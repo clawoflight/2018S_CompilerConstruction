@@ -13,6 +13,7 @@
 
 %{
 #include <string.h>
+#include <stdbool.h>
 
 int mCc_parser_lex();
 void mCc_parser_error();
@@ -25,6 +26,7 @@ void mCc_parser_error();
 
 %token <long>   INT_LITERAL   "integer literal"
 %token <double> FLOAT_LITERAL "float literal"
+%token <bool>   BOOL_LITERAL  "bool literal"
 
 %token LPARENTH "("
 %token RPARENTH ")"
@@ -62,6 +64,7 @@ expression : single_expr                      { $$ = $1;                        
 
 literal : INT_LITERAL   { $$ = mCc_ast_new_literal_int($1);   }
         | FLOAT_LITERAL { $$ = mCc_ast_new_literal_float($1); }
+        | BOOL_LITERAL  { $$ = mCc_ast_new_literal_bool($1);  }
         ;
 
 %%
