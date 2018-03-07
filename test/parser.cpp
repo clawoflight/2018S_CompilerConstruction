@@ -33,6 +33,44 @@ TEST(Parser, BinaryOp_1)
 	mCc_ast_delete_expression(expr);
 }
 
+TEST(Parser, BoolLiteral_1)
+{
+	const char input[] = "true";
+	auto result = mCc_parser_parse_string(input);
+
+	ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);
+
+	auto expr = result.expression;
+
+	// root
+	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_LITERAL, expr->type);
+
+	// root -> literal
+	ASSERT_EQ(MCC_AST_LITERAL_TYPE_BOOL, expr->literal->type);
+	ASSERT_EQ(true, expr->literal->b_value);
+
+	mCc_ast_delete_expression(expr);
+}
+
+TEST(Parser, BoolLiteral_2)
+{
+	const char input[] = "false";
+	auto result = mCc_parser_parse_string(input);
+
+	ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);
+
+	auto expr = result.expression;
+
+	// root
+	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_LITERAL, expr->type);
+
+	// root -> literal
+	ASSERT_EQ(MCC_AST_LITERAL_TYPE_BOOL, expr->literal->type);
+	ASSERT_EQ(false, expr->literal->b_value);
+
+	mCc_ast_delete_expression(expr);
+}
+
 TEST(Parser, NestedExpression_1)
 {
 	const char input[] = "42 * (-192 + 3.14)";
