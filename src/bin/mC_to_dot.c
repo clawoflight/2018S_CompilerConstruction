@@ -1,3 +1,9 @@
+/**
+ * @file mC_to_dot.c
+ * @brief Program that parses code and outputs the AST in DOT format.
+ * @author warhawk
+ * @date 2018-03-08
+ */
 #include <stdio.h>
 #include <stdlib.h>
 

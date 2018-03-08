@@ -1,3 +1,9 @@
+/**
+ * @file ast_print.h
+ * @brief Declarations for the ast printing mechanism.
+ * @author warhawk
+ * @date 2018-03-08
+ */
 #ifndef MCC_AST_PRINT_H
 #define MCC_AST_PRINT_H
 
@@ -9,6 +15,13 @@
 extern "C" {
 #endif
 
+/**
+ * Get a human-readable string from a binary operation.
+ *
+ * @param op the type of the operation
+ *
+ * @return A human-readable string
+ */
 const char *mCc_ast_print_binary_op(enum mCc_ast_binary_op op);
 
 /* ------------------------------------------------------------- DOT Printer */

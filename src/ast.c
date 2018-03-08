@@ -1,3 +1,9 @@
+/**
+ * @file ast.c
+ * @brief Implementation of the AST.
+ * @author warhawk
+ * @date 2018-03-08
+ */
 #include "mCc/ast.h"
 
 #include <assert.h>

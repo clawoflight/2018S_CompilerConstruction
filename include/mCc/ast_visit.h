@@ -1,3 +1,9 @@
+/**
+ * @file ast_visit.h
+ * @brief Declarations for the AST traversal mechanism.
+ * @author warhawk
+ * @date 2018-03-08
+ */
 #ifndef MCC_AST_VISIT_H
 #define MCC_AST_VISIT_H
 

@@ -1,3 +1,9 @@
+/**
+ * @file ast_visit.c
+ * @brief Implementation of the AST traversal mechanism.
+ * @author warhawk
+ * @date 2018-03-08
+ */
 #include "mCc/ast_visit.h"
 
 #include <assert.h>

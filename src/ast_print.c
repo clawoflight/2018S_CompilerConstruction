@@ -1,3 +1,9 @@
+/**
+ * @file ast_print.c
+ * @brief Implementation of the AST printing mechanism.
+ * @author warhawk
+ * @date 2018-03-08
+ */
 #include "mCc/ast_print.h"
 
 #include <assert.h>
