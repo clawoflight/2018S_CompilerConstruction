@@ -79,3 +79,17 @@ foreach bench : mCc_benchs
 
     benchmark(name + ': ' + reps, b, args: [reps])
 endforeach
+
+# --------------------------------------------------------------------- DOXYGEN
+
+doxygen = find_program('doxygen')
+
+doxyconf = configuration_data()
+doxyconf.set('ROOT',     meson.source_root())
+doxyconf.set('BUILDDIR', meson.build_root())
+
+doxyfile = configure_file(input: 'Doxyfile',
+                          output: '.doxyfile',
+                          configuration: doxyconf)
+
+html_doc = run_target('doc', command: [doxygen, doxyfile])
