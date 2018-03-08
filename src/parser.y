@@ -26,6 +26,7 @@ void mCc_parser_error();
 
 %token <long>   INT_LITERAL   "integer literal"
 %token <double> FLOAT_LITERAL "float literal"
+%token <char*>  STRING_LITERAL "string literal"
 %token <bool>   BOOL_LITERAL  "bool literal"
 
 %token LPARENTH "("
@@ -64,6 +65,7 @@ expression : single_expr                      { $$ = $1;                        
 
 literal : INT_LITERAL   { $$ = mCc_ast_new_literal_int($1);   }
         | FLOAT_LITERAL { $$ = mCc_ast_new_literal_float($1); }
+		| STRING_LITERAL { $$ = mCc_ast_new_literal_string($1); }
         | BOOL_LITERAL  { $$ = mCc_ast_new_literal_bool($1);  }
         ;
 

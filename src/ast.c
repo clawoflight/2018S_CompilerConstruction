@@ -103,6 +103,21 @@ struct mCc_ast_literal *mCc_ast_new_literal_float(double value)
 	return lit;
 }
 
+struct mCc_ast_literal *mCc_ast_new_literal_string(char* value)
+{
+	struct mCc_ast_literal *lit = malloc(sizeof(*lit));
+	if (!lit) {
+		return NULL;
+	}
+
+    char *str=malloc(2* sizeof(char));  // this has to be done in order to don't get weird symbols in output
+    strcpy(str,value);
+
+	lit->type = MCC_AST_LITERAL_TYPE_STRING;
+	lit->s_value = str;
+	return lit;
+}
+
 struct mCc_ast_literal *mCc_ast_new_literal_bool(bool value)
 {
 	struct mCc_ast_literal *lit = malloc(sizeof(*lit));

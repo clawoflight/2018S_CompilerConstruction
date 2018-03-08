@@ -80,7 +80,8 @@ void mCc_ast_delete_expression(struct mCc_ast_expression *expression);
 enum mCc_ast_literal_type {
 	MCC_AST_LITERAL_TYPE_INT,
 	MCC_AST_LITERAL_TYPE_FLOAT,
-	MCC_AST_LITERAL_TYPE_BOOL
+	MCC_AST_LITERAL_TYPE_BOOL,
+	MCC_AST_LITERAL_TYPE_STRING,
 };
 
 struct mCc_ast_literal {
@@ -94,6 +95,9 @@ struct mCc_ast_literal {
 		/* MCC_AST_LITERAL_TYPE_FLOAT */
 		double f_value;
 
+		/* MCC_AST_LITERAL_TYPE_STRING */
+		char* s_value;
+
 		/* MCC_AST_LITERAL_TYPE_BOOL */
 		bool b_value;
 	};
@@ -102,6 +106,8 @@ struct mCc_ast_literal {
 struct mCc_ast_literal *mCc_ast_new_literal_int(long value);
 
 struct mCc_ast_literal *mCc_ast_new_literal_float(double value);
+
+struct mCc_ast_literal *mCc_ast_new_literal_string(char* value);
 
 struct mCc_ast_literal *mCc_ast_new_literal_bool(bool value);
 
