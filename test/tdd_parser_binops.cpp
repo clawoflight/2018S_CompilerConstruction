@@ -14,6 +14,8 @@ TEST(TDD_PARSER_BINOPS, LT)
 	// root
 	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_BINARY_OP, expr->type);
 	ASSERT_EQ(MCC_AST_BINARY_OP_LT, expr->op);
+
+	mCc_ast_delete_expression(expr);
 }
 
 TEST(TDD_PARSER_BINOPS, GT)
@@ -27,6 +29,8 @@ TEST(TDD_PARSER_BINOPS, GT)
 	// root
 	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_BINARY_OP, expr->type);
 	ASSERT_EQ(MCC_AST_BINARY_OP_GT, expr->op);
+
+	mCc_ast_delete_expression(expr);
 }
 
 TEST(TDD_PARSER_BINOPS, LEQ)
@@ -40,6 +44,8 @@ TEST(TDD_PARSER_BINOPS, LEQ)
 	// root
 	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_BINARY_OP, expr->type);
 	ASSERT_EQ(MCC_AST_BINARY_OP_LEQ, expr->op);
+
+	mCc_ast_delete_expression(expr);
 }
 
 TEST(TDD_PARSER_BINOPS, GEQ)
@@ -53,6 +59,8 @@ TEST(TDD_PARSER_BINOPS, GEQ)
 	// root
 	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_BINARY_OP, expr->type);
 	ASSERT_EQ(MCC_AST_BINARY_OP_GEQ, expr->op);
+
+	mCc_ast_delete_expression(expr);
 }
 
 TEST(TDD_PARSER_BINOPS, AND)
@@ -66,6 +74,8 @@ TEST(TDD_PARSER_BINOPS, AND)
 	// root
 	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_BINARY_OP, expr->type);
 	ASSERT_EQ(MCC_AST_BINARY_OP_AND, expr->op);
+
+	mCc_ast_delete_expression(expr);
 }
 
 TEST(TDD_PARSER_BINOPS, OR)
@@ -79,6 +89,8 @@ TEST(TDD_PARSER_BINOPS, OR)
 	// root
 	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_BINARY_OP, expr->type);
 	ASSERT_EQ(MCC_AST_BINARY_OP_OR, expr->op);
+
+	mCc_ast_delete_expression(expr);
 }
 
 TEST(TDD_PARSER_BINOPS, EQ)
@@ -92,6 +104,8 @@ TEST(TDD_PARSER_BINOPS, EQ)
 	// root
 	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_BINARY_OP, expr->type);
 	ASSERT_EQ(MCC_AST_BINARY_OP_EQ, expr->op);
+
+	mCc_ast_delete_expression(expr);
 }
 
 TEST(TDD_PARSER_BINOPS, NEQ)
@@ -105,4 +119,6 @@ TEST(TDD_PARSER_BINOPS, NEQ)
 	// root
 	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_BINARY_OP, expr->type);
 	ASSERT_EQ(MCC_AST_BINARY_OP_NEQ, expr->op);
+
+	mCc_ast_delete_expression(expr);
 }
