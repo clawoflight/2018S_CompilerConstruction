@@ -43,6 +43,14 @@ struct mCc_ast_node {
 /* --------------------------------------------------------------- Operators */
 
 /**
+ * Available types of unary operators.
+ */
+enum mCc_ast_unary_op {
+	MCC_AST_UNARY_OP_NEG, ///< Numerical negation
+	MCC_AST_UNARY_OP_NOT, ///< Logical negation
+};
+
+/**
  * @brief Available types of binary operators.
  */
 enum mCc_ast_binary_op {
@@ -67,6 +75,7 @@ enum mCc_ast_binary_op {
  */
 enum mCc_ast_expression_type {
 	MCC_AST_EXPRESSION_TYPE_LITERAL,   ///< Literal expression
+	MCC_AST_EXPRESSION_TYPE_UNARY_OP,  ///< Unary Operation expression
 	MCC_AST_EXPRESSION_TYPE_BINARY_OP, ///< Binary operation expression
 	MCC_AST_EXPRESSION_TYPE_PARENTH,   ///< Parenthesis expression
 };
@@ -99,6 +108,15 @@ struct mCc_ast_expression {
 		};
 
 		/**
+		 * Data if #type is #MCC_AST_EXPRESSION_TYPE_UNARY_OP
+		 */
+		struct {
+			enum mCc_ast_unary_op unary_op; ///< The type of the unary operation
+			struct mCc_ast_expression
+			    *unary_expression; ///< subexpression of unary op
+		};
+
+		/**
 		 * Data if #type is #MCC_AST_EXPRESSION_TYPE_PARENTH
 		 */
 		struct mCc_ast_expression *expression;
@@ -114,6 +132,18 @@ struct mCc_ast_expression {
  */
 struct mCc_ast_expression *
 mCc_ast_new_expression_literal(struct mCc_ast_literal *literal);
+
+/**
+ * Construct an expression for a unary operation.
+ *
+ * @param op The type of the operation
+ * @param subexpression The subexpression
+ *
+ * @return A new expression with type #MCC_AST_EXPRESSION_TYPE_UNARY_OP
+ */
+struct mCc_ast_expression *
+mCc_ast_new_expression_unary_op(enum mCc_ast_unary_op op,
+                                struct mCc_ast_expression *subexpression);
 
 /**
  * Construct an expression from a binary operation.

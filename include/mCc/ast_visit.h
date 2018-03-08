@@ -36,6 +36,7 @@ struct mCc_ast_visitor {
 
 	mCc_ast_visit_expression_cb expression;
 	mCc_ast_visit_expression_cb expression_literal;
+	mCc_ast_visit_expression_cb expression_unary_op;
 	mCc_ast_visit_expression_cb expression_binary_op;
 	mCc_ast_visit_expression_cb expression_parenth;
 

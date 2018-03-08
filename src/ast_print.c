@@ -12,6 +12,16 @@
 
 #define LABEL_SIZE 64
 
+const char *mCc_ast_print_unary_op(enum mCc_ast_unary_op op)
+{
+	switch (op) {
+	case MCC_AST_UNARY_OP_NEG: return "-";
+	case MCC_AST_UNARY_OP_NOT: return "!";
+	}
+
+	return "unknown op";
+}
+
 const char *mCc_ast_print_binary_op(enum mCc_ast_binary_op op)
 {
 	switch (op) {
@@ -19,13 +29,13 @@ const char *mCc_ast_print_binary_op(enum mCc_ast_binary_op op)
 	case MCC_AST_BINARY_OP_SUB: return "-";
 	case MCC_AST_BINARY_OP_MUL: return "*";
 	case MCC_AST_BINARY_OP_DIV: return "/";
-	case MCC_AST_BINARY_OP_LT:  return "<";
-    case MCC_AST_BINARY_OP_GT:  return ">";
+	case MCC_AST_BINARY_OP_LT: return "<";
+	case MCC_AST_BINARY_OP_GT: return ">";
 	case MCC_AST_BINARY_OP_LEQ: return "<=";
 	case MCC_AST_BINARY_OP_GEQ: return ">=";
 	case MCC_AST_BINARY_OP_AND: return "&&";
-	case MCC_AST_BINARY_OP_OR:  return "||";
-	case MCC_AST_BINARY_OP_EQ:  return "==";
+	case MCC_AST_BINARY_OP_OR: return "||";
+	case MCC_AST_BINARY_OP_EQ: return "==";
 	case MCC_AST_BINARY_OP_NEQ: return "!=";
 	}
 
@@ -81,6 +91,21 @@ static void print_dot_expression_literal(struct mCc_ast_expression *expression,
 	print_dot_edge(out, expression, expression->literal, "literal");
 }
 
+static void print_dot_expression_unary_op(struct mCc_ast_expression *expression,
+                                          void *data)
+{
+	assert(expression);
+	assert(data);
+
+	char label[LABEL_SIZE] = { 0 };
+	snprintf(label, sizeof(label), "expr: %s",
+	         mCc_ast_print_unary_op(expression->unary_op));
+	FILE *out = data;
+	print_dot_node(out, expression, label);
+	print_dot_edge(out, expression, expression->unary_expression,
+	               "subexpression");
+}
+
 static void
 print_dot_expression_binary_op(struct mCc_ast_expression *expression,
                                void *data)
@@ -133,7 +158,8 @@ static void print_dot_literal_float(struct mCc_ast_literal *literal, void *data)
 	print_dot_node(out, literal, label);
 }
 
-static void print_dot_literal_string(struct mCc_ast_literal *literal, void *data)
+static void print_dot_literal_string(struct mCc_ast_literal *literal,
+                                     void *data)
 {
 	assert(literal);
 	assert(data);
@@ -168,6 +194,7 @@ static struct mCc_ast_visitor print_dot_visitor(FILE *out)
 		.userdata = out,
 
 		.expression_literal = print_dot_expression_literal,
+		.expression_unary_op = print_dot_expression_unary_op,
 		.expression_binary_op = print_dot_expression_binary_op,
 		.expression_parenth = print_dot_expression_parenth,
 

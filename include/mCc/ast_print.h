@@ -16,6 +16,15 @@ extern "C" {
 #endif
 
 /**
+ * Get a human-readable string from a unary operation.
+ *
+ * @param op the type of the operation
+ *
+ * @return A human-readable string
+ */
+const char *mCc_ast_print_unary_op(enum mCc_ast_unary_op op);
+
+/**
  * Get a human-readable string from a binary operation.
  *
  * @param op the type of the operation

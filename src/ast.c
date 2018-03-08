@@ -28,6 +28,22 @@ mCc_ast_new_expression_literal(struct mCc_ast_literal *literal)
 }
 
 struct mCc_ast_expression *
+mCc_ast_new_expression_unary_op(enum mCc_ast_unary_op op,
+                                struct mCc_ast_expression *subexpression)
+{
+	assert(subexpression);
+
+	struct mCc_ast_expression *expr = malloc(sizeof(*expr));
+	if (!expr)
+		return NULL;
+
+	expr->type = MCC_AST_EXPRESSION_TYPE_UNARY_OP;
+	expr->unary_op = op;
+	expr->unary_expression = subexpression;
+	return expr;
+}
+
+struct mCc_ast_expression *
 mCc_ast_new_expression_binary_op(enum mCc_ast_binary_op op,
                                  struct mCc_ast_expression *lhs,
                                  struct mCc_ast_expression *rhs)
@@ -71,6 +87,10 @@ void mCc_ast_delete_expression(struct mCc_ast_expression *expression)
 		mCc_ast_delete_literal(expression->literal);
 		break;
 
+	case MCC_AST_EXPRESSION_TYPE_UNARY_OP:
+		mCc_ast_delete_expression(expression->unary_expression);
+		break;
+
 	case MCC_AST_EXPRESSION_TYPE_BINARY_OP:
 		mCc_ast_delete_expression(expression->lhs);
 		mCc_ast_delete_expression(expression->rhs);
@@ -110,15 +130,15 @@ struct mCc_ast_literal *mCc_ast_new_literal_float(double value)
 	return lit;
 }
 
-struct mCc_ast_literal *mCc_ast_new_literal_string(char* value)
+struct mCc_ast_literal *mCc_ast_new_literal_string(char *value)
 {
 	struct mCc_ast_literal *lit = malloc(sizeof(*lit));
 	if (!lit) {
 		return NULL;
 	}
 
-    char *str=malloc((strlen(value)+1)*sizeof(char));
-    strcpy(str,value);
+	char *str = malloc((strlen(value) + 1) * sizeof(char));
+	strcpy(str, value);
 
 	lit->type = MCC_AST_LITERAL_TYPE_STRING;
 	lit->s_value = str;
