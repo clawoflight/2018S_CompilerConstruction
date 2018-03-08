@@ -19,6 +19,7 @@ extern "C" {
 /* Forward Declarations */
 struct mCc_ast_expression;
 struct mCc_ast_literal;
+struct mCc_ast_identifier;
 
 /* ---------------------------------------------------------------- AST Node */
 
@@ -67,6 +68,7 @@ enum mCc_ast_binary_op {
  */
 enum mCc_ast_expression_type {
 	MCC_AST_EXPRESSION_TYPE_LITERAL,   ///< Literal expression
+	MCC_AST_EXPRESSION_TYPE_IDENTIFIER, ///< Identifier expression
 	MCC_AST_EXPRESSION_TYPE_BINARY_OP, ///< Binary operation expression
 	MCC_AST_EXPRESSION_TYPE_PARENTH,   ///< Parenthesis expression
 };
@@ -88,6 +90,11 @@ struct mCc_ast_expression {
 		 * Data if #type is #MCC_AST_EXPRESSION_TYPE_LITERAL
 		 */
 		struct mCc_ast_literal *literal;
+
+		/**
+		 * Data if #type is #MCC_AST_EXPRESSION_TYPE_LITERAL
+		 */
+		struct mCc_ast_identifier *identifier;
 
 		/**
 		 * Data if #type is #MCC_AST_EXPRESSION_TYPE_BINARY_OP
@@ -114,6 +121,16 @@ struct mCc_ast_expression {
  */
 struct mCc_ast_expression *
 mCc_ast_new_expression_literal(struct mCc_ast_literal *literal);
+
+/**
+ * Construct an expression from a literal.
+ *
+ * @param literal The literal
+ *
+ * @return A new expression with type #MCC_AST_EXPRESSION_TYPE_LITERAL
+ */
+struct mCc_ast_expression *
+mCc_ast_new_expression_identifier(struct mCc_ast_identifier *identifier);
 
 /**
  * Construct an expression from a binary operation.
@@ -156,6 +173,27 @@ enum mCc_ast_literal_type {
 	MCC_AST_LITERAL_TYPE_FLOAT,  ///< Float literal
 	MCC_AST_LITERAL_TYPE_BOOL,   ///< Boolean literal
 	MCC_AST_LITERAL_TYPE_STRING, ///< String literal
+};
+
+enum mCc_ast_identifier_type {
+	MCC_AST_IDENTIFIER_TYPE,			///< Identifier
+};
+
+/**
+ * Node representing a identifier.
+ */
+struct mCc_ast_identifier {
+	struct mCc_ast_node node; ///< Common attributes
+
+	/**
+	 * The type of this identifier.
+	 *
+	 * Type-specific data is contained in the union.
+	 */
+	enum mCc_ast_identifier_type type;
+	union {
+		char *id_value;
+	};
 };
 
 /**
@@ -230,11 +268,27 @@ struct mCc_ast_literal *mCc_ast_new_literal_bool(bool value);
 struct mCc_ast_literal *mCc_ast_new_literal_string(char *value);
 
 /**
+ * Create a new identifier.
+ *
+ * @param value The value
+ *
+ * @return A new identifier with type #MCC_AST_IDENTIFIER
+ */
+struct mCc_ast_identifier *mCc_ast_new_identifier(char *value);
+
+/**
  * Delete a literal.
  *
  * @param literal The literal to delete
  */
 void mCc_ast_delete_literal(struct mCc_ast_literal *literal);
+
+/**
+ * Delete a identifier.
+ *
+ * @param identifier The identifier to delete
+ */
+void mCc_ast_delete_identifier(struct mCc_ast_identifier *identifier);
 
 #ifdef __cplusplus
 }

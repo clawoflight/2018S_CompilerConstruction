@@ -28,6 +28,7 @@ void mCc_parser_error();
 %token <double> FLOAT_LITERAL "float literal"
 %token <char*>  STRING_LITERAL "string literal"
 %token <bool>   BOOL_LITERAL  "bool literal"
+%token <char*>  IDENTIFIER    "identifier"
 
 %token LPARENTH "("
 %token RPARENTH ")"
@@ -49,6 +50,7 @@ void mCc_parser_error();
 
 %type <struct mCc_ast_expression *> expression single_expr
 %type <struct mCc_ast_literal *> literal
+%type <struct mCc_ast_identifier *> identifier
 
 %start toplevel
 
@@ -72,6 +74,7 @@ binary_op : PLUS  { $$ = MCC_AST_BINARY_OP_ADD; }
           ;
 
 single_expr : literal                         { $$ = mCc_ast_new_expression_literal($1); }
+			| identifier					  { $$ = mCc_ast_new_expression_identifier($1); }
             | LPARENTH expression RPARENTH    { $$ = mCc_ast_new_expression_parenth($2); }
             ;
 
@@ -84,7 +87,8 @@ literal : INT_LITERAL   { $$ = mCc_ast_new_literal_int($1);   }
 		| STRING_LITERAL { $$ = mCc_ast_new_literal_string($1); }
         | BOOL_LITERAL  { $$ = mCc_ast_new_literal_bool($1);  }
         ;
-
+identifier : IDENTIFIER { $$ = mCc_ast_new_identifier($1);}
+		;
 %%
 
 #include <assert.h>

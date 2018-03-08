@@ -28,6 +28,21 @@ mCc_ast_new_expression_literal(struct mCc_ast_literal *literal)
 }
 
 struct mCc_ast_expression *
+mCc_ast_new_expression_identifier(struct mCc_ast_identifier *identifier)
+{
+	assert(identifier);
+
+	struct mCc_ast_expression *expr = malloc(sizeof(*expr));
+	if (!expr) {
+		return NULL;
+	}
+
+	expr->type = MCC_AST_EXPRESSION_TYPE_IDENTIFIER;
+	expr->identifier = identifier;
+	return expr;
+}
+
+struct mCc_ast_expression *
 mCc_ast_new_expression_binary_op(enum mCc_ast_binary_op op,
                                  struct mCc_ast_expression *lhs,
                                  struct mCc_ast_expression *rhs)
@@ -71,6 +86,10 @@ void mCc_ast_delete_expression(struct mCc_ast_expression *expression)
 		mCc_ast_delete_literal(expression->literal);
 		break;
 
+	case MCC_AST_EXPRESSION_TYPE_IDENTIFIER:
+		mCc_ast_delete_identifier(expression->identifier);
+		break;
+
 	case MCC_AST_EXPRESSION_TYPE_BINARY_OP:
 		mCc_ast_delete_expression(expression->lhs);
 		mCc_ast_delete_expression(expression->rhs);
@@ -82,6 +101,22 @@ void mCc_ast_delete_expression(struct mCc_ast_expression *expression)
 	}
 
 	free(expression);
+}
+/* ---------------------------------------------------------------- Identifier */
+
+struct mCc_ast_identifier *mCc_ast_new_identifier(char* value)
+{
+	struct mCc_ast_identifier *id = malloc(sizeof(*id));
+	if (!id) {
+		return NULL;
+	}
+
+    char *str=malloc((strlen(value)+1)*sizeof(char));
+    strcpy(str,value);
+
+    id->type = MCC_AST_IDENTIFIER_TYPE;
+    id->id_value = str;
+	return id;
 }
 
 /* ---------------------------------------------------------------- Literals */
@@ -141,4 +176,9 @@ void mCc_ast_delete_literal(struct mCc_ast_literal *literal)
 {
 	assert(literal);
 	free(literal);
+}
+void mCc_ast_delete_identifier(struct mCc_ast_identifier *identifier)
+{
+	assert(identifier);
+	free(identifier);
 }

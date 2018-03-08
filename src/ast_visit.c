@@ -45,6 +45,12 @@ void mCc_ast_visit_expression(struct mCc_ast_expression *expression,
 		visit_if_post_order(expression, visitor->expression_literal, visitor);
 		break;
 
+	case MCC_AST_EXPRESSION_TYPE_IDENTIFIER:
+		visit_if_pre_order(expression, visitor->expression_identifier, visitor);
+		mCc_ast_visit_identifier(expression->identifier, visitor);
+		visit_if_post_order(expression, visitor->expression_identifier, visitor);
+		break;
+
 	case MCC_AST_EXPRESSION_TYPE_BINARY_OP:
 		visit_if_pre_order(expression, visitor->expression_binary_op, visitor);
 		mCc_ast_visit_expression(expression->lhs, visitor);
@@ -89,4 +95,16 @@ void mCc_ast_visit_literal(struct mCc_ast_literal *literal,
 	}
 
 	visit_if_post_order(literal, visitor->literal, visitor);
+}
+
+void mCc_ast_visit_identifier(struct mCc_ast_identifier *identifier,
+						   struct mCc_ast_visitor *visitor)
+{
+	assert(identifier);
+	assert(visitor);
+
+	visit_if_pre_order(identifier, visitor->identifier, visitor);
+
+	visit(identifier, visitor->identifier_s, visitor);
+	visit_if_post_order(identifier, visitor->identifier, visitor);
 }
