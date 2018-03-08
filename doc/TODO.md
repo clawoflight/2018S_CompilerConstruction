@@ -10,10 +10,8 @@
 ~~alpha_num        = /[a-zA-Z0-9_]/~~
 
 ~~digit            = /[0-9]/~~
-```
 
-identifier       = alpha , [ { alpha_num } ]
-```
+~~identifier       = alpha , [ { alpha_num } ]~~
 
 ~~bool_literal     = "true" | "false"~~
 
@@ -22,13 +20,12 @@ identifier       = alpha , [ { alpha_num } ]
 ~~float_literal    = { digit } , "." , { digit }~~
 
 ~~string_literal   = /"[^"]*"/~~
-```
 
 
 ### Operators
 
-unary_op         = "-" | "!"
-```
+~~unary_op         = "-" | "!"~~
+
 ~~binary_op        = "+"  | "-" | "*" | "/" 
                  | "<"  | ">" | "<=" | ">=" 
                  | "&&" | "||" 
