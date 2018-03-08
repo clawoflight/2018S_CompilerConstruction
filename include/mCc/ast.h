@@ -50,14 +50,14 @@ enum mCc_ast_binary_op {
 	MCC_AST_BINARY_OP_SUB, ///< Subtraction
 	MCC_AST_BINARY_OP_MUL, ///< Multiplication
 	MCC_AST_BINARY_OP_DIV, ///< Division
-	MCC_AST_BINARY_OP_LT, ///< Less than
-	MCC_AST_BINARY_OP_GT, ///< Greater than
+	MCC_AST_BINARY_OP_LT,  ///< Less than
+	MCC_AST_BINARY_OP_GT,  ///< Greater than
 	MCC_AST_BINARY_OP_LEQ, ///< Less or equal
 	MCC_AST_BINARY_OP_GEQ, ///< Greater or equal
 	MCC_AST_BINARY_OP_AND, /// AND
-	MCC_AST_BINARY_OP_OR, /// OR
-	MCC_AST_BINARY_OP_EQ, /// Equal
-	MCC_AST_BINARY_OP_NEQ /// Not equal
+	MCC_AST_BINARY_OP_OR,  /// OR
+	MCC_AST_BINARY_OP_EQ,  /// Equal
+	MCC_AST_BINARY_OP_NEQ  /// Not equal
 };
 
 /* ------------------------------------------------------------- Expressions */
@@ -66,22 +66,22 @@ enum mCc_ast_binary_op {
  * @brief Available expression types.
  */
 enum mCc_ast_expression_type {
-	MCC_AST_EXPRESSION_TYPE_LITERAL, ///< Literal expression
+	MCC_AST_EXPRESSION_TYPE_LITERAL,   ///< Literal expression
 	MCC_AST_EXPRESSION_TYPE_BINARY_OP, ///< Binary operation expression
-	MCC_AST_EXPRESSION_TYPE_PARENTH, ///< Parenthesis expression
+	MCC_AST_EXPRESSION_TYPE_PARENTH,   ///< Parenthesis expression
 };
 
 /**
  * @brief Node representing an expression.
  *
  * Note that it contains common attributes in a #mCc_ast_node.
- * It has a type in #type, and pointers to the child nodes depending on the type.
- * Only one of the union members can be set at any time.
+ * It has a type in #type, and pointers to the child nodes depending on the
+ * type. Only one of the union members can be set at any time.
  */
 struct mCc_ast_expression {
 	struct mCc_ast_node node; ///< Common node attributes
-
-	enum mCc_ast_expression_type type; ///< The concrete type of this expression (no inheritence in C)
+	/// The concrete type of this expression (no inheritance in C)
+	enum mCc_ast_expression_type type;
 	union {
 
 		/**
@@ -152,9 +152,9 @@ void mCc_ast_delete_expression(struct mCc_ast_expression *expression);
  * Available Literal types.
  */
 enum mCc_ast_literal_type {
-	MCC_AST_LITERAL_TYPE_INT, ///< Integer literal
-	MCC_AST_LITERAL_TYPE_FLOAT, ///< Float literal
-	MCC_AST_LITERAL_TYPE_BOOL, ///< Boolean literal
+	MCC_AST_LITERAL_TYPE_INT,    ///< Integer literal
+	MCC_AST_LITERAL_TYPE_FLOAT,  ///< Float literal
+	MCC_AST_LITERAL_TYPE_BOOL,   ///< Boolean literal
 	MCC_AST_LITERAL_TYPE_STRING, ///< String literal
 };
 
@@ -184,7 +184,7 @@ struct mCc_ast_literal {
 		/**
 		 * Data if #type is #MCC_AST_LITERAL_TYPE_STRING
 		 */
-		char* s_value;
+		char *s_value;
 
 		/**
 		 * Data if #type is #MCC_AST_LITERAL_TYPE_BOOL
@@ -227,7 +227,7 @@ struct mCc_ast_literal *mCc_ast_new_literal_bool(bool value);
  *
  * @return A new literal with type #MCC_AST_LITERAL_TYPE_STRING
  */
-struct mCc_ast_literal *mCc_ast_new_literal_string(char* value);
+struct mCc_ast_literal *mCc_ast_new_literal_string(char *value);
 
 /**
  * Delete a literal.
