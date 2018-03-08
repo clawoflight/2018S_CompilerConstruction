@@ -33,6 +33,63 @@ TEST(Parser, BinaryOp_1)
 	mCc_ast_delete_expression(expr);
 }
 
+TEST(Parser, StringLiteral_1)
+{
+	const char input[] = "\"3_n4f$f\"";
+	auto result = mCc_parser_parse_string(input);
+
+	ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);
+
+	auto expr = result.expression;
+
+	// root
+	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_LITERAL, expr->type);
+
+	// root -> literal
+	ASSERT_EQ(MCC_AST_LITERAL_TYPE_STRING, expr->literal->type);
+	ASSERT_EQ(0, strcmp(expr->literal->s_value,"\"3_n4f$f\""));
+
+	mCc_ast_delete_expression(expr);
+}
+
+TEST(Parser, StringLiteral_2)
+{
+    const char input[] = "\"f\"";
+    auto result = mCc_parser_parse_string(input);
+
+    ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);
+
+    auto expr = result.expression;
+
+    // root
+    ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_LITERAL, expr->type);
+
+    // root -> literal
+    ASSERT_EQ(MCC_AST_LITERAL_TYPE_STRING, expr->literal->type);
+    ASSERT_EQ(1, strcmp(expr->literal->s_value,"\"3f\""));
+
+    mCc_ast_delete_expression(expr);
+}
+
+TEST(Parser, StringLiteral_Empty)
+{
+    const char input[] = "\"\"";
+    auto result = mCc_parser_parse_string(input);
+
+    ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);
+
+    auto expr = result.expression;
+
+    // root
+    ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_LITERAL, expr->type);
+
+    // root -> literal
+    ASSERT_EQ(MCC_AST_LITERAL_TYPE_STRING, expr->literal->type);
+    ASSERT_EQ(0, strcmp(expr->literal->s_value,"\"\""));
+
+    mCc_ast_delete_expression(expr);
+}
+
 TEST(Parser, BoolLiteral_1)
 {
 	const char input[] = "true";

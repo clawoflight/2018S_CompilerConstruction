@@ -145,8 +145,9 @@ void mCc_ast_delete_expression(struct mCc_ast_expression *expression);
  */
 enum mCc_ast_literal_type {
 	MCC_AST_LITERAL_TYPE_INT, ///< Integer literal
-	MCC_AST_LITERAL_TYPE_FLOAT, ///< Float Literal
-	MCC_AST_LITERAL_TYPE_BOOL ///< Boolean literal
+	MCC_AST_LITERAL_TYPE_FLOAT, ///< Float literal
+	MCC_AST_LITERAL_TYPE_BOOL, ///< Boolean literal
+	MCC_AST_LITERAL_TYPE_STRING, ///< String literal
 };
 
 /**
@@ -171,6 +172,11 @@ struct mCc_ast_literal {
 		 * Data if #type is #MCC_AST_LITERAL_TYPE_FLOAT
 		 */
 		double f_value;
+
+		/**
+		 * Data if #type is #MCC_AST_LITERAL_TYPE_STRING
+		 */
+		char* s_value;
 
 		/**
 		 * Data if #type is #MCC_AST_LITERAL_TYPE_BOOL
@@ -205,6 +211,15 @@ struct mCc_ast_literal *mCc_ast_new_literal_float(double value);
  * @return A new literal with type #MCC_AST_LITERAL_TYPE_BOOL
  */
 struct mCc_ast_literal *mCc_ast_new_literal_bool(bool value);
+
+/**
+ * Create a new string literal.
+ *
+ * @param value The value
+ *
+ * @return A new literal with type #MCC_AST_LITERAL_TYPE_STRING
+ */
+struct mCc_ast_literal *mCc_ast_new_literal_string(char* value);
 
 /**
  * Delete a literal.

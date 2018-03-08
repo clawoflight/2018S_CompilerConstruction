@@ -8,6 +8,7 @@
 
 #include <assert.h>
 #include <stdlib.h>
+#include <string.h>
 
 /* ------------------------------------------------------------- Expressions */
 
@@ -106,6 +107,21 @@ struct mCc_ast_literal *mCc_ast_new_literal_float(double value)
 
 	lit->type = MCC_AST_LITERAL_TYPE_FLOAT;
 	lit->f_value = value;
+	return lit;
+}
+
+struct mCc_ast_literal *mCc_ast_new_literal_string(char* value)
+{
+	struct mCc_ast_literal *lit = malloc(sizeof(*lit));
+	if (!lit) {
+		return NULL;
+	}
+
+    char *str=malloc((strlen(value)+1)*sizeof(char));
+    strcpy(str,value);
+
+	lit->type = MCC_AST_LITERAL_TYPE_STRING;
+	lit->s_value = str;
 	return lit;
 }
 
