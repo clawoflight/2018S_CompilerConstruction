@@ -12,13 +12,10 @@
 
 #define YYSTYPE MCC_PARSER_STYPE
 %}
-alpha         -?[a-zA-Z]+
-alpha_num     -?[a-zA-Z0-9]+
-identifier    -?alpha,[{alpha_num}]
 
 int_literal   -?[0-9]+
 float_literal -?[0-9]+\.[0-9]+
-string_literal -?[a-zA-Z]+
+string_literal \"[^"]*\"
 bool_literal (true)|(false)
 
 %%
