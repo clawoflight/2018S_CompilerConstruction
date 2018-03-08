@@ -33,6 +33,14 @@ bool_literal (true)|(false)
 "-"               { return TK_MINUS; }
 "*"               { return TK_ASTER; }
 "/"               { return TK_SLASH; }
+"<"               { return TK_LESS; }
+">"               { return TK_GREATER; }
+"<="              { return TK_LESS_EQ; }
+">="              { return TK_GREATER_EQ; }
+"&&"              { return TK_AND; }
+"||"              { return TK_OR; }
+"=="              { return TK_EQUALS; }
+"!="              { return TK_NOT_EQUALS; }
 
 "("               { return TK_LPARENTH; }
 ")"               { return TK_RPARENTH; }

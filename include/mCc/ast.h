@@ -50,6 +50,14 @@ enum mCc_ast_binary_op {
 	MCC_AST_BINARY_OP_SUB, ///< Subtraction
 	MCC_AST_BINARY_OP_MUL, ///< Multiplication
 	MCC_AST_BINARY_OP_DIV, ///< Division
+	MCC_AST_BINARY_OP_LT, ///< Less than
+	MCC_AST_BINARY_OP_GT, ///< Greater than
+	MCC_AST_BINARY_OP_LEQ, ///< Less or equal
+	MCC_AST_BINARY_OP_GEQ, ///< Greater or equal
+	MCC_AST_BINARY_OP_AND, /// AND
+	MCC_AST_BINARY_OP_OR, /// OR
+	MCC_AST_BINARY_OP_EQ, /// Equal
+	MCC_AST_BINARY_OP_NEQ /// Not equal
 };
 
 /* ------------------------------------------------------------- Expressions */
