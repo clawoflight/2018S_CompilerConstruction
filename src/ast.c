@@ -111,7 +111,7 @@ struct mCc_ast_literal *mCc_ast_new_literal_string(char* value)
 		return NULL;
 	}
 
-    char *str=malloc(2* (sizeof(strlen(value))+1));  // this has to be done in order to don't get weird symbols in output
+    char *str=malloc( strlen(value)*sizeof(char)+1);  // this has to be done in order to don't get weird symbols in output
     strcpy(str,value);
 
 	lit->type = MCC_AST_LITERAL_TYPE_STRING;
