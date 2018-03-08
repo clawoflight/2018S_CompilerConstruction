@@ -2,16 +2,18 @@
 
 ## Tasks 1 and 2: AST, lexer, parser
 
-```
+
 ###Primitives
 
-~~alpha            = /[a-zA-Z_]/ ~~
+~~alpha            = /[a-zA-Z_]/~~
 
 ~~alpha_num        = /[a-zA-Z0-9_]/~~
 
 ~~digit            = /[0-9]/~~
+```
 
 identifier       = alpha , [ { alpha_num } ]
+```
 
 ~~bool_literal     = "true" | "false"~~
 
@@ -20,17 +22,18 @@ identifier       = alpha , [ { alpha_num } ]
 ~~float_literal    = { digit } , "." , { digit }~~
 
 ~~string_literal   = /"[^"]*"/~~
+```
 
 
 ### Operators
 
 unary_op         = "-" | "!"
-
-~~binary_op        = "+"  | "-" | "*" | "/" ~~
-                 ~~| "<"  | ">" | "<=" | ">=" ~~
-                 ~~| "&&" | "||" ~~
-                 ~~| "==" | "!=" ~~
-
+```
+~~binary_op        = "+"  | "-" | "*" | "/" 
+                 | "<"  | ">" | "<=" | ">=" 
+                 | "&&" | "||" 
+                 | "==" | "!="~~
+```
 
 ### Types
 
@@ -53,12 +56,12 @@ single_expr      = literal
                  | call_expr
                  | unary_op , expression
                  | "(" , expression , ")"
-
-literal          = bool_literal
+```
+~~literal          = bool_literal
                  | int_literal
                  | float_literal
-                 | string_literal
-
+                 | string_literal~~
+```
 
 ### Statements
 
