@@ -41,6 +41,7 @@ bool_literal (true)|(false)
 "||"              { return TK_OR; }
 "=="              { return TK_EQUALS; }
 "!="              { return TK_NOT_EQUALS; }
+"!"               { return TK_NOT; }
 
 "("               { return TK_LPARENTH; }
 ")"               { return TK_RPARENTH; }

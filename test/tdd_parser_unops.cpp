@@ -5,7 +5,7 @@
 
 TEST(TDD_PARSER_UNOPS, NEG)
 {
-	const char str[] = "-5";
+	const char str[] = "-(5)";
 	auto result = mCc_parser_parse_string(str);
 
 	ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);

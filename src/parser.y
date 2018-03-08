@@ -32,6 +32,8 @@ void mCc_parser_error();
 %token LPARENTH "("
 %token RPARENTH ")"
 
+%token NOT "!"
+
 %token PLUS  "+"
 %token MINUS "-"
 %token ASTER "*"
@@ -46,6 +48,7 @@ void mCc_parser_error();
 %token NOT_EQUALS "!="
 
 %type <enum mCc_ast_binary_op> binary_op
+%type <enum mCc_ast_unary_op>  unary_op
 
 %type <struct mCc_ast_expression *> expression single_expr
 %type <struct mCc_ast_literal *> literal
@@ -56,6 +59,10 @@ void mCc_parser_error();
 
 toplevel : expression { *result = $1; }
          ;
+
+unary_op  : NOT   { $$ = MCC_AST_UNARY_OP_NOT; }
+          | MINUS { $$ = MCC_AST_UNARY_OP_NEG; }
+          ;
 
 binary_op : PLUS  { $$ = MCC_AST_BINARY_OP_ADD; }
           | MINUS { $$ = MCC_AST_BINARY_OP_SUB; }
@@ -72,6 +79,7 @@ binary_op : PLUS  { $$ = MCC_AST_BINARY_OP_ADD; }
           ;
 
 single_expr : literal                         { $$ = mCc_ast_new_expression_literal($1); }
+            | unary_op expression             { $$ = mCc_ast_new_expression_unary_op($1, $2); }
             | LPARENTH expression RPARENTH    { $$ = mCc_ast_new_expression_parenth($2); }
             ;
 
@@ -81,7 +89,7 @@ expression : single_expr                      { $$ = $1;                        
 
 literal : INT_LITERAL   { $$ = mCc_ast_new_literal_int($1);   }
         | FLOAT_LITERAL { $$ = mCc_ast_new_literal_float($1); }
-		| STRING_LITERAL { $$ = mCc_ast_new_literal_string($1); }
+        | STRING_LITERAL { $$ = mCc_ast_new_literal_string($1); }
         | BOOL_LITERAL  { $$ = mCc_ast_new_literal_bool($1);  }
         ;
 
