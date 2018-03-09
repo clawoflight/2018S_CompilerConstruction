@@ -43,8 +43,13 @@ bool_literal (true)|(false)
 "!="              { return TK_NOT_EQUALS; }
 "!"               { return TK_NOT; }
 
+";"               { return TK_SEMICOLON; }
+
 "("               { return TK_LPARENTH; }
 ")"               { return TK_RPARENTH; }
+
+"if"              { return TK_IF; }
+"else"            { return TK_ELSE; }
 
 [ \t\r\n]+        { /* ignore */ }
 
