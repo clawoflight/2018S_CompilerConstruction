@@ -19,6 +19,7 @@ extern "C" {
 /* Forward Declarations */
 struct mCc_ast_expression;
 struct mCc_ast_literal;
+struct mCc_ast_statement;
 struct mCc_ast_identifier;
 
 /* ---------------------------------------------------------------- AST Node */
@@ -40,6 +41,10 @@ struct mCc_ast_source_location {
 struct mCc_ast_node {
 	struct mCc_ast_source_location sloc; ///< Source location of this node.
 };
+
+/* Don't move or remove this! It needs to be below #mCc_ast_node because that is
+ * used in ast_statements.h */
+#include "ast_statements.h"
 
 /* --------------------------------------------------------------- Operators */
 
@@ -63,10 +68,10 @@ enum mCc_ast_binary_op {
 	MCC_AST_BINARY_OP_GT,  ///< Greater than
 	MCC_AST_BINARY_OP_LEQ, ///< Less or equal
 	MCC_AST_BINARY_OP_GEQ, ///< Greater or equal
-	MCC_AST_BINARY_OP_AND, /// AND
-	MCC_AST_BINARY_OP_OR,  /// OR
-	MCC_AST_BINARY_OP_EQ,  /// Equal
-	MCC_AST_BINARY_OP_NEQ  /// Not equal
+	MCC_AST_BINARY_OP_AND, ///< AND
+	MCC_AST_BINARY_OP_OR,  ///< OR
+	MCC_AST_BINARY_OP_EQ,  ///< Equal
+	MCC_AST_BINARY_OP_NEQ  ///< Not equal
 };
 
 /* ------------------------------------------------------------- Expressions */

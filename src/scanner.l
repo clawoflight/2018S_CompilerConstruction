@@ -30,8 +30,6 @@ bool_literal (true)|(false)
 {bool_literal}    { yylval->TK_BOOL_LITERAL = strcmp("true", yytext) == 0 ? true : false;
 		    return TK_BOOL_LITERAL;  }
 
-{identifier}   { yylval->TK_IDENTIFIER = yytext; return TK_IDENTIFIER; }
-
 "+"               { return TK_PLUS; }
 "-"               { return TK_MINUS; }
 "*"               { return TK_ASTER; }
@@ -46,11 +44,18 @@ bool_literal (true)|(false)
 "!="              { return TK_NOT_EQUALS; }
 "!"               { return TK_NOT; }
 
+";"               { return TK_SEMICOLON; }
+
 "("               { return TK_LPARENTH; }
 ")"               { return TK_RPARENTH; }
+
+"if"              { return TK_IF; }
+"else"            { return TK_ELSE; }
 
 [ \t\r\n]+        { /* ignore */ }
 
 <<EOF>>           { return TK_END; }
+
+{identifier}      { yylval->TK_IDENTIFIER = yytext; return TK_IDENTIFIER; }
 
 .                 { fprintf(stderr, "invalid character '%c'\n", yytext[0]); }

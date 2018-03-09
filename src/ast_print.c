@@ -80,6 +80,39 @@ static void print_dot_edge(FILE *out, const void *src_node,
 	        label);
 }
 
+static void print_dot_statement_expr(struct mCc_ast_statement *statement, void *data)
+{
+	assert(statement);
+	assert(data);
+
+	FILE *out = data;
+	print_dot_node(out, statement, "stmt: expr");
+	print_dot_edge(out, statement, statement->expression, "expression");
+}
+
+static void print_dot_statement_if(struct mCc_ast_statement *statement, void *data)
+{
+	assert(statement);
+	assert(data);
+
+	FILE *out = data;
+	print_dot_node(out, statement, "stmt: if");
+	print_dot_edge(out, statement, statement->if_cond, "condition");
+	print_dot_edge(out, statement, statement->if_stmt, "if stmt");
+}
+
+static void print_dot_statement_ifelse(struct mCc_ast_statement *statement, void *data)
+{
+	assert(statement);
+	assert(data);
+
+	FILE *out = data;
+	print_dot_node(out, statement, "stmt: ifelse");
+	print_dot_edge(out, statement, statement->if_cond, "if expr");
+	print_dot_edge(out, statement, statement->if_stmt, "if stmt");
+	print_dot_edge(out, statement, statement->else_stmt, "else stmt");
+}
+
 static void print_dot_expression_literal(struct mCc_ast_expression *expression,
                                          void *data)
 {
@@ -216,6 +249,10 @@ static struct mCc_ast_visitor print_dot_visitor(FILE *out)
 
 		.userdata = out,
 
+		.statement_expr = print_dot_statement_expr,
+		.statement_if = print_dot_statement_if,
+		.statement_ifelse = print_dot_statement_ifelse,
+
 		.expression_literal = print_dot_expression_literal,
 		.expression_identifier = print_dot_expression_identifier,
 		.expression_unary_op = print_dot_expression_unary_op,
@@ -229,6 +266,19 @@ static struct mCc_ast_visitor print_dot_visitor(FILE *out)
 		.literal_string = print_dot_literal_string,
 		.literal_bool = print_dot_literal_bool,
 	};
+}
+
+void mCc_ast_print_dot_statement(FILE *out, struct mCc_ast_statement *statement)
+{
+	assert(out);
+	assert(statement);
+
+	print_dot_begin(out);
+
+	struct mCc_ast_visitor visitor = print_dot_visitor(out);
+	mCc_ast_visit_statement(statement, &visitor);
+
+	print_dot_end(out);
 }
 
 void mCc_ast_print_dot_expression(FILE *out,

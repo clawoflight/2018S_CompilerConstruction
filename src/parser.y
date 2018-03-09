@@ -2,7 +2,7 @@
 
 %define api.pure full
 %lex-param   {void *scanner}
-%parse-param {void *scanner} {struct mCc_ast_expression** result}
+%parse-param {void *scanner} {struct mCc_ast_expression **result} {struct mCc_ast_statement **stmt_result}
 
 %define parse.trace
 %define parse.error verbose
@@ -48,11 +48,16 @@ void mCc_parser_error();
 %token EQUALS "=="
 %token NOT_EQUALS "!="
 
+%token IF "if"
+%token ELSE "else"
+%token SEMICOLON ";"
+
 %type <enum mCc_ast_binary_op> binary_op
 %type <enum mCc_ast_unary_op>  unary_op
 
 %type <struct mCc_ast_expression *> expression single_expr
 %type <struct mCc_ast_literal *> literal
+%type <struct mCc_ast_statement *> statement
 %type <struct mCc_ast_identifier *> identifier
 
 %start toplevel
@@ -60,6 +65,7 @@ void mCc_parser_error();
 %%
 
 toplevel : expression { *result = $1; }
+         | statement { *stmt_result = $1; }
          ;
 
 unary_op  : NOT   { $$ = MCC_AST_UNARY_OP_NOT; }
@@ -95,8 +101,15 @@ literal : INT_LITERAL   { $$ = mCc_ast_new_literal_int($1);   }
         | STRING_LITERAL { $$ = mCc_ast_new_literal_string($1); }
         | BOOL_LITERAL  { $$ = mCc_ast_new_literal_bool($1);  }
         ;
-identifier : IDENTIFIER { $$ = mCc_ast_new_identifier($1);}
+
+identifier : IDENTIFIER { $$ = mCc_ast_new_identifier($1); }
            ;
+
+statement : expression SEMICOLON { $$ = mCc_ast_new_statement_expression($1); }
+          | IF LPARENTH expression RPARENTH statement { $$ = mCc_ast_new_statement_if($3, $5, NULL); }
+          | IF LPARENTH expression RPARENTH statement ELSE statement { $$ = mCc_ast_new_statement_if($3, $5, $7); }
+          ;
+
 %%
 
 #include <assert.h>
@@ -136,7 +149,7 @@ struct mCc_parser_result mCc_parser_parse_file(FILE *input)
 		.status = MCC_PARSER_STATUS_OK,
 	};
 
-	if (yyparse(scanner, &result.expression) != 0) {
+	if (yyparse(scanner, &result.expression, &result.statement) != 0) {
 		result.status = MCC_PARSER_STATUS_UNKNOWN_ERROR;
 	}
 

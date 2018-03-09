@@ -30,6 +30,7 @@ pgen = generator(bison,
 mCc_inc = include_directories('include')
 
 mCc_src = [ 'src/ast.c',
+            'src/ast_statements.c',
             'src/ast_print.c',
             'src/ast_visit.c',
             lgen.process('src/scanner.l'),
@@ -53,7 +54,13 @@ endforeach
 
 gtest = dependency('gtest', fallback: ['gtest', 'gtest_main_dep'])
 
-mCc_uts = [ 'parser', 'tdd_parser_binops', 'tdd_parser_unops', 'identifier' ]
+mCc_uts = [
+            'parser',
+            'tdd_parser_binops',
+            'tdd_parser_unops',
+            'tdd_parser_statements',
+            'identifier',
+]
 
 foreach ut : mCc_uts
     t = executable('ut_' + ut.underscorify(), 'test/' + ut + '.cpp',
