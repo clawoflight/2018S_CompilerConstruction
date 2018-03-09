@@ -30,6 +30,40 @@
 	visit_if((visitor)->order == MCC_AST_VISIT_POST_ORDER, node, callback, \
 	         visitor)
 
+void mCc_ast_visit_statement(struct mCc_ast_statement *statement,
+                             struct mCc_ast_visitor *visitor)
+{
+	assert(statement);
+	assert(visitor);
+
+	visit_if_pre_order(statement, visitor->statement, visitor);
+
+	switch (statement->type) {
+	case MCC_AST_STATEMENT_TYPE_EXPR:
+		visit_if_pre_order(statement, visitor->statement_expr, visitor);
+		mCc_ast_visit_expression(statement->expression, visitor);
+		visit_if_post_order(statement, visitor->statement_expr, visitor);
+		break;
+
+	case MCC_AST_STATEMENT_TYPE_IFELSE:
+		visit_if_pre_order(statement, visitor->statement_ifelse, visitor);
+		mCc_ast_visit_expression(statement->if_expr, visitor);
+		mCc_ast_visit_statement(statement->if_stmt, visitor);
+		mCc_ast_visit_statement(statement->else_stmt, visitor);
+		visit_if_post_order(statement, visitor->statement_ifelse, visitor);
+		break;
+
+	case MCC_AST_STATEMENT_TYPE_IF:
+		visit_if_pre_order(statement, visitor->statement_if, visitor);
+		mCc_ast_visit_expression(statement->if_expr, visitor);
+		mCc_ast_visit_statement(statement->if_stmt, visitor);
+		visit_if_post_order(statement, visitor->statement_if, visitor);
+		break;
+	}
+
+	visit_if_post_order(statement, visitor->statement, visitor);
+}
+
 void mCc_ast_visit_expression(struct mCc_ast_expression *expression,
                               struct mCc_ast_visitor *visitor)
 {

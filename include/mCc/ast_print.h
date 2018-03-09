@@ -35,6 +35,9 @@ const char *mCc_ast_print_binary_op(enum mCc_ast_binary_op op);
 
 /* ------------------------------------------------------------- DOT Printer */
 
+void mCc_ast_print_dot_statement(FILE *out,
+                                 struct mCc_ast_statement *statement);
+
 void mCc_ast_print_dot_expression(FILE *out,
                                   struct mCc_ast_expression *expression);
 

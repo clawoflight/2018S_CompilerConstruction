@@ -14,6 +14,7 @@
 int main(void)
 {
 	struct mCc_ast_expression *expr = NULL;
+	struct mCc_ast_statement *stmt = NULL;
 
 	/* parsing phase */
 	{
@@ -22,11 +23,19 @@ int main(void)
 			return EXIT_FAILURE;
 		}
 		expr = result.expression;
+		stmt = result.statement;
 	}
 
-	mCc_ast_print_dot_expression(stdout, expr);
-
-	mCc_ast_delete_expression(expr);
+	if (expr) {
+		mCc_ast_print_dot_expression(stdout, expr);
+		mCc_ast_delete_expression(expr);
+	} else if (stmt) {
+		mCc_ast_print_dot_statement(stdout, stmt);
+		mCc_ast_delete_statement(stmt);
+	} else {
+		fprintf(stderr, "Invalid top-level or forgotten to implement!");
+		return EXIT_FAILURE;
+	}
 
 	return EXIT_SUCCESS;
 }
