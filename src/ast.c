@@ -104,6 +104,65 @@ void mCc_ast_delete_expression(struct mCc_ast_expression *expression)
 	free(expression);
 }
 
+/*--------------------------------------------------------------- Statements */
+
+struct mCc_ast_statement *
+mCc_ast_new_statement_expression(struct mCc_ast_expression *expression)
+{
+	assert(expression);
+
+	struct mCc_ast_statement *stmt = malloc(sizeof(*stmt));
+	if (!stmt)
+		return NULL;
+
+	stmt->type = MCC_AST_STATEMENT_TYPE_EXPR;
+	stmt->expression = expression;
+	return stmt;
+}
+
+struct mCc_ast_statement *
+mCc_ast_new_statement_if(struct mCc_ast_expression *if_expr,
+                         struct mCc_ast_statement *if_stmt,
+                         struct mCc_ast_statement *else_stmt)
+{
+	assert(if_expr);
+	assert(if_stmt);
+
+	struct mCc_ast_statement *stmt = malloc(sizeof(*stmt));
+	if (!stmt)
+		return NULL;
+
+	stmt->type = MCC_AST_STATEMENT_TYPE_IF;
+	stmt->if_expr = if_expr;
+	stmt->if_stmt = if_stmt;
+
+	if (else_stmt) {
+		stmt->type = MCC_AST_STATEMENT_TYPE_IFELSE;
+		stmt->else_stmt = else_stmt;
+	}
+	return stmt;
+}
+
+void mCc_ast_delete_statement(struct mCc_ast_statement *statement)
+{
+	assert(statement);
+
+	switch (statement->type) {
+	case MCC_AST_STATEMENT_TYPE_EXPR:
+		mCc_ast_delete_expression(statement->expression);
+		break;
+
+	case MCC_AST_STATEMENT_TYPE_IFELSE:
+		mCc_ast_delete_statement(statement->else_stmt);
+		// Fallthrough
+
+	case MCC_AST_STATEMENT_TYPE_IF:
+		mCc_ast_delete_expression(statement->if_expr);
+		mCc_ast_delete_statement(statement->if_stmt);
+		break;
+	}
+}
+
 /* ---------------------------------------------------------------- Literals */
 
 struct mCc_ast_literal *mCc_ast_new_literal_int(long value)
