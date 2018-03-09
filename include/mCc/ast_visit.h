@@ -49,7 +49,6 @@ struct mCc_ast_visitor {
 	mCc_ast_visit_literal_cb literal_bool;
 
 	mCc_ast_visit_identifier_cb identifier;
-	mCc_ast_visit_identifier_cb identifier_s;
 };
 
 void mCc_ast_visit_expression(struct mCc_ast_expression *expression,

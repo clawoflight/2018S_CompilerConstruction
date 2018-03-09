@@ -105,6 +105,5 @@ void mCc_ast_visit_identifier(struct mCc_ast_identifier *identifier,
 
 	visit_if_pre_order(identifier, visitor->identifier, visitor);
 
-	visit(identifier, visitor->identifier_s, visitor);
 	visit_if_post_order(identifier, visitor->identifier, visitor);
 }

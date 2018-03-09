@@ -68,7 +68,7 @@ enum mCc_ast_binary_op {
  */
 enum mCc_ast_expression_type {
 	MCC_AST_EXPRESSION_TYPE_LITERAL,   ///< Literal expression
-	MCC_AST_EXPRESSION_TYPE_IDENTIFIER, ///< Identifier expression
+	MCC_AST_EXPRESSION_TYPE_IDENTIFIER,///< Identifier expression
 	MCC_AST_EXPRESSION_TYPE_BINARY_OP, ///< Binary operation expression
 	MCC_AST_EXPRESSION_TYPE_PARENTH,   ///< Parenthesis expression
 };
@@ -92,7 +92,7 @@ struct mCc_ast_expression {
 		struct mCc_ast_literal *literal;
 
 		/**
-		 * Data if #type is #MCC_AST_EXPRESSION_TYPE_LITERAL
+		 * Data if #type is #MCC_AST_EXPRESSION_TYPE_IDENTIFIER
 		 */
 		struct mCc_ast_identifier *identifier;
 
@@ -123,11 +123,11 @@ struct mCc_ast_expression *
 mCc_ast_new_expression_literal(struct mCc_ast_literal *literal);
 
 /**
- * Construct an expression from a literal.
+ * Construct an expression from a identifier.
  *
- * @param literal The literal
+ * @param identifier The identifier
  *
- * @return A new expression with type #MCC_AST_EXPRESSION_TYPE_LITERAL
+ * @return A new expression with type #MCC_AST_EXPRESSION_TYPE_IDENTIFIER
  */
 struct mCc_ast_expression *
 mCc_ast_new_expression_identifier(struct mCc_ast_identifier *identifier);
@@ -191,9 +191,7 @@ struct mCc_ast_identifier {
 	 * Type-specific data is contained in the union.
 	 */
 	enum mCc_ast_identifier_type type;
-	union {
-		char *id_value;
-	};
+    char *id_value;
 };
 
 /**
