@@ -47,7 +47,7 @@ void mCc_ast_visit_statement(struct mCc_ast_statement *statement,
 
 	case MCC_AST_STATEMENT_TYPE_IFELSE:
 		visit_if_pre_order(statement, visitor->statement_ifelse, visitor);
-		mCc_ast_visit_expression(statement->if_expr, visitor);
+		mCc_ast_visit_expression(statement->if_cond, visitor);
 		mCc_ast_visit_statement(statement->if_stmt, visitor);
 		mCc_ast_visit_statement(statement->else_stmt, visitor);
 		visit_if_post_order(statement, visitor->statement_ifelse, visitor);
@@ -55,7 +55,7 @@ void mCc_ast_visit_statement(struct mCc_ast_statement *statement,
 
 	case MCC_AST_STATEMENT_TYPE_IF:
 		visit_if_pre_order(statement, visitor->statement_if, visitor);
-		mCc_ast_visit_expression(statement->if_expr, visitor);
+		mCc_ast_visit_expression(statement->if_cond, visitor);
 		mCc_ast_visit_statement(statement->if_stmt, visitor);
 		visit_if_post_order(statement, visitor->statement_if, visitor);
 		break;

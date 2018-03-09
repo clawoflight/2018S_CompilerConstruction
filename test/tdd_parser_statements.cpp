@@ -31,8 +31,8 @@ TEST(TDD_PARSER_STATEMENTS, IF)
 	ASSERT_EQ(MCC_AST_STATEMENT_TYPE_IF, stmt->type);
 
 	// () expression
-	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_LITERAL, stmt->if_expr->type);
-	ASSERT_EQ(true, stmt->if_expr->literal->b_value);
+	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_LITERAL, stmt->if_cond->type);
+	ASSERT_EQ(true, stmt->if_cond->literal->b_value);
 
 	// if body
 	ASSERT_EQ(MCC_AST_STATEMENT_TYPE_EXPR, stmt->if_stmt->type);
@@ -55,8 +55,8 @@ TEST(TDD_PARSER_STATEMENTS, IFELSE)
 	ASSERT_EQ(MCC_AST_STATEMENT_TYPE_IFELSE, stmt->type);
 
 	// () expression
-	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_LITERAL, stmt->if_expr->type);
-	ASSERT_EQ(true, stmt->if_expr->literal->b_value);
+	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_LITERAL, stmt->if_cond->type);
+	ASSERT_EQ(true, stmt->if_cond->literal->b_value);
 
 	// if body
 	ASSERT_EQ(MCC_AST_STATEMENT_TYPE_EXPR, stmt->if_stmt->type);

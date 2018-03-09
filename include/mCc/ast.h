@@ -206,7 +206,7 @@ struct mCc_ast_statement {
 		/// Data if type is #MCC_AST_STATEMENT_TYPE_IF
 		/// or #MCC_AST_STATEMENT_TYPE_IFELSE
 		struct {
-			struct mCc_ast_expression *if_expr;
+			struct mCc_ast_expression *if_cond;
 			struct mCc_ast_statement *if_stmt;
 			struct mCc_ast_statement *else_stmt;
 		};
@@ -229,7 +229,7 @@ mCc_ast_new_statement_expression(struct mCc_ast_expression *expression);
 /**
  * @brief Construct a statement from an if-statement
  *
- * @param if_expr The expression in parentheses
+ * @param if_cond The if-condition
  * @param if_stmt The statement inside the if-clause
  * @param else_stmt The (optional) statement inside the else-clause
  *
@@ -237,7 +237,7 @@ mCc_ast_new_statement_expression(struct mCc_ast_expression *expression);
  * #MCC_AST_STATEMENT_TYPE_IFELSE
  */
 struct mCc_ast_statement *
-mCc_ast_new_statement_if(struct mCc_ast_expression *if_expr,
+mCc_ast_new_statement_if(struct mCc_ast_expression *if_cond,
                          struct mCc_ast_statement *if_stmt,
                          struct mCc_ast_statement *else_stmt);
 

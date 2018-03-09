@@ -121,11 +121,11 @@ mCc_ast_new_statement_expression(struct mCc_ast_expression *expression)
 }
 
 struct mCc_ast_statement *
-mCc_ast_new_statement_if(struct mCc_ast_expression *if_expr,
+mCc_ast_new_statement_if(struct mCc_ast_expression *if_cond,
                          struct mCc_ast_statement *if_stmt,
                          struct mCc_ast_statement *else_stmt)
 {
-	assert(if_expr);
+	assert(if_cond);
 	assert(if_stmt);
 
 	struct mCc_ast_statement *stmt = malloc(sizeof(*stmt));
@@ -133,7 +133,7 @@ mCc_ast_new_statement_if(struct mCc_ast_expression *if_expr,
 		return NULL;
 
 	stmt->type = MCC_AST_STATEMENT_TYPE_IF;
-	stmt->if_expr = if_expr;
+	stmt->if_cond = if_cond;
 	stmt->if_stmt = if_stmt;
 
 	if (else_stmt) {
@@ -157,7 +157,7 @@ void mCc_ast_delete_statement(struct mCc_ast_statement *statement)
 		// Fallthrough
 
 	case MCC_AST_STATEMENT_TYPE_IF:
-		mCc_ast_delete_expression(statement->if_expr);
+		mCc_ast_delete_expression(statement->if_cond);
 		mCc_ast_delete_statement(statement->if_stmt);
 		break;
 	}
