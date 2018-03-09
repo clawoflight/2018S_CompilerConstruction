@@ -28,6 +28,7 @@ TEST(Parser, Identifier_2)
 
     ASSERT_NE(MCC_PARSER_STATUS_OK, result.status);
 
+    mCc_ast_delete_expression(result.expression);
 }
 
 TEST(Parser, Identifier_3)

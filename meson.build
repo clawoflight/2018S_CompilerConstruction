@@ -71,6 +71,8 @@ foreach ut : mCc_uts
     test(ut, t)
 endforeach
 
+tests_with_valgrind = run_target('testgrind', command: 'test/testgrind' )
+
 # ------------------------------------------------------------------ BENCHMARKS
 
 mCc_benchs = [ ['parser/binary_op',         '100000'],
