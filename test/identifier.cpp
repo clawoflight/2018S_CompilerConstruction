@@ -16,7 +16,6 @@ TEST(Parser, Identifier_1)
     ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_IDENTIFIER, expr->type);
 
     // root -> literal
-    ASSERT_EQ(MCC_AST_IDENTIFIER_TYPE, expr->identifier->type);
     ASSERT_EQ(0, strcmp(expr->identifier->id_value,"e"));
 
     mCc_ast_delete_expression(expr);
@@ -44,7 +43,6 @@ TEST(Parser, Identifier_3)
     ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_IDENTIFIER, expr->type);
 
     // root -> literal
-    ASSERT_EQ(MCC_AST_IDENTIFIER_TYPE, expr->identifier->type);
     ASSERT_EQ(0, strcmp(expr->identifier->id_value,"en43r"));
 
     mCc_ast_delete_expression(expr);
@@ -52,19 +50,18 @@ TEST(Parser, Identifier_3)
 
 TEST(Parser, Identifier_4)
 {
-const char input[] = "e4_r";
-auto result = mCc_parser_parse_string(input);
+    const char input[] = "e4_r";
+    auto result = mCc_parser_parse_string(input);
 
-ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);
+    ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);
 
-auto expr = result.expression;
+    auto expr = result.expression;
 
-// root
-ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_IDENTIFIER, expr->type);
+    // root
+    ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_IDENTIFIER, expr->type);
 
-// root -> literal
-ASSERT_EQ(MCC_AST_IDENTIFIER_TYPE, expr->identifier->type);
-ASSERT_EQ(0, strcmp(expr->identifier->id_value,"e4_r"));
+    // root -> literal
+    ASSERT_EQ(0, strcmp(expr->identifier->id_value,"e4_r"));
 
-mCc_ast_delete_expression(expr);
+    mCc_ast_delete_expression(expr);
 }

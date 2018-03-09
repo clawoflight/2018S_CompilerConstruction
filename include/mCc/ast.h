@@ -175,9 +175,6 @@ enum mCc_ast_literal_type {
 	MCC_AST_LITERAL_TYPE_STRING, ///< String literal
 };
 
-char* MCC_AST_IDENTIFIER_TYPE; ///< Idenfitifier
-
-
 /**
  * Node representing a identifier.
  */
@@ -185,11 +182,8 @@ struct mCc_ast_identifier {
 	struct mCc_ast_node node; ///< Common attributes
 
 	/**
-	 * The type of this identifier.
-	 *
-	 * Type-specific data is contained in the union.
+	 * Type-specific data.
 	 */
-	char* type;
     char *id_value;
 };
 

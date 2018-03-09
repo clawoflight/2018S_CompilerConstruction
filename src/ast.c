@@ -114,7 +114,6 @@ struct mCc_ast_identifier *mCc_ast_new_identifier(char* value)
     char *str=malloc((strlen(value)+1)*sizeof(char));
     strcpy(str,value);
 
-    id->type = MCC_AST_IDENTIFIER_TYPE;
     id->id_value = str;
 	return id;
 }
