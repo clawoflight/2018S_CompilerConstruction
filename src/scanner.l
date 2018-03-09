@@ -12,11 +12,12 @@
 
 #define YYSTYPE MCC_PARSER_STYPE
 %}
-
+identifier    [a-zA-Z_][a-zA-Z0-9_]*
 int_literal   -?[0-9]+
 float_literal -?[0-9]+\.[0-9]+
 string_literal \"[^"]*\"
 bool_literal (true)|(false)
+
 
 %%
 
@@ -28,6 +29,8 @@ bool_literal (true)|(false)
 
 {bool_literal}    { yylval->TK_BOOL_LITERAL = strcmp("true", yytext) == 0 ? true : false;
 		    return TK_BOOL_LITERAL;  }
+
+{identifier}   { yylval->TK_IDENTIFIER = yytext; return TK_IDENTIFIER; }
 
 "+"               { return TK_PLUS; }
 "-"               { return TK_MINUS; }

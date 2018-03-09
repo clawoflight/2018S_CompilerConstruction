@@ -39,6 +39,7 @@ void mCc_ast_print_dot_expression(FILE *out,
                                   struct mCc_ast_expression *expression);
 
 void mCc_ast_print_dot_literal(FILE *out, struct mCc_ast_literal *literal);
+void mCc_ast_print_dot_identifier(FILE *out, struct mCc_ast_identifier *identifier);
 
 #ifdef __cplusplus
 }

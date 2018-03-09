@@ -28,6 +28,8 @@ typedef void (*mCc_ast_visit_expression_cb)(struct mCc_ast_expression *,
                                             void *);
 typedef void (*mCc_ast_visit_literal_cb)(struct mCc_ast_literal *, void *);
 
+typedef void (*mCc_ast_visit_identifier_cb)(struct mCc_ast_identifier *, void *);
+
 struct mCc_ast_visitor {
 	enum mCc_ast_visit_traversal traversal;
 	enum mCc_ast_visit_order order;
@@ -35,6 +37,7 @@ struct mCc_ast_visitor {
 	void *userdata;
 
 	mCc_ast_visit_expression_cb expression;
+	mCc_ast_visit_expression_cb expression_identifier;
 	mCc_ast_visit_expression_cb expression_literal;
 	mCc_ast_visit_expression_cb expression_unary_op;
 	mCc_ast_visit_expression_cb expression_binary_op;
@@ -45,6 +48,8 @@ struct mCc_ast_visitor {
 	mCc_ast_visit_literal_cb literal_float;
 	mCc_ast_visit_literal_cb literal_string;
 	mCc_ast_visit_literal_cb literal_bool;
+
+	mCc_ast_visit_identifier_cb identifier;
 };
 
 void mCc_ast_visit_expression(struct mCc_ast_expression *expression,
@@ -52,6 +57,9 @@ void mCc_ast_visit_expression(struct mCc_ast_expression *expression,
 
 void mCc_ast_visit_literal(struct mCc_ast_literal *literal,
                            struct mCc_ast_visitor *visitor);
+
+void mCc_ast_visit_identifier(struct mCc_ast_identifier *identifier,
+						   struct mCc_ast_visitor *visitor);
 
 #ifdef __cplusplus
 }

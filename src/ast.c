@@ -28,6 +28,21 @@ mCc_ast_new_expression_literal(struct mCc_ast_literal *literal)
 }
 
 struct mCc_ast_expression *
+mCc_ast_new_expression_identifier(struct mCc_ast_identifier *identifier)
+{
+	assert(identifier);
+
+	struct mCc_ast_expression *expr = malloc(sizeof(*expr));
+	if (!expr) {
+		return NULL;
+	}
+
+	expr->type = MCC_AST_EXPRESSION_TYPE_IDENTIFIER;
+	expr->identifier = identifier;
+	return expr;
+}
+
+struct mCc_ast_expression *
 mCc_ast_new_expression_unary_op(enum mCc_ast_unary_op op,
                                 struct mCc_ast_expression *subexpression)
 {
@@ -87,6 +102,10 @@ void mCc_ast_delete_expression(struct mCc_ast_expression *expression)
 		mCc_ast_delete_literal(expression->literal);
 		break;
 
+	case MCC_AST_EXPRESSION_TYPE_IDENTIFIER:
+		mCc_ast_delete_identifier(expression->identifier);
+		break;
+
 	case MCC_AST_EXPRESSION_TYPE_UNARY_OP:
 		mCc_ast_delete_expression(expression->unary_expression);
 		break;
@@ -102,6 +121,29 @@ void mCc_ast_delete_expression(struct mCc_ast_expression *expression)
 	}
 
 	free(expression);
+}
+
+/* ------------------------------------------------------------- Identifier */
+
+struct mCc_ast_identifier *mCc_ast_new_identifier(char *value)
+{
+	struct mCc_ast_identifier *id = malloc(sizeof(*id));
+	if (!id) {
+		return NULL;
+	}
+
+	char *str = malloc((strlen(value) + 1) * sizeof(char));
+	strcpy(str, value);
+
+	id->id_value = str;
+	return id;
+}
+
+void mCc_ast_delete_identifier(struct mCc_ast_identifier *identifier)
+{
+	assert(identifier);
+	free(identifier->id_value);
+	free(identifier);
 }
 
 /* ---------------------------------------------------------------- Literals */
@@ -160,5 +202,7 @@ struct mCc_ast_literal *mCc_ast_new_literal_bool(bool value)
 void mCc_ast_delete_literal(struct mCc_ast_literal *literal)
 {
 	assert(literal);
+	if (literal->type == MCC_AST_LITERAL_TYPE_STRING)
+		free(literal->s_value);
 	free(literal);
 }

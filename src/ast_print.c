@@ -91,6 +91,17 @@ static void print_dot_expression_literal(struct mCc_ast_expression *expression,
 	print_dot_edge(out, expression, expression->literal, "literal");
 }
 
+static void print_dot_expression_identifier(struct mCc_ast_expression *expression,
+										 void *data)
+{
+	assert(expression);
+	assert(data);
+
+	FILE *out = data;
+	print_dot_node(out, expression, "expr: id");
+	print_dot_edge(out, expression, expression->identifier, "identifier");
+}
+
 static void print_dot_expression_unary_op(struct mCc_ast_expression *expression,
                                           void *data)
 {
@@ -183,6 +194,18 @@ static void print_dot_literal_bool(struct mCc_ast_literal *literal, void *data)
 	print_dot_node(out, literal, label);
 }
 
+static void print_dot_identifier(struct mCc_ast_identifier *identifier, void *data)
+{
+	assert(identifier);
+	assert(data);
+
+	char label[LABEL_SIZE] = { 0 };
+	snprintf(label, sizeof(label), "%s", identifier->id_value);
+
+	FILE *out = data;
+	print_dot_node(out, identifier, label);
+}
+
 static struct mCc_ast_visitor print_dot_visitor(FILE *out)
 {
 	assert(out);
@@ -194,9 +217,12 @@ static struct mCc_ast_visitor print_dot_visitor(FILE *out)
 		.userdata = out,
 
 		.expression_literal = print_dot_expression_literal,
+		.expression_identifier = print_dot_expression_identifier,
 		.expression_unary_op = print_dot_expression_unary_op,
 		.expression_binary_op = print_dot_expression_binary_op,
 		.expression_parenth = print_dot_expression_parenth,
+
+		.identifier = print_dot_identifier,
 
 		.literal_int = print_dot_literal_int,
 		.literal_float = print_dot_literal_float,
@@ -228,6 +254,19 @@ void mCc_ast_print_dot_literal(FILE *out, struct mCc_ast_literal *literal)
 
 	struct mCc_ast_visitor visitor = print_dot_visitor(out);
 	mCc_ast_visit_literal(literal, &visitor);
+
+	print_dot_end(out);
+}
+
+void mCc_ast_print_dot_identifier(FILE *out, struct mCc_ast_identifier *identifier)
+{
+	assert(out);
+	assert(identifier);
+
+	print_dot_begin(out);
+
+	struct mCc_ast_visitor visitor = print_dot_visitor(out);
+	mCc_ast_visit_identifier(identifier, &visitor);
 
 	print_dot_end(out);
 }

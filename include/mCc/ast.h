@@ -19,6 +19,7 @@ extern "C" {
 /* Forward Declarations */
 struct mCc_ast_expression;
 struct mCc_ast_literal;
+struct mCc_ast_identifier;
 
 /* ---------------------------------------------------------------- AST Node */
 
@@ -74,10 +75,11 @@ enum mCc_ast_binary_op {
  * @brief Available expression types.
  */
 enum mCc_ast_expression_type {
-	MCC_AST_EXPRESSION_TYPE_LITERAL,   ///< Literal expression
-	MCC_AST_EXPRESSION_TYPE_UNARY_OP,  ///< Unary Operation expression
-	MCC_AST_EXPRESSION_TYPE_BINARY_OP, ///< Binary operation expression
-	MCC_AST_EXPRESSION_TYPE_PARENTH,   ///< Parenthesis expression
+	MCC_AST_EXPRESSION_TYPE_LITERAL,    ///< Literal expression
+	MCC_AST_EXPRESSION_TYPE_IDENTIFIER, ///< Identifier expression
+	MCC_AST_EXPRESSION_TYPE_UNARY_OP,   ///< Unary Operation expression
+	MCC_AST_EXPRESSION_TYPE_BINARY_OP,  ///< Binary operation expression
+	MCC_AST_EXPRESSION_TYPE_PARENTH,    ///< Parenthesis expression
 };
 
 /**
@@ -97,6 +99,11 @@ struct mCc_ast_expression {
 		 * Data if #type is #MCC_AST_EXPRESSION_TYPE_LITERAL
 		 */
 		struct mCc_ast_literal *literal;
+
+		/**
+		 * Data if #type is #MCC_AST_EXPRESSION_TYPE_IDENTIFIER
+		 */
+		struct mCc_ast_identifier *identifier;
 
 		/**
 		 * Data if #type is #MCC_AST_EXPRESSION_TYPE_BINARY_OP
@@ -132,6 +139,16 @@ struct mCc_ast_expression {
  */
 struct mCc_ast_expression *
 mCc_ast_new_expression_literal(struct mCc_ast_literal *literal);
+
+/**
+ * Construct an expression from a identifier.
+ *
+ * @param identifier The identifier
+ *
+ * @return A new expression with type #MCC_AST_EXPRESSION_TYPE_IDENTIFIER
+ */
+struct mCc_ast_expression *
+mCc_ast_new_expression_identifier(struct mCc_ast_identifier *identifier);
 
 /**
  * Construct an expression for a unary operation.
@@ -265,6 +282,36 @@ struct mCc_ast_literal *mCc_ast_new_literal_string(char *value);
  * @param literal The literal to delete
  */
 void mCc_ast_delete_literal(struct mCc_ast_literal *literal);
+
+/* -------------------------------------------------------------- Identifiers */
+
+/**
+ * Node representing a identifier.
+ */
+struct mCc_ast_identifier {
+	struct mCc_ast_node node; ///< Common attributes
+
+	/**
+	 * The ID string
+	 */
+	char *id_value;
+};
+
+/**
+ * Create a new identifier.
+ *
+ * @param value The value
+ *
+ * @return A new identifier with type #MCC_AST_IDENTIFIER
+ */
+struct mCc_ast_identifier *mCc_ast_new_identifier(char *value);
+
+/**
+ * Delete an identifier.
+ *
+ * @param identifier The identifier to delete
+ */
+void mCc_ast_delete_identifier(struct mCc_ast_identifier *identifier);
 
 #ifdef __cplusplus
 }
