@@ -47,13 +47,13 @@ assignment       = identifier , [ "[" , expression , "]" ] , "=" , expression
 ### Expressions
 
 expression       = single_expr , [ binary_op , expression ]
-
-single_expr      = literal
+```
+single_expr      = ~~literal~~
                  | identifier , [ "[" , expression , "]" ]
                  | call_expr
-                 | unary_op , expression
-                 | "(" , expression , ")"
-```
+                 ~~| unary_op , expression~~
+                 ~~| "(" , expression , ")"~~
+
 ~~literal          = bool_literal
                  | int_literal
                  | float_literal
