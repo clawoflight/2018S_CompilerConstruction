@@ -67,4 +67,6 @@ void mCc_ast_delete_statement(struct mCc_ast_statement *statement)
 		mCc_ast_delete_statement(statement->if_stmt);
 		break;
 	}
+
+	free(statement);
 }
