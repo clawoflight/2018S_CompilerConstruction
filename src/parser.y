@@ -52,6 +52,8 @@ void mCc_parser_error();
 %token ELSE "else"
 %token SEMICOLON ";"
 
+/* TYPES */
+
 %type <enum mCc_ast_binary_op> binary_op
 %type <enum mCc_ast_unary_op>  unary_op
 
@@ -61,6 +63,12 @@ void mCc_parser_error();
 %type <struct mCc_ast_identifier *> identifier
 
 %start toplevel
+
+/* PRECEDENCE RULES (INCREASING) */
+
+/* These rules make ELSE bind to the innermost IF like in the spec. */
+%precedence "then"
+%precedence ELSE
 
 %%
 
@@ -106,7 +114,7 @@ identifier : IDENTIFIER { $$ = mCc_ast_new_identifier($1); }
            ;
 
 statement : expression SEMICOLON { $$ = mCc_ast_new_statement_expression($1); }
-          | IF LPARENTH expression RPARENTH statement { $$ = mCc_ast_new_statement_if($3, $5, NULL); }
+          | IF LPARENTH expression RPARENTH statement { $$ = mCc_ast_new_statement_if($3, $5, NULL); } %prec "then" /* give this statement the precedence named "then" */
           | IF LPARENTH expression RPARENTH statement ELSE statement { $$ = mCc_ast_new_statement_if($3, $5, $7); }
           ;
 

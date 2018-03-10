@@ -108,7 +108,7 @@ static void print_dot_statement_ifelse(struct mCc_ast_statement *statement, void
 
 	FILE *out = data;
 	print_dot_node(out, statement, "stmt: ifelse");
-	print_dot_edge(out, statement, statement->if_cond, "if expr");
+	print_dot_edge(out, statement, statement->if_cond, "condition");
 	print_dot_edge(out, statement, statement->if_stmt, "if stmt");
 	print_dot_edge(out, statement, statement->else_stmt, "else stmt");
 }
