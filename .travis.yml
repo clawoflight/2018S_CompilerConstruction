@@ -2,7 +2,6 @@
 
 notifications:
     email: false
-    slack: informatik-teamwork:gKfvLlT07re0xB7RiCMGkBkD
 
 git:
     submodules: false
@@ -28,6 +27,7 @@ addons:
             - sourceline: 'deb http://ppa.launchpad.net/cernekee/ppa/ubuntu xenial main'
         packages:
             # - clang-5.0
+            - doxygen
             - flex
             - g++-7
             - python3.6
@@ -35,13 +35,13 @@ addons:
             - time
             - unzip
             - wget
-            - doxygen
 
 # Get direct deps
 install:
     - wget https://bootstrap.pypa.io/get-pip.py
     - python3.6 get-pip.py --user
     - python3.6 -m pip install --user meson
+    - python3.6 -m pip install --user cpp-coveralls
     - wget https://github.com/ninja-build/ninja/releases/download/v1.8.2/ninja-linux.zip
     - unzip ninja-linux.zip
     - mkdir -p ~/bin
@@ -52,7 +52,7 @@ install:
 
 script:
     # Build
-    - meson build
+    - meson build --buildtype=debugoptimized -Db_coverage=true
     - cd build
     - ninja
 
@@ -60,3 +60,7 @@ script:
     - ninja test
     - ninja benchmark
     # - ../test/integration
+    - cd ..
+
+after_success:
+    - coveralls --gcov-options '\-lp' -r . -x .c -b build -e subprojects -e build/mCc@exe -e build/mC_to_dot@exe -e bison-3.0.4/ -e build/meson-private
