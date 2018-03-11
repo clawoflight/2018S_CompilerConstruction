@@ -28,7 +28,6 @@ addons:
             - sourceline: 'deb http://ppa.launchpad.net/cernekee/ppa/ubuntu xenial main'
         packages:
             # - clang-5.0
-            # - bison
             - flex
             - g++-7
             - python3.6
@@ -36,6 +35,7 @@ addons:
             - time
             - unzip
             - wget
+            - doxygen
 
 # Get direct deps
 install:
@@ -55,8 +55,6 @@ script:
     - meson build
     - cd build
     - ninja
-    - flex --version
-    - bison --version
 
     # Unit tests
     - ninja test
