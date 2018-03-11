@@ -1,0 +1,64 @@
+# vim: sw=4 ts=4 et
+
+notifications:
+    email: false
+    slack: informatik-teamwork:gKfvLlT07re0xB7RiCMGkBkD
+
+git:
+    submodules: false
+
+dist: trusty
+
+language: c
+
+env:
+    - PATH="$PATH:~/bin" CXX=g++-7
+
+compiler:
+    # - clang
+    - gcc-7
+
+# Get indirect deps
+addons:
+    apt:
+        sources:
+            - deadsnakes
+            - ubuntu-toolchain-r-test
+            # - llvm-toolchain-trusty-5.0
+            - sourceline: 'deb http://ppa.launchpad.net/cernekee/ppa/ubuntu xenial main'
+        packages:
+            # - clang-5.0
+            # - bison
+            - flex
+            - g++-7
+            - python3.6
+            - python3.6-dev
+            - time
+            - unzip
+            - wget
+
+# Get direct deps
+install:
+    - wget https://bootstrap.pypa.io/get-pip.py
+    - python3.6 get-pip.py --user
+    - python3.6 -m pip install --user meson
+    - wget https://github.com/ninja-build/ninja/releases/download/v1.8.2/ninja-linux.zip
+    - unzip ninja-linux.zip
+    - mkdir -p ~/bin
+    - mv ninja ~/bin
+    - wget http://ftp.gnu.org/gnu/bison/bison-3.0.4.tar.gz
+    - tar -xzf bison-3.0.4.tar.gz
+    - pushd bison-3.0.4 && ./configure --prefix=/usr && make && sudo make install && popd
+
+script:
+    # Build
+    - meson build
+    - cd build
+    - ninja
+    - flex --version
+    - bison --version
+
+    # Unit tests
+    - ninja test
+    - ninja benchmark
+    # - ../test/integration
