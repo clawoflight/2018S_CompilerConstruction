@@ -72,10 +72,9 @@ statement        =
                  | compound_stmt
 ```
 ~~if_stmt          = "if" , "(" , expression , ")" , statement , [ "else" , statement ]~~
+
+~~while_stmt       = "while" , "(" , expression , ")" , statement~~
 ```
-
-while_stmt       = "while" , "(" , expression , ")" , statement
-
 ret_stmt         = "return" , [ expression ] , ";"
 
 compound_stmt    = "{" , [ { statement } ] , "}"
