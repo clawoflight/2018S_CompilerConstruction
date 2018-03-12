@@ -46,8 +46,7 @@ struct mCc_ast_statement {
 			struct mCc_ast_statement *if_stmt;
 			struct mCc_ast_statement *else_stmt;
 		};
-        /// Data if type is #MCC_AST_STATEMENT_TYPE_IF
-        /// or #MCC_AST_STATEMENT_TYPE_IFELSE
+        /// Data while type is #MCC_AST_STATEMENT_TYPE_WHILE
 		struct {
 			struct mCc_ast_expression *while_cond;
 			struct mCc_ast_statement *while_stmt;
