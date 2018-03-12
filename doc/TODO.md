@@ -47,13 +47,13 @@ assignment       = identifier , [ "[" , expression , "]" ] , "=" , expression
 ### Expressions
 
 expression       = single_expr , [ binary_op , expression ]
-```
-single_expr      = ~~literal~~
+
+single_expr      = ~~literal~~ done
                  | identifier , [ "[" , expression , "]" ]
                  | call_expr
-                 ~~| unary_op , expression~~
-                 ~~| "(" , expression , ")"~~
-
+                 ~~| unary_op , expression~~ done
+                 ~~| "(" , expression , ")"~~ done
+```
 ~~literal          = bool_literal
                  | int_literal
                  | float_literal
@@ -62,15 +62,17 @@ single_expr      = ~~literal~~
 
 ### Statements
 
-statement        = if_stmt
+statement        = 
+                ~~ if_stmt ~~ done
                  | while_stmt
                  | ret_stmt
                  | declaration , ";"
                  | assignment  , ";"
-                 | expression  , ";"
+              ~~ | expression  , ";"~~ done
                  | compound_stmt
-
-if_stmt          = "if" , "(" , expression , ")" , statement , [ "else" , statement ]
+```
+~~if_stmt          = "if" , "(" , expression , ")" , statement , [ "else" , statement ]~~
+```
 
 while_stmt       = "while" , "(" , expression , ")" , statement
 
