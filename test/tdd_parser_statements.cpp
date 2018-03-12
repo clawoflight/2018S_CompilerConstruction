@@ -84,8 +84,7 @@ TEST(TDD_PARSER_STATEMENTS, WHILE)
 
 	// () expression
 	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_LITERAL, stmt->while_cond->type);
-    //printf("%s",stmt->while_cond->literal) ;
-   // ASSERT_EQ(true, stmt->while_cond->literal->b_value);
+    ASSERT_EQ(true, stmt->while_cond->literal->b_value);
 
 	// while body
 	ASSERT_EQ(MCC_AST_STATEMENT_TYPE_EXPR, stmt->while_stmt->type);
