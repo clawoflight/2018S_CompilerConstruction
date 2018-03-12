@@ -48,6 +48,23 @@ mCc_ast_new_statement_if(struct mCc_ast_expression *if_cond,
 	}
 	return stmt;
 }
+struct mCc_ast_statement *
+mCc_ast_new_statement_while(struct mCc_ast_expression *while_cond,
+						 struct mCc_ast_statement *while_stmt)
+{
+	assert(while_cond);
+	assert(while_stmt);
+
+	struct mCc_ast_statement *stmt = malloc(sizeof(*stmt));
+	if (!stmt)
+		return NULL;
+
+	stmt->type = MCC_AST_STATEMENT_TYPE_WHILE;
+	stmt->while_cond = while_cond;
+	stmt->while_stmt = while_stmt;
+
+	return stmt;
+}
 
 void mCc_ast_delete_statement(struct mCc_ast_statement *statement)
 {
@@ -65,6 +82,11 @@ void mCc_ast_delete_statement(struct mCc_ast_statement *statement)
 	case MCC_AST_STATEMENT_TYPE_IF:
 		mCc_ast_delete_expression(statement->if_cond);
 		mCc_ast_delete_statement(statement->if_stmt);
+		break;
+
+	case MCC_AST_STATEMENT_TYPE_WHILE:
+		mCc_ast_delete_expression(statement->while_cond);
+		mCc_ast_delete_statement(statement->while_stmt);
 		break;
 	}
 

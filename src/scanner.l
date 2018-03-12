@@ -51,6 +51,7 @@ bool_literal (true)|(false)
 
 "if"              { return TK_IF; }
 "else"            { return TK_ELSE; }
+"while"           { return TK_WHILE;}
 
 [ \t\r\n]+        { /* ignore */ }
 

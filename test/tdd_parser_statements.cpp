@@ -70,3 +70,27 @@ TEST(TDD_PARSER_STATEMENTS, IFELSE)
 
 	mCc_ast_delete_statement(stmt);
 }
+
+TEST(TDD_PARSER_STATEMENTS, WHILE)
+{
+	const char str[] = "while (true) hello;";
+	auto result = mCc_parser_parse_string(str);
+
+	ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);
+	auto stmt = result.statement;
+
+	// root
+	ASSERT_EQ(MCC_AST_STATEMENT_TYPE_WHILE, stmt->type);
+
+	// () expression
+	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_LITERAL, stmt->while_cond->type);
+    //printf("%s",stmt->while_cond->literal) ;
+   // ASSERT_EQ(true, stmt->while_cond->literal->b_value);
+
+	// while body
+	ASSERT_EQ(MCC_AST_STATEMENT_TYPE_EXPR, stmt->while_stmt->type);
+	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_IDENTIFIER, stmt->while_stmt->expression->type);
+	ASSERT_EQ(0, strcmp("hello", stmt->while_stmt->expression->identifier->id_value));
+
+	mCc_ast_delete_statement(stmt);
+}
