@@ -75,12 +75,11 @@ mCc_ast_new_statement_return(struct mCc_ast_expression *ret_val)
 		return NULL;
     if(!ret_val) {
         stmt->type = MCC_AST_STATEMENT_TYPE_RET_VOID;
-        stmt->ret_val_void = ret_val;
     }
     else {
         stmt->type = MCC_AST_STATEMENT_TYPE_RET;
-        stmt->ret_val = ret_val;
     }
+    stmt->ret_val = ret_val;
 	return stmt;
 }
 
@@ -107,9 +106,13 @@ void mCc_ast_delete_statement(struct mCc_ast_statement *statement)
 			mCc_ast_delete_statement(statement->while_stmt);
 			break;
 
-		case MCC_AST_STATEMENT_TYPE_RET:
-			mCc_ast_delete_expression(statement->ret_val);
-			break;
+        case MCC_AST_STATEMENT_TYPE_RET:
+            mCc_ast_delete_expression(statement->ret_val);
+            break;
+
+        case MCC_AST_STATEMENT_TYPE_RET_VOID:
+           // mCc_ast_delete_expression(statement->ret_val); // value is Null
+            break;
 	}
 
 	free(statement);

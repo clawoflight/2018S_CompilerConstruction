@@ -56,7 +56,6 @@ struct mCc_ast_statement {
         /// or #MCC_AST_STATEMENT_TYPE_RET_VOID
 		struct {
 			struct mCc_ast_expression *ret_val;
-            struct mCc_ast_expression *ret_val_void;
 		};
 		/// Data if type is #MCC_AST_STATEMENT_TYPE_EXPR
 		struct mCc_ast_expression *expression;

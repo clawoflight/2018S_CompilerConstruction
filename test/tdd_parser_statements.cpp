@@ -122,9 +122,8 @@ TEST(TDD_PARSER_STATEMENTS, RETURN_VOID)
 
 	// root
 	ASSERT_EQ(MCC_AST_STATEMENT_TYPE_RET_VOID, stmt->type);
-
 	// () expression
-	ASSERT_EQ(NULL, stmt->ret_val_void);
+	ASSERT_EQ(NULL, stmt->ret_val);
 
 	mCc_ast_delete_statement(stmt);
 }
