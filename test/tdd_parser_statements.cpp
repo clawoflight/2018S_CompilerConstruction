@@ -93,3 +93,39 @@ TEST(TDD_PARSER_STATEMENTS, WHILE)
 
 	mCc_ast_delete_statement(stmt);
 }
+
+TEST(TDD_PARSER_STATEMENTS, RETURN)
+{
+	const char str[] = "return true;";
+	auto result = mCc_parser_parse_string(str);
+
+	ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);
+	auto stmt = result.statement;
+
+	// root
+	ASSERT_EQ(MCC_AST_STATEMENT_TYPE_RET, stmt->type);
+
+	// () expression
+	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_LITERAL, stmt->ret_val->type);
+	ASSERT_EQ(true, stmt->ret_val->literal->b_value);
+
+	mCc_ast_delete_statement(stmt);
+}
+//TODO testcase for return;
+/*TEST(TDD_PARSER_STATEMENTS, RETURN_EMPTY)
+{
+	const char str[] = "return ;";
+	auto result = mCc_parser_parse_string(str);
+
+	ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);
+	auto stmt = result.statement;
+
+	// root
+	ASSERT_EQ(MCC_AST_STATEMENT_TYPE_RET, stmt->type);
+
+	// () expression
+	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_LITERAL, stmt->ret_val->type);
+	//ASSERT_EQ(true, stmt->ret_val->literal->b_value);
+
+	mCc_ast_delete_statement(stmt);
+}*/

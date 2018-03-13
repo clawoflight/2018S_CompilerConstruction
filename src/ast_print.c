@@ -124,6 +124,16 @@ static void print_dot_statement_while(struct mCc_ast_statement *statement, void 
 	print_dot_edge(out, statement, statement->while_stmt, "while stmt");
 }
 
+static void print_dot_statement_return(struct mCc_ast_statement *statement, void *data)
+{
+	assert(statement);
+	assert(data);
+
+	FILE *out = data;
+	print_dot_node(out, statement, "stmt: return");
+	print_dot_edge(out, statement, statement->ret_val, "return value");
+}
+
 static void print_dot_expression_literal(struct mCc_ast_expression *expression,
                                          void *data)
 {
@@ -264,6 +274,7 @@ static struct mCc_ast_visitor print_dot_visitor(FILE *out)
 		.statement_if = print_dot_statement_if,
 		.statement_ifelse = print_dot_statement_ifelse,
 		.statement_while = print_dot_statement_while,
+		.statement_return = print_dot_statement_return,
 
 		.expression_literal = print_dot_expression_literal,
 		.expression_identifier = print_dot_expression_identifier,

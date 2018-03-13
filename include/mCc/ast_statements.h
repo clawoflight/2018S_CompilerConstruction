@@ -21,7 +21,7 @@ extern "C" {
 enum mCc_ast_statement_type {
 	MCC_AST_STATEMENT_TYPE_IF,     ///< If statement
 	MCC_AST_STATEMENT_TYPE_IFELSE, ///< If statement with else-branch
-	/* MCC_AST_STATEMENT_TYPE_RET,   ///< Return statement */
+	MCC_AST_STATEMENT_TYPE_RET,   ///< Return statement */
     MCC_AST_STATEMENT_TYPE_WHILE, ///< While statement
 	/* MCC_AST_STATEMENT_TYPE_DECL,  ///< Variable declaration assignment */
 	/* MCC_AST_STATEMENT_TYPE_ASSGN, ///< Variable assignment statement */
@@ -50,6 +50,10 @@ struct mCc_ast_statement {
 		struct {
 			struct mCc_ast_expression *while_cond;
 			struct mCc_ast_statement *while_stmt;
+		};
+		/// Data return type is #MCC_AST_STATEMENT_TYPE_RET
+		struct {
+			struct mCc_ast_expression *ret_val;
 		};
 		/// Data if type is #MCC_AST_STATEMENT_TYPE_EXPR
 		struct mCc_ast_expression *expression;
@@ -92,6 +96,16 @@ mCc_ast_new_statement_if(struct mCc_ast_expression *if_cond,
 struct mCc_ast_statement *
 mCc_ast_new_statement_while(struct mCc_ast_expression *while_cond,
 						 struct mCc_ast_statement *while_stmt);
+
+/**
+ * @brief Construct a statement from an return-statement
+ *
+ * @param ret_val The return value
+ *
+ * @return A new statement with type #MCC_AST_STATEMENT_TYPE_RET
+ */
+struct mCc_ast_statement *
+mCc_ast_new_statement_return(struct mCc_ast_expression *ret_val);
 
 /**
  * @brief Delete a statement.

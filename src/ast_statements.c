@@ -66,28 +66,47 @@ mCc_ast_new_statement_while(struct mCc_ast_expression *while_cond,
 	return stmt;
 }
 
+struct mCc_ast_statement *
+mCc_ast_new_statement_return(struct mCc_ast_expression *ret_val)
+{
+    assert(ret_val);
+
+	struct mCc_ast_statement *stmt = malloc(sizeof(*stmt));
+	if (!stmt)
+		return NULL;
+
+	stmt->type = MCC_AST_STATEMENT_TYPE_RET;
+    stmt->ret_val =ret_val;
+
+	return stmt;
+}
+
 void mCc_ast_delete_statement(struct mCc_ast_statement *statement)
 {
 	assert(statement);
 
 	switch (statement->type) {
-	case MCC_AST_STATEMENT_TYPE_EXPR:
-		mCc_ast_delete_expression(statement->expression);
-		break;
+		case MCC_AST_STATEMENT_TYPE_EXPR:
+			mCc_ast_delete_expression(statement->expression);
+			break;
 
-	case MCC_AST_STATEMENT_TYPE_IFELSE:
-		mCc_ast_delete_statement(statement->else_stmt);
-		// Fallthrough
+		case MCC_AST_STATEMENT_TYPE_IFELSE:
+			mCc_ast_delete_statement(statement->else_stmt);
+			// Fallthrough
 
-	case MCC_AST_STATEMENT_TYPE_IF:
-		mCc_ast_delete_expression(statement->if_cond);
-		mCc_ast_delete_statement(statement->if_stmt);
-		break;
+		case MCC_AST_STATEMENT_TYPE_IF:
+			mCc_ast_delete_expression(statement->if_cond);
+			mCc_ast_delete_statement(statement->if_stmt);
+			break;
 
-	case MCC_AST_STATEMENT_TYPE_WHILE:
-		mCc_ast_delete_expression(statement->while_cond);
-		mCc_ast_delete_statement(statement->while_stmt);
-		break;
+		case MCC_AST_STATEMENT_TYPE_WHILE:
+			mCc_ast_delete_expression(statement->while_cond);
+			mCc_ast_delete_statement(statement->while_stmt);
+			break;
+
+		case MCC_AST_STATEMENT_TYPE_RET:
+			mCc_ast_delete_expression(statement->ret_val);
+			break;
 	}
 
 	free(statement);
