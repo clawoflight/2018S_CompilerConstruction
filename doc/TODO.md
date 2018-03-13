@@ -64,8 +64,8 @@ single_expr      = ~~literal~~ done
 
 statement        = 
                 ~~ if_stmt ~~ done
-                 | while_stmt
-                 | ret_stmt
+               ~~| while_stmt ~~ done
+               ~~| ret_stmt ~~ done
                  | declaration , ";"
                  | assignment  , ";"
               ~~ | expression  , ";"~~ done
@@ -74,9 +74,9 @@ statement        =
 ~~if_stmt          = "if" , "(" , expression , ")" , statement , [ "else" , statement ]~~
 
 ~~while_stmt       = "while" , "(" , expression , ")" , statement~~
-```
-ret_stmt         = "return" , [ expression ] , ";"
 
+~~ret_stmt         = "return" , [ expression ] , ";"~~
+```
 compound_stmt    = "{" , [ { statement } ] , "}"
 
 
