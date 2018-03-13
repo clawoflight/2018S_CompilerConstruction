@@ -69,15 +69,18 @@ mCc_ast_new_statement_while(struct mCc_ast_expression *while_cond,
 struct mCc_ast_statement *
 mCc_ast_new_statement_return(struct mCc_ast_expression *ret_val)
 {
-    assert(ret_val);
 
 	struct mCc_ast_statement *stmt = malloc(sizeof(*stmt));
 	if (!stmt)
 		return NULL;
-
-	stmt->type = MCC_AST_STATEMENT_TYPE_RET;
-    stmt->ret_val =ret_val;
-
+    if(!ret_val) {
+        stmt->type = MCC_AST_STATEMENT_TYPE_RET_VOID;
+        stmt->ret_val_void = ret_val;
+    }
+    else {
+        stmt->type = MCC_AST_STATEMENT_TYPE_RET;
+        stmt->ret_val = ret_val;
+    }
 	return stmt;
 }
 
