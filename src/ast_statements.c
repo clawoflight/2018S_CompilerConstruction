@@ -111,7 +111,6 @@ void mCc_ast_delete_statement(struct mCc_ast_statement *statement)
             break;
 
         case MCC_AST_STATEMENT_TYPE_RET_VOID:
-           // mCc_ast_delete_expression(statement->ret_val); // value is Null
             break;
 	}
 
