@@ -127,3 +127,40 @@ TEST(TDD_PARSER_STATEMENTS, RETURN_VOID)
 
 	mCc_ast_delete_statement(stmt);
 }
+
+
+TEST(TDD_PARSER_STATEMENTS, COMPOUND_EMPTY)
+{
+	const char str[] = "{ }";
+	auto result = mCc_parser_parse_string(str);
+
+	ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);
+	auto stmt = result.statement;
+
+	// ROOT
+	ASSERT_EQ(MCC_AST_STATEMENT_TYPE_CMPND, stmt->type);
+	ASSERT_EQ((unsigned int) 0, stmt->compound_stmt_count);
+
+}
+
+TEST(TDD_PARSER_STATEMENTS, COMPOUND_MULTIPLE)
+{
+	const char str[] = "{ true; false; }";
+	auto result = mCc_parser_parse_string(str);
+
+	ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);
+	auto stmt = result.statement;
+
+	// ROOT
+	ASSERT_EQ(MCC_AST_STATEMENT_TYPE_CMPND, stmt->type);
+	ASSERT_EQ((unsigned int) 2, stmt->compound_stmt_count);
+
+	// sub 1
+	ASSERT_EQ(MCC_AST_STATEMENT_TYPE_EXPR, stmt->compound_stmts[0]->type);
+	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_LITERAL, stmt->compound_stmts[0]->expression->type);
+
+	// sub 2
+	ASSERT_EQ(MCC_AST_STATEMENT_TYPE_EXPR, stmt->compound_stmts[1]->type);
+	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_LITERAL, stmt->compound_stmts[1]->expression->type);
+}
+

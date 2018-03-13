@@ -77,6 +77,12 @@ void mCc_ast_visit_statement(struct mCc_ast_statement *statement,
         visit_if_pre_order(statement, visitor->statement_return_void, visitor);
         visit_if_post_order(statement, visitor->statement_return_void, visitor);
         break;
+
+	case MCC_AST_STATEMENT_TYPE_CMPND:
+		visit_if_pre_order(statement, visitor->statement_compound, visitor);
+		for (unsigned int i = 0; i < statement->compound_stmt_count; ++i)
+			mCc_ast_visit_statement(statement->compound_stmts[i], visitor);
+		visit_if_post_order(statement, visitor->statement_compound, visitor);
 	}
 
 	visit_if_post_order(statement, visitor->statement, visitor);
