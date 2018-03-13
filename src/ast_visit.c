@@ -66,6 +66,17 @@ void mCc_ast_visit_statement(struct mCc_ast_statement *statement,
 		mCc_ast_visit_statement(statement->while_stmt, visitor);
 		visit_if_post_order(statement, visitor->statement_while, visitor);
 		break;
+
+	case MCC_AST_STATEMENT_TYPE_RET:
+		visit_if_pre_order(statement, visitor->statement_return, visitor);
+		mCc_ast_visit_expression(statement->ret_val, visitor);
+		visit_if_post_order(statement, visitor->statement_return, visitor);
+		break;
+
+    case MCC_AST_STATEMENT_TYPE_RET_VOID:
+        visit_if_pre_order(statement, visitor->statement_return_void, visitor);
+        visit_if_post_order(statement, visitor->statement_return_void, visitor);
+        break;
 	}
 
 	visit_if_post_order(statement, visitor->statement, visitor);

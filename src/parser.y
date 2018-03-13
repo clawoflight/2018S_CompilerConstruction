@@ -51,6 +51,7 @@ void mCc_parser_error();
 %token IF "if"
 %token ELSE "else"
 %token WHILE "while"
+%token RETURN "return"
 %token SEMICOLON ";"
 
 /* TYPES */
@@ -124,6 +125,8 @@ statement : expression SEMICOLON { $$ = mCc_ast_new_statement_expression($1); }
           | WHILE LPARENTH expression RPARENTH statement { $$ = mCc_ast_new_statement_while($3, $5); }
           | IF LPARENTH expression RPARENTH statement { $$ = mCc_ast_new_statement_if($3, $5, NULL); } %prec "then" /* give this statement the precedence named "then" */
           | IF LPARENTH expression RPARENTH statement ELSE statement { $$ = mCc_ast_new_statement_if($3, $5, $7); }
+          | RETURN expression SEMICOLON { $$ = mCc_ast_new_statement_return($2); }
+          | RETURN SEMICOLON { $$ = mCc_ast_new_statement_return(NULL); }
           ;
 
 %%
