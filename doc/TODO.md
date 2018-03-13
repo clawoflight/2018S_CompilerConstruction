@@ -97,7 +97,6 @@ program          = [ { function_def } ]
 ```
 
 ## Task 3: Error handling
-- Memory safety: [Destructors](https://www.gnu.org/software/bison/manual/html_node/Destructor-Decl.html#Destructor-Decl)
 - [Location tracking](https://www.gnu.org/software/bison/manual/html_node/Tracking-Locations.html#Tracking-Locations)
   and also [SO](https://stackoverflow.com/questions/22407730/bison-line-number-included-in-the-error-messages) and [IBM](https://www.ibm.com/developerworks/library/l-flexbison/index.html)
 - [Precedence](https://www.gnu.org/software/bison/manual/html_node/Precedence.html#Precedence)

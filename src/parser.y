@@ -71,6 +71,12 @@ void mCc_parser_error();
 %precedence "then"
 %precedence ELSE
 
+/* DESTRUCTORS */
+%destructor { mCc_ast_delete_expression($$); } expression single_expr
+%destructor { mCc_ast_delete_literal($$); } literal
+%destructor { mCc_ast_delete_statement($$); } statement
+%destructor { mCc_ast_delete_identifier($$); } identifier
+
 %%
 
 toplevel : expression { *result = $1; }

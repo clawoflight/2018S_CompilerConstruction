@@ -34,6 +34,7 @@ addons:
             - python3.6-dev
             - time
             - unzip
+            - valgrind
             - wget
 
 # Get direct deps
@@ -58,9 +59,11 @@ script:
 
     # Unit tests
     - ninja test
+    - ninja testgrind # UTs behind valgrind
     - ninja benchmark
     # - ../test/integration
     - cd ..
 
 after_success:
+    # Upload coverage to coveralls.io
     - coveralls --gcov-options '\-lp' -r . -x .c -b build -e subprojects -e build/mCc@exe -e build/mC_to_dot@exe -e bison-3.0.4/ -e build/meson-private
