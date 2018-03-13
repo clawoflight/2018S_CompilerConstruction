@@ -10,6 +10,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+/// Size by which to increase compound_stmts when reallocking
+const int compound_stmt_alloc_block_size = 10;
+
 /*--------------------------------------------------------------- Statements */
 
 struct mCc_ast_statement *
@@ -65,7 +68,6 @@ mCc_ast_new_statement_while(struct mCc_ast_expression *while_cond,
 
 	return stmt;
 }
-
 struct mCc_ast_statement *
 mCc_ast_new_statement_return(struct mCc_ast_expression *ret_val)
 {
@@ -83,29 +85,81 @@ mCc_ast_new_statement_return(struct mCc_ast_expression *ret_val)
 	return stmt;
 }
 
+struct mCc_ast_statement *
+mCc_ast_new_statement_compound(struct mCc_ast_statement *substatement)
+{
+	struct mCc_ast_statement *stmt = malloc(sizeof(*stmt));
+	if (!stmt)
+		return NULL;
+
+	stmt->type = MCC_AST_STATEMENT_TYPE_CMPND;
+	stmt->compound_stmt_count = 0;
+
+	if (substatement &&
+	    (stmt->compound_stmts =
+	         malloc(compound_stmt_alloc_block_size * sizeof(stmt))) != NULL) {
+		stmt->compound_stmt_count = 1;
+		stmt->compound_stmt_alloc_size = compound_stmt_alloc_block_size;
+		stmt->compound_stmts[0] = substatement;
+	}
+
+	return stmt;
+}
+
+struct mCc_ast_statement *
+mCc_ast_compound_statement_add(struct mCc_ast_statement *self,
+                               struct mCc_ast_statement *statement)
+{
+	assert(self);
+	assert(statement);
+
+	if (self->compound_stmt_count < self->compound_stmt_alloc_size) {
+		self->compound_stmts[self->compound_stmt_count++] = statement;
+		return self;
+	}
+
+	struct mCc_ast_statement **tmp;
+	if ((tmp = realloc(self->compound_stmts, compound_stmt_alloc_block_size *
+	                                             sizeof(self))) == NULL) {
+		mCc_ast_delete_statement(self);
+		return NULL;
+	}
+
+	self->compound_stmt_alloc_size += compound_stmt_alloc_block_size;
+	self->compound_stmts = tmp;
+	self->compound_stmts[self->compound_stmt_count++] = statement;
+	return self;
+}
+
+
 void mCc_ast_delete_statement(struct mCc_ast_statement *statement)
 {
 	assert(statement);
 
 	switch (statement->type) {
-		case MCC_AST_STATEMENT_TYPE_EXPR:
-			mCc_ast_delete_expression(statement->expression);
-			break;
+	case MCC_AST_STATEMENT_TYPE_EXPR:
+		mCc_ast_delete_expression(statement->expression);
+		break;
 
-		case MCC_AST_STATEMENT_TYPE_IFELSE:
-			mCc_ast_delete_statement(statement->else_stmt);
-			// Fallthrough
+	case MCC_AST_STATEMENT_TYPE_IFELSE:
+		mCc_ast_delete_statement(statement->else_stmt);
+		// Fallthrough
 
-		case MCC_AST_STATEMENT_TYPE_IF:
-			mCc_ast_delete_expression(statement->if_cond);
-			mCc_ast_delete_statement(statement->if_stmt);
-			break;
+	case MCC_AST_STATEMENT_TYPE_IF:
+		mCc_ast_delete_expression(statement->if_cond);
+		mCc_ast_delete_statement(statement->if_stmt);
+		break;
 
-		case MCC_AST_STATEMENT_TYPE_WHILE:
-			mCc_ast_delete_expression(statement->while_cond);
-			mCc_ast_delete_statement(statement->while_stmt);
-			break;
+	case MCC_AST_STATEMENT_TYPE_WHILE:
+		mCc_ast_delete_expression(statement->while_cond);
+		mCc_ast_delete_statement(statement->while_stmt);
+		break;
 
+	case MCC_AST_STATEMENT_TYPE_CMPND:
+		for (unsigned int i = 0; i < statement->compound_stmt_count; ++i)
+			mCc_ast_delete_statement(statement->compound_stmts[i]);
+		free(statement->compound_stmts);
+		break;
         case MCC_AST_STATEMENT_TYPE_RET:
             mCc_ast_delete_expression(statement->ret_val);
             break;

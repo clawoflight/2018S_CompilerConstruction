@@ -27,7 +27,7 @@ enum mCc_ast_statement_type {
 	/* MCC_AST_STATEMENT_TYPE_DECL,  ///< Variable declaration assignment */
 	/* MCC_AST_STATEMENT_TYPE_ASSGN, ///< Variable assignment statement */
 	MCC_AST_STATEMENT_TYPE_EXPR, ///< Expression statement
-	/* MCC_AST_STATEMENT_TYPE_CPND   ///< Compound statement */
+	MCC_AST_STATEMENT_TYPE_CMPND ///< Compound statement
 };
 
 /**
@@ -38,6 +38,7 @@ struct mCc_ast_statement {
 	/// The concrete type of this statement (no inheritance in C)
 	enum mCc_ast_statement_type type;
 
+
 	union {
 
 		/// Data if type is #MCC_AST_STATEMENT_TYPE_IF
@@ -47,7 +48,7 @@ struct mCc_ast_statement {
 			struct mCc_ast_statement *if_stmt;
 			struct mCc_ast_statement *else_stmt;
 		};
-        /// Data while type is #MCC_AST_STATEMENT_TYPE_WHILE
+		/// Data while type is #MCC_AST_STATEMENT_TYPE_WHILE
 		struct {
 			struct mCc_ast_expression *while_cond;
 			struct mCc_ast_statement *while_stmt;
@@ -59,6 +60,14 @@ struct mCc_ast_statement {
 		};
 		/// Data if type is #MCC_AST_STATEMENT_TYPE_EXPR
 		struct mCc_ast_expression *expression;
+
+		/// Data if type is #MCC_AST_STATEMENT_TYPE_CMPND
+		struct {
+			/// Number of statements for which pointer memory was allocated
+			unsigned int compound_stmt_alloc_size;
+			unsigned int compound_stmt_count; ///< Number of sub-statements
+			struct mCc_ast_statement **compound_stmts; ///< Sub-statements
+		};
 	};
 };
 
@@ -97,7 +106,31 @@ mCc_ast_new_statement_if(struct mCc_ast_expression *if_cond,
  */
 struct mCc_ast_statement *
 mCc_ast_new_statement_while(struct mCc_ast_expression *while_cond,
-						 struct mCc_ast_statement *while_stmt);
+                            struct mCc_ast_statement *while_stmt);
+
+/**
+ * @brief Construct a statement from multiple statements.
+ *
+ * @param substatement The (optional) initial substatement.
+ *
+ * @return A new statement with type #MCC_AST_STATEMENT_TYPE_CMPND
+ */
+struct mCc_ast_statement *
+mCc_ast_new_statement_compound(struct mCc_ast_statement *substatement);
+
+/**
+ * @brief Add a subexpression to a compound statement.
+ *
+ * @param self Statement with type #MCC_AST_STATEMENT_TYPE_CMPND to which to add
+ * another
+ * @param statement The substatement to add to the compound statement
+ *
+ * @return self
+ */
+struct mCc_ast_statement *
+mCc_ast_compound_statement_add(struct mCc_ast_statement *self,
+                               struct mCc_ast_statement *statement);
+
 /**
  * @brief Construct a statement from an return-statement
  *
