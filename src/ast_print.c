@@ -80,7 +80,8 @@ static void print_dot_edge(FILE *out, const void *src_node,
 	        label);
 }
 
-static void print_dot_statement_expr(struct mCc_ast_statement *statement, void *data)
+static void print_dot_statement_expr(struct mCc_ast_statement *statement,
+                                     void *data)
 {
 	assert(statement);
 	assert(data);
@@ -90,7 +91,8 @@ static void print_dot_statement_expr(struct mCc_ast_statement *statement, void *
 	print_dot_edge(out, statement, statement->expression, "expression");
 }
 
-static void print_dot_statement_if(struct mCc_ast_statement *statement, void *data)
+static void print_dot_statement_if(struct mCc_ast_statement *statement,
+                                   void *data)
 {
 	assert(statement);
 	assert(data);
@@ -101,7 +103,8 @@ static void print_dot_statement_if(struct mCc_ast_statement *statement, void *da
 	print_dot_edge(out, statement, statement->if_stmt, "if stmt");
 }
 
-static void print_dot_statement_ifelse(struct mCc_ast_statement *statement, void *data)
+static void print_dot_statement_ifelse(struct mCc_ast_statement *statement,
+                                       void *data)
 {
 	assert(statement);
 	assert(data);
@@ -113,7 +116,8 @@ static void print_dot_statement_ifelse(struct mCc_ast_statement *statement, void
 	print_dot_edge(out, statement, statement->else_stmt, "else stmt");
 }
 
-static void print_dot_statement_while(struct mCc_ast_statement *statement, void *data)
+static void print_dot_statement_while(struct mCc_ast_statement *statement,
+                                      void *data)
 {
 	assert(statement);
 	assert(data);
@@ -155,6 +159,18 @@ static void print_dot_statement_return_void(struct mCc_ast_statement *statement,
    // print_dot_edge(out, statement, statement->ret_val_void, "return value"); // not needed bec. no value
 }
 
+static void print_dot_statement_compound(struct mCc_ast_statement *statement,
+                                         void *data)
+{
+	assert(statement);
+	assert(data);
+
+	FILE *out = data;
+	print_dot_node(out, statement, "stmt: cmpnd");
+	for (unsigned int i = 0; i < statement->compound_stmt_count; ++i)
+		print_dot_edge(out, statement, statement->compound_stmts[i],
+		               "substatement");
+}
 
 static void print_dot_expression_literal(struct mCc_ast_expression *expression,
                                          void *data)
@@ -167,8 +183,9 @@ static void print_dot_expression_literal(struct mCc_ast_expression *expression,
 	print_dot_edge(out, expression, expression->literal, "literal");
 }
 
-static void print_dot_expression_identifier(struct mCc_ast_expression *expression,
-										 void *data)
+static void
+print_dot_expression_identifier(struct mCc_ast_expression *expression,
+                                void *data)
 {
 	assert(expression);
 	assert(data);
@@ -270,7 +287,8 @@ static void print_dot_literal_bool(struct mCc_ast_literal *literal, void *data)
 	print_dot_node(out, literal, label);
 }
 
-static void print_dot_identifier(struct mCc_ast_identifier *identifier, void *data)
+static void print_dot_identifier(struct mCc_ast_identifier *identifier,
+                                 void *data)
 {
 	assert(identifier);
 	assert(data);
@@ -297,7 +315,7 @@ static struct mCc_ast_visitor print_dot_visitor(FILE *out)
 		.statement_ifelse = print_dot_statement_ifelse,
 		.statement_while = print_dot_statement_while,
 		.statement_return = print_dot_statement_return,
-        .statement_return_void = print_dot_statement_return_void,
+		.statement_return_void = print_dot_statement_return_void,
 		.statement_compound = print_dot_statement_compound,
 
 		.expression_literal = print_dot_expression_literal,
@@ -355,7 +373,8 @@ void mCc_ast_print_dot_literal(FILE *out, struct mCc_ast_literal *literal)
 	print_dot_end(out);
 }
 
-void mCc_ast_print_dot_identifier(FILE *out, struct mCc_ast_identifier *identifier)
+void mCc_ast_print_dot_identifier(FILE *out,
+                                  struct mCc_ast_identifier *identifier)
 {
 	assert(out);
 	assert(identifier);

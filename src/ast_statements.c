@@ -51,9 +51,10 @@ mCc_ast_new_statement_if(struct mCc_ast_expression *if_cond,
 	}
 	return stmt;
 }
+
 struct mCc_ast_statement *
 mCc_ast_new_statement_while(struct mCc_ast_expression *while_cond,
-						 struct mCc_ast_statement *while_stmt)
+                            struct mCc_ast_statement *while_stmt)
 {
 	assert(while_cond);
 	assert(while_stmt);
@@ -68,6 +69,7 @@ mCc_ast_new_statement_while(struct mCc_ast_expression *while_cond,
 
 	return stmt;
 }
+
 struct mCc_ast_statement *
 mCc_ast_new_statement_return(struct mCc_ast_expression *ret_val)
 {
@@ -75,13 +77,12 @@ mCc_ast_new_statement_return(struct mCc_ast_expression *ret_val)
 	struct mCc_ast_statement *stmt = malloc(sizeof(*stmt));
 	if (!stmt)
 		return NULL;
-    if(!ret_val) {
-        stmt->type = MCC_AST_STATEMENT_TYPE_RET_VOID;
-    }
-    else {
-        stmt->type = MCC_AST_STATEMENT_TYPE_RET;
-    }
-    stmt->ret_val = ret_val;
+	if (!ret_val) {
+		stmt->type = MCC_AST_STATEMENT_TYPE_RET_VOID;
+	} else {
+		stmt->type = MCC_AST_STATEMENT_TYPE_RET;
+	}
+	stmt->ret_val = ret_val;
 	return stmt;
 }
 
@@ -132,7 +133,6 @@ mCc_ast_compound_statement_add(struct mCc_ast_statement *self,
 	return self;
 }
 
-
 void mCc_ast_delete_statement(struct mCc_ast_statement *statement)
 {
 	assert(statement);
@@ -162,12 +162,12 @@ void mCc_ast_delete_statement(struct mCc_ast_statement *statement)
 		if (statement->compound_stmts)
 			free(statement->compound_stmts);
 		break;
-        case MCC_AST_STATEMENT_TYPE_RET:
-            mCc_ast_delete_expression(statement->ret_val);
-            break;
 
-        case MCC_AST_STATEMENT_TYPE_RET_VOID:
-            break;
+	case MCC_AST_STATEMENT_TYPE_RET:
+		mCc_ast_delete_expression(statement->ret_val);
+		break;
+
+	case MCC_AST_STATEMENT_TYPE_RET_VOID: break;
 	}
 
 	free(statement);

@@ -19,11 +19,11 @@ extern "C" {
  * The available statement types
  */
 enum mCc_ast_statement_type {
-	MCC_AST_STATEMENT_TYPE_IF,     ///< If statement
-	MCC_AST_STATEMENT_TYPE_IFELSE, ///< If statement with else-branch
-	MCC_AST_STATEMENT_TYPE_RET,   ///< Return statement */
-    MCC_AST_STATEMENT_TYPE_RET_VOID, ///< Return statement with no value
-    MCC_AST_STATEMENT_TYPE_WHILE, ///< While statement
+	MCC_AST_STATEMENT_TYPE_IF,       ///< If statement
+	MCC_AST_STATEMENT_TYPE_IFELSE,   ///< If statement with else-branch
+	MCC_AST_STATEMENT_TYPE_RET,      ///< Return statement */
+	MCC_AST_STATEMENT_TYPE_RET_VOID, ///< Return statement with no value
+	MCC_AST_STATEMENT_TYPE_WHILE,    ///< While statement
 	/* MCC_AST_STATEMENT_TYPE_DECL,  ///< Variable declaration assignment */
 	/* MCC_AST_STATEMENT_TYPE_ASSGN, ///< Variable assignment statement */
 	MCC_AST_STATEMENT_TYPE_EXPR, ///< Expression statement
@@ -37,7 +37,6 @@ struct mCc_ast_statement {
 	struct mCc_ast_node node; ///< Common node attributes
 	/// The concrete type of this statement (no inheritance in C)
 	enum mCc_ast_statement_type type;
-
 
 	union {
 
@@ -54,7 +53,7 @@ struct mCc_ast_statement {
 			struct mCc_ast_statement *while_stmt;
 		};
 		/// Data return type is #MCC_AST_STATEMENT_TYPE_RET
-        /// or #MCC_AST_STATEMENT_TYPE_RET_VOID
+		/// or #MCC_AST_STATEMENT_TYPE_RET_VOID
 		struct {
 			struct mCc_ast_expression *ret_val;
 		};

@@ -42,7 +42,6 @@ TEST(TDD_PARSER_STATEMENTS, IF)
 	mCc_ast_delete_statement(stmt);
 }
 
-
 TEST(TDD_PARSER_STATEMENTS, IFELSE)
 {
 	const char str[] = "if (true) 1; else 0;";
@@ -65,7 +64,8 @@ TEST(TDD_PARSER_STATEMENTS, IFELSE)
 
 	// else body
 	ASSERT_EQ(MCC_AST_STATEMENT_TYPE_EXPR, stmt->else_stmt->type);
-	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_LITERAL, stmt->else_stmt->expression->type);
+	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_LITERAL,
+	          stmt->else_stmt->expression->type);
 	ASSERT_EQ(0, stmt->else_stmt->expression->literal->i_value);
 
 	mCc_ast_delete_statement(stmt);
@@ -88,8 +88,10 @@ TEST(TDD_PARSER_STATEMENTS, WHILE)
 
 	// while body
 	ASSERT_EQ(MCC_AST_STATEMENT_TYPE_EXPR, stmt->while_stmt->type);
-	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_IDENTIFIER, stmt->while_stmt->expression->type);
-	ASSERT_EQ(0, strcmp("hello", stmt->while_stmt->expression->identifier->id_value));
+	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_IDENTIFIER,
+	          stmt->while_stmt->expression->type);
+	ASSERT_EQ(
+	    0, strcmp("hello", stmt->while_stmt->expression->identifier->id_value));
 
 	mCc_ast_delete_statement(stmt);
 }
@@ -139,7 +141,7 @@ TEST(TDD_PARSER_STATEMENTS, COMPOUND_EMPTY)
 
 	// ROOT
 	ASSERT_EQ(MCC_AST_STATEMENT_TYPE_CMPND, stmt->type);
-	ASSERT_EQ((unsigned int) 0, stmt->compound_stmt_count);
+	ASSERT_EQ((unsigned int)0, stmt->compound_stmt_count);
 
 	mCc_ast_delete_statement(stmt);
 }
@@ -154,16 +156,17 @@ TEST(TDD_PARSER_STATEMENTS, COMPOUND_MULTIPLE)
 
 	// ROOT
 	ASSERT_EQ(MCC_AST_STATEMENT_TYPE_CMPND, stmt->type);
-	ASSERT_EQ((unsigned int) 2, stmt->compound_stmt_count);
+	ASSERT_EQ((unsigned int)2, stmt->compound_stmt_count);
 
 	// sub 1
 	ASSERT_EQ(MCC_AST_STATEMENT_TYPE_EXPR, stmt->compound_stmts[0]->type);
-	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_LITERAL, stmt->compound_stmts[0]->expression->type);
+	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_LITERAL,
+	          stmt->compound_stmts[0]->expression->type);
 
 	// sub 2
 	ASSERT_EQ(MCC_AST_STATEMENT_TYPE_EXPR, stmt->compound_stmts[1]->type);
-	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_LITERAL, stmt->compound_stmts[1]->expression->type);
+	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_LITERAL,
+	          stmt->compound_stmts[1]->expression->type);
 
 	mCc_ast_delete_statement(stmt);
 }
-
