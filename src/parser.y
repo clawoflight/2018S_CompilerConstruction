@@ -55,6 +55,7 @@ void mCc_parser_error();
 %token WHILE "while"
 %token RETURN "return"
 %token SEMICOLON ";"
+5token COMMA ","
 
 /* TYPES */
 
@@ -137,7 +138,11 @@ statement : expression SEMICOLON { $$ = mCc_ast_new_statement_expression($1); }
 compound_stmt : %empty                  { $$ = mCc_ast_new_statement_compound(NULL); }
               | statement               { $$ = mCc_ast_new_statement_compound($1); }
               | compound_stmt statement { $$ = mCc_ast_compound_statement_add($1, $2); }
+              ;
 
+arguments : expression                 { $$ = mCc_ast_new_arguments($1);     }
+          | arguments COMMA expression { $$ = mCc_ast_arguments_add($1, $3); }
+          ;
 %%
 
 #include <assert.h>
