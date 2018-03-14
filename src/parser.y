@@ -135,7 +135,7 @@ statement : expression SEMICOLON { $$ = mCc_ast_new_statement_expression($1); }
 compound_stmt : %empty                  { $$ = mCc_ast_new_statement_compound(NULL); }
               | statement               { $$ = mCc_ast_new_statement_compound($1); }
               | compound_stmt statement { $$ = mCc_ast_compound_statement_add($1, $2); }
-
+              ;
 %%
 
 #include <assert.h>
