@@ -94,6 +94,7 @@ mCc_ast_new_statement_compound(struct mCc_ast_statement *substatement)
 
 	stmt->type = MCC_AST_STATEMENT_TYPE_CMPND;
 	stmt->compound_stmt_count = 0;
+	stmt->compound_stmts = NULL;
 
 	if (substatement &&
 	    (stmt->compound_stmts =
@@ -158,7 +159,8 @@ void mCc_ast_delete_statement(struct mCc_ast_statement *statement)
 	case MCC_AST_STATEMENT_TYPE_CMPND:
 		for (unsigned int i = 0; i < statement->compound_stmt_count; ++i)
 			mCc_ast_delete_statement(statement->compound_stmts[i]);
-		free(statement->compound_stmts);
+		if (statement->compound_stmts)
+			free(statement->compound_stmts);
 		break;
         case MCC_AST_STATEMENT_TYPE_RET:
             mCc_ast_delete_expression(statement->ret_val);

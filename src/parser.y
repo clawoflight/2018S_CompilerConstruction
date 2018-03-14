@@ -77,7 +77,7 @@ void mCc_parser_error();
 /* DESTRUCTORS */
 %destructor { mCc_ast_delete_expression($$); } expression single_expr
 %destructor { mCc_ast_delete_literal($$); } literal
-%destructor { mCc_ast_delete_statement($$); } statement
+%destructor { mCc_ast_delete_statement($$); } statement compound_stmt
 %destructor { mCc_ast_delete_identifier($$); } identifier
 
 %%

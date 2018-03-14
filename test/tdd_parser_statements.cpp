@@ -141,6 +141,7 @@ TEST(TDD_PARSER_STATEMENTS, COMPOUND_EMPTY)
 	ASSERT_EQ(MCC_AST_STATEMENT_TYPE_CMPND, stmt->type);
 	ASSERT_EQ((unsigned int) 0, stmt->compound_stmt_count);
 
+	mCc_ast_delete_statement(stmt);
 }
 
 TEST(TDD_PARSER_STATEMENTS, COMPOUND_MULTIPLE)
@@ -162,5 +163,7 @@ TEST(TDD_PARSER_STATEMENTS, COMPOUND_MULTIPLE)
 	// sub 2
 	ASSERT_EQ(MCC_AST_STATEMENT_TYPE_EXPR, stmt->compound_stmts[1]->type);
 	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_LITERAL, stmt->compound_stmts[1]->expression->type);
+
+	mCc_ast_delete_statement(stmt);
 }
 
