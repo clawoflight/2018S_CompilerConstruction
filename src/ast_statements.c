@@ -120,14 +120,15 @@ mCc_ast_compound_statement_add(struct mCc_ast_statement *self,
 		return self;
 	}
 
+	// Allocate additional memory if necessary
 	struct mCc_ast_statement **tmp;
-	if ((tmp = realloc(self->compound_stmts, compound_stmt_alloc_block_size *
+	self->compound_stmt_alloc_size += compound_stmt_alloc_block_size;
+	if ((tmp = realloc(self->compound_stmts, self->compound_stmt_alloc_size *
 	                                             sizeof(self))) == NULL) {
 		mCc_ast_delete_statement(self);
 		return NULL;
 	}
 
-	self->compound_stmt_alloc_size += compound_stmt_alloc_block_size;
 	self->compound_stmts = tmp;
 	self->compound_stmts[self->compound_stmt_count++] = statement;
 	return self;
