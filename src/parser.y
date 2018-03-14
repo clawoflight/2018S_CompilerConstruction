@@ -104,10 +104,12 @@ binary_op : PLUS  { $$ = MCC_AST_BINARY_OP_ADD; }
           | NOT_EQUALS { $$ = MCC_AST_BINARY_OP_NEQ; }
           ;
 
-single_expr : literal                         { $$ = mCc_ast_new_expression_literal($1); }
-            | identifier                      { $$ = mCc_ast_new_expression_identifier($1); }
-            | unary_op expression             { $$ = mCc_ast_new_expression_unary_op($1, $2); }
-            | LPARENTH expression RPARENTH    { $$ = mCc_ast_new_expression_parenth($2); }
+single_expr : literal                                   { $$ = mCc_ast_new_expression_literal($1); }
+            | identifier                                { $$ = mCc_ast_new_expression_identifier($1); }
+            | identifier LPARENTH RPARENTH
+            | identifier LPARENTH arguments RPARENTH
+            | unary_op expression                       { $$ = mCc_ast_new_expression_unary_op($1, $2); }
+            | LPARENTH expression RPARENTH              { $$ = mCc_ast_new_expression_parenth($2); }
             ;
 
 expression : single_expr                      { $$ = $1;                                           }
