@@ -172,3 +172,17 @@ void mCc_ast_visit_identifier(struct mCc_ast_identifier *identifier,
 
 	visit_if_post_order(identifier, visitor->identifier, visitor);
 }
+
+
+void mCc_ast_visit_arguments(struct mCc_ast_arguments * arguments,
+							 struct mCc_ast_visitor *visitor)
+{
+	assert(arguments);
+	assert(visitor);
+
+	visit_if_pre_order(arguments, visitor->arguments, visitor);
+
+	for (unsigned int i = 0; i < arguments->expression_count; ++i)
+		mCc_ast_visit_expression(arguments->expressions[i], visitor);
+	visit_if_post_order(arguments, visitor->arguments, visitor);
+}

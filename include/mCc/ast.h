@@ -318,6 +318,50 @@ struct mCc_ast_identifier *mCc_ast_new_identifier(char *value);
  */
 void mCc_ast_delete_identifier(struct mCc_ast_identifier *identifier);
 
+/* -------------------------------------------------------------- Arguments */
+
+/**
+ * Node representing arguments.
+ */
+struct mCc_ast_arguments {
+    struct mCc_ast_node node; ///< Common node attributes
+    /// The concrete type of this statement (no inheritance in C)
+
+    unsigned int arguments_alloc_block_size;
+    unsigned int expression_count; ///< Number of sub-expressions
+    struct mCc_ast_expression **expressions; ///< Sub expressions
+};
+
+/**
+ * @brief Construct arguments from an expression
+ *
+ * @param expression The underlying expression
+ *
+ * @return A new list of arguments
+ */
+struct mCc_ast_arguments *
+mCc_ast_new_arguments(struct mCc_ast_expression *expression);
+
+/**
+ * @brief Add a subexpression to arguments.
+ *
+ * @param self arguments to which to add another
+ * @param expression The sub-expression to add to the arguments
+ *
+ * @return self
+ */
+struct mCc_ast_arguments *
+mCc_ast_arguments_add(struct mCc_ast_arguments *self,
+                      struct mCc_ast_expression *expression);
+
+
+/**
+ * @brief Delete arguments.
+ *
+ * @param statement The arguments to delete
+ */
+void mCc_ast_delete_arguments(struct mCc_ast_arguments *arguments);
+
 #ifdef __cplusplus
 }
 #endif

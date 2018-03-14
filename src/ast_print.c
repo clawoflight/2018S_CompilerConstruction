@@ -292,6 +292,21 @@ static void print_dot_identifier(struct mCc_ast_identifier *identifier,
 	print_dot_node(out, identifier, label);
 }
 
+
+static void print_dot_arguments(struct mCc_ast_arguments *arguments,
+										 void *data)
+{
+	assert(arguments);
+	assert(data);
+
+	FILE *out = data;
+	print_dot_node(out, arguments, "args: expr");
+	for (unsigned int i = 0; i < arguments->expression_count; ++i)
+		print_dot_edge(out, arguments, arguments->expressions[i],
+					   "subarguments");
+}
+
+
 static struct mCc_ast_visitor print_dot_visitor(FILE *out)
 {
 	assert(out);
@@ -318,6 +333,8 @@ static struct mCc_ast_visitor print_dot_visitor(FILE *out)
 
 		.identifier = print_dot_identifier,
 
+		.arguments = print_dot_arguments,
+
 		.literal_int = print_dot_literal_int,
 		.literal_float = print_dot_literal_float,
 		.literal_string = print_dot_literal_string,
@@ -337,6 +354,20 @@ void mCc_ast_print_dot_statement(FILE *out, struct mCc_ast_statement *statement)
 
 	print_dot_end(out);
 }
+
+void mCc_ast_print_dot_arguments(FILE *out, struct mCc_ast_arguments *arguments)
+{
+	assert(out);
+	assert(arguments);
+
+	print_dot_begin(out);
+
+	struct mCc_ast_visitor visitor = print_dot_visitor(out);
+	mCc_ast_visit_arguments(arguments, &visitor);
+
+	print_dot_end(out);
+}
+
 
 void mCc_ast_print_dot_expression(FILE *out,
                                   struct mCc_ast_expression *expression)

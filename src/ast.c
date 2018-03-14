@@ -206,3 +206,66 @@ void mCc_ast_delete_literal(struct mCc_ast_literal *literal)
 		free(literal->s_value);
 	free(literal);
 }
+
+/*--------------------------------------------------------------- Arguments */
+
+/// Size by which to increase arguments when reallocating
+const int arguments_alloc_block_size = 10;
+
+struct mCc_ast_arguments * mCc_ast_new_arguments(struct mCc_ast_expression *expression)
+{
+    assert(expression);
+
+    struct mCc_ast_arguments *args = malloc(sizeof(*args));
+    if (!args)
+        return NULL;
+
+    args->expression_count = 0;
+	args->expressions = NULL;
+
+	if (expression &&
+		(args->expressions =
+				 malloc(arguments_alloc_block_size * sizeof(args))) != NULL) {
+		args->expression_count = 1;
+		args->arguments_alloc_block_size = arguments_alloc_block_size;
+		args->expressions[0] = expression;
+	}
+
+	return args;
+}
+
+struct mCc_ast_arguments *
+mCc_ast_arguments_add(struct mCc_ast_arguments *self,
+					  struct mCc_ast_expression *expression)
+{
+	assert(self);
+	assert(expression);
+
+	if (self->expression_count < self->arguments_alloc_block_size) {
+		self->expressions[self->expression_count++] = expression;
+		return self;
+	}
+
+	struct mCc_ast_expression **tmp;
+	if ((tmp = realloc(self->expressions, arguments_alloc_block_size * sizeof(self))) == NULL) {
+		mCc_ast_delete_arguments(self);
+		return NULL;
+	}
+
+	self->arguments_alloc_block_size += arguments_alloc_block_size;
+	self->expressions = tmp;
+	self->expressions[self->expression_count++] = expression;
+	return self;
+}
+
+void mCc_ast_delete_arguments(struct mCc_ast_arguments *arguments)
+{
+	assert(arguments);
+
+	for (unsigned int i = 0; i < arguments->expression_count; ++i)
+		mCc_ast_delete_expression(arguments->expressions[i]);
+	if (arguments->expressions)
+		free(arguments->expressions);
+
+	free(arguments);
+}
