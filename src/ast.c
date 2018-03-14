@@ -31,7 +31,6 @@ struct mCc_ast_expression *
 mCc_ast_new_expression_identifier(struct mCc_ast_identifier *identifier)
 {
 	assert(identifier);
-
 	struct mCc_ast_expression *expr = malloc(sizeof(*expr));
 	if (!expr) {
 		return NULL;

@@ -58,10 +58,9 @@ void mCc_parser_error();
 
 /* TYPES */
 
-%type <enum mCc_ast_binary_op> binary_op
 %type <enum mCc_ast_unary_op>  unary_op
 
-%type <struct mCc_ast_expression *> expression single_expr
+%type <struct mCc_ast_expression *> expression single_expr binary_op
 %type <struct mCc_ast_literal *> literal
 %type <struct mCc_ast_statement *> statement compound_stmt
 %type <struct mCc_ast_identifier *> identifier
@@ -69,6 +68,11 @@ void mCc_parser_error();
 %start toplevel
 
 /* PRECEDENCE RULES (INCREASING) */
+
+%left PLUS MINUS
+%left ASTER SLASH
+%left AND OR
+%left LESS_EQ LESS GREATER_EQ GREATER EQUALS NOT_EQUALS
 
 /* These rules make ELSE bind to the innermost IF like in the spec. */
 %precedence "then"
@@ -90,28 +94,28 @@ unary_op  : NOT   { $$ = MCC_AST_UNARY_OP_NOT; }
           | MINUS { $$ = MCC_AST_UNARY_OP_NEG; }
           ;
 
-binary_op : PLUS  { $$ = MCC_AST_BINARY_OP_ADD; }
-          | MINUS { $$ = MCC_AST_BINARY_OP_SUB; }
-          | ASTER { $$ = MCC_AST_BINARY_OP_MUL; }
-          | SLASH { $$ = MCC_AST_BINARY_OP_DIV; }
-          | LESS  { $$ = MCC_AST_BINARY_OP_LT; }
-          | GREATER { $$ = MCC_AST_BINARY_OP_GT; }
-          | LESS_EQ { $$ = MCC_AST_BINARY_OP_LEQ; }
-          | GREATER_EQ { $$ = MCC_AST_BINARY_OP_GEQ; }
-          | AND    { $$ = MCC_AST_BINARY_OP_AND; }
-          | OR     { $$ = MCC_AST_BINARY_OP_OR; }
-          | EQUALS { $$ = MCC_AST_BINARY_OP_EQ; }
-          | NOT_EQUALS { $$ = MCC_AST_BINARY_OP_NEQ; }
+binary_op : expression PLUS expression  { $$ = mCc_ast_new_expression_binary_op(MCC_AST_BINARY_OP_ADD, $1, $3); }
+          | expression MINUS expression { $$ = mCc_ast_new_expression_binary_op(MCC_AST_BINARY_OP_SUB, $1, $3);  }
+          | expression ASTER expression { $$ = mCc_ast_new_expression_binary_op( MCC_AST_BINARY_OP_MUL, $1, $3);  }
+          | expression SLASH expression { $$ = mCc_ast_new_expression_binary_op( MCC_AST_BINARY_OP_DIV, $1, $3);  }
+          | expression LESS expression  { $$ = mCc_ast_new_expression_binary_op( MCC_AST_BINARY_OP_LT, $1, $3);  }
+          | expression GREATER expression { $$ = mCc_ast_new_expression_binary_op( MCC_AST_BINARY_OP_GT, $1, $3);  }
+          | expression LESS_EQ expression { $$ = mCc_ast_new_expression_binary_op( MCC_AST_BINARY_OP_LEQ, $1, $3);  }
+          | expression GREATER_EQ expression{ $$ = mCc_ast_new_expression_binary_op( MCC_AST_BINARY_OP_GEQ, $1, $3);  }
+          | expression AND expression   { $$ = mCc_ast_new_expression_binary_op( MCC_AST_BINARY_OP_AND, $1, $3);  }
+          | expression OR expression    { $$ = mCc_ast_new_expression_binary_op( MCC_AST_BINARY_OP_OR, $1, $3);  }
+          | expression EQUALS expression { $$ = mCc_ast_new_expression_binary_op( MCC_AST_BINARY_OP_EQ, $1, $3);  }
+          | expression NOT_EQUALS expression{ $$ = mCc_ast_new_expression_binary_op( MCC_AST_BINARY_OP_NEQ, $1, $3);  }
           ;
 
 single_expr : literal                         { $$ = mCc_ast_new_expression_literal($1); }
             | identifier                      { $$ = mCc_ast_new_expression_identifier($1); }
-            | unary_op expression             { $$ = mCc_ast_new_expression_unary_op($1, $2); }
+            | unary_op single_expr             { $$ = mCc_ast_new_expression_unary_op($1, $2); }
             | LPARENTH expression RPARENTH    { $$ = mCc_ast_new_expression_parenth($2); }
             ;
 
-expression : single_expr                      { $$ = $1;                                           }
-           | single_expr binary_op expression { $$ = mCc_ast_new_expression_binary_op($2, $1, $3); }
+expression : binary_op                      { $$ = $1;                                           }
+           | single_expr                        { $$ = $1;                                            }
            ;
 
 literal : INT_LITERAL   { $$ = mCc_ast_new_literal_int($1);   }
