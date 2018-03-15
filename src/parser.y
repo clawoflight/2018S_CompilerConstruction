@@ -69,7 +69,7 @@ void mCc_parser_error();
 
 /* PRECEDENCE RULES (INCREASING) */
 
-%left PLUS MINUS BMINUS
+%left PLUS MINUS
 %left ASTER SLASH
 %left AND OR
 %left LESS_EQ LESS GREATER_EQ GREATER EQUALS NOT_EQUALS
@@ -91,7 +91,7 @@ toplevel : expression { *result = $1; }
          ;
 
 binary_op : expression PLUS expression  { $$ = mCc_ast_new_expression_binary_op(MCC_AST_BINARY_OP_ADD, $1, $3); }
-          | expression MINUS expression %prec BMINUS{ $$ = mCc_ast_new_expression_binary_op(MCC_AST_BINARY_OP_SUB, $1, $3);  }
+          | expression MINUS expression { $$ = mCc_ast_new_expression_binary_op(MCC_AST_BINARY_OP_SUB, $1, $3);  }
           | expression ASTER expression { $$ = mCc_ast_new_expression_binary_op( MCC_AST_BINARY_OP_MUL, $1, $3);  }
           | expression SLASH expression { $$ = mCc_ast_new_expression_binary_op( MCC_AST_BINARY_OP_DIV, $1, $3);  }
           | expression LESS expression  { $$ = mCc_ast_new_expression_binary_op( MCC_AST_BINARY_OP_LT, $1, $3);  }
@@ -110,7 +110,7 @@ unary_op  : NOT { $$ = MCC_AST_UNARY_OP_NOT; }
 
 single_expr : literal                         { $$ = mCc_ast_new_expression_literal($1); }
             | identifier                      { $$ = mCc_ast_new_expression_identifier($1); }
-            | unary_op single_expr             { $$ = mCc_ast_new_expression_unary_op($1, $2); }
+            | unary_op single_expr            { $$ = mCc_ast_new_expression_unary_op($1, $2); }
             | LPARENTH expression RPARENTH    { $$ = mCc_ast_new_expression_parenth($2); }
             ;
 
