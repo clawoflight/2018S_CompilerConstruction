@@ -1,0 +1,3 @@
+#!/bin/bash
+# Run clang-format on all unstaged c, cpp, or header files.
+git ls-files -m | grep -E ".*(c|h|cpp)$" | tee /dev/tty | xargs clang-format -i
