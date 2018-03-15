@@ -21,6 +21,8 @@ struct mCc_ast_expression;
 struct mCc_ast_literal;
 struct mCc_ast_statement;
 struct mCc_ast_identifier;
+struct mCc_ast_arguments;
+
 
 /* ---------------------------------------------------------------- AST Node */
 
@@ -85,6 +87,7 @@ enum mCc_ast_expression_type {
 	MCC_AST_EXPRESSION_TYPE_UNARY_OP,   ///< Unary Operation expression
 	MCC_AST_EXPRESSION_TYPE_BINARY_OP,  ///< Binary operation expression
 	MCC_AST_EXPRESSION_TYPE_PARENTH,    ///< Parenthesis expression
+	MCC_AST_EXPRESSION_TYPE_CALL_EXPR,    ///< Call expression
 };
 
 /**
@@ -132,6 +135,14 @@ struct mCc_ast_expression {
 		 * Data if #type is #MCC_AST_EXPRESSION_TYPE_PARENTH
 		 */
 		struct mCc_ast_expression *expression;
+
+		/**
+		 * Data if #type is #MCC_AST_EXPRESSION_TYPE_CALL_EXPR
+		 */
+		struct {
+			struct mCc_ast_arguments
+					*arguments; ///< argument list
+		};
 	};
 };
 
@@ -190,6 +201,18 @@ mCc_ast_new_expression_binary_op(enum mCc_ast_binary_op op,
  */
 struct mCc_ast_expression *
 mCc_ast_new_expression_parenth(struct mCc_ast_expression *expression);
+
+/**
+ * Construct an expression for a call expression.
+ *
+ * @param identifier The Identifier
+ * @param arguments The arguments list
+ *
+ * @return A new expression with type #MCC_AST_EXPRESSION_TYPE_CALL_EXPR
+ */
+struct mCc_ast_expression *
+mCc_ast_new_expression_call_expr(struct mCc_ast_identifier *identifier,
+								 struct mCc_ast_arguments *arguments);
 
 /**
  * Delete an expression.

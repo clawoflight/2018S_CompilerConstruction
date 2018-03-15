@@ -93,6 +93,24 @@ mCc_ast_new_expression_parenth(struct mCc_ast_expression *expression)
 	return expr;
 }
 
+struct mCc_ast_expression *
+mCc_ast_new_expression_call_expr(struct mCc_ast_identifier *identifier,
+								 struct mCc_ast_arguments *arguments)
+{
+	assert(identifier);
+	assert(arguments);
+
+	struct mCc_ast_expression *expr = malloc(sizeof(*expr));
+	if (!expr)
+		return NULL;
+
+	expr->type = MCC_AST_EXPRESSION_TYPE_CALL_EXPR;
+	expr->identifier = identifier;
+	expr->arguments = arguments;
+	return expr;
+}
+
+
 void mCc_ast_delete_expression(struct mCc_ast_expression *expression)
 {
 	assert(expression);
@@ -113,7 +131,12 @@ void mCc_ast_delete_expression(struct mCc_ast_expression *expression)
 	case MCC_AST_EXPRESSION_TYPE_BINARY_OP:
 		mCc_ast_delete_expression(expression->lhs);
 		mCc_ast_delete_expression(expression->rhs);
-		break;
+	break;
+
+	case MCC_AST_EXPRESSION_TYPE_CALL_EXPR:
+		mCc_ast_delete_identifier(expression->identifier);
+		mCc_ast_delete_arguments(expression->arguments);
+	break;
 
 	case MCC_AST_EXPRESSION_TYPE_PARENTH:
 		mCc_ast_delete_expression(expression->expression);

@@ -108,8 +108,8 @@ binary_op : PLUS  { $$ = MCC_AST_BINARY_OP_ADD; }
 
 single_expr : literal                                   { $$ = mCc_ast_new_expression_literal($1); }
             | identifier                                { $$ = mCc_ast_new_expression_identifier($1); }
-    //        | identifier LPARENTH RPARENTH
-    //        | identifier LPARENTH arguments RPARENTH
+       //     | identifier LPARENTH RPARENTH
+            | identifier LPARENTH arguments RPARENTH    { $$ = mCc_ast_new_expression_call_expr($1, $3); }
             | unary_op expression                       { $$ = mCc_ast_new_expression_unary_op($1, $2); }
             | LPARENTH expression RPARENTH              { $$ = mCc_ast_new_expression_parenth($2); }
             ;

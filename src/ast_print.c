@@ -230,6 +230,22 @@ static void print_dot_expression_parenth(struct mCc_ast_expression *expression,
 	print_dot_edge(out, expression, expression->expression, "expression");
 }
 
+
+static void
+print_dot_expression_call_expr(struct mCc_ast_expression *expression,
+							   void *data)
+{
+	assert(expression);
+	assert(data);
+
+	FILE *out = data;
+	print_dot_node(out, expression, "expr: call");
+	print_dot_edge(out, expression, expression->identifier, "identifier");
+	print_dot_edge(out, expression, expression->arguments, "arguments");
+}
+
+
+
 static void print_dot_literal_int(struct mCc_ast_literal *literal, void *data)
 {
 	assert(literal);
@@ -330,6 +346,7 @@ static struct mCc_ast_visitor print_dot_visitor(FILE *out)
 		.expression_unary_op = print_dot_expression_unary_op,
 		.expression_binary_op = print_dot_expression_binary_op,
 		.expression_parenth = print_dot_expression_parenth,
+		.expression_call_expr = print_dot_expression_call_expr,
 
 		.identifier = print_dot_identifier,
 
