@@ -37,12 +37,12 @@ void mCc_parser_error();
 
 %token NOT "!"
 
-%token PLUS  "+"
-%token MINUS "-"
-%token ASTER "*"
-%token SLASH "/"
-%token LESS "<"
-%token GREATER ">"
+%token PLUS  '+'
+%token MINUS '-'
+%token ASTER '*'
+%token SLASH '/'
+%token LESS '<'
+%token GREATER '>'
 %token LESS_EQ "<="
 %token GREATER_EQ ">="
 %token AND "&&"
@@ -69,7 +69,7 @@ void mCc_parser_error();
 
 /* PRECEDENCE RULES (INCREASING) */
 
-%left PLUS MINUS
+%left PLUS MINUS BMINUS
 %left ASTER SLASH
 %left AND OR
 %left LESS_EQ LESS GREATER_EQ GREATER EQUALS NOT_EQUALS
@@ -90,12 +90,8 @@ toplevel : expression { *result = $1; }
          | statement { *stmt_result = $1; }
          ;
 
-unary_op  : NOT   { $$ = MCC_AST_UNARY_OP_NOT; }
-          | MINUS { $$ = MCC_AST_UNARY_OP_NEG; }
-          ;
-
 binary_op : expression PLUS expression  { $$ = mCc_ast_new_expression_binary_op(MCC_AST_BINARY_OP_ADD, $1, $3); }
-          | expression MINUS expression { $$ = mCc_ast_new_expression_binary_op(MCC_AST_BINARY_OP_SUB, $1, $3);  }
+          | expression MINUS expression %prec BMINUS{ $$ = mCc_ast_new_expression_binary_op(MCC_AST_BINARY_OP_SUB, $1, $3);  }
           | expression ASTER expression { $$ = mCc_ast_new_expression_binary_op( MCC_AST_BINARY_OP_MUL, $1, $3);  }
           | expression SLASH expression { $$ = mCc_ast_new_expression_binary_op( MCC_AST_BINARY_OP_DIV, $1, $3);  }
           | expression LESS expression  { $$ = mCc_ast_new_expression_binary_op( MCC_AST_BINARY_OP_LT, $1, $3);  }
@@ -107,6 +103,10 @@ binary_op : expression PLUS expression  { $$ = mCc_ast_new_expression_binary_op(
           | expression EQUALS expression { $$ = mCc_ast_new_expression_binary_op( MCC_AST_BINARY_OP_EQ, $1, $3);  }
           | expression NOT_EQUALS expression{ $$ = mCc_ast_new_expression_binary_op( MCC_AST_BINARY_OP_NEQ, $1, $3);  }
           ;
+
+unary_op  : NOT { $$ = MCC_AST_UNARY_OP_NOT; }
+    | MINUS { $$ = MCC_AST_UNARY_OP_NEG; }
+    ;
 
 single_expr : literal                         { $$ = mCc_ast_new_expression_literal($1); }
             | identifier                      { $$ = mCc_ast_new_expression_identifier($1); }
