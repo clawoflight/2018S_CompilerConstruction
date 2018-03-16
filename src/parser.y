@@ -34,6 +34,8 @@ void mCc_parser_error();
 %token RPARENTH ")"
 %token LBRACE "{"
 %token RBRACE "}"
+%token LBRACK "["
+%token RBRACK "]"
 
 %token NOT "!"
 
@@ -55,6 +57,7 @@ void mCc_parser_error();
 %token WHILE "while"
 %token RETURN "return"
 %token SEMICOLON ";"
+%token <char*> TYPE "type"
 
 /* TYPES */
 
@@ -64,6 +67,8 @@ void mCc_parser_error();
 %type <struct mCc_ast_literal *> literal
 %type <struct mCc_ast_statement *> statement compound_stmt
 %type <struct mCc_ast_identifier *> identifier
+%type <struct mCc_ast_declaration *> declaration
+%type <enum mCc_ast_declaration_type> type
 
 %start toplevel
 
@@ -134,6 +139,19 @@ statement : expression SEMICOLON { $$ = mCc_ast_new_statement_expression($1); }
           | LBRACE compound_stmt RBRACE { $$ = $2; }
           | RETURN expression SEMICOLON { $$ = mCc_ast_new_statement_return($2); }
           | RETURN SEMICOLON { $$ = mCc_ast_new_statement_return(NULL); }
+          | declaration SEMICOLON { $$ = $1;}
+          ;
+
+type : TYPE {
+        if (!strcmp("bool", $1) )       $$ = MCC_AST_TYPE_BOOL;
+        else if (!strcmp("int", $1))    $$ = MCC_AST_TYPE_INT;
+        else if (!strcmp("float", $1))  $$ = MCC_AST_TYPE_FLOAT;
+        else if (!strcmp("string", $1)) $$ = MCC_AST_TYPE_STRING;
+}
+;
+
+declaration: type identifier                          {$$ = mCc_ast_new_statement_declaration($1,NULL,$2);}
+          | type LBRACK INT_LITERAL RBRACK identifier {$$ = mCc_ast_new_statement_declaration($1,$3,$5);}
           ;
 
 compound_stmt : %empty                  { $$ = mCc_ast_new_statement_compound(NULL); }

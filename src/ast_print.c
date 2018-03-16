@@ -12,6 +12,16 @@
 
 #define LABEL_SIZE 64
 
+const char* mCc_ast_print_declaration_type(enum mCc_ast_declaration_type type) {
+    switch(type) {
+        case MCC_AST_TYPE_BOOL: return "bool";  ///< Boolean
+        case MCC_AST_TYPE_INT: return "int";   ///< Integer
+        case MCC_AST_TYPE_FLOAT: return "float"; ///< Floating-point number
+        case MCC_AST_TYPE_STRING: return "string"; ///< String
+    }
+    return NULL;
+}
+
 const char *mCc_ast_print_unary_op(enum mCc_ast_unary_op op)
 {
 	switch (op) {
@@ -147,8 +157,6 @@ static void print_dot_statement_return_void(struct mCc_ast_statement *statement,
 
 	FILE *out = data;
 	print_dot_node(out, statement, "stmt: return");
-	// print_dot_edge(out, statement, statement->ret_val_void, "return value");
-	// // not needed bec. no value
 }
 
 static void print_dot_statement_compound(struct mCc_ast_statement *statement,
@@ -162,6 +170,34 @@ static void print_dot_statement_compound(struct mCc_ast_statement *statement,
 	for (unsigned int i = 0; i < statement->compound_stmt_count; ++i)
 		print_dot_edge(out, statement, statement->compound_stmts[i],
 		               "substatement");
+}
+
+static void print_dot_statement_declaration(struct mCc_ast_statement *statement,
+                                       void *data)
+{
+    assert(statement);
+    assert(data);
+
+    FILE *out = data;
+    print_dot_node(out, statement, "stmt: decl");
+    switch (statement->dec_type){
+        case 0:
+            print_dot_edge(out, statement, statement->expression, "type");
+            break;
+        case 1:
+            print_dot_edge(out, statement, statement->expression, "type");
+            break;
+        case 2:
+            print_dot_edge(out, statement, statement->expression, "type");
+            break;
+        case 3:
+            print_dot_edge(out, statement, statement->expression, "type");
+            break;
+    }
+    print_dot_edge(out, statement, statement->dec_id, "identifier");
+    if (statement->dec_val) {
+        print_dot_edge(out, statement, statement->dec_val, "size");
+    }
 }
 
 static void print_dot_expression_literal(struct mCc_ast_expression *expression,
@@ -309,6 +345,7 @@ static struct mCc_ast_visitor print_dot_visitor(FILE *out)
 		.statement_return = print_dot_statement_return,
 		.statement_return_void = print_dot_statement_return_void,
 		.statement_compound = print_dot_statement_compound,
+        .declaration= print_dot_statement_declaration,
 
 		.expression_literal = print_dot_expression_literal,
 		.expression_identifier = print_dot_expression_identifier,

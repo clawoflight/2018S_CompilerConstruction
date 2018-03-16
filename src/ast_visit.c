@@ -7,6 +7,7 @@
 #include "mCc/ast_visit.h"
 
 #include <assert.h>
+#include <stdio.h>
 
 #define visit(node, callback, visitor) \
 	do { \
@@ -83,6 +84,16 @@ void mCc_ast_visit_statement(struct mCc_ast_statement *statement,
 		for (unsigned int i = 0; i < statement->compound_stmt_count; ++i)
 			mCc_ast_visit_statement(statement->compound_stmts[i], visitor);
 		visit_if_post_order(statement, visitor->statement_compound, visitor);
+
+    case MCC_AST_STATEMENT_TYPE_DECL:
+        visit_if_pre_order(statement, visitor->declaration, visitor);
+            if(statement->dec_val) {
+                mCc_ast_visit_literal(statement->dec_val, visitor);
+            }
+        mCc_ast_visit_literal(statement->dec_id, visitor);
+        //mCc_ast_visit_literal(statement->dec_type,visitor);
+        visit_if_post_order(statement, visitor->declaration, visitor);
+        break;
 	}
 
 	visit_if_post_order(statement, visitor->statement, visitor);

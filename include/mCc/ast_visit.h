@@ -46,6 +46,8 @@ struct mCc_ast_visitor {
 	mCc_ast_visit_statement_cb statement_return;
 	mCc_ast_visit_statement_cb statement_return_void;
 	mCc_ast_visit_statement_cb statement_compound;
+    mCc_ast_visit_statement_cb declaration;
+    mCc_ast_visit_statement_cb dec_type;
 
 	mCc_ast_visit_expression_cb expression;
 	mCc_ast_visit_expression_cb expression_identifier;
@@ -61,6 +63,7 @@ struct mCc_ast_visitor {
 	mCc_ast_visit_literal_cb literal_bool;
 
 	mCc_ast_visit_identifier_cb identifier;
+
 };
 
 void mCc_ast_visit_statement(struct mCc_ast_statement *statement,

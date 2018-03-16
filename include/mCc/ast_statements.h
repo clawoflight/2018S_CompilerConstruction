@@ -14,6 +14,15 @@ extern "C" {
 #include "ast.h"
 
 /* -------------------------------------------------------------- Statements */
+/**
+ * The available primitive types
+ */
+enum mCc_ast_declaration_type {
+    MCC_AST_TYPE_BOOL,  ///< Boolean
+    MCC_AST_TYPE_INT,   ///< Integer
+    MCC_AST_TYPE_FLOAT, ///< Floating-point number
+    MCC_AST_TYPE_STRING ///< String
+};
 
 /**
  * The available statement types
@@ -24,7 +33,7 @@ enum mCc_ast_statement_type {
 	MCC_AST_STATEMENT_TYPE_RET,      ///< Return statement */
 	MCC_AST_STATEMENT_TYPE_RET_VOID, ///< Return statement with no value
 	MCC_AST_STATEMENT_TYPE_WHILE,    ///< While statement
-	/* MCC_AST_STATEMENT_TYPE_DECL,  ///< Variable declaration assignment */
+    MCC_AST_STATEMENT_TYPE_DECL,  ///< Variable declaration assignment */
 	/* MCC_AST_STATEMENT_TYPE_ASSGN, ///< Variable assignment statement */
 	MCC_AST_STATEMENT_TYPE_EXPR, ///< Expression statement
 	MCC_AST_STATEMENT_TYPE_CMPND ///< Compound statement
@@ -67,6 +76,12 @@ struct mCc_ast_statement {
 			unsigned int compound_stmt_count; ///< Number of sub-statements
 			struct mCc_ast_statement **compound_stmts; ///< Sub-statements
 		};
+        /// Data return type is #MCC_AST_STATEMENT_TYPE_DEC
+        struct {
+            enum mCc_ast_declaration_type dec_type;
+            long dec_val;
+            struct mCc_ast_identifier *dec_id;
+        };
 	};
 };
 
@@ -116,6 +131,19 @@ mCc_ast_new_statement_while(struct mCc_ast_expression *while_cond,
  */
 struct mCc_ast_statement *
 mCc_ast_new_statement_compound(struct mCc_ast_statement *substatement);
+
+/**
+ * @brief Construct a statement from an declaration-statement
+ *
+ * @param dec_type declaration type
+ * @param dec_val value of the declaration
+ * @param dec_id identifier of the declaration
+ *
+ * @return A new statement with type #MCC_AST_STATEMENT_TYPE_DEC
+ */
+struct mCc_ast_statement *
+mCc_ast_new_statement_declaration(enum mCc_ast_declaration_type dec_type, long dec_val,
+                            struct mCc_ast_identifier *dec_id);
 
 /**
  * @brief Add a subexpression to a compound statement.

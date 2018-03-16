@@ -134,6 +134,28 @@ mCc_ast_compound_statement_add(struct mCc_ast_statement *self,
 	return self;
 }
 
+struct mCc_ast_statement *
+mCc_ast_new_statement_declaration(enum mCc_ast_declaration_type type,
+                         long val,
+                         struct mCc_ast_identifier *id)
+{
+    assert(id);
+
+    struct mCc_ast_statement *stmt = malloc(sizeof(*stmt));
+    if (!stmt)
+        return NULL;
+
+    stmt->type = MCC_AST_STATEMENT_TYPE_DECL;
+    stmt->dec_type = type;
+    stmt->dec_id = id;
+
+
+    if (val) {
+        stmt->dec_val = val;
+    }
+    return stmt;
+}
+
 void mCc_ast_delete_statement(struct mCc_ast_statement *statement)
 {
 	assert(statement);
@@ -167,6 +189,13 @@ void mCc_ast_delete_statement(struct mCc_ast_statement *statement)
 	case MCC_AST_STATEMENT_TYPE_RET:
 		mCc_ast_delete_expression(statement->ret_val);
 		break;
+
+    case MCC_AST_STATEMENT_TYPE_DECL:
+        mCc_ast_delete_identifier(statement->dec_id);
+        if(statement->dec_val) {
+            mCc_ast_delete_literal(statement->dec_val);
+        }
+        break;
 
 	case MCC_AST_STATEMENT_TYPE_RET_VOID: break;
 	}
