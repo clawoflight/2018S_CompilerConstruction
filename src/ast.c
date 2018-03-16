@@ -95,20 +95,35 @@ mCc_ast_new_expression_parenth(struct mCc_ast_expression *expression)
 
 struct mCc_ast_expression *
 mCc_ast_new_expression_call_expr(struct mCc_ast_identifier *identifier,
-								 struct mCc_ast_arguments *arguments)
+                                 struct mCc_ast_arguments *arguments)
 {
-	assert(identifier);
-	assert(arguments);
+    assert(identifier);
+    assert(arguments);
 
-	struct mCc_ast_expression *expr = malloc(sizeof(*expr));
-	if (!expr)
-		return NULL;
+    struct mCc_ast_expression *expr = malloc(sizeof(*expr));
+    if (!expr)
+        return NULL;
 
-	expr->type = MCC_AST_EXPRESSION_TYPE_CALL_EXPR;
-	expr->identifier = identifier;
-	expr->arguments = arguments;
-	return expr;
+    expr->type = MCC_AST_EXPRESSION_TYPE_CALL_EXPR;
+    expr->argId = identifier;
+    expr->arguments = arguments;
+    return expr;
 }
+
+struct mCc_ast_expression *
+mCc_ast_new_expression_call_expr_void(struct mCc_ast_identifier *identifier)
+{
+    assert(identifier);
+
+    struct mCc_ast_expression *expr = malloc(sizeof(*expr));
+    if (!expr)
+        return NULL;
+
+    expr->type = MCC_AST_EXPRESSION_TYPE_CALL_EXPR;
+    expr->argId = identifier;
+    return expr;
+}
+
 
 
 void mCc_ast_delete_expression(struct mCc_ast_expression *expression)
@@ -134,7 +149,7 @@ void mCc_ast_delete_expression(struct mCc_ast_expression *expression)
 	break;
 
 	case MCC_AST_EXPRESSION_TYPE_CALL_EXPR:
-		mCc_ast_delete_identifier(expression->identifier);
+		mCc_ast_delete_identifier(expression->argId);
 		mCc_ast_delete_arguments(expression->arguments);
 	break;
 
@@ -283,12 +298,14 @@ mCc_ast_arguments_add(struct mCc_ast_arguments *self,
 
 void mCc_ast_delete_arguments(struct mCc_ast_arguments *arguments)
 {
-	assert(arguments);
+	if(arguments){
 
-	for (unsigned int i = 0; i < arguments->expression_count; ++i)
-		mCc_ast_delete_expression(arguments->expressions[i]);
-	if (arguments->expressions)
-		free(arguments->expressions);
+        for (unsigned int i = 0; i < arguments->expression_count; ++i)
+            mCc_ast_delete_expression(arguments->expressions[i]);
+        if (arguments->expressions)
+            free(arguments->expressions);
 
-	free(arguments);
+        free(arguments);
+    }
+
 }
