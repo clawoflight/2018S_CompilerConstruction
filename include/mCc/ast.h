@@ -23,17 +23,16 @@ struct mCc_ast_statement;
 struct mCc_ast_identifier;
 struct mCc_ast_arguments;
 
-
 /* ---------------------------------------------------------------- AST Node */
 
 /**
  * Node attribute containing the source location.
  */
 struct mCc_ast_source_location {
-	int start_line;
-	int start_col;
-	int end_line;
-	int end_col;
+  int start_line;
+  int start_col;
+  int end_line;
+  int end_col;
 };
 
 /* Data contained by every AST node. */
@@ -41,7 +40,7 @@ struct mCc_ast_source_location {
  * Attributes contained by every AST node.
  */
 struct mCc_ast_node {
-	struct mCc_ast_source_location sloc; ///< Source location of this node.
+  struct mCc_ast_source_location sloc; ///< Source location of this node.
 };
 
 /* Don't move or remove this! It needs to be below #mCc_ast_node because that is
@@ -54,26 +53,26 @@ struct mCc_ast_node {
  * Available types of unary operators.
  */
 enum mCc_ast_unary_op {
-	MCC_AST_UNARY_OP_NEG, ///< Numerical negation
-	MCC_AST_UNARY_OP_NOT, ///< Logical negation
+  MCC_AST_UNARY_OP_NEG, ///< Numerical negation
+  MCC_AST_UNARY_OP_NOT, ///< Logical negation
 };
 
 /**
  * @brief Available types of binary operators.
  */
 enum mCc_ast_binary_op {
-	MCC_AST_BINARY_OP_ADD, ///< Addition
-	MCC_AST_BINARY_OP_SUB, ///< Subtraction
-	MCC_AST_BINARY_OP_MUL, ///< Multiplication
-	MCC_AST_BINARY_OP_DIV, ///< Division
-	MCC_AST_BINARY_OP_LT,  ///< Less than
-	MCC_AST_BINARY_OP_GT,  ///< Greater than
-	MCC_AST_BINARY_OP_LEQ, ///< Less or equal
-	MCC_AST_BINARY_OP_GEQ, ///< Greater or equal
-	MCC_AST_BINARY_OP_AND, ///< AND
-	MCC_AST_BINARY_OP_OR,  ///< OR
-	MCC_AST_BINARY_OP_EQ,  ///< Equal
-	MCC_AST_BINARY_OP_NEQ  ///< Not equal
+  MCC_AST_BINARY_OP_ADD, ///< Addition
+  MCC_AST_BINARY_OP_SUB, ///< Subtraction
+  MCC_AST_BINARY_OP_MUL, ///< Multiplication
+  MCC_AST_BINARY_OP_DIV, ///< Division
+  MCC_AST_BINARY_OP_LT,  ///< Less than
+  MCC_AST_BINARY_OP_GT,  ///< Greater than
+  MCC_AST_BINARY_OP_LEQ, ///< Less or equal
+  MCC_AST_BINARY_OP_GEQ, ///< Greater or equal
+  MCC_AST_BINARY_OP_AND, ///< AND
+  MCC_AST_BINARY_OP_OR,  ///< OR
+  MCC_AST_BINARY_OP_EQ,  ///< Equal
+  MCC_AST_BINARY_OP_NEQ  ///< Not equal
 };
 
 /* ------------------------------------------------------------- Expressions */
@@ -82,12 +81,12 @@ enum mCc_ast_binary_op {
  * @brief Available expression types.
  */
 enum mCc_ast_expression_type {
-	MCC_AST_EXPRESSION_TYPE_LITERAL,    ///< Literal expression
-	MCC_AST_EXPRESSION_TYPE_IDENTIFIER, ///< Identifier expression
-	MCC_AST_EXPRESSION_TYPE_UNARY_OP,   ///< Unary Operation expression
-	MCC_AST_EXPRESSION_TYPE_BINARY_OP,  ///< Binary operation expression
-	MCC_AST_EXPRESSION_TYPE_PARENTH,    ///< Parenthesis expression
-	MCC_AST_EXPRESSION_TYPE_CALL_EXPR,    ///< Call expression
+  MCC_AST_EXPRESSION_TYPE_LITERAL,    ///< Literal expression
+  MCC_AST_EXPRESSION_TYPE_IDENTIFIER, ///< Identifier expression
+  MCC_AST_EXPRESSION_TYPE_UNARY_OP,   ///< Unary Operation expression
+  MCC_AST_EXPRESSION_TYPE_BINARY_OP,  ///< Binary operation expression
+  MCC_AST_EXPRESSION_TYPE_PARENTH,    ///< Parenthesis expression
+  MCC_AST_EXPRESSION_TYPE_CALL_EXPR,  ///< Call expression
 };
 
 /**
@@ -98,53 +97,52 @@ enum mCc_ast_expression_type {
  * type. Only one of the union members can be set at any time.
  */
 struct mCc_ast_expression {
-	struct mCc_ast_node node; ///< Common node attributes
-	/// The concrete type of this expression (no inheritance in C)
-	enum mCc_ast_expression_type type;
-	union {
+  struct mCc_ast_node node; ///< Common node attributes
+  /// The concrete type of this expression (no inheritance in C)
+  enum mCc_ast_expression_type type;
+  union {
 
-		/**
-		 * Data if #type is #MCC_AST_EXPRESSION_TYPE_LITERAL
-		 */
-		struct mCc_ast_literal *literal;
+    /**
+     * Data if #type is #MCC_AST_EXPRESSION_TYPE_LITERAL
+     */
+    struct mCc_ast_literal *literal;
 
-		/**
-		 * Data if #type is #MCC_AST_EXPRESSION_TYPE_IDENTIFIER
-		 */
-		struct mCc_ast_identifier *identifier;
+    /**
+     * Data if #type is #MCC_AST_EXPRESSION_TYPE_IDENTIFIER
+     */
+    struct mCc_ast_identifier *identifier;
 
-		/**
-		 * Data if #type is #MCC_AST_EXPRESSION_TYPE_BINARY_OP
-		 */
-		struct {
-			enum mCc_ast_binary_op op; ///< The type of the binary operation
-			struct mCc_ast_expression *lhs; ///< The lhs of the operation
-			struct mCc_ast_expression *rhs; ///< The rhs of the operation
-		};
+    /**
+     * Data if #type is #MCC_AST_EXPRESSION_TYPE_BINARY_OP
+     */
+    struct {
+      enum mCc_ast_binary_op op;      ///< The type of the binary operation
+      struct mCc_ast_expression *lhs; ///< The lhs of the operation
+      struct mCc_ast_expression *rhs; ///< The rhs of the operation
+    };
 
-		/**
-		 * Data if #type is #MCC_AST_EXPRESSION_TYPE_UNARY_OP
-		 */
-		struct {
-			enum mCc_ast_unary_op unary_op; ///< The type of the unary operation
-			struct mCc_ast_expression
-			    *unary_expression; ///< subexpression of unary op
-		};
+    /**
+     * Data if #type is #MCC_AST_EXPRESSION_TYPE_UNARY_OP
+     */
+    struct {
+      enum mCc_ast_unary_op unary_op; ///< The type of the unary operation
+      struct mCc_ast_expression
+          *unary_expression; ///< subexpression of unary op
+    };
 
-		/**
-		 * Data if #type is #MCC_AST_EXPRESSION_TYPE_PARENTH
-		 */
-		struct mCc_ast_expression *expression;
+    /**
+     * Data if #type is #MCC_AST_EXPRESSION_TYPE_PARENTH
+     */
+    struct mCc_ast_expression *expression;
 
-		/**
-		 * Data if #type is #MCC_AST_EXPRESSION_TYPE_CALL_EXPR
-		 */
-		struct {
-			struct mCc_ast_arguments
-					*arguments; ///< argument list
-			struct mCc_ast_identifier *argId;
-		};
-	};
+    /**
+     * Data if #type is #MCC_AST_EXPRESSION_TYPE_CALL_EXPR
+     */
+    struct {
+      struct mCc_ast_arguments *arguments; ///< argument list
+      struct mCc_ast_identifier *argId;
+    };
+  };
 };
 
 /**
@@ -213,7 +211,7 @@ mCc_ast_new_expression_parenth(struct mCc_ast_expression *expression);
  */
 struct mCc_ast_expression *
 mCc_ast_new_expression_call_expr(struct mCc_ast_identifier *identifier,
-								 struct mCc_ast_arguments *arguments);
+                                 struct mCc_ast_arguments *arguments);
 
 /**
  * Delete an expression.
@@ -228,45 +226,45 @@ void mCc_ast_delete_expression(struct mCc_ast_expression *expression);
  * Available Literal types.
  */
 enum mCc_ast_literal_type {
-	MCC_AST_LITERAL_TYPE_INT,    ///< Integer literal
-	MCC_AST_LITERAL_TYPE_FLOAT,  ///< Float literal
-	MCC_AST_LITERAL_TYPE_BOOL,   ///< Boolean literal
-	MCC_AST_LITERAL_TYPE_STRING, ///< String literal
+  MCC_AST_LITERAL_TYPE_INT,    ///< Integer literal
+  MCC_AST_LITERAL_TYPE_FLOAT,  ///< Float literal
+  MCC_AST_LITERAL_TYPE_BOOL,   ///< Boolean literal
+  MCC_AST_LITERAL_TYPE_STRING, ///< String literal
 };
 
 /**
  * Node representing a literal.
  */
 struct mCc_ast_literal {
-	struct mCc_ast_node node; ///< Common attributes
+  struct mCc_ast_node node; ///< Common attributes
 
-	/**
-	 * The type of this literal.
-	 *
-	 * Type-specific data is contained in the union.
-	 */
-	enum mCc_ast_literal_type type;
-	union {
-		/**
-		 * Data if #type is #MCC_AST_LITERAL_TYPE_INT
-		 */
-		long i_value;
+  /**
+   * The type of this literal.
+   *
+   * Type-specific data is contained in the union.
+   */
+  enum mCc_ast_literal_type type;
+  union {
+    /**
+     * Data if #type is #MCC_AST_LITERAL_TYPE_INT
+     */
+    long i_value;
 
-		/**
-		 * Data if #type is #MCC_AST_LITERAL_TYPE_FLOAT
-		 */
-		double f_value;
+    /**
+     * Data if #type is #MCC_AST_LITERAL_TYPE_FLOAT
+     */
+    double f_value;
 
-		/**
-		 * Data if #type is #MCC_AST_LITERAL_TYPE_STRING
-		 */
-		char *s_value;
+    /**
+     * Data if #type is #MCC_AST_LITERAL_TYPE_STRING
+     */
+    char *s_value;
 
-		/**
-		 * Data if #type is #MCC_AST_LITERAL_TYPE_BOOL
-		 */
-		bool b_value;
-	};
+    /**
+     * Data if #type is #MCC_AST_LITERAL_TYPE_BOOL
+     */
+    bool b_value;
+  };
 };
 
 /**
@@ -318,12 +316,12 @@ void mCc_ast_delete_literal(struct mCc_ast_literal *literal);
  * Node representing a identifier.
  */
 struct mCc_ast_identifier {
-	struct mCc_ast_node node; ///< Common attributes
+  struct mCc_ast_node node; ///< Common attributes
 
-	/**
-	 * The ID string
-	 */
-	char *id_value;
+  /**
+   * The ID string
+   */
+  char *id_value;
 };
 
 /**
@@ -348,12 +346,12 @@ void mCc_ast_delete_identifier(struct mCc_ast_identifier *identifier);
  * Node representing arguments.
  */
 struct mCc_ast_arguments {
-    struct mCc_ast_node node; ///< Common node attributes
-    /// The concrete type of this statement (no inheritance in C)
+  struct mCc_ast_node node; ///< Common node attributes
+  /// The concrete type of this statement (no inheritance in C)
 
-    unsigned int arguments_alloc_block_size;
-    unsigned int expression_count; ///< Number of sub-expressions
-    struct mCc_ast_expression **expressions; ///< Sub expressions
+  unsigned int arguments_alloc_block_size;
+  unsigned int expression_count;           ///< Number of sub-expressions
+  struct mCc_ast_expression **expressions; ///< Sub expressions
 };
 
 /**
@@ -377,7 +375,6 @@ mCc_ast_new_arguments(struct mCc_ast_expression *expression);
 struct mCc_ast_arguments *
 mCc_ast_arguments_add(struct mCc_ast_arguments *self,
                       struct mCc_ast_expression *expression);
-
 
 /**
  * @brief Delete arguments.
