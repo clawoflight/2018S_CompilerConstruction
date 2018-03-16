@@ -19,63 +19,63 @@ extern "C" {
  * The available statement types
  */
 enum mCc_ast_statement_type {
-	MCC_AST_STATEMENT_TYPE_IF,       ///< If statement
-	MCC_AST_STATEMENT_TYPE_IFELSE,   ///< If statement with else-branch
-	MCC_AST_STATEMENT_TYPE_RET,      ///< Return statement */
-	MCC_AST_STATEMENT_TYPE_RET_VOID, ///< Return statement with no value
-	MCC_AST_STATEMENT_TYPE_WHILE,    ///< While statement
-	/* MCC_AST_STATEMENT_TYPE_DECL,  ///< Variable declaration assignment */
-	MCC_AST_STATEMENT_TYPE_ASSGN, ///< Variable assignment statement */
-	MCC_AST_STATEMENT_TYPE_EXPR, ///< Expression statement
-	MCC_AST_STATEMENT_TYPE_CMPND ///< Compound statement
+  MCC_AST_STATEMENT_TYPE_IF,       ///< If statement
+  MCC_AST_STATEMENT_TYPE_IFELSE,   ///< If statement with else-branch
+  MCC_AST_STATEMENT_TYPE_RET,      ///< Return statement */
+  MCC_AST_STATEMENT_TYPE_RET_VOID, ///< Return statement with no value
+  MCC_AST_STATEMENT_TYPE_WHILE,    ///< While statement
+  /* MCC_AST_STATEMENT_TYPE_DECL,  ///< Variable declaration assignment */
+  MCC_AST_STATEMENT_TYPE_ASSGN, ///< Variable assignment statement */
+  MCC_AST_STATEMENT_TYPE_EXPR,  ///< Expression statement
+  MCC_AST_STATEMENT_TYPE_CMPND  ///< Compound statement
 };
 
 /**
  * Node representing a statement.
  */
 struct mCc_ast_statement {
-	struct mCc_ast_node node; ///< Common node attributes
-	/// The concrete type of this statement (no inheritance in C)
-	enum mCc_ast_statement_type type;
+  struct mCc_ast_node node; ///< Common node attributes
+  /// The concrete type of this statement (no inheritance in C)
+  enum mCc_ast_statement_type type;
 
-	union {
+  union {
 
-		/// Data if type is #MCC_AST_STATEMENT_TYPE_IF
-		/// or #MCC_AST_STATEMENT_TYPE_IFELSE
-		struct {
-			struct mCc_ast_expression *if_cond;
-			struct mCc_ast_statement *if_stmt;
-			struct mCc_ast_statement *else_stmt;
-		};
-		/// Data while type is #MCC_AST_STATEMENT_TYPE_WHILE
-		struct {
-			struct mCc_ast_expression *while_cond;
-			struct mCc_ast_statement *while_stmt;
-		};
-		/// Data return type is #MCC_AST_STATEMENT_TYPE_RET
-		/// or #MCC_AST_STATEMENT_TYPE_RET_VOID
-		struct {
-			struct mCc_ast_expression *ret_val;
-		};
+    /// Data if type is #MCC_AST_STATEMENT_TYPE_IF
+    /// or #MCC_AST_STATEMENT_TYPE_IFELSE
+    struct {
+      struct mCc_ast_expression *if_cond;
+      struct mCc_ast_statement *if_stmt;
+      struct mCc_ast_statement *else_stmt;
+    };
+    /// Data while type is #MCC_AST_STATEMENT_TYPE_WHILE
+    struct {
+      struct mCc_ast_expression *while_cond;
+      struct mCc_ast_statement *while_stmt;
+    };
+    /// Data return type is #MCC_AST_STATEMENT_TYPE_RET
+    /// or #MCC_AST_STATEMENT_TYPE_RET_VOID
+    struct {
+      struct mCc_ast_expression *ret_val;
+    };
 
-		/// Data if type is #MCC_AST_STATEMENT_TYPE_ASSGN
-		struct {
-			struct mCc_ast_identifier *id_assgn;
-			struct mCc_ast_expression *lhs_assgn;
-			struct mCc_ast_expression *rhs_assgn;
-		};
+    /// Data if type is #MCC_AST_STATEMENT_TYPE_ASSGN
+    struct {
+      struct mCc_ast_identifier *id_assgn;
+      struct mCc_ast_expression *lhs_assgn;
+      struct mCc_ast_expression *rhs_assgn;
+    };
 
-		/// Data if type is #MCC_AST_STATEMENT_TYPE_EXPR
-		struct mCc_ast_expression *expression;
+    /// Data if type is #MCC_AST_STATEMENT_TYPE_EXPR
+    struct mCc_ast_expression *expression;
 
-		/// Data if type is #MCC_AST_STATEMENT_TYPE_CMPND
-		struct {
-			/// Number of statements for which pointer memory was allocated
-			unsigned int compound_stmt_alloc_size;
-			unsigned int compound_stmt_count; ///< Number of sub-statements
-			struct mCc_ast_statement **compound_stmts; ///< Sub-statements
-		};
-	};
+    /// Data if type is #MCC_AST_STATEMENT_TYPE_CMPND
+    struct {
+      /// Number of statements for which pointer memory was allocated
+      unsigned int compound_stmt_alloc_size;
+      unsigned int compound_stmt_count;          ///< Number of sub-statements
+      struct mCc_ast_statement **compound_stmts; ///< Sub-statements
+    };
+  };
 };
 
 /**
@@ -114,8 +114,8 @@ mCc_ast_new_statement_if(struct mCc_ast_expression *if_cond,
  */
 struct mCc_ast_statement *
 mCc_ast_new_statement_assgn(struct mCc_ast_identifier *id_assgn,
-                         struct mCc_ast_expression *lhs_assgn,
-                         struct mCc_ast_expression *rhs_assgn);
+                            struct mCc_ast_expression *lhs_assgn,
+                            struct mCc_ast_expression *rhs_assgn);
 
 /**
  * @brief Construct a statement from an while-statement
