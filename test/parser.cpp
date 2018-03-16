@@ -54,40 +54,40 @@ TEST(Parser, StringLiteral_1)
 
 TEST(Parser, StringLiteral_2)
 {
-    const char input[] = "\"f\"";
-    auto result = mCc_parser_parse_string(input);
+	const char input[] = "\"f\"";
+	auto result = mCc_parser_parse_string(input);
 
-    ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);
+	ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);
 
-    auto expr = result.expression;
+	auto expr = result.expression;
 
-    // root
-    ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_LITERAL, expr->type);
+	// root
+	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_LITERAL, expr->type);
 
-    // root -> literal
-    ASSERT_EQ(MCC_AST_LITERAL_TYPE_STRING, expr->literal->type);
-    ASSERT_EQ(1, strcmp(expr->literal->s_value,"\"3f\""));
+	// root -> literal
+	ASSERT_EQ(MCC_AST_LITERAL_TYPE_STRING, expr->literal->type);
+	ASSERT_EQ(1, strcmp(expr->literal->s_value,"\"3f\""));
 
-    mCc_ast_delete_expression(expr);
+	mCc_ast_delete_expression(expr);
 }
 
 TEST(Parser, StringLiteral_Empty)
 {
-    const char input[] = "\"\"";
-    auto result = mCc_parser_parse_string(input);
+	const char input[] = "\"\"";
+	auto result = mCc_parser_parse_string(input);
 
-    ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);
+	ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);
 
-    auto expr = result.expression;
+	auto expr = result.expression;
 
-    // root
-    ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_LITERAL, expr->type);
+	// root
+	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_LITERAL, expr->type);
 
-    // root -> literal
-    ASSERT_EQ(MCC_AST_LITERAL_TYPE_STRING, expr->literal->type);
-    ASSERT_EQ(0, strcmp(expr->literal->s_value,"\"\""));
+	// root -> literal
+	ASSERT_EQ(MCC_AST_LITERAL_TYPE_STRING, expr->literal->type);
+	ASSERT_EQ(0, strcmp(expr->literal->s_value,"\"\""));
 
-    mCc_ast_delete_expression(expr);
+	mCc_ast_delete_expression(expr);
 }
 
 TEST(Parser, BoolLiteral_1)
@@ -158,11 +158,8 @@ TEST(Parser, NestedExpression_1)
 	ASSERT_EQ(MCC_AST_BINARY_OP_ADD, subexpr->op);
 
 	// subexpr -> lhs
-	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_LITERAL, subexpr->lhs->type);
-
-	// subexpr -> lhs -> literal
-	ASSERT_EQ(MCC_AST_LITERAL_TYPE_INT, subexpr->lhs->literal->type);
-	ASSERT_EQ(-192, subexpr->lhs->literal->i_value);
+	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_UNARY_OP, subexpr->lhs->type);
+	ASSERT_EQ(MCC_AST_UNARY_OP_NEG, subexpr->lhs->unary_op);
 
 	// subexpr -> rhs
 	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_LITERAL, subexpr->rhs->type);
@@ -170,6 +167,11 @@ TEST(Parser, NestedExpression_1)
 	// subexpr -> rhs -> literal
 	ASSERT_EQ(MCC_AST_LITERAL_TYPE_FLOAT, subexpr->rhs->literal->type);
 	ASSERT_EQ(3.14, subexpr->rhs->literal->f_value);
+
+    auto subsubexpr = subexpr->lhs->unary_expression;
+    // subsubexpr -> literal
+    ASSERT_EQ(MCC_AST_LITERAL_TYPE_INT, subsubexpr->literal->type);
+    ASSERT_EQ(192, subsubexpr->literal->i_value);
 
 	mCc_ast_delete_expression(expr);
 }

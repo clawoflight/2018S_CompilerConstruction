@@ -13,8 +13,8 @@
 #define YYSTYPE MCC_PARSER_STYPE
 %}
 identifier    [a-zA-Z_][a-zA-Z0-9_]*
-int_literal   -?[0-9]+
-float_literal -?[0-9]+\.[0-9]+
+int_literal   [0-9]+
+float_literal [0-9]+\.[0-9]+
 string_literal \"[^"]*\"
 bool_literal (true)|(false)
 

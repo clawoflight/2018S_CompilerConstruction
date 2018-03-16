@@ -122,3 +122,36 @@ TEST(TDD_PARSER_BINOPS, NEQ)
 
 	mCc_ast_delete_expression(expr);
 }
+
+TEST(TDD_PARSER_BINOPS_PREC, BIN_PREC)
+{
+	const char str[] = "3 * 5 + 2";
+	auto result = mCc_parser_parse_string(str);
+
+	ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);
+	auto expr = result.expression;
+
+	// root
+	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_BINARY_OP, expr->type);
+	ASSERT_EQ(MCC_AST_BINARY_OP_ADD, expr->op);
+
+	// next left
+	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_BINARY_OP, expr->lhs->type);
+	ASSERT_EQ(MCC_AST_BINARY_OP_MUL, expr->lhs->op);
+
+	// next right
+	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_LITERAL, expr->rhs->type);
+	ASSERT_EQ(2, expr->rhs->literal->i_value);
+
+	auto subexpr = expr->lhs;
+
+	// subexp left
+	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_LITERAL, subexpr->lhs->type);
+	ASSERT_EQ(3, subexpr->lhs->literal->i_value);
+
+	// subexp right
+	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_LITERAL, subexpr->rhs->type);
+	ASSERT_EQ(5, subexpr->rhs->literal->i_value);
+
+	mCc_ast_delete_expression(expr);
+}
