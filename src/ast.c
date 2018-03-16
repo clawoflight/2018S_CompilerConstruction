@@ -121,6 +121,7 @@ mCc_ast_new_expression_call_expr_void(struct mCc_ast_identifier *identifier)
 
     expr->type = MCC_AST_EXPRESSION_TYPE_CALL_EXPR;
     expr->argId = identifier;
+    expr->arguments = NULL;
     return expr;
 }
 
