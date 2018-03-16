@@ -92,6 +92,22 @@ mCc_ast_new_expression_parenth(struct mCc_ast_expression *expression)
 	return expr;
 }
 
+struct mCc_ast_expression *
+mCc_ast_new_expression_call_expr(struct mCc_ast_identifier *identifier,
+                                 struct mCc_ast_arguments *arguments)
+{
+	assert(identifier);
+
+	struct mCc_ast_expression *expr = malloc(sizeof(*expr));
+	if (!expr)
+		return NULL;
+
+	expr->type = MCC_AST_EXPRESSION_TYPE_CALL_EXPR;
+	expr->argId = identifier;
+	expr->arguments = arguments;
+	return expr;
+}
+
 void mCc_ast_delete_expression(struct mCc_ast_expression *expression)
 {
 	assert(expression);
@@ -112,6 +128,11 @@ void mCc_ast_delete_expression(struct mCc_ast_expression *expression)
 	case MCC_AST_EXPRESSION_TYPE_BINARY_OP:
 		mCc_ast_delete_expression(expression->lhs);
 		mCc_ast_delete_expression(expression->rhs);
+		break;
+
+	case MCC_AST_EXPRESSION_TYPE_CALL_EXPR:
+		mCc_ast_delete_identifier(expression->argId);
+		mCc_ast_delete_arguments(expression->arguments);
 		break;
 
 	case MCC_AST_EXPRESSION_TYPE_PARENTH:
@@ -204,4 +225,69 @@ void mCc_ast_delete_literal(struct mCc_ast_literal *literal)
 	if (literal->type == MCC_AST_LITERAL_TYPE_STRING)
 		free(literal->s_value);
 	free(literal);
+}
+
+/*--------------------------------------------------------------- Arguments */
+
+/// Size by which to increase arguments when reallocating
+const int arguments_alloc_block_size = 10;
+
+struct mCc_ast_arguments *
+mCc_ast_new_arguments(struct mCc_ast_expression *expression)
+{
+	assert(expression);
+
+	struct mCc_ast_arguments *args = malloc(sizeof(*args));
+	if (!args)
+		return NULL;
+
+	args->expression_count = 0;
+	args->expressions = NULL;
+
+	if (expression && (args->expressions = malloc(arguments_alloc_block_size *
+	                                              sizeof(args))) != NULL) {
+		args->expression_count = 1;
+		args->arguments_alloc_block_size = arguments_alloc_block_size;
+		args->expressions[0] = expression;
+	}
+
+	return args;
+}
+
+struct mCc_ast_arguments *
+mCc_ast_arguments_add(struct mCc_ast_arguments *self,
+                      struct mCc_ast_expression *expression)
+{
+	assert(self);
+	assert(expression);
+
+	if (self->expression_count < self->arguments_alloc_block_size) {
+		self->expressions[self->expression_count++] = expression;
+		return self;
+	}
+
+	struct mCc_ast_expression **tmp;
+	if ((tmp = realloc(self->expressions,
+	                   arguments_alloc_block_size * sizeof(self))) == NULL) {
+		mCc_ast_delete_arguments(self);
+		return NULL;
+	}
+
+	self->arguments_alloc_block_size += arguments_alloc_block_size;
+	self->expressions = tmp;
+	self->expressions[self->expression_count++] = expression;
+	return self;
+}
+
+void mCc_ast_delete_arguments(struct mCc_ast_arguments *arguments)
+{
+	if (arguments) {
+
+		for (unsigned int i = 0; i < arguments->expression_count; ++i)
+			mCc_ast_delete_expression(arguments->expressions[i]);
+		if (arguments->expressions)
+			free(arguments->expressions);
+
+		free(arguments);
+	}
 }

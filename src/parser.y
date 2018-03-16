@@ -55,6 +55,7 @@ void mCc_parser_error();
 %token WHILE "while"
 %token RETURN "return"
 %token SEMICOLON ";"
+%token COMMA ","
 
 /* TYPES */
 
@@ -64,6 +65,7 @@ void mCc_parser_error();
 %type <struct mCc_ast_literal *> literal
 %type <struct mCc_ast_statement *> statement compound_stmt
 %type <struct mCc_ast_identifier *> identifier
+%type <struct mCc_ast_arguments *> arguments
 
 %start toplevel
 
@@ -108,10 +110,12 @@ unary_op  : NOT   { $$ = MCC_AST_UNARY_OP_NOT; }
           | MINUS { $$ = MCC_AST_UNARY_OP_NEG; }
           ;
 
-single_expr : literal                      { $$ = mCc_ast_new_expression_literal($1); }
-            | identifier                   { $$ = mCc_ast_new_expression_identifier($1); }
-            | unary_op single_expr         { $$ = mCc_ast_new_expression_unary_op($1, $2); }
-            | LPARENTH expression RPARENTH { $$ = mCc_ast_new_expression_parenth($2); }
+single_expr : literal                                   { $$ = mCc_ast_new_expression_literal($1); }
+            | identifier                                { $$ = mCc_ast_new_expression_identifier($1); }
+            | unary_op single_expr                      { $$ = mCc_ast_new_expression_unary_op($1, $2); }
+            | LPARENTH expression RPARENTH              { $$ = mCc_ast_new_expression_parenth($2); }
+            | identifier LPARENTH RPARENTH              { $$ = mCc_ast_new_expression_call_expr($1, NULL); }
+            | identifier LPARENTH arguments RPARENTH    { $$ = mCc_ast_new_expression_call_expr($1, $3); }
             ;
 
 expression : binary_op   { $$ = $1; }
@@ -140,6 +144,10 @@ compound_stmt : %empty                  { $$ = mCc_ast_new_statement_compound(NU
               | statement               { $$ = mCc_ast_new_statement_compound($1); }
               | compound_stmt statement { $$ = mCc_ast_compound_statement_add($1, $2); }
               ;
+
+arguments : expression                 { $$ = mCc_ast_new_arguments($1);     }
+          | arguments COMMA expression { $$ = mCc_ast_arguments_add($1, $3); }
+          ;
 %%
 
 #include <assert.h>

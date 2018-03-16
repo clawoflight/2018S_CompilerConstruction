@@ -60,6 +60,7 @@ mCc_uts = [
             'tdd_parser_unops',
             'tdd_parser_statements',
             'identifier',
+            'tdd_parser_callexpr',
 ]
 
 foreach ut : mCc_uts

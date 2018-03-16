@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-/// Size by which to increase compound_stmts when reallocking
+/// Size by which to increase compound_stmts when reallocing
 const int compound_stmt_alloc_block_size = 10;
 
 /*--------------------------------------------------------------- Statements */

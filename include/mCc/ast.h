@@ -21,6 +21,7 @@ struct mCc_ast_expression;
 struct mCc_ast_literal;
 struct mCc_ast_statement;
 struct mCc_ast_identifier;
+struct mCc_ast_arguments;
 
 /* ---------------------------------------------------------------- AST Node */
 
@@ -85,6 +86,7 @@ enum mCc_ast_expression_type {
 	MCC_AST_EXPRESSION_TYPE_UNARY_OP,   ///< Unary Operation expression
 	MCC_AST_EXPRESSION_TYPE_BINARY_OP,  ///< Binary operation expression
 	MCC_AST_EXPRESSION_TYPE_PARENTH,    ///< Parenthesis expression
+	MCC_AST_EXPRESSION_TYPE_CALL_EXPR,  ///< Call expression
 };
 
 /**
@@ -132,6 +134,14 @@ struct mCc_ast_expression {
 		 * Data if #type is #MCC_AST_EXPRESSION_TYPE_PARENTH
 		 */
 		struct mCc_ast_expression *expression;
+
+		/**
+		 * Data if #type is #MCC_AST_EXPRESSION_TYPE_CALL_EXPR
+		 */
+		struct {
+			struct mCc_ast_arguments *arguments; ///< argument list
+			struct mCc_ast_identifier *argId;
+		};
 	};
 };
 
@@ -190,6 +200,18 @@ mCc_ast_new_expression_binary_op(enum mCc_ast_binary_op op,
  */
 struct mCc_ast_expression *
 mCc_ast_new_expression_parenth(struct mCc_ast_expression *expression);
+
+/**
+ * Construct an expression for a call expression.
+ *
+ * @param identifier The Identifier
+ * @param arguments The arguments list
+ *
+ * @return A new expression with type #MCC_AST_EXPRESSION_TYPE_CALL_EXPR
+ */
+struct mCc_ast_expression *
+mCc_ast_new_expression_call_expr(struct mCc_ast_identifier *identifier,
+                                 struct mCc_ast_arguments *arguments);
 
 /**
  * Delete an expression.
@@ -317,6 +339,49 @@ struct mCc_ast_identifier *mCc_ast_new_identifier(char *value);
  * @param identifier The identifier to delete
  */
 void mCc_ast_delete_identifier(struct mCc_ast_identifier *identifier);
+
+/* -------------------------------------------------------------- Arguments */
+
+/**
+ * Node representing arguments.
+ */
+struct mCc_ast_arguments {
+	struct mCc_ast_node node; ///< Common node attributes
+	/// The concrete type of this statement (no inheritance in C)
+
+	unsigned int arguments_alloc_block_size;
+	unsigned int expression_count;           ///< Number of sub-expressions
+	struct mCc_ast_expression **expressions; ///< Sub expressions
+};
+
+/**
+ * @brief Construct arguments from an expression
+ *
+ * @param expression The underlying expression
+ *
+ * @return A new list of arguments
+ */
+struct mCc_ast_arguments *
+mCc_ast_new_arguments(struct mCc_ast_expression *expression);
+
+/**
+ * @brief Add a subexpression to arguments.
+ *
+ * @param self arguments to which to add another
+ * @param expression The sub-expression to add to the arguments
+ *
+ * @return self
+ */
+struct mCc_ast_arguments *
+mCc_ast_arguments_add(struct mCc_ast_arguments *self,
+                      struct mCc_ast_expression *expression);
+
+/**
+ * @brief Delete arguments.
+ *
+ * @param statement The arguments to delete
+ */
+void mCc_ast_delete_arguments(struct mCc_ast_arguments *arguments);
 
 #ifdef __cplusplus
 }

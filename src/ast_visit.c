@@ -128,6 +128,13 @@ void mCc_ast_visit_expression(struct mCc_ast_expression *expression,
 		mCc_ast_visit_expression(expression->expression, visitor);
 		visit_if_post_order(expression, visitor->expression_parenth, visitor);
 		break;
+
+	case MCC_AST_EXPRESSION_TYPE_CALL_EXPR:
+		visit_if_pre_order(expression, visitor->expression_call_expr, visitor);
+		mCc_ast_visit_identifier(expression->argId, visitor);
+		mCc_ast_visit_arguments(expression->arguments, visitor);
+		visit_if_post_order(expression, visitor->expression_call_expr, visitor);
+		break;
 	}
 
 	visit_if_post_order(expression, visitor->expression, visitor);
@@ -171,4 +178,19 @@ void mCc_ast_visit_identifier(struct mCc_ast_identifier *identifier,
 	visit_if_pre_order(identifier, visitor->identifier, visitor);
 
 	visit_if_post_order(identifier, visitor->identifier, visitor);
+}
+
+void mCc_ast_visit_arguments(struct mCc_ast_arguments *arguments,
+                             struct mCc_ast_visitor *visitor)
+{
+	assert(visitor);
+
+	if (arguments) {
+
+		visit_if_pre_order(arguments, visitor->arguments, visitor);
+
+		for (unsigned int i = 0; i < arguments->expression_count; ++i)
+			mCc_ast_visit_expression(arguments->expressions[i], visitor);
+		visit_if_post_order(arguments, visitor->arguments, visitor);
+	}
 }

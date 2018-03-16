@@ -45,6 +45,7 @@ bool_literal (true)|(false)
 "!"               { return TK_NOT; }
 
 ";"               { return TK_SEMICOLON; }
+","               { return TK_COMMA; }
 
 "("               { return TK_LPARENTH; }
 ")"               { return TK_RPARENTH; }

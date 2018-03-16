@@ -230,6 +230,20 @@ static void print_dot_expression_parenth(struct mCc_ast_expression *expression,
 	print_dot_edge(out, expression, expression->expression, "expression");
 }
 
+static void
+print_dot_expression_call_expr(struct mCc_ast_expression *expression,
+                               void *data)
+{
+	assert(expression);
+	assert(data);
+
+	FILE *out = data;
+	print_dot_node(out, expression, "expr: call");
+	print_dot_edge(out, expression, expression->argId, "id");
+	if (expression->arguments != NULL)
+		print_dot_edge(out, expression, expression->arguments, "arguments");
+}
+
 static void print_dot_literal_int(struct mCc_ast_literal *literal, void *data)
 {
 	assert(literal);
@@ -292,6 +306,18 @@ static void print_dot_identifier(struct mCc_ast_identifier *identifier,
 	print_dot_node(out, identifier, label);
 }
 
+static void print_dot_arguments(struct mCc_ast_arguments *arguments, void *data)
+{
+	assert(arguments);
+	assert(data);
+
+	FILE *out = data;
+	print_dot_node(out, arguments, "args: expr");
+	for (unsigned int i = 0; i < arguments->expression_count; ++i)
+		print_dot_edge(out, arguments, arguments->expressions[i],
+		               "subarguments");
+}
+
 static struct mCc_ast_visitor print_dot_visitor(FILE *out)
 {
 	assert(out);
@@ -315,8 +341,11 @@ static struct mCc_ast_visitor print_dot_visitor(FILE *out)
 		.expression_unary_op = print_dot_expression_unary_op,
 		.expression_binary_op = print_dot_expression_binary_op,
 		.expression_parenth = print_dot_expression_parenth,
+		.expression_call_expr = print_dot_expression_call_expr,
 
 		.identifier = print_dot_identifier,
+
+		.arguments = print_dot_arguments,
 
 		.literal_int = print_dot_literal_int,
 		.literal_float = print_dot_literal_float,
@@ -334,6 +363,19 @@ void mCc_ast_print_dot_statement(FILE *out, struct mCc_ast_statement *statement)
 
 	struct mCc_ast_visitor visitor = print_dot_visitor(out);
 	mCc_ast_visit_statement(statement, &visitor);
+
+	print_dot_end(out);
+}
+
+void mCc_ast_print_dot_arguments(FILE *out, struct mCc_ast_arguments *arguments)
+{
+	assert(out);
+	assert(arguments);
+
+	print_dot_begin(out);
+
+	struct mCc_ast_visitor visitor = print_dot_visitor(out);
+	mCc_ast_visit_arguments(arguments, &visitor);
 
 	print_dot_end(out);
 }
