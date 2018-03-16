@@ -267,13 +267,13 @@ mCc_ast_arguments_add(struct mCc_ast_arguments *self,
 	}
 
 	struct mCc_ast_expression **tmp;
+	self->arguments_alloc_block_size += arguments_alloc_block_size;
 	if ((tmp = realloc(self->expressions,
-	                   arguments_alloc_block_size * sizeof(self))) == NULL) {
+	                   self->arguments_alloc_block_size * sizeof(self))) == NULL) {
 		mCc_ast_delete_arguments(self);
 		return NULL;
 	}
 
-	self->arguments_alloc_block_size += arguments_alloc_block_size;
 	self->expressions = tmp;
 	self->expressions[self->expression_count++] = expression;
 	return self;
