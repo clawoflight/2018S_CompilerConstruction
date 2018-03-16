@@ -69,16 +69,16 @@ statement        =
                  | declaration , ";"
                  | assignment  , ";"
               ~~ | expression  , ";"~~ done
-                 | compound_stmt
+               ~~| compound_stmt ~~done
 ```
 ~~if_stmt          = "if" , "(" , expression , ")" , statement , [ "else" , statement ]~~
 
 ~~while_stmt       = "while" , "(" , expression , ")" , statement~~
 
 ~~ret_stmt         = "return" , [ expression ] , ";"~~
-```
-compound_stmt    = "{" , [ { statement } ] , "}"
 
+~~compound_stmt    = "{" , [ { statement } ] , "}"~~
+```
 
 ### Function Definition / Call
 
@@ -99,6 +99,6 @@ program          = [ { function_def } ]
 ## Task 3: Error handling
 - [Location tracking](https://www.gnu.org/software/bison/manual/html_node/Tracking-Locations.html#Tracking-Locations)
   and also [SO](https://stackoverflow.com/questions/22407730/bison-line-number-included-in-the-error-messages) and [IBM](https://www.ibm.com/developerworks/library/l-flexbison/index.html)
-- [Precedence](https://www.gnu.org/software/bison/manual/html_node/Precedence.html#Precedence)
+~~[Precedence] https://www.gnu.org/software/bison/manual/html_node/Precedence.html#Precedence~~
 
 ## Task 4: Examples
