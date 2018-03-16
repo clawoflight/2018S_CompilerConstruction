@@ -239,7 +239,7 @@ print_dot_expression_call_expr(struct mCc_ast_expression *expression,
 
 	FILE *out = data;
 	print_dot_node(out, expression, "expr: call");
-	print_dot_edge(out, expression, expression->argId, "id");
+	print_dot_edge(out, expression, expression->f_name, "fName");
 	if (expression->arguments != NULL)
 		print_dot_edge(out, expression, expression->arguments, "arguments");
 }

@@ -140,7 +140,7 @@ struct mCc_ast_expression {
 		 */
 		struct {
 			struct mCc_ast_arguments *arguments; ///< argument list
-			struct mCc_ast_identifier *argId;
+			struct mCc_ast_identifier *f_name; ///< function name
 		};
 	};
 };
