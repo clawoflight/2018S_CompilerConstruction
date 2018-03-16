@@ -34,6 +34,8 @@ void mCc_parser_error();
 %token RPARENTH ")"
 %token LBRACE "{"
 %token RBRACE "}"
+%token LBRACK "["
+%token RBRACK "]"
 
 %token NOT "!"
 
@@ -49,6 +51,7 @@ void mCc_parser_error();
 %token OR "||"
 %token EQUALS "=="
 %token NOT_EQUALS "!="
+%token ASSGN "="
 
 %token IF "if"
 %token ELSE "else"
@@ -64,11 +67,12 @@ void mCc_parser_error();
 %type <struct mCc_ast_literal *> literal
 %type <struct mCc_ast_statement *> statement compound_stmt
 %type <struct mCc_ast_identifier *> identifier
+%type <struct mCc_ast_assignment *> assignment
 
 %start toplevel
 
 /* PRECEDENCE RULES (INCREASING) */
-
+%left ASSGN
 %left PLUS MINUS
 %left ASTER SLASH
 %left AND OR
@@ -134,12 +138,17 @@ statement : expression SEMICOLON { $$ = mCc_ast_new_statement_expression($1); }
           | LBRACE compound_stmt RBRACE { $$ = $2; }
           | RETURN expression SEMICOLON { $$ = mCc_ast_new_statement_return($2); }
           | RETURN SEMICOLON { $$ = mCc_ast_new_statement_return(NULL); }
+          | assignment SEMICOLON  { $$ = $1; }
           ;
 
 compound_stmt : %empty                  { $$ = mCc_ast_new_statement_compound(NULL); }
               | statement               { $$ = mCc_ast_new_statement_compound($1); }
               | compound_stmt statement { $$ = mCc_ast_compound_statement_add($1, $2); }
               ;
+
+assignment : identifier ASSGN expression                          { $$ = mCc_ast_new_statement_assgn($1, NULL, $3); }
+           | identifier LBRACK expression RBRACK ASSGN expression { $$ = mCc_ast_new_statement_assgn($1, $3, $6); }
+           ;
 %%
 
 #include <assert.h>

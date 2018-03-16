@@ -43,6 +43,7 @@ bool_literal (true)|(false)
 "=="              { return TK_EQUALS; }
 "!="              { return TK_NOT_EQUALS; }
 "!"               { return TK_NOT; }
+"="               { return TK_ASSGN; }
 
 ";"               { return TK_SEMICOLON; }
 
@@ -50,6 +51,8 @@ bool_literal (true)|(false)
 ")"               { return TK_RPARENTH; }
 "{"               { return TK_LBRACE; }
 "}"               { return TK_RBRACE; }
+"["               { return TK_LBRACK; }
+"]"               { return TK_RBRACK; }
 
 "if"              { return TK_IF; }
 "else"            { return TK_ELSE; }

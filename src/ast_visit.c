@@ -39,52 +39,62 @@ void mCc_ast_visit_statement(struct mCc_ast_statement *statement,
 	visit_if_pre_order(statement, visitor->statement, visitor);
 
 	switch (statement->type) {
-	case MCC_AST_STATEMENT_TYPE_EXPR:
-		visit_if_pre_order(statement, visitor->statement_expr, visitor);
-		mCc_ast_visit_expression(statement->expression, visitor);
-		visit_if_post_order(statement, visitor->statement_expr, visitor);
-		break;
+		case MCC_AST_STATEMENT_TYPE_EXPR:
+			visit_if_pre_order(statement, visitor->statement_expr, visitor);
+			mCc_ast_visit_expression(statement->expression, visitor);
+			visit_if_post_order(statement, visitor->statement_expr, visitor);
+			break;
 
-	case MCC_AST_STATEMENT_TYPE_IFELSE:
-		visit_if_pre_order(statement, visitor->statement_ifelse, visitor);
-		mCc_ast_visit_expression(statement->if_cond, visitor);
-		mCc_ast_visit_statement(statement->if_stmt, visitor);
-		mCc_ast_visit_statement(statement->else_stmt, visitor);
-		visit_if_post_order(statement, visitor->statement_ifelse, visitor);
-		break;
+		case MCC_AST_STATEMENT_TYPE_IFELSE:
+			visit_if_pre_order(statement, visitor->statement_ifelse, visitor);
+			mCc_ast_visit_expression(statement->if_cond, visitor);
+			mCc_ast_visit_statement(statement->if_stmt, visitor);
+			mCc_ast_visit_statement(statement->else_stmt, visitor);
+			visit_if_post_order(statement, visitor->statement_ifelse, visitor);
+			break;
 
-	case MCC_AST_STATEMENT_TYPE_IF:
-		visit_if_pre_order(statement, visitor->statement_if, visitor);
-		mCc_ast_visit_expression(statement->if_cond, visitor);
-		mCc_ast_visit_statement(statement->if_stmt, visitor);
-		visit_if_post_order(statement, visitor->statement_if, visitor);
-		break;
+		case MCC_AST_STATEMENT_TYPE_IF:
+			visit_if_pre_order(statement, visitor->statement_if, visitor);
+			mCc_ast_visit_expression(statement->if_cond, visitor);
+			mCc_ast_visit_statement(statement->if_stmt, visitor);
+			visit_if_post_order(statement, visitor->statement_if, visitor);
+			break;
 
-	case MCC_AST_STATEMENT_TYPE_WHILE:
-		visit_if_pre_order(statement, visitor->statement_while, visitor);
-		mCc_ast_visit_expression(statement->while_cond, visitor);
-		mCc_ast_visit_statement(statement->while_stmt, visitor);
-		visit_if_post_order(statement, visitor->statement_while, visitor);
-		break;
+		case MCC_AST_STATEMENT_TYPE_WHILE:
+			visit_if_pre_order(statement, visitor->statement_while, visitor);
+			mCc_ast_visit_expression(statement->while_cond, visitor);
+			mCc_ast_visit_statement(statement->while_stmt, visitor);
+			visit_if_post_order(statement, visitor->statement_while, visitor);
+			break;
 
-	case MCC_AST_STATEMENT_TYPE_RET:
-		visit_if_pre_order(statement, visitor->statement_return, visitor);
-		mCc_ast_visit_expression(statement->ret_val, visitor);
-		visit_if_post_order(statement, visitor->statement_return, visitor);
-		break;
+		case MCC_AST_STATEMENT_TYPE_RET:
+			visit_if_pre_order(statement, visitor->statement_return, visitor);
+			mCc_ast_visit_expression(statement->ret_val, visitor);
+			visit_if_post_order(statement, visitor->statement_return, visitor);
+			break;
 
-	case MCC_AST_STATEMENT_TYPE_RET_VOID:
-		visit_if_pre_order(statement, visitor->statement_return_void, visitor);
-		visit_if_post_order(statement, visitor->statement_return_void, visitor);
-		break;
+		case MCC_AST_STATEMENT_TYPE_RET_VOID:
+			visit_if_pre_order(statement, visitor->statement_return_void, visitor);
+			visit_if_post_order(statement, visitor->statement_return_void, visitor);
+			break;
 
-	case MCC_AST_STATEMENT_TYPE_CMPND:
-		visit_if_pre_order(statement, visitor->statement_compound, visitor);
-		for (unsigned int i = 0; i < statement->compound_stmt_count; ++i)
-			mCc_ast_visit_statement(statement->compound_stmts[i], visitor);
-		visit_if_post_order(statement, visitor->statement_compound, visitor);
+		case MCC_AST_STATEMENT_TYPE_CMPND:
+			visit_if_pre_order(statement, visitor->statement_compound, visitor);
+			for (unsigned int i = 0; i < statement->compound_stmt_count; ++i)
+				mCc_ast_visit_statement(statement->compound_stmts[i], visitor);
+			visit_if_post_order(statement, visitor->statement_compound, visitor);
+			break;
+
+
+		case MCC_AST_STATEMENT_TYPE_ASSGN:
+			visit_if_pre_order(statement, visitor->statement_assgn, visitor);
+			mCc_ast_visit_identifier(statement->id_assgn, visitor);
+			if (statement->lhs_assgn)
+				mCc_ast_visit_expression(statement->lhs_assgn, visitor);
+			mCc_ast_visit_expression(statement->rhs_assgn, visitor);
+			visit_if_post_order(statement, visitor->statement_assgn, visitor);
+			break;
 	}
-
 	visit_if_post_order(statement, visitor->statement, visitor);
 }
 
