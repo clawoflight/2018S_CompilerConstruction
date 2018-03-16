@@ -92,7 +92,6 @@ struct mCc_ast_expression *
 mCc_ast_new_expression_call_expr(struct mCc_ast_identifier *identifier,
                                  struct mCc_ast_arguments *arguments) {
   assert(identifier);
-  assert(arguments);
 
   struct mCc_ast_expression *expr = malloc(sizeof(*expr));
   if (!expr)
@@ -101,20 +100,6 @@ mCc_ast_new_expression_call_expr(struct mCc_ast_identifier *identifier,
   expr->type = MCC_AST_EXPRESSION_TYPE_CALL_EXPR;
   expr->argId = identifier;
   expr->arguments = arguments;
-  return expr;
-}
-
-struct mCc_ast_expression *
-mCc_ast_new_expression_call_expr_void(struct mCc_ast_identifier *identifier) {
-  assert(identifier);
-
-  struct mCc_ast_expression *expr = malloc(sizeof(*expr));
-  if (!expr)
-    return NULL;
-
-  expr->type = MCC_AST_EXPRESSION_TYPE_CALL_EXPR;
-  expr->argId = identifier;
-  expr->arguments = NULL;
   return expr;
 }
 
