@@ -196,3 +196,40 @@ TEST(TDD_PARSER_STATEMENTS, COMPOUND_MULTIPLE)
 
 	mCc_ast_delete_statement(stmt);
 }
+
+TEST(TDD_PARSER_STATEMENTS, DECL)
+{
+	const char input[] = "bool a;";
+	auto result = mCc_parser_parse_string(input);
+
+	ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);
+
+	auto stmt = result.statement;
+
+	// root
+	ASSERT_EQ(MCC_AST_STATEMENT_TYPE_DECL, stmt->type);
+
+	// root -> literal
+	ASSERT_EQ(0, strcmp(stmt->dec_id->id_value,"a"));
+
+	mCc_ast_delete_statement(stmt);
+}
+
+TEST(TDD_PARSER_STATEMENTS, DECL_ARR)
+{
+	const char input[] = "int [3] a;";
+	auto result = mCc_parser_parse_string(input);
+
+	ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);
+
+	auto stmt = result.statement;
+
+	// root
+	ASSERT_EQ(MCC_AST_STATEMENT_TYPE_DECL, stmt->type);
+
+	// root -> literal
+	ASSERT_EQ(stmt->dec_val->i_value,3);
+	ASSERT_EQ(0, strcmp(stmt->dec_id->id_value,"a"));
+
+	mCc_ast_delete_statement(stmt);
+}

@@ -149,9 +149,11 @@ mCc_ast_new_statement_declaration(enum mCc_ast_declaration_type type,
     stmt->dec_type = type;
     stmt->dec_id = id;
 
-
     if (val) {
         stmt->dec_val = val;
+    }
+    else{
+        stmt->dec_val = NULL;
     }
     return stmt;
 }
