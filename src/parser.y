@@ -65,14 +65,12 @@ void mCc_parser_error();
 
 %type <struct mCc_ast_expression *> expression single_expr binary_op
 %type <struct mCc_ast_literal *> literal
-%type <struct mCc_ast_statement *> statement compound_stmt
+%type <struct mCc_ast_statement *> statement compound_stmt assignment
 %type <struct mCc_ast_identifier *> identifier
-%type <struct mCc_ast_assignment *> assignment
 
 %start toplevel
 
 /* PRECEDENCE RULES (INCREASING) */
-%left ASSGN
 %left PLUS MINUS
 %left ASTER SLASH
 %left AND OR
