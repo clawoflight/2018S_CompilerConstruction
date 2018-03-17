@@ -43,11 +43,11 @@ declaration      = type , [ "[" , int_literal , "]" ] , identifier
 
 ~~assignment       = identifier , [ "[" , expression , "]" ] , "=" , expression~~
 
-```
+
 ### Expressions
 
-expression       = single_expr , [ binary_op , expression ]
-```
+~~expression       = single_expr , [ binary_op , expression ]~~
+
 ~~single_expr      = literal
                  | identifier , [ "[" , expression , "]" ]
                  | call_expr
