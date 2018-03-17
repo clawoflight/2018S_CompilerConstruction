@@ -34,6 +34,8 @@ void mCc_parser_error();
 %token RPARENTH ")"
 %token LBRACE "{"
 %token RBRACE "}"
+%token LBRACK "["
+%token RBRACK "]"
 
 %token NOT "!"
 
@@ -49,6 +51,7 @@ void mCc_parser_error();
 %token OR "||"
 %token EQUALS "=="
 %token NOT_EQUALS "!="
+%token ASSGN "="
 
 %token IF "if"
 %token ELSE "else"
@@ -70,7 +73,6 @@ void mCc_parser_error();
 %start toplevel
 
 /* PRECEDENCE RULES (INCREASING) */
-
 %left PLUS MINUS
 %left ASTER SLASH
 %left AND OR
@@ -85,6 +87,7 @@ void mCc_parser_error();
 %destructor { mCc_ast_delete_literal($$); } literal
 %destructor { mCc_ast_delete_statement($$); } statement compound_stmt
 %destructor { mCc_ast_delete_identifier($$); } identifier
+%destructor { mCc_ast_delete_arguments($$); } arguments
 
 %%
 
@@ -138,6 +141,8 @@ statement : expression SEMICOLON { $$ = mCc_ast_new_statement_expression($1); }
           | LBRACE compound_stmt RBRACE { $$ = $2; }
           | RETURN expression SEMICOLON { $$ = mCc_ast_new_statement_return($2); }
           | RETURN SEMICOLON { $$ = mCc_ast_new_statement_return(NULL); }
+          | identifier ASSGN expression SEMICOLON               { $$ = mCc_ast_new_statement_assgn($1, NULL, $3); }
+          | identifier LBRACK expression RBRACK ASSGN expression SEMICOLON { $$ = mCc_ast_new_statement_assgn($1, $3, $6); }
           ;
 
 compound_stmt : %empty                  { $$ = mCc_ast_new_statement_compound(NULL); }
@@ -148,6 +153,7 @@ compound_stmt : %empty                  { $$ = mCc_ast_new_statement_compound(NU
 arguments : expression                 { $$ = mCc_ast_new_arguments($1);     }
           | arguments COMMA expression { $$ = mCc_ast_arguments_add($1, $3); }
           ;
+
 %%
 
 #include <assert.h>

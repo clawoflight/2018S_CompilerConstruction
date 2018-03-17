@@ -25,9 +25,9 @@ enum mCc_ast_statement_type {
 	MCC_AST_STATEMENT_TYPE_RET_VOID, ///< Return statement with no value
 	MCC_AST_STATEMENT_TYPE_WHILE,    ///< While statement
 	/* MCC_AST_STATEMENT_TYPE_DECL,  ///< Variable declaration assignment */
-	/* MCC_AST_STATEMENT_TYPE_ASSGN, ///< Variable assignment statement */
-	MCC_AST_STATEMENT_TYPE_EXPR, ///< Expression statement
-	MCC_AST_STATEMENT_TYPE_CMPND ///< Compound statement
+	MCC_AST_STATEMENT_TYPE_ASSGN, ///< Variable assignment statement */
+	MCC_AST_STATEMENT_TYPE_EXPR,  ///< Expression statement
+	MCC_AST_STATEMENT_TYPE_CMPND  ///< Compound statement
 };
 
 /**
@@ -57,6 +57,14 @@ struct mCc_ast_statement {
 		struct {
 			struct mCc_ast_expression *ret_val;
 		};
+
+		/// Data if type is #MCC_AST_STATEMENT_TYPE_ASSGN
+		struct {
+			struct mCc_ast_identifier *id_assgn;
+			struct mCc_ast_expression *lhs_assgn;
+			struct mCc_ast_expression *rhs_assgn;
+		};
+
 		/// Data if type is #MCC_AST_STATEMENT_TYPE_EXPR
 		struct mCc_ast_expression *expression;
 
@@ -94,6 +102,20 @@ struct mCc_ast_statement *
 mCc_ast_new_statement_if(struct mCc_ast_expression *if_cond,
                          struct mCc_ast_statement *if_stmt,
                          struct mCc_ast_statement *else_stmt);
+
+/**
+ * @brief Construct a statement from an assignment
+ *
+ * @param id_assgn The variable to be assigned
+ * @param lhs_assgn The (optional) index expression
+ * @param rhs_assgn The expression which is assigned to lhs
+ *
+ * @return A new statement with type #MCC_AST_STATEMENT_TYPE_ASSGN
+ */
+struct mCc_ast_statement *
+mCc_ast_new_statement_assgn(struct mCc_ast_identifier *id_assgn,
+                            struct mCc_ast_expression *lhs_assgn,
+                            struct mCc_ast_expression *rhs_assgn);
 
 /**
  * @brief Construct a statement from an while-statement

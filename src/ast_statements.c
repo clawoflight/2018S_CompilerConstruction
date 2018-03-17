@@ -134,6 +134,29 @@ mCc_ast_compound_statement_add(struct mCc_ast_statement *self,
 	return self;
 }
 
+struct mCc_ast_statement *
+mCc_ast_new_statement_assgn(struct mCc_ast_identifier *id_assgn,
+                            struct mCc_ast_expression *lhs_assgn,
+                            struct mCc_ast_expression *rhs_assgn)
+{
+	assert(id_assgn);
+	assert(rhs_assgn);
+
+	struct mCc_ast_statement *stmt = malloc(sizeof(*stmt));
+	if (!stmt)
+		return NULL;
+
+	stmt->type = MCC_AST_STATEMENT_TYPE_ASSGN;
+	stmt->id_assgn = id_assgn;
+	stmt->rhs_assgn = rhs_assgn;
+
+	if (lhs_assgn)
+		stmt->lhs_assgn = lhs_assgn;
+	else
+		stmt->lhs_assgn = NULL;
+	return stmt;
+}
+
 void mCc_ast_delete_statement(struct mCc_ast_statement *statement)
 {
 	assert(statement);
@@ -167,6 +190,12 @@ void mCc_ast_delete_statement(struct mCc_ast_statement *statement)
 	case MCC_AST_STATEMENT_TYPE_RET:
 		mCc_ast_delete_expression(statement->ret_val);
 		break;
+
+	case MCC_AST_STATEMENT_TYPE_ASSGN:
+		mCc_ast_delete_identifier(statement->id_assgn);
+		if (statement->lhs_assgn)
+			mCc_ast_delete_expression(statement->lhs_assgn);
+		mCc_ast_delete_expression(statement->rhs_assgn);
 
 	case MCC_AST_STATEMENT_TYPE_RET_VOID: break;
 	}

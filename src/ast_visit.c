@@ -83,8 +83,17 @@ void mCc_ast_visit_statement(struct mCc_ast_statement *statement,
 		for (unsigned int i = 0; i < statement->compound_stmt_count; ++i)
 			mCc_ast_visit_statement(statement->compound_stmts[i], visitor);
 		visit_if_post_order(statement, visitor->statement_compound, visitor);
-	}
+		break;
 
+	case MCC_AST_STATEMENT_TYPE_ASSGN:
+		visit_if_pre_order(statement, visitor->statement_assgn, visitor);
+		mCc_ast_visit_identifier(statement->id_assgn, visitor);
+		if (statement->lhs_assgn)
+			mCc_ast_visit_expression(statement->lhs_assgn, visitor);
+		mCc_ast_visit_expression(statement->rhs_assgn, visitor);
+		visit_if_post_order(statement, visitor->statement_assgn, visitor);
+		break;
+	}
 	visit_if_post_order(statement, visitor->statement, visitor);
 }
 

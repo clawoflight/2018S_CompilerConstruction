@@ -116,6 +116,20 @@ static void print_dot_statement_ifelse(struct mCc_ast_statement *statement,
 	print_dot_edge(out, statement, statement->else_stmt, "else stmt");
 }
 
+static void print_dot_statement_assgn(struct mCc_ast_statement *statement,
+                                      void *data)
+{
+	assert(statement);
+	assert(data);
+
+	FILE *out = data;
+	print_dot_node(out, statement, "stmt: =");
+	print_dot_edge(out, statement, statement->id_assgn, "id");
+	if (statement->lhs_assgn)
+		print_dot_edge(out, statement, statement->lhs_assgn, "index");
+	print_dot_edge(out, statement, statement->rhs_assgn, "value");
+}
+
 static void print_dot_statement_while(struct mCc_ast_statement *statement,
                                       void *data)
 {
@@ -335,6 +349,7 @@ static struct mCc_ast_visitor print_dot_visitor(FILE *out)
 		.statement_return = print_dot_statement_return,
 		.statement_return_void = print_dot_statement_return_void,
 		.statement_compound = print_dot_statement_compound,
+		.statement_assgn = print_dot_statement_assgn,
 
 		.expression_literal = print_dot_expression_literal,
 		.expression_identifier = print_dot_expression_identifier,
