@@ -135,6 +135,13 @@ void mCc_ast_visit_expression(struct mCc_ast_expression *expression,
 		mCc_ast_visit_arguments(expression->arguments, visitor);
 		visit_if_post_order(expression, visitor->expression_call_expr, visitor);
 		break;
+
+	case MCC_AST_EXPRESSION_TYPE_ID_ARR:
+		visit_if_pre_order(expression, visitor->expression_id_arr, visitor);
+		mCc_ast_visit_identifier(expression->id_arr, visitor);
+		mCc_ast_visit_expression(expression->index_arr, visitor);
+		visit_if_post_order(expression, visitor->expression_id_arr, visitor);
+		break;
 	}
 
 	visit_if_post_order(expression, visitor->expression, visitor);

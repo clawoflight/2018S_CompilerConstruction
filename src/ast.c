@@ -108,38 +108,59 @@ mCc_ast_new_expression_call_expr(struct mCc_ast_identifier *identifier,
 	return expr;
 }
 
+struct mCc_ast_expression *
+mCc_ast_new_expression_id_arr(struct mCc_ast_identifier *identifier,
+							  struct mCc_ast_expression *index_arr)
+{
+	assert(identifier);
+	assert(index_arr);
+
+	struct mCc_ast_expression *expr = malloc(sizeof(*expr));
+	if (!expr)
+		return NULL;
+
+	expr->type = MCC_AST_EXPRESSION_TYPE_ID_ARR;
+	expr->id_arr = identifier;
+	expr->index_arr = index_arr;
+	return expr;
+}
+
 void mCc_ast_delete_expression(struct mCc_ast_expression *expression)
 {
 	assert(expression);
 
 	switch (expression->type) {
-	case MCC_AST_EXPRESSION_TYPE_LITERAL:
-		mCc_ast_delete_literal(expression->literal);
-		break;
+		case MCC_AST_EXPRESSION_TYPE_LITERAL:
+			mCc_ast_delete_literal(expression->literal);
+			break;
 
-	case MCC_AST_EXPRESSION_TYPE_IDENTIFIER:
-		mCc_ast_delete_identifier(expression->identifier);
-		break;
+		case MCC_AST_EXPRESSION_TYPE_IDENTIFIER:
+			mCc_ast_delete_identifier(expression->identifier);
+			break;
 
-	case MCC_AST_EXPRESSION_TYPE_UNARY_OP:
-		mCc_ast_delete_expression(expression->unary_expression);
-		break;
+		case MCC_AST_EXPRESSION_TYPE_UNARY_OP:
+			mCc_ast_delete_expression(expression->unary_expression);
+			break;
 
-	case MCC_AST_EXPRESSION_TYPE_BINARY_OP:
-		mCc_ast_delete_expression(expression->lhs);
-		mCc_ast_delete_expression(expression->rhs);
-		break;
+		case MCC_AST_EXPRESSION_TYPE_BINARY_OP:
+			mCc_ast_delete_expression(expression->lhs);
+			mCc_ast_delete_expression(expression->rhs);
+			break;
 
-	case MCC_AST_EXPRESSION_TYPE_CALL_EXPR:
-		mCc_ast_delete_identifier(expression->f_name);
-		mCc_ast_delete_arguments(expression->arguments);
-		break;
+		case MCC_AST_EXPRESSION_TYPE_CALL_EXPR:
+			mCc_ast_delete_identifier(expression->f_name);
+			mCc_ast_delete_arguments(expression->arguments);
+			break;
 
-	case MCC_AST_EXPRESSION_TYPE_PARENTH:
-		mCc_ast_delete_expression(expression->expression);
-		break;
+		case MCC_AST_EXPRESSION_TYPE_PARENTH:
+			mCc_ast_delete_expression(expression->expression);
+			break;
+
+		case MCC_AST_EXPRESSION_TYPE_ID_ARR:
+			mCc_ast_delete_identifier(expression->id_arr);
+			mCc_ast_delete_expression(expression->index_arr);
+			break;
 	}
-
 	free(expression);
 }
 

@@ -34,6 +34,9 @@ void mCc_parser_error();
 %token RPARENTH ")"
 %token LBRACE "{"
 %token RBRACE "}"
+%token LBRACK "["
+%token RBRACK "]"
+
 
 %token NOT "!"
 
@@ -112,6 +115,7 @@ unary_op  : NOT   { $$ = MCC_AST_UNARY_OP_NOT; }
 
 single_expr : literal                                   { $$ = mCc_ast_new_expression_literal($1); }
             | identifier                                { $$ = mCc_ast_new_expression_identifier($1); }
+            | identifier LBRACK expression RBRACK       { $$ = mCc_ast_new_expression_id_arr($1, $3); }
             | unary_op single_expr                      { $$ = mCc_ast_new_expression_unary_op($1, $2); }
             | LPARENTH expression RPARENTH              { $$ = mCc_ast_new_expression_parenth($2); }
             | identifier LPARENTH RPARENTH              { $$ = mCc_ast_new_expression_call_expr($1, NULL); }

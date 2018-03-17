@@ -87,6 +87,7 @@ enum mCc_ast_expression_type {
 	MCC_AST_EXPRESSION_TYPE_BINARY_OP,  ///< Binary operation expression
 	MCC_AST_EXPRESSION_TYPE_PARENTH,    ///< Parenthesis expression
 	MCC_AST_EXPRESSION_TYPE_CALL_EXPR,  ///< Call expression
+	MCC_AST_EXPRESSION_TYPE_ID_ARR		///< Identifier Array
 };
 
 /**
@@ -141,6 +142,14 @@ struct mCc_ast_expression {
 		struct {
 			struct mCc_ast_arguments *arguments; ///< argument list
 			struct mCc_ast_identifier *f_name; ///< function name
+		};
+
+		/**
+		 * Data if #type is #MCC_AST_EXPRESSION_TYPE_ID_ARR
+		 */
+		struct {
+			struct mCc_ast_identifier *id_arr; ///< identifier
+			struct mCc_ast_expression *index_arr; ///< array index expression
 		};
 	};
 };
@@ -211,7 +220,19 @@ mCc_ast_new_expression_parenth(struct mCc_ast_expression *expression);
  */
 struct mCc_ast_expression *
 mCc_ast_new_expression_call_expr(struct mCc_ast_identifier *identifier,
-                                 struct mCc_ast_arguments *arguments);
+								 struct mCc_ast_arguments *arguments);
+
+/**
+ * Construct an expression for an identifier with array.
+ *
+ * @param identifier The Identifier
+ * @param index The index expression
+ *
+ * @return A new expression with type #MCC_AST_EXPRESSION_TYPE_ID_ARR
+ */
+struct mCc_ast_expression *
+mCc_ast_new_expression_id_arr(struct mCc_ast_identifier *identifier,
+							  struct mCc_ast_expression *index);
 
 /**
  * Delete an expression.
