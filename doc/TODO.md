@@ -50,7 +50,7 @@ expression       = single_expr , [ binary_op , expression ]
 
 single_expr      = ~~literal~~ done
                  | identifier , [ "[" , expression , "]" ]
-                 | call_expr
+                 ~~| call_expr~~ done
                  ~~| unary_op , expression~~ done
                  ~~| "(" , expression , ")"~~ done
 ```
@@ -85,11 +85,11 @@ statement        =
 function_def     = ( "void" | type ) , identifier , "(" , [ parameters ] , ")" , compound_stmt
 
 parameters       = declaration , [ { "," , declaration } ]
+```
+~~call_expr        = identifier , "(" , [ arguments ] , ")"~~
 
-call_expr        = identifier , "(" , [ arguments ] , ")"
-
-arguments        = expression , [ { "," expression } ]
-
+~~arguments        = expression , [ { "," expression } ]~~
+```
 
 ### Program
 
