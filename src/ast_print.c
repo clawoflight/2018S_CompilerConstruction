@@ -12,28 +12,6 @@
 
 #define LABEL_SIZE 64
 
-static void mCc_ast_print_declaration_type(struct mCc_ast_literal *type, void *data) {
-    assert(type);
-
-    char label[LABEL_SIZE] = { 0 };
-    switch(type->i_value) {
-        case MCC_AST_TYPE_BOOL:
-            snprintf(label, sizeof(label), "%s", "bool");
-            break;
-        case MCC_AST_TYPE_INT:
-            snprintf(label, sizeof(label), "%s", "int");
-            break;
-        case MCC_AST_TYPE_FLOAT:
-            snprintf(label, sizeof(label), "%s", "float");
-            break;
-        case MCC_AST_TYPE_STRING:
-            snprintf(label, sizeof(label), "%s", "string");
-            break;
-    }
-    FILE *out = data;
-  //  print_dot_node(out, type, label);
-
-}
 
 const char *mCc_ast_print_unary_op(enum mCc_ast_unary_op op)
 {
@@ -192,28 +170,27 @@ static void print_dot_statement_declaration(struct mCc_ast_statement *statement,
     assert(data);
 
     FILE *out = data;
-    print_dot_node(out, statement, "stmt: decl");
+    switch(statement->dec_type) {
+        case MCC_AST_TYPE_BOOL:
+            print_dot_node(out, statement, "stmt: decl bool");
+            break;
+        case MCC_AST_TYPE_INT:
+            print_dot_node(out, statement, "stmt: decl int");
+            break;///< Integer
+        case MCC_AST_TYPE_FLOAT:
+            print_dot_node(out, statement, "stmt: decl float");
+            break;///< Floating-point number
+        case MCC_AST_TYPE_STRING:
+            print_dot_node(out, statement, "stmt: decl string");
+            break;
+    }
+
     print_dot_edge(out, statement, statement->dec_id, "identifier");
     if (statement->dec_val) {
         print_dot_edge(out, statement, statement->dec_val, "size");
     }
 }
 
-static void print_dot_declaration_type(struct mCc_ast_statement *statement,enum mCc_ast_declaration_type type, void *data)
-{
-	assert(type);
-	assert(data);
-
-	char label[LABEL_SIZE] = { 0 };
-	switch(type) {
-		case MCC_AST_TYPE_BOOL: snprintf(label, sizeof(label), "%s", "bool");  ///< Boolean
-		case MCC_AST_TYPE_INT: snprintf(label, sizeof(label), "%s", "int");   ///< Integer
-		case MCC_AST_TYPE_FLOAT: snprintf(label, sizeof(label), "%s", "float"); ///< Floating-point number
-		case MCC_AST_TYPE_STRING: snprintf(label, sizeof(label), "%s", "string"); ///< String
-	}
-	FILE *out = data;
-	print_dot_node(out, statement->dec_val, label);
-}
 
 static void print_dot_expression_literal(struct mCc_ast_expression *expression,
                                          void *data)
@@ -361,8 +338,6 @@ static struct mCc_ast_visitor print_dot_visitor(FILE *out)
 		.statement_return_void = print_dot_statement_return_void,
 		.statement_compound = print_dot_statement_compound,
         .declaration= print_dot_statement_declaration,
-		.dec_type= print_dot_declaration_type,
-        .type_id = mCc_ast_print_declaration_type,
 
 		.expression_literal = print_dot_expression_literal,
 		.expression_identifier = print_dot_expression_identifier,

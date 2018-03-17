@@ -31,8 +31,7 @@ typedef void (*mCc_ast_visit_statement_cb)(struct mCc_ast_statement *, void *);
 
 typedef void (*mCc_ast_visit_identifier_cb)(struct mCc_ast_identifier *,
                                             void *);
-typedef void (*mCc_ast_visit_dec_type_cb)(struct mCc_ast_statement *,
-                                            void *);
+
 
 struct mCc_ast_visitor {
 	enum mCc_ast_visit_traversal traversal;
@@ -49,8 +48,6 @@ struct mCc_ast_visitor {
 	mCc_ast_visit_statement_cb statement_return_void;
 	mCc_ast_visit_statement_cb statement_compound;
     mCc_ast_visit_statement_cb declaration;
-    mCc_ast_visit_statement_cb dec_type;
-    mCc_ast_visit_statement_cb type_id;
 
 	mCc_ast_visit_expression_cb expression;
 	mCc_ast_visit_expression_cb expression_identifier;
@@ -81,8 +78,6 @@ void mCc_ast_visit_literal(struct mCc_ast_literal *literal,
 void mCc_ast_visit_identifier(struct mCc_ast_identifier *identifier,
                               struct mCc_ast_visitor *visitor);
 
-void mCc_ast_visit_dec_type(struct mCc_ast_statement *statement,
-                            struct mCc_ast_visitor *visitor);
 
 #ifdef __cplusplus
 }
