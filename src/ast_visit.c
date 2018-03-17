@@ -87,16 +87,40 @@ void mCc_ast_visit_statement(struct mCc_ast_statement *statement,
 
     case MCC_AST_STATEMENT_TYPE_DECL:
         visit_if_pre_order(statement, visitor->declaration, visitor);
-            if(statement->dec_val) {
-                mCc_ast_visit_literal(statement->dec_val, visitor);
-            }
-        mCc_ast_visit_literal(statement->dec_id, visitor);
-        //mCc_ast_visit_literal(statement->dec_type,visitor);
+        if(statement->dec_val) {
+           mCc_ast_visit_literal(statement->dec_val, visitor);
+        }
+        mCc_ast_visit_identifier(statement->dec_id, visitor);
+        mCc_ast_visit_dec_type(statement,visitor);
         visit_if_post_order(statement, visitor->declaration, visitor);
         break;
 	}
 
 	visit_if_post_order(statement, visitor->statement, visitor);
+}
+
+void mCc_ast_visit_dec_type(struct mCc_ast_statement *statement,struct mCc_ast_visitor *visitor){
+
+	assert(visitor);
+
+	//visit_if_pre_order(statement, visitor->dec_type, visitor);
+    switch (statement->dec_type){
+        case MCC_AST_TYPE_INT:
+            visit(statement, visitor->type_id, visitor);
+            break;
+        case MCC_AST_TYPE_STRING:
+            visit(statement, visitor->type_id, visitor);
+            break;
+        case MCC_AST_TYPE_BOOL:
+            visit(statement, visitor->type_id, visitor);
+            break;
+        case MCC_AST_TYPE_FLOAT:
+            visit(statement, visitor->type_id, visitor);
+            break;
+    }
+
+	//visit_if_post_order(statement, visitor->dec_type, visitor);
+
 }
 
 void mCc_ast_visit_expression(struct mCc_ast_expression *expression,

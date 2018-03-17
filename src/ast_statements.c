@@ -136,7 +136,7 @@ mCc_ast_compound_statement_add(struct mCc_ast_statement *self,
 
 struct mCc_ast_statement *
 mCc_ast_new_statement_declaration(enum mCc_ast_declaration_type type,
-                         long val,
+								  struct mCc_ast_literal* val,
                          struct mCc_ast_identifier *id)
 {
     assert(id);

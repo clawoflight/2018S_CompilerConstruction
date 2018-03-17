@@ -151,7 +151,7 @@ type : TYPE {
 ;
 
 declaration: type identifier                          {$$ = mCc_ast_new_statement_declaration($1,NULL,$2);}
-          | type LBRACK INT_LITERAL RBRACK identifier {$$ = mCc_ast_new_statement_declaration($1,$3,$5);}
+          | type LBRACK literal RBRACK identifier {$$ = mCc_ast_new_statement_declaration($1,$3,$5);}
           ;
 
 compound_stmt : %empty                  { $$ = mCc_ast_new_statement_compound(NULL); }

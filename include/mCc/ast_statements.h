@@ -79,7 +79,7 @@ struct mCc_ast_statement {
         /// Data return type is #MCC_AST_STATEMENT_TYPE_DEC
         struct {
             enum mCc_ast_declaration_type dec_type;
-            long dec_val;
+			struct mCc_ast_literal *dec_val;
             struct mCc_ast_identifier *dec_id;
         };
 	};
@@ -142,7 +142,7 @@ mCc_ast_new_statement_compound(struct mCc_ast_statement *substatement);
  * @return A new statement with type #MCC_AST_STATEMENT_TYPE_DEC
  */
 struct mCc_ast_statement *
-mCc_ast_new_statement_declaration(enum mCc_ast_declaration_type dec_type, long dec_val,
+mCc_ast_new_statement_declaration(enum mCc_ast_declaration_type dec_type, struct mCc_ast_literal* dec_val,
                             struct mCc_ast_identifier *dec_id);
 
 /**
