@@ -139,6 +139,7 @@ statement : expression SEMICOLON { $$ = mCc_ast_new_statement_expression($1); }
           | WHILE LPARENTH expression RPARENTH statement { $$ = mCc_ast_new_statement_while($3, $5); }
           | IF LPARENTH expression RPARENTH statement { $$ = mCc_ast_new_statement_if($3, $5, NULL); } %prec "then" /* give this statement the precedence named "then" */
           | IF LPARENTH expression RPARENTH statement ELSE statement { $$ = mCc_ast_new_statement_if($3, $5, $7); }
+          | LBRACE RBRACE { $$ = mCc_ast_new_statement_compound(NULL); }
           | LBRACE compound_stmt RBRACE { $$ = $2; }
           | RETURN expression SEMICOLON { $$ = mCc_ast_new_statement_return($2); }
           | RETURN SEMICOLON { $$ = mCc_ast_new_statement_return(NULL); }
@@ -146,8 +147,7 @@ statement : expression SEMICOLON { $$ = mCc_ast_new_statement_expression($1); }
           | identifier LBRACK expression RBRACK ASSGN expression SEMICOLON { $$ = mCc_ast_new_statement_assgn($1, $3, $6); }
           ;
 
-compound_stmt : %empty                  { $$ = mCc_ast_new_statement_compound(NULL); }
-              | statement               { $$ = mCc_ast_new_statement_compound($1); }
+compound_stmt : statement               { $$ = mCc_ast_new_statement_compound($1); }
               | compound_stmt statement { $$ = mCc_ast_compound_statement_add($1, $2); }
               ;
 
