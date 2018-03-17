@@ -143,9 +143,10 @@ mCc_ast_new_statement_assgn(struct mCc_ast_identifier *id_assgn,
   stmt->id_assgn = id_assgn;
   stmt->rhs_assgn = rhs_assgn;
 
-  if (lhs_assgn) {
+  if (lhs_assgn)
     stmt->lhs_assgn = lhs_assgn;
-  }
+  else
+    stmt->lhs_assgn = NULL;
   return stmt;
 }
 
