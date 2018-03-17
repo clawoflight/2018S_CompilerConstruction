@@ -109,19 +109,19 @@ mCc_ast_new_expression_call_expr(struct mCc_ast_identifier *identifier,
 }
 
 struct mCc_ast_expression *
-mCc_ast_new_expression_id_arr(struct mCc_ast_identifier *identifier,
-							  struct mCc_ast_expression *index_arr)
+mCc_ast_new_expression_arr_subscr(struct mCc_ast_identifier *array_id,
+							  struct mCc_ast_expression *subscript_expr)
 {
-	assert(identifier);
-	assert(index_arr);
+	assert(array_id);
+	assert(subscript_expr);
 
 	struct mCc_ast_expression *expr = malloc(sizeof(*expr));
 	if (!expr)
 		return NULL;
 
-	expr->type = MCC_AST_EXPRESSION_TYPE_ID_ARR;
-	expr->id_arr = identifier;
-	expr->index_arr = index_arr;
+	expr->type = MCC_AST_EXPRESSION_TYPE_ARR_SUBSCR;
+	expr->array_id = array_id;
+	expr->subscript_expr = subscript_expr;
 	return expr;
 }
 
@@ -156,9 +156,9 @@ void mCc_ast_delete_expression(struct mCc_ast_expression *expression)
 			mCc_ast_delete_expression(expression->expression);
 			break;
 
-		case MCC_AST_EXPRESSION_TYPE_ID_ARR:
-			mCc_ast_delete_identifier(expression->id_arr);
-			mCc_ast_delete_expression(expression->index_arr);
+		case MCC_AST_EXPRESSION_TYPE_ARR_SUBSCR:
+			mCc_ast_delete_identifier(expression->array_id);
+			mCc_ast_delete_expression(expression->subscript_expr);
 			break;
 	}
 	free(expression);
