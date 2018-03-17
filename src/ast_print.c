@@ -232,7 +232,7 @@ static void print_dot_expression_parenth(struct mCc_ast_expression *expression,
 
 static void
 print_dot_expression_call_expr(struct mCc_ast_expression *expression,
-							   void *data)
+                               void *data)
 {
 	assert(expression);
 	assert(data);
@@ -246,7 +246,7 @@ print_dot_expression_call_expr(struct mCc_ast_expression *expression,
 
 static void
 print_dot_expression_arr_subscr(struct mCc_ast_expression *expression,
-							    void *data)
+                                void *data)
 {
 	assert(expression);
 	assert(data);

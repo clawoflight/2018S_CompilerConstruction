@@ -87,7 +87,7 @@ enum mCc_ast_expression_type {
 	MCC_AST_EXPRESSION_TYPE_BINARY_OP,  ///< Binary operation expression
 	MCC_AST_EXPRESSION_TYPE_PARENTH,    ///< Parenthesis expression
 	MCC_AST_EXPRESSION_TYPE_CALL_EXPR,  ///< Call expression
-	MCC_AST_EXPRESSION_TYPE_ARR_SUBSCR		///< Array Subscript expression
+	MCC_AST_EXPRESSION_TYPE_ARR_SUBSCR  ///< Array Subscript expression
 };
 
 /**
@@ -141,7 +141,7 @@ struct mCc_ast_expression {
 		 */
 		struct {
 			struct mCc_ast_arguments *arguments; ///< argument list
-			struct mCc_ast_identifier *f_name; ///< function name
+			struct mCc_ast_identifier *f_name;   ///< function name
 		};
 
 		/**
@@ -149,7 +149,8 @@ struct mCc_ast_expression {
 		 */
 		struct {
 			struct mCc_ast_identifier *array_id; ///< identifier
-			struct mCc_ast_expression *subscript_expr; ///< array subscript expression
+			struct mCc_ast_expression
+			    *subscript_expr; ///< array subscript expression
 		};
 	};
 };
@@ -220,7 +221,7 @@ mCc_ast_new_expression_parenth(struct mCc_ast_expression *expression);
  */
 struct mCc_ast_expression *
 mCc_ast_new_expression_call_expr(struct mCc_ast_identifier *identifier,
-								 struct mCc_ast_arguments *arguments);
+                                 struct mCc_ast_arguments *arguments);
 
 /**
  * Construct an expression for an identifier with array.
@@ -232,7 +233,7 @@ mCc_ast_new_expression_call_expr(struct mCc_ast_identifier *identifier,
  */
 struct mCc_ast_expression *
 mCc_ast_new_expression_arr_subscr(struct mCc_ast_identifier *array_id,
-							      struct mCc_ast_expression *subscript_expr);
+                                  struct mCc_ast_expression *subscript_expr);
 
 /**
  * Delete an expression.

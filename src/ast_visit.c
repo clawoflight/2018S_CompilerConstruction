@@ -140,7 +140,8 @@ void mCc_ast_visit_expression(struct mCc_ast_expression *expression,
 		visit_if_pre_order(expression, visitor->expression_arr_subscr, visitor);
 		mCc_ast_visit_identifier(expression->array_id, visitor);
 		mCc_ast_visit_expression(expression->subscript_expr, visitor);
-		visit_if_post_order(expression, visitor->expression_arr_subscr, visitor);
+		visit_if_post_order(expression, visitor->expression_arr_subscr,
+		                    visitor);
 		break;
 	}
 
