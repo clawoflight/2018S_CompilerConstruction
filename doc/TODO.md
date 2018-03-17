@@ -36,24 +36,24 @@
 
 type             = "bool" | "int" | "float" | "string"
 
-
+```
 ### Declaration / Assignment
 
 declaration      = type , [ "[" , int_literal , "]" ] , identifier
 
-assignment       = identifier , [ "[" , expression , "]" ] , "=" , expression
+~~assignment       = identifier , [ "[" , expression , "]" ] , "=" , expression~~
 
-
+```
 ### Expressions
 
 expression       = single_expr , [ binary_op , expression ]
-
-single_expr      = ~~literal~~ done
-                 | identifier , [ "[" , expression , "]" ]
-                 ~~| call_expr~~ done
-                 ~~| unary_op , expression~~ done
-                 ~~| "(" , expression , ")"~~ done
 ```
+~~single_expr      = literal
+                 | identifier , [ "[" , expression , "]" ]
+                 | call_expr
+                 | unary_op , expression
+                 | "(" , expression , ")"~~
+
 ~~literal          = bool_literal
                  | int_literal
                  | float_literal
@@ -67,7 +67,7 @@ statement        =
                ~~| while_stmt ~~ done
                ~~| ret_stmt ~~ done
                  | declaration , ";"
-                 | assignment  , ";"
+               ~~| assignment  , ";"~~ done
               ~~ | expression  , ";"~~ done
                ~~| compound_stmt ~~done
 ```
