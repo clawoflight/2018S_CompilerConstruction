@@ -56,6 +56,7 @@ struct mCc_ast_visitor {
 	mCc_ast_visit_expression_cb expression_binary_op;
 	mCc_ast_visit_expression_cb expression_parenth;
 	mCc_ast_visit_expression_cb expression_call_expr;
+	mCc_ast_visit_expression_cb expression_arr_subscr;
 
 	mCc_ast_visit_literal_cb literal;
 	mCc_ast_visit_literal_cb literal_int;

@@ -183,3 +183,20 @@ TEST(Parser, MissingClosingParenthesis_1)
 
 	ASSERT_NE(MCC_PARSER_STATUS_OK, result.status);
 }
+
+TEST(Parser, ArraySubscript)
+{
+	const char input[] = "a[3+4]";
+	auto result = mCc_parser_parse_string(input);
+
+	ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);
+
+	auto expr = result.expression;
+
+	// root
+	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_ARR_SUBSCR, expr->type);
+	ASSERT_EQ(0, strcmp("a",expr->array_id->id_value) );
+	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_BINARY_OP, expr->subscript_expr->type);
+
+	mCc_ast_delete_expression(expr);
+}

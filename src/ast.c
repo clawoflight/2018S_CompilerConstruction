@@ -108,6 +108,23 @@ mCc_ast_new_expression_call_expr(struct mCc_ast_identifier *identifier,
 	return expr;
 }
 
+struct mCc_ast_expression *
+mCc_ast_new_expression_arr_subscr(struct mCc_ast_identifier *array_id,
+                                  struct mCc_ast_expression *subscript_expr)
+{
+	assert(array_id);
+	assert(subscript_expr);
+
+	struct mCc_ast_expression *expr = malloc(sizeof(*expr));
+	if (!expr)
+		return NULL;
+
+	expr->type = MCC_AST_EXPRESSION_TYPE_ARR_SUBSCR;
+	expr->array_id = array_id;
+	expr->subscript_expr = subscript_expr;
+	return expr;
+}
+
 void mCc_ast_delete_expression(struct mCc_ast_expression *expression)
 {
 	assert(expression);
@@ -138,8 +155,12 @@ void mCc_ast_delete_expression(struct mCc_ast_expression *expression)
 	case MCC_AST_EXPRESSION_TYPE_PARENTH:
 		mCc_ast_delete_expression(expression->expression);
 		break;
-	}
 
+	case MCC_AST_EXPRESSION_TYPE_ARR_SUBSCR:
+		mCc_ast_delete_identifier(expression->array_id);
+		mCc_ast_delete_expression(expression->subscript_expr);
+		break;
+	}
 	free(expression);
 }
 
@@ -268,8 +289,8 @@ mCc_ast_arguments_add(struct mCc_ast_arguments *self,
 
 	struct mCc_ast_expression **tmp;
 	self->arguments_alloc_block_size += arguments_alloc_block_size;
-	if ((tmp = realloc(self->expressions,
-	                   self->arguments_alloc_block_size * sizeof(self))) == NULL) {
+	if ((tmp = realloc(self->expressions, self->arguments_alloc_block_size *
+	                                          sizeof(self))) == NULL) {
 		mCc_ast_delete_arguments(self);
 		return NULL;
 	}
