@@ -17,10 +17,16 @@
 
 int mCc_parser_lex();
 void mCc_parser_error();
+
+#define loc(ast_node, ast_sloc) \
+	(ast_node)->node.sloc.start_col = (ast_sloc).first_column;
+
 %}
 
 %define api.value.type union
 %define api.token.prefix {TK_}
+
+%locations
 
 %token END 0 "EOF"
 
@@ -203,7 +209,10 @@ program : function_def         { $$ = mCc_ast_new_program($1); }
 
 #include "scanner.h"
 
-void yyerror(yyscan_t *scanner, const char *msg) {}
+void mCc_parser_error(struct MCC_PARSER_LTYPE *yylloc, yyscan_t *scanner,
+                      const char *msg)
+{
+}
 
 struct mCc_parser_result mCc_parser_parse_string(const char *input)
 {
