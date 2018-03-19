@@ -28,6 +28,8 @@ typedef void (*mCc_ast_visit_expression_cb)(struct mCc_ast_expression *,
                                             void *);
 typedef void (*mCc_ast_visit_literal_cb)(struct mCc_ast_literal *, void *);
 typedef void (*mCc_ast_visit_statement_cb)(struct mCc_ast_statement *, void *);
+typedef void (*mCc_ast_visit_declaration_cb)(struct mCc_ast_declaration *,
+                                             void *);
 typedef void (*mCc_ast_visit_arguments_cb)(struct mCc_ast_arguments *, void *);
 
 typedef void (*mCc_ast_visit_identifier_cb)(struct mCc_ast_identifier *,
@@ -48,6 +50,8 @@ struct mCc_ast_visitor {
 	mCc_ast_visit_statement_cb statement_return_void;
 	mCc_ast_visit_statement_cb statement_compound;
 	mCc_ast_visit_statement_cb statement_assgn;
+	mCc_ast_visit_statement_cb statement_decl;
+	mCc_ast_visit_declaration_cb declaration;
 
 	mCc_ast_visit_expression_cb expression;
 	mCc_ast_visit_expression_cb expression_identifier;
@@ -70,6 +74,9 @@ struct mCc_ast_visitor {
 
 void mCc_ast_visit_statement(struct mCc_ast_statement *statement,
                              struct mCc_ast_visitor *visitor);
+
+void mCc_ast_visit_declaration(struct mCc_ast_declaration *decl,
+                               struct mCc_ast_visitor *visitor);
 
 void mCc_ast_visit_expression(struct mCc_ast_expression *expression,
                               struct mCc_ast_visitor *visitor);

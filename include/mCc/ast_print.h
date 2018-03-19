@@ -41,6 +41,8 @@ void mCc_ast_print_dot_statement(FILE *out,
 void mCc_ast_print_dot_arguments(FILE *out,
                                  struct mCc_ast_arguments *arguments);
 
+void mCc_ast_print_dot_declaration(FILE *out, struct mCc_ast_declaration *decl);
+
 void mCc_ast_print_dot_expression(FILE *out,
                                   struct mCc_ast_expression *expression);
 

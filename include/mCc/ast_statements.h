@@ -14,6 +14,15 @@ extern "C" {
 #include "ast.h"
 
 /* -------------------------------------------------------------- Statements */
+/**
+ * The available primitive types
+ */
+enum mCc_ast_declaration_type {
+	MCC_AST_TYPE_BOOL,  ///< Boolean
+	MCC_AST_TYPE_INT,   ///< Integer
+	MCC_AST_TYPE_FLOAT, ///< Floating-point number
+	MCC_AST_TYPE_STRING ///< String
+};
 
 /**
  * The available statement types
@@ -21,13 +30,13 @@ extern "C" {
 enum mCc_ast_statement_type {
 	MCC_AST_STATEMENT_TYPE_IF,       ///< If statement
 	MCC_AST_STATEMENT_TYPE_IFELSE,   ///< If statement with else-branch
-	MCC_AST_STATEMENT_TYPE_RET,      ///< Return statement */
+	MCC_AST_STATEMENT_TYPE_RET,      ///< Return statement
 	MCC_AST_STATEMENT_TYPE_RET_VOID, ///< Return statement with no value
 	MCC_AST_STATEMENT_TYPE_WHILE,    ///< While statement
-	/* MCC_AST_STATEMENT_TYPE_DECL,  ///< Variable declaration assignment */
-	MCC_AST_STATEMENT_TYPE_ASSGN, ///< Variable assignment statement */
-	MCC_AST_STATEMENT_TYPE_EXPR,  ///< Expression statement
-	MCC_AST_STATEMENT_TYPE_CMPND  ///< Compound statement
+	MCC_AST_STATEMENT_TYPE_DECL,     ///< Variable declaration statement
+	MCC_AST_STATEMENT_TYPE_ASSGN,    ///< Variable assignment statement
+	MCC_AST_STATEMENT_TYPE_EXPR,     ///< Expression statement
+	MCC_AST_STATEMENT_TYPE_CMPND     ///< Compound statement
 };
 
 /**
@@ -75,7 +84,19 @@ struct mCc_ast_statement {
 			unsigned int compound_stmt_count; ///< Number of sub-statements
 			struct mCc_ast_statement **compound_stmts; ///< Sub-statements
 		};
+		/// Data return type is #MCC_AST_STATEMENT_TYPE_DECL
+		struct mCc_ast_declaration *declaration;
 	};
+};
+
+struct mCc_ast_declaration {
+	struct mCc_ast_node node; ///< Common node attributes
+	/// The concrete type of this statement (no inheritance in C)
+	enum mCc_ast_declaration_type type;
+
+	enum mCc_ast_declaration_type decl_type;
+	struct mCc_ast_literal *decl_array_size;
+	struct mCc_ast_identifier *decl_id;
 };
 
 /**
@@ -153,6 +174,16 @@ mCc_ast_compound_statement_add(struct mCc_ast_statement *self,
                                struct mCc_ast_statement *statement);
 
 /**
+ * @brief Construct a statement from a declaration
+ *
+ * @param declaration The underlying declaration
+ *
+ * @return A new statement with type #MCC_AST_STATEMENT_TYPE_DECL
+ */
+struct mCc_ast_statement *
+mCc_ast_new_statement_declaration(struct mCc_ast_declaration *declaration);
+
+/**
  * @brief Construct a statement from an return-statement
  *
  * @param return val The return-value
@@ -169,6 +200,29 @@ mCc_ast_new_statement_return(struct mCc_ast_expression *ret_val);
  * @param statement The statement to delete
  */
 void mCc_ast_delete_statement(struct mCc_ast_statement *statement);
+
+/************************************************************* Declarations */
+
+/**
+ * @brief Construct a declaration
+ *
+ * @param decl_type declaration type
+ * @param decl_array_size value of the declaration
+ * @param decl_id identifier of the declaration
+ *
+ * @return A new declaraton
+ */
+struct mCc_ast_declaration *
+mCc_ast_new_declaration(enum mCc_ast_declaration_type decl_type,
+                        struct mCc_ast_literal *dec_array_size,
+                        struct mCc_ast_identifier *decl_id);
+
+/**
+ * @brief Delete a declaration.
+ *
+ * @param decl The declaration to delete
+ */
+void mCc_ast_delete_declaration(struct mCc_ast_declaration *decl);
 
 #ifdef __cplusplus
 }

@@ -59,16 +59,19 @@ void mCc_parser_error();
 %token RETURN "return"
 %token SEMICOLON ";"
 %token COMMA ","
+%token <char*> TYPE "type"
 
 /* TYPES */
 
 %type <enum mCc_ast_unary_op>  unary_op
+%type <enum mCc_ast_declaration_type> type
 
 %type <struct mCc_ast_expression *> expression single_expr binary_op
 %type <struct mCc_ast_literal *> literal
 %type <struct mCc_ast_statement *> statement compound_stmt
 %type <struct mCc_ast_identifier *> identifier
 %type <struct mCc_ast_arguments *> arguments
+%type <struct mCc_ast_declaration *> declaration
 
 %start toplevel
 
@@ -88,6 +91,7 @@ void mCc_parser_error();
 %destructor { mCc_ast_delete_statement($$); } statement compound_stmt
 %destructor { mCc_ast_delete_identifier($$); } identifier
 %destructor { mCc_ast_delete_arguments($$); } arguments
+%destructor { mCc_ast_delete_declaration($$); } declaration
 
 %%
 
@@ -143,8 +147,21 @@ statement : expression SEMICOLON { $$ = mCc_ast_new_statement_expression($1); }
           | LBRACE compound_stmt RBRACE { $$ = $2; }
           | RETURN expression SEMICOLON { $$ = mCc_ast_new_statement_return($2); }
           | RETURN SEMICOLON { $$ = mCc_ast_new_statement_return(NULL); }
+          | declaration SEMICOLON { $$ = mCc_ast_new_statement_declaration($1);}
           | identifier ASSGN expression SEMICOLON               { $$ = mCc_ast_new_statement_assgn($1, NULL, $3); }
           | identifier LBRACK expression RBRACK ASSGN expression SEMICOLON { $$ = mCc_ast_new_statement_assgn($1, $3, $6); }
+          ;
+
+type : TYPE {
+        if (!strcmp("bool", $1) )       $$ = MCC_AST_TYPE_BOOL;
+        else if (!strcmp("int", $1))    $$ = MCC_AST_TYPE_INT;
+        else if (!strcmp("float", $1))  $$ = MCC_AST_TYPE_FLOAT;
+        else if (!strcmp("string", $1)) $$ = MCC_AST_TYPE_STRING;
+     }
+     ;
+
+declaration: type identifier                          {$$ = mCc_ast_new_declaration($1, NULL, $2);}
+          |  type LBRACK literal RBRACK identifier    {$$ = mCc_ast_new_declaration($1, $3 , $5);}
           ;
 
 compound_stmt : statement               { $$ = mCc_ast_new_statement_compound($1); }
