@@ -18,10 +18,10 @@ extern "C" {
  * The available primitive types
  */
 enum mCc_ast_declaration_type {
-    MCC_AST_TYPE_BOOL,  ///< Boolean
-    MCC_AST_TYPE_INT,   ///< Integer
-    MCC_AST_TYPE_FLOAT, ///< Floating-point number
-    MCC_AST_TYPE_STRING ///< String
+	MCC_AST_TYPE_BOOL,  ///< Boolean
+	MCC_AST_TYPE_INT,   ///< Integer
+	MCC_AST_TYPE_FLOAT, ///< Floating-point number
+	MCC_AST_TYPE_STRING ///< String
 };
 
 /**
@@ -33,7 +33,7 @@ enum mCc_ast_statement_type {
 	MCC_AST_STATEMENT_TYPE_RET,      ///< Return statement
 	MCC_AST_STATEMENT_TYPE_RET_VOID, ///< Return statement with no value
 	MCC_AST_STATEMENT_TYPE_WHILE,    ///< While statement
-    MCC_AST_STATEMENT_TYPE_DECL,  ///< Variable declaration statement
+	MCC_AST_STATEMENT_TYPE_DECL,     ///< Variable declaration statement
 	/* MCC_AST_STATEMENT_TYPE_ASSGN, ///< Variable assignment statement */
 	MCC_AST_STATEMENT_TYPE_EXPR, ///< Expression statement
 	MCC_AST_STATEMENT_TYPE_CMPND ///< Compound statement
@@ -76,12 +76,12 @@ struct mCc_ast_statement {
 			unsigned int compound_stmt_count; ///< Number of sub-statements
 			struct mCc_ast_statement **compound_stmts; ///< Sub-statements
 		};
-        /// Data return type is #MCC_AST_STATEMENT_TYPE_DECL
-        struct mCc_ast_declaration *declaration;
+		/// Data return type is #MCC_AST_STATEMENT_TYPE_DECL
+		struct mCc_ast_declaration *declaration;
 	};
 };
 
-struct mCc_ast_declaration{
+struct mCc_ast_declaration {
 	struct mCc_ast_node node; ///< Common node attributes
 	/// The concrete type of this statement (no inheritance in C)
 	enum mCc_ast_declaration_type type;
@@ -89,7 +89,6 @@ struct mCc_ast_declaration{
 	enum mCc_ast_declaration_type decl_type;
 	struct mCc_ast_literal *decl_array_size;
 	struct mCc_ast_identifier *decl_id;
-
 };
 
 /**
@@ -192,8 +191,9 @@ void mCc_ast_delete_statement(struct mCc_ast_statement *statement);
  * @return A new declaraton
  */
 struct mCc_ast_declaration *
-mCc_ast_new_declaration(enum mCc_ast_declaration_type decl_type, struct mCc_ast_literal* dec_array_size,
-                            struct mCc_ast_identifier *decl_id);
+mCc_ast_new_declaration(enum mCc_ast_declaration_type decl_type,
+                        struct mCc_ast_literal *dec_array_size,
+                        struct mCc_ast_identifier *decl_id);
 
 /**
  * @brief Delete a declaration.

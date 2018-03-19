@@ -31,7 +31,6 @@
 	visit_if((visitor)->order == MCC_AST_VISIT_POST_ORDER, node, callback, \
 	         visitor)
 
-
 void mCc_ast_visit_statement(struct mCc_ast_statement *statement,
                              struct mCc_ast_visitor *visitor)
 {
@@ -87,16 +86,15 @@ void mCc_ast_visit_statement(struct mCc_ast_statement *statement,
 		visit_if_post_order(statement, visitor->statement_compound, visitor);
 		break;
 
-    case MCC_AST_STATEMENT_TYPE_DECL:
+	case MCC_AST_STATEMENT_TYPE_DECL:
 		visit_if_pre_order(statement, visitor->statement_decl, visitor);
 		mCc_ast_visit_declaration(statement->declaration, visitor);
 		visit_if_post_order(statement, visitor->statement_decl, visitor);
-        break;
+		break;
 	}
 
 	visit_if_post_order(statement, visitor->statement, visitor);
 }
-
 
 void mCc_ast_visit_expression(struct mCc_ast_expression *expression,
                               struct mCc_ast_visitor *visitor)
@@ -183,15 +181,15 @@ void mCc_ast_visit_identifier(struct mCc_ast_identifier *identifier,
 	visit_if_post_order(identifier, visitor->identifier, visitor);
 }
 
-void mCc_ast_visit_declaration(struct mCc_ast_declaration* decl,
-							   struct mCc_ast_visitor *visitor){
+void mCc_ast_visit_declaration(struct mCc_ast_declaration *decl,
+                               struct mCc_ast_visitor *visitor)
+{
 	assert(decl);
 	assert(visitor);
 
 	visit_if_pre_order(decl, visitor->declaration, visitor);
-	if(decl->decl_array_size) {
+	if (decl->decl_array_size) {
 		mCc_ast_visit_literal(decl->decl_array_size, visitor);
 	}
 	mCc_ast_visit_identifier(decl->decl_id, visitor);
-
 }

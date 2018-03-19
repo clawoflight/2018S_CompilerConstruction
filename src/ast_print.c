@@ -12,7 +12,6 @@
 
 #define LABEL_SIZE 64
 
-
 const char *mCc_ast_print_unary_op(enum mCc_ast_unary_op op)
 {
 	switch (op) {
@@ -163,7 +162,9 @@ static void print_dot_statement_compound(struct mCc_ast_statement *statement,
 		               "substatement");
 }
 
-static void print_dot_statement_decl(struct mCc_ast_statement *statement,void *data){
+static void print_dot_statement_decl(struct mCc_ast_statement *statement,
+                                     void *data)
+{
 	assert(statement);
 	assert(data);
 
@@ -171,7 +172,6 @@ static void print_dot_statement_decl(struct mCc_ast_statement *statement,void *d
 	print_dot_node(out, statement, "stmt: decl");
 	print_dot_edge(out, statement, statement->declaration, "declaration");
 }
-
 
 static void print_dot_expression_literal(struct mCc_ast_expression *expression,
                                          void *data)
@@ -301,25 +301,23 @@ static void print_dot_identifier(struct mCc_ast_identifier *identifier,
 	print_dot_node(out, identifier, label);
 }
 
-static void print_dot_declaration(struct mCc_ast_declaration * decl,
-									void *data){
+static void print_dot_declaration(struct mCc_ast_declaration *decl, void *data)
+{
 	assert(decl);
 	assert(data);
 
 	FILE *out = data;
-	switch(decl->decl_type) {
-		case MCC_AST_TYPE_BOOL:
-			print_dot_node(out, decl, "declaration bool");
-			break;
-		case MCC_AST_TYPE_INT:
-			print_dot_node(out, decl, "declaration int");
-			break;
-		case MCC_AST_TYPE_FLOAT:
-			print_dot_node(out, decl, "declaration float");
-			break;
-		case MCC_AST_TYPE_STRING:
-			print_dot_node(out, decl, "declaration string");
-			break;
+	switch (decl->decl_type) {
+	case MCC_AST_TYPE_BOOL:
+		print_dot_node(out, decl, "declaration bool");
+		break;
+	case MCC_AST_TYPE_INT: print_dot_node(out, decl, "declaration int"); break;
+	case MCC_AST_TYPE_FLOAT:
+		print_dot_node(out, decl, "declaration float");
+		break;
+	case MCC_AST_TYPE_STRING:
+		print_dot_node(out, decl, "declaration string");
+		break;
 	}
 
 	print_dot_edge(out, decl, decl->decl_id, "identifier");
@@ -346,7 +344,7 @@ static struct mCc_ast_visitor print_dot_visitor(FILE *out)
 		.statement_return_void = print_dot_statement_return_void,
 		.statement_compound = print_dot_statement_compound,
 		.statement_decl = print_dot_statement_decl,
-        .declaration= print_dot_declaration,
+		.declaration = print_dot_declaration,
 
 		.expression_literal = print_dot_expression_literal,
 		.expression_identifier = print_dot_expression_identifier,
