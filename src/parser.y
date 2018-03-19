@@ -99,6 +99,27 @@ toplevel : expression { *result = $1; }
          | statement  { *stmt_result = $1; }
          ;
 
+type : TYPE {
+        if (!strcmp("bool", $1) )       $$ = MCC_AST_TYPE_BOOL;
+        else if (!strcmp("int", $1))    $$ = MCC_AST_TYPE_INT;
+        else if (!strcmp("float", $1))  $$ = MCC_AST_TYPE_FLOAT;
+        else if (!strcmp("string", $1)) $$ = MCC_AST_TYPE_STRING;
+     }
+     ;
+
+literal : INT_LITERAL    { $$ = mCc_ast_new_literal_int($1); }
+        | FLOAT_LITERAL  { $$ = mCc_ast_new_literal_float($1); }
+        | STRING_LITERAL { $$ = mCc_ast_new_literal_string($1); }
+        | BOOL_LITERAL   { $$ = mCc_ast_new_literal_bool($1); }
+        ;
+
+identifier : IDENTIFIER { $$ = mCc_ast_new_identifier($1); }
+           ;
+
+unary_op  : NOT   { $$ = MCC_AST_UNARY_OP_NOT; }
+          | MINUS { $$ = MCC_AST_UNARY_OP_NEG; }
+          ;
+
 binary_op : expression PLUS expression       { $$ = mCc_ast_new_expression_binary_op(MCC_AST_BINARY_OP_ADD, $1, $3); }
           | expression MINUS expression      { $$ = mCc_ast_new_expression_binary_op(MCC_AST_BINARY_OP_SUB, $1, $3); }
           | expression ASTER expression      { $$ = mCc_ast_new_expression_binary_op( MCC_AST_BINARY_OP_MUL, $1, $3); }
@@ -111,10 +132,6 @@ binary_op : expression PLUS expression       { $$ = mCc_ast_new_expression_binar
           | expression OR expression         { $$ = mCc_ast_new_expression_binary_op( MCC_AST_BINARY_OP_OR, $1, $3); }
           | expression EQUALS expression     { $$ = mCc_ast_new_expression_binary_op( MCC_AST_BINARY_OP_EQ, $1, $3); }
           | expression NOT_EQUALS expression { $$ = mCc_ast_new_expression_binary_op( MCC_AST_BINARY_OP_NEQ, $1, $3); }
-          ;
-
-unary_op  : NOT   { $$ = MCC_AST_UNARY_OP_NOT; }
-          | MINUS { $$ = MCC_AST_UNARY_OP_NEG; }
           ;
 
 single_expr : literal                                   { $$ = mCc_ast_new_expression_literal($1); }
@@ -130,43 +147,26 @@ expression : binary_op   { $$ = $1; }
            | single_expr { $$ = $1; }
            ;
 
-literal : INT_LITERAL    { $$ = mCc_ast_new_literal_int($1);   }
-        | FLOAT_LITERAL  { $$ = mCc_ast_new_literal_float($1); }
-        | STRING_LITERAL { $$ = mCc_ast_new_literal_string($1); }
-        | BOOL_LITERAL   { $$ = mCc_ast_new_literal_bool($1);  }
-        ;
-
-identifier : IDENTIFIER { $$ = mCc_ast_new_identifier($1); }
-           ;
-
-statement : expression SEMICOLON { $$ = mCc_ast_new_statement_expression($1); }
-          | WHILE LPARENTH expression RPARENTH statement { $$ = mCc_ast_new_statement_while($3, $5); }
-          | IF LPARENTH expression RPARENTH statement { $$ = mCc_ast_new_statement_if($3, $5, NULL); } %prec "then" /* give this statement the precedence named "then" */
-          | IF LPARENTH expression RPARENTH statement ELSE statement { $$ = mCc_ast_new_statement_if($3, $5, $7); }
-          | LBRACE RBRACE { $$ = mCc_ast_new_statement_compound(NULL); }
-          | LBRACE compound_stmt RBRACE { $$ = $2; }
-          | RETURN expression SEMICOLON { $$ = mCc_ast_new_statement_return($2); }
-          | RETURN SEMICOLON { $$ = mCc_ast_new_statement_return(NULL); }
-          | declaration SEMICOLON { $$ = mCc_ast_new_statement_declaration($1);}
-          | identifier ASSGN expression SEMICOLON               { $$ = mCc_ast_new_statement_assgn($1, NULL, $3); }
+statement : expression SEMICOLON                                           { $$ = mCc_ast_new_statement_expression($1); }
+          | WHILE LPARENTH expression RPARENTH statement                   { $$ = mCc_ast_new_statement_while($3, $5); }
+          | IF LPARENTH expression RPARENTH statement                      { $$ = mCc_ast_new_statement_if($3, $5, NULL); } %prec "then" /* give this statement the precedence named "then" */
+          | IF LPARENTH expression RPARENTH statement ELSE statement       { $$ = mCc_ast_new_statement_if($3, $5, $7); }
+          | LBRACE RBRACE                                                  { $$ = mCc_ast_new_statement_compound(NULL); }
+          | LBRACE compound_stmt RBRACE                                    { $$ = $2; }
+          | RETURN expression SEMICOLON                                    { $$ = mCc_ast_new_statement_return($2); }
+          | RETURN SEMICOLON                                               { $$ = mCc_ast_new_statement_return(NULL); }
+          | declaration SEMICOLON                                          { $$ = mCc_ast_new_statement_declaration($1);}
+          | identifier ASSGN expression SEMICOLON                          { $$ = mCc_ast_new_statement_assgn($1, NULL, $3); }
           | identifier LBRACK expression RBRACK ASSGN expression SEMICOLON { $$ = mCc_ast_new_statement_assgn($1, $3, $6); }
-          ;
-
-type : TYPE {
-        if (!strcmp("bool", $1) )       $$ = MCC_AST_TYPE_BOOL;
-        else if (!strcmp("int", $1))    $$ = MCC_AST_TYPE_INT;
-        else if (!strcmp("float", $1))  $$ = MCC_AST_TYPE_FLOAT;
-        else if (!strcmp("string", $1)) $$ = MCC_AST_TYPE_STRING;
-     }
-     ;
-
-declaration: type identifier                          {$$ = mCc_ast_new_declaration($1, NULL, $2);}
-          |  type LBRACK literal RBRACK identifier    {$$ = mCc_ast_new_declaration($1, $3 , $5);}
           ;
 
 compound_stmt : statement               { $$ = mCc_ast_new_statement_compound($1); }
               | compound_stmt statement { $$ = mCc_ast_compound_statement_add($1, $2); }
               ;
+
+declaration : type identifier                       {$$ = mCc_ast_new_declaration($1, NULL, $2);}
+            | type LBRACK literal RBRACK identifier {$$ = mCc_ast_new_declaration($1, $3 , $5);}
+            ;
 
 arguments : expression                 { $$ = mCc_ast_new_arguments($1);     }
           | arguments COMMA expression { $$ = mCc_ast_arguments_add($1, $3); }
