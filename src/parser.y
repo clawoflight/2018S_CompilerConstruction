@@ -83,7 +83,7 @@ void mCc_parser_error();
 %precedence ELSE
 
 /* DESTRUCTORS */
-%destructor { mCc_ast_delete_expression($$); } expression single_expr
+%destructor { mCc_ast_delete_expression($$); } expression single_expr binary_op
 %destructor { mCc_ast_delete_literal($$); } literal
 %destructor { mCc_ast_delete_statement($$); } statement compound_stmt
 %destructor { mCc_ast_delete_identifier($$); } identifier
