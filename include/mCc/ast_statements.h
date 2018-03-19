@@ -140,29 +140,6 @@ struct mCc_ast_statement *
 mCc_ast_new_statement_compound(struct mCc_ast_statement *substatement);
 
 /**
- * @brief Construct a declaration
- *
- * @param decl_type declaration type
- * @param decl_array_size value of the declaration
- * @param decl_id identifier of the declaration
- *
- * @return A new declaraton
- */
-struct mCc_ast_declaration *
-mCc_ast_new_declaration(enum mCc_ast_declaration_type decl_type, struct mCc_ast_literal* dec_array_size,
-                            struct mCc_ast_identifier *decl_id);
-
-/**
- * @brief Construct a statement from an expression
- *
- * @param expression The underlying expression
- *
- * @return A new statement with type #MCC_AST_STATEMENT_TYPE_EXPR
- */
-struct mCc_ast_statement *
-mCc_ast_new_statement_declaration(struct mCc_ast_declaration *declaration);
-
-/**
  * @brief Add a subexpression to a compound statement.
  *
  * @param self Statement with type #MCC_AST_STATEMENT_TYPE_CMPND to which to add
@@ -174,6 +151,16 @@ mCc_ast_new_statement_declaration(struct mCc_ast_declaration *declaration);
 struct mCc_ast_statement *
 mCc_ast_compound_statement_add(struct mCc_ast_statement *self,
                                struct mCc_ast_statement *statement);
+
+/**
+ * @brief Construct a statement from an expression
+ *
+ * @param expression The underlying expression
+ *
+ * @return A new statement with type #MCC_AST_STATEMENT_TYPE_EXPR
+ */
+struct mCc_ast_statement *
+mCc_ast_new_statement_declaration(struct mCc_ast_declaration *declaration);
 
 /**
  * @brief Construct a statement from an return-statement
@@ -192,6 +179,28 @@ mCc_ast_new_statement_return(struct mCc_ast_expression *ret_val);
  * @param statement The statement to delete
  */
 void mCc_ast_delete_statement(struct mCc_ast_statement *statement);
+
+/************************************************************* Declarations */
+
+/**
+ * @brief Construct a declaration
+ *
+ * @param decl_type declaration type
+ * @param decl_array_size value of the declaration
+ * @param decl_id identifier of the declaration
+ *
+ * @return A new declaraton
+ */
+struct mCc_ast_declaration *
+mCc_ast_new_declaration(enum mCc_ast_declaration_type decl_type, struct mCc_ast_literal* dec_array_size,
+                            struct mCc_ast_identifier *decl_id);
+
+/**
+ * @brief Delete a declaration.
+ *
+ * @param decl The declaration to delete
+ */
+void mCc_ast_delete_declaration(struct mCc_ast_declaration *decl);
 
 #ifdef __cplusplus
 }

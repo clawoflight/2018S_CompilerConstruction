@@ -62,13 +62,13 @@ void mCc_parser_error();
 /* TYPES */
 
 %type <enum mCc_ast_unary_op>  unary_op
+%type <enum mCc_ast_declaration_type> type
 
 %type <struct mCc_ast_expression *> expression single_expr binary_op
 %type <struct mCc_ast_literal *> literal
 %type <struct mCc_ast_statement *> statement compound_stmt
 %type <struct mCc_ast_identifier *> identifier
 %type <struct mCc_ast_declaration *> declaration
-%type <enum mCc_ast_declaration_type> type
 
 %start toplevel
 
@@ -88,6 +88,7 @@ void mCc_parser_error();
 %destructor { mCc_ast_delete_literal($$); } literal
 %destructor { mCc_ast_delete_statement($$); } statement compound_stmt
 %destructor { mCc_ast_delete_identifier($$); } identifier
+%destructor { mCc_ast_delete_declaration($$); } declaration
 
 %%
 
@@ -147,11 +148,11 @@ type : TYPE {
         else if (!strcmp("int", $1))    $$ = MCC_AST_TYPE_INT;
         else if (!strcmp("float", $1))  $$ = MCC_AST_TYPE_FLOAT;
         else if (!strcmp("string", $1)) $$ = MCC_AST_TYPE_STRING;
-}
-;
+     }
+     ;
 
-declaration: type identifier                          {$$ = mCc_ast_new_declaration($1,NULL,$2);}
-          | type LBRACK literal RBRACK identifier {$$ = mCc_ast_new_declaration($1,$3,$5);}
+declaration: type identifier                          {$$ = mCc_ast_new_declaration($1, NULL, $2);}
+          |  type LBRACK literal RBRACK identifier    {$$ = mCc_ast_new_declaration($1, $3 , $5);}
           ;
 
 compound_stmt : %empty                  { $$ = mCc_ast_new_statement_compound(NULL); }

@@ -190,6 +190,8 @@ void mCc_ast_delete_statement(struct mCc_ast_statement *statement)
 	free(statement);
 }
 
+/*********************************************************************** Declarations */
+
 struct mCc_ast_declaration *
 mCc_ast_new_declaration(enum mCc_ast_declaration_type type,
                         struct mCc_ast_literal* val,
