@@ -15,13 +15,13 @@
 #define YYSTYPE MCC_PARSER_STYPE
 #define YYLTYPE MCC_PARSER_LTYPE
 
-/* TODO:
- * - track lines
- * - take line breaks into account
- */
-#define YY_USER_ACTION \
-	yylloc->first_column = yylloc->last_column; \
-	yylloc->last_column += yyleng;
+/* Source Location tracking adapted from Group 16. */
+int col;
+
+#define YY_USER_ACTION { col += yyleng; \
+		yylloc->first_line = yylloc->last_line = yylineno; \
+		yylloc->first_column = col - yyleng + 1; \
+		yylloc->last_column = col; }
 %}
 identifier    [a-zA-Z_][a-zA-Z0-9_]*
 int_literal   [0-9]+
@@ -73,7 +73,9 @@ type (bool)|(int)|(float)|(string)
 "return"          { return TK_RETURN; }
 "void"            { return TK_VOID; }
 
-[ \t\r\n]+        { /* ignore */ }
+[ \t\r]+          { /* ignore */ }
+
+\n                { col = 1; }
 
 <<EOF>>           { return TK_END; }
 
