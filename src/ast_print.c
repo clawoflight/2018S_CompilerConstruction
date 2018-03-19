@@ -170,24 +170,24 @@ static void print_dot_statement_declaration(struct mCc_ast_statement *statement,
     assert(data);
 
     FILE *out = data;
-    switch(statement->dec_type) {
+    switch(statement->decl_type) {
         case MCC_AST_TYPE_BOOL:
             print_dot_node(out, statement, "stmt: decl bool");
             break;
         case MCC_AST_TYPE_INT:
             print_dot_node(out, statement, "stmt: decl int");
-            break;///< Integer
+            break;
         case MCC_AST_TYPE_FLOAT:
             print_dot_node(out, statement, "stmt: decl float");
-            break;///< Floating-point number
+            break;
         case MCC_AST_TYPE_STRING:
             print_dot_node(out, statement, "stmt: decl string");
             break;
     }
 
-    print_dot_edge(out, statement, statement->dec_id, "identifier");
-    if (statement->dec_val) {
-        print_dot_edge(out, statement, statement->dec_val, "size");
+    print_dot_edge(out, statement, statement->decl_id, "identifier");
+    if (statement->decl_array_size) {
+        print_dot_edge(out, statement, statement->decl_array_size, "arr size");
     }
 }
 

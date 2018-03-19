@@ -30,10 +30,10 @@ enum mCc_ast_declaration_type {
 enum mCc_ast_statement_type {
 	MCC_AST_STATEMENT_TYPE_IF,       ///< If statement
 	MCC_AST_STATEMENT_TYPE_IFELSE,   ///< If statement with else-branch
-	MCC_AST_STATEMENT_TYPE_RET,      ///< Return statement */
+	MCC_AST_STATEMENT_TYPE_RET,      ///< Return statement
 	MCC_AST_STATEMENT_TYPE_RET_VOID, ///< Return statement with no value
 	MCC_AST_STATEMENT_TYPE_WHILE,    ///< While statement
-    MCC_AST_STATEMENT_TYPE_DECL,  ///< Variable declaration assignment */
+    MCC_AST_STATEMENT_TYPE_DECL,  ///< Variable declaration statement
 	/* MCC_AST_STATEMENT_TYPE_ASSGN, ///< Variable assignment statement */
 	MCC_AST_STATEMENT_TYPE_EXPR, ///< Expression statement
 	MCC_AST_STATEMENT_TYPE_CMPND ///< Compound statement
@@ -76,11 +76,11 @@ struct mCc_ast_statement {
 			unsigned int compound_stmt_count; ///< Number of sub-statements
 			struct mCc_ast_statement **compound_stmts; ///< Sub-statements
 		};
-        /// Data return type is #MCC_AST_STATEMENT_TYPE_DEC
+        /// Data return type is #MCC_AST_STATEMENT_TYPE_DECL
         struct {
-            enum mCc_ast_declaration_type dec_type;
-			struct mCc_ast_literal *dec_val;
-            struct mCc_ast_identifier *dec_id;
+            enum mCc_ast_declaration_type decl_type;
+			struct mCc_ast_literal *decl_array_size;
+            struct mCc_ast_identifier *decl_id;
         };
 	};
 };
@@ -135,15 +135,15 @@ mCc_ast_new_statement_compound(struct mCc_ast_statement *substatement);
 /**
  * @brief Construct a statement from an declaration-statement
  *
- * @param dec_type declaration type
- * @param dec_val value of the declaration
- * @param dec_id identifier of the declaration
+ * @param decl_type declaration type
+ * @param decl_array_size value of the declaration
+ * @param decl_id identifier of the declaration
  *
- * @return A new statement with type #MCC_AST_STATEMENT_TYPE_DEC
+ * @return A new statement with type #MCC_AST_STATEMENT_TYPE_DECL
  */
 struct mCc_ast_statement *
-mCc_ast_new_statement_declaration(enum mCc_ast_declaration_type dec_type, struct mCc_ast_literal* dec_val,
-                            struct mCc_ast_identifier *dec_id);
+mCc_ast_new_statement_declaration(enum mCc_ast_declaration_type decl_type, struct mCc_ast_literal* dec_array_size,
+                            struct mCc_ast_identifier *decl_id);
 
 /**
  * @brief Add a subexpression to a compound statement.

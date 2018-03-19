@@ -146,14 +146,14 @@ mCc_ast_new_statement_declaration(enum mCc_ast_declaration_type type,
         return NULL;
 
     stmt->type = MCC_AST_STATEMENT_TYPE_DECL;
-    stmt->dec_type = type;
-    stmt->dec_id = id;
+    stmt->decl_type = type;
+    stmt->decl_id = id;
 
     if (val) {
-        stmt->dec_val = val;
+        stmt->decl_array_size = val;
     }
     else{
-        stmt->dec_val = NULL;
+        stmt->decl_array_size = NULL;
     }
     return stmt;
 }
@@ -193,9 +193,9 @@ void mCc_ast_delete_statement(struct mCc_ast_statement *statement)
 		break;
 
     case MCC_AST_STATEMENT_TYPE_DECL:
-        mCc_ast_delete_identifier(statement->dec_id);
-        if(statement->dec_val) {
-            mCc_ast_delete_literal(statement->dec_val);
+        mCc_ast_delete_identifier(statement->decl_id);
+        if(statement->decl_array_size) {
+            mCc_ast_delete_literal(statement->decl_array_size);
         }
         break;
 
