@@ -135,27 +135,15 @@ mCc_ast_compound_statement_add(struct mCc_ast_statement *self,
 }
 
 struct mCc_ast_statement *
-mCc_ast_new_statement_declaration(enum mCc_ast_declaration_type type,
-								  struct mCc_ast_literal* val,
-                         struct mCc_ast_identifier *id)
-{
-    assert(id);
+mCc_ast_new_statement_declaration(struct mCc_ast_declaration* decl){
 
-    struct mCc_ast_declaration *decl = malloc(sizeof(*decl));
-    if (!decl)
+    assert(decl);
+    struct mCc_ast_statement *stmt = malloc(sizeof(*stmt));
+    if (!stmt)
         return NULL;
-
-    decl->type = MCC_AST_STATEMENT_TYPE_DECL;
-    decl->decl_type = type;
-    decl->decl_id = id;
-
-    if (val) {
-        decl->decl_array_size = val;
-    }
-    else{
-        decl->decl_array_size = NULL;
-    }
-    return decl;
+    stmt->type = MCC_AST_STATEMENT_TYPE_DECL;
+    stmt->declaration = decl;
+    return stmt;
 }
 
 void mCc_ast_delete_statement(struct mCc_ast_statement *statement)
@@ -193,14 +181,43 @@ void mCc_ast_delete_statement(struct mCc_ast_statement *statement)
 		break;
 
     case MCC_AST_STATEMENT_TYPE_DECL:
-        mCc_ast_delete_identifier(statement->decl_id);
-        if(statement->decl_array_size) {
-            mCc_ast_delete_literal(statement->decl_array_size);
-        }
+        mCc_ast_delete_declaration(statement->declaration);
         break;
 
 	case MCC_AST_STATEMENT_TYPE_RET_VOID: break;
 	}
 
 	free(statement);
+}
+
+struct mCc_ast_declaration *
+mCc_ast_new_declaration(enum mCc_ast_declaration_type type,
+                        struct mCc_ast_literal* val,
+                        struct mCc_ast_identifier *id)
+{
+    assert(id);
+
+    struct mCc_ast_declaration *decl = malloc(sizeof(*decl));
+    if (!decl)
+        return NULL;
+
+    decl->decl_type = type;
+    decl->decl_id = id;
+
+    if (val) {
+        decl->decl_array_size = val;
+    }
+    else{
+        decl->decl_array_size = NULL;
+    }
+    return decl;
+}
+
+void mCc_ast_delete_declaration(struct mCc_ast_declaration *decl){
+    mCc_ast_delete_identifier(decl->decl_id);
+    if(decl->decl_array_size) {
+        mCc_ast_delete_literal(decl->decl_array_size);
+    }
+    free(decl);
+
 }

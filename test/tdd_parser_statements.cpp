@@ -210,7 +210,7 @@ TEST(TDD_PARSER_STATEMENTS, DECL)
 	ASSERT_EQ(MCC_AST_STATEMENT_TYPE_DECL, stmt->type);
 
 	// root -> literal
-	ASSERT_EQ(0, strcmp(stmt->decl_id->id_value,"a"));
+	ASSERT_EQ(0, strcmp(stmt->declaration->decl_id->id_value,"a"));
 
 	mCc_ast_delete_statement(stmt);
 }
@@ -228,8 +228,8 @@ TEST(TDD_PARSER_STATEMENTS, DECL_ARR)
 	ASSERT_EQ(MCC_AST_STATEMENT_TYPE_DECL, stmt->type);
 
 	// root -> literal
-	ASSERT_EQ(stmt->decl_array_size->i_value,3);
-	ASSERT_EQ(0, strcmp(stmt->decl_id->id_value,"a"));
+	ASSERT_EQ(stmt->declaration->decl_array_size->i_value,3);
+	ASSERT_EQ(0, strcmp(stmt->declaration->decl_id->id_value,"a"));
 
 	mCc_ast_delete_statement(stmt);
 }

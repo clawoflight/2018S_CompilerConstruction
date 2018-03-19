@@ -163,6 +163,15 @@ static void print_dot_statement_compound(struct mCc_ast_statement *statement,
 		               "substatement");
 }
 
+static void print_dot_statement_decl(struct mCc_ast_statement *statement,void *data){
+	assert(statement);
+	assert(data);
+
+	FILE *out = data;
+	print_dot_node(out, statement, "stmt: decl");
+	print_dot_edge(out, statement, statement->declaration, "declaration");
+}
+
 
 static void print_dot_expression_literal(struct mCc_ast_expression *expression,
                                          void *data)
@@ -336,6 +345,7 @@ static struct mCc_ast_visitor print_dot_visitor(FILE *out)
 		.statement_return = print_dot_statement_return,
 		.statement_return_void = print_dot_statement_return_void,
 		.statement_compound = print_dot_statement_compound,
+		.statement_decl = print_dot_statement_decl,
         .declaration= print_dot_declaration,
 
 		.expression_literal = print_dot_expression_literal,

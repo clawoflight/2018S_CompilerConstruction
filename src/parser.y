@@ -139,7 +139,7 @@ statement : expression SEMICOLON { $$ = mCc_ast_new_statement_expression($1); }
           | LBRACE compound_stmt RBRACE { $$ = $2; }
           | RETURN expression SEMICOLON { $$ = mCc_ast_new_statement_return($2); }
           | RETURN SEMICOLON { $$ = mCc_ast_new_statement_return(NULL); }
-          | declaration SEMICOLON { $$ = $1;}
+          | declaration SEMICOLON { $$ = mCc_ast_new_statement_declaration($1);}
           ;
 
 type : TYPE {
@@ -150,8 +150,8 @@ type : TYPE {
 }
 ;
 
-declaration: type identifier                          {$$ = mCc_ast_new_statement_declaration($1,NULL,$2);}
-          | type LBRACK literal RBRACK identifier {$$ = mCc_ast_new_statement_declaration($1,$3,$5);}
+declaration: type identifier                          {$$ = mCc_ast_new_declaration($1,NULL,$2);}
+          | type LBRACK literal RBRACK identifier {$$ = mCc_ast_new_declaration($1,$3,$5);}
           ;
 
 compound_stmt : %empty                  { $$ = mCc_ast_new_statement_compound(NULL); }
