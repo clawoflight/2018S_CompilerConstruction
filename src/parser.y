@@ -205,8 +205,8 @@ program : function_def         { $$ = mCc_ast_new_program($1); }
 
 #include "scanner.h"
 
-void mCc_parser_error(struct MCC_PARSER_LTYPE *yylloc,
-                      const char *msg)
+void mCc_parser_error(struct MCC_PARSER_LTYPE *yylloc, yyscan_t *scanner,
+                      void *result, void *stmt_result, const char *msg)
 {
 	fprintf(stderr, "ERROR line %d:%d - %d:%d: %s\n", yylloc->first_line, yylloc->first_column,
             yylloc->last_line, yylloc->last_column, msg);
