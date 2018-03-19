@@ -39,7 +39,7 @@ type             = "bool" | "int" | "float" | "string"
 ```
 ### Declaration / Assignment
 
-declaration      = type , [ "[" , int_literal , "]" ] , identifier
+~~declaration      = type , [ "[" , int_literal , "]" ] , identifier~~
 
 ~~assignment       = identifier , [ "[" , expression , "]" ] , "=" , expression~~
 
@@ -58,7 +58,6 @@ declaration      = type , [ "[" , int_literal , "]" ] , identifier
                  | int_literal
                  | float_literal
                  | string_literal~~
-```
 
 ### Statements
 
@@ -66,11 +65,11 @@ statement        =
                 ~~ if_stmt ~~ done
                ~~| while_stmt ~~ done
                ~~| ret_stmt ~~ done
-                 | declaration , ";"
-               ~~| assignment  , ";"~~ done
-              ~~ | expression  , ";"~~ done
-               ~~| compound_stmt ~~done
-```
+                ~~ | declaration , ";"~~
+               ~~| assignment  , ";"~~ 
+              ~~ | expression  , ";"~~ 
+               ~~| compound_stmt ~~
+
 ~~if_stmt          = "if" , "(" , expression , ")" , statement , [ "else" , statement ]~~
 
 ~~while_stmt       = "while" , "(" , expression , ")" , statement~~
