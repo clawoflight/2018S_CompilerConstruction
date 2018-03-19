@@ -85,6 +85,17 @@ struct mCc_ast_statement {
 	};
 };
 
+struct mCc_ast_declaration{
+	struct mCc_ast_node node; ///< Common node attributes
+	/// The concrete type of this statement (no inheritance in C)
+	enum mCc_ast_declaration_type type;
+
+	enum mCc_ast_declaration_type decl_type;
+	struct mCc_ast_literal *decl_array_size;
+	struct mCc_ast_identifier *decl_id;
+
+};
+
 /**
  * @brief Construct a statement from an expression
  *

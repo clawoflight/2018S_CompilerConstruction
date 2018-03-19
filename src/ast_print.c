@@ -163,34 +163,6 @@ static void print_dot_statement_compound(struct mCc_ast_statement *statement,
 		               "substatement");
 }
 
-static void print_dot_statement_declaration(struct mCc_ast_statement *statement,
-                                       void *data)
-{
-    assert(statement);
-    assert(data);
-
-    FILE *out = data;
-    switch(statement->decl_type) {
-        case MCC_AST_TYPE_BOOL:
-            print_dot_node(out, statement, "stmt: decl bool");
-            break;
-        case MCC_AST_TYPE_INT:
-            print_dot_node(out, statement, "stmt: decl int");
-            break;
-        case MCC_AST_TYPE_FLOAT:
-            print_dot_node(out, statement, "stmt: decl float");
-            break;
-        case MCC_AST_TYPE_STRING:
-            print_dot_node(out, statement, "stmt: decl string");
-            break;
-    }
-
-    print_dot_edge(out, statement, statement->decl_id, "identifier");
-    if (statement->decl_array_size) {
-        print_dot_edge(out, statement, statement->decl_array_size, "arr size");
-    }
-}
-
 
 static void print_dot_expression_literal(struct mCc_ast_expression *expression,
                                          void *data)
@@ -320,6 +292,33 @@ static void print_dot_identifier(struct mCc_ast_identifier *identifier,
 	print_dot_node(out, identifier, label);
 }
 
+static void print_dot_declaration(struct mCc_ast_declaration * decl,
+									void *data){
+	assert(decl);
+	assert(data);
+
+	FILE *out = data;
+	switch(decl->decl_type) {
+		case MCC_AST_TYPE_BOOL:
+			print_dot_node(out, decl, "declaration bool");
+			break;
+		case MCC_AST_TYPE_INT:
+			print_dot_node(out, decl, "declaration int");
+			break;
+		case MCC_AST_TYPE_FLOAT:
+			print_dot_node(out, decl, "declaration float");
+			break;
+		case MCC_AST_TYPE_STRING:
+			print_dot_node(out, decl, "declaration string");
+			break;
+	}
+
+	print_dot_edge(out, decl, decl->decl_id, "identifier");
+	if (decl->decl_array_size) {
+		print_dot_edge(out, decl, decl->decl_array_size, "arr size");
+	}
+}
+
 static struct mCc_ast_visitor print_dot_visitor(FILE *out)
 {
 	assert(out);
@@ -337,7 +336,7 @@ static struct mCc_ast_visitor print_dot_visitor(FILE *out)
 		.statement_return = print_dot_statement_return,
 		.statement_return_void = print_dot_statement_return_void,
 		.statement_compound = print_dot_statement_compound,
-        .declaration= print_dot_statement_declaration,
+        .declaration= print_dot_declaration,
 
 		.expression_literal = print_dot_expression_literal,
 		.expression_identifier = print_dot_expression_identifier,
@@ -363,6 +362,19 @@ void mCc_ast_print_dot_statement(FILE *out, struct mCc_ast_statement *statement)
 
 	struct mCc_ast_visitor visitor = print_dot_visitor(out);
 	mCc_ast_visit_statement(statement, &visitor);
+
+	print_dot_end(out);
+}
+
+void mCc_ast_print_dot_declaration(FILE *out, struct mCc_ast_declaration *decl)
+{
+	assert(out);
+	assert(decl);
+
+	print_dot_begin(out);
+
+	struct mCc_ast_visitor visitor = print_dot_visitor(out);
+	mCc_ast_visit_declaration(decl, &visitor);
 
 	print_dot_end(out);
 }

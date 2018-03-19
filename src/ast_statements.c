@@ -141,21 +141,21 @@ mCc_ast_new_statement_declaration(enum mCc_ast_declaration_type type,
 {
     assert(id);
 
-    struct mCc_ast_statement *stmt = malloc(sizeof(*stmt));
-    if (!stmt)
+    struct mCc_ast_declaration *decl = malloc(sizeof(*decl));
+    if (!decl)
         return NULL;
 
-    stmt->type = MCC_AST_STATEMENT_TYPE_DECL;
-    stmt->decl_type = type;
-    stmt->decl_id = id;
+    decl->type = MCC_AST_STATEMENT_TYPE_DECL;
+    decl->decl_type = type;
+    decl->decl_id = id;
 
     if (val) {
-        stmt->decl_array_size = val;
+        decl->decl_array_size = val;
     }
     else{
-        stmt->decl_array_size = NULL;
+        decl->decl_array_size = NULL;
     }
-    return stmt;
+    return decl;
 }
 
 void mCc_ast_delete_statement(struct mCc_ast_statement *statement)
