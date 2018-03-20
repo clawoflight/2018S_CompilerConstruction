@@ -351,7 +351,7 @@ static void print_dot_arguments(struct mCc_ast_arguments *arguments, void *data)
 	print_dot_node(out, arguments, "args: expr");
 	for (unsigned int i = 0; i < arguments->expression_count; ++i)
 		print_dot_edge(out, arguments, arguments->expressions[i],
-		               "subarguments");
+		               "expression");
 }
 
 static void print_dot_parameter(struct mCc_ast_parameters *parameter, void *data)
@@ -363,7 +363,7 @@ static void print_dot_parameter(struct mCc_ast_parameters *parameter, void *data
 	print_dot_node(out, parameter, "args: decl");
 	for (unsigned int i = 0; i < parameter->decl_count; ++i)
 		print_dot_edge(out, parameter, parameter->decl[i],
-					   "subparameter");
+					   "declaration");
 }
 
 static void print_dot_declaration(struct mCc_ast_declaration *decl, void *data)
@@ -429,10 +429,10 @@ static void print_dot_program(struct mCc_ast_program *prog, void *data) {
     assert(data);
 
     FILE *out = data;
-    print_dot_node(out, prog, "prog: func");
+    print_dot_node(out, prog, "program");
     for (unsigned int i = 0; i < prog->func_def_count; ++i)
         print_dot_edge(out, prog, prog->func_defs[i],
-                       "subfunctions");
+                       "func def");
 
 }
 

@@ -268,7 +268,6 @@ mCc_ast_new_function_def_void(struct mCc_ast_identifier *id, struct mCc_ast_para
 	}
 
 	func->type = MCC_AST_FUNCTION_DEF_VOID;
-	//func->func_type = NULL;
 	func->identifier = id;
 	if (para) {
 		func->para = para;
