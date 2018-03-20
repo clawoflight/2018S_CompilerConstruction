@@ -52,7 +52,9 @@ void mCc_ast_print_dot_expression(FILE *out,
 void mCc_ast_print_dot_literal(FILE *out, struct mCc_ast_literal *literal);
 void mCc_ast_print_dot_identifier(FILE *out,
                                   struct mCc_ast_identifier *identifier);
+
 void mCc_ast_print_dot_func_def(FILE *out, struct mCc_ast_function_def *func);
+void mCc_ast_print_dot_program(FILE *out, struct mCc_ast_program *prog);
 
 #ifdef __cplusplus
 }

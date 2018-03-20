@@ -260,3 +260,14 @@ void mCc_ast_visit_function_def(struct mCc_ast_function_def *func,
     }
     visit_if_post_order(func, visitor->function_def, visitor);
 }
+
+void mCc_ast_visit_program(struct mCc_ast_program *prog,
+                                struct mCc_ast_visitor *visitor) {
+    assert(prog);
+    assert(visitor);
+
+    visit_if_post_order(prog, visitor->program, visitor);
+    for (unsigned int i = 0; i < prog->func_def_count; ++i)
+        mCc_ast_visit_function_def(prog->func_defs[i], visitor);
+    visit_if_post_order(prog, visitor->program, visitor);
+}

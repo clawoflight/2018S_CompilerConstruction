@@ -295,6 +295,9 @@ mCc_ast_new_function_def_type(enum mCc_ast_declaration_type type, struct mCc_ast
 	if (para) {
 		func->para = para;
 	}
+    else{
+        func->para =NULL;
+    }
 	func->cmp = cmp;
 	return func;
 

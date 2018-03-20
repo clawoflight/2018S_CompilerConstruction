@@ -424,6 +424,18 @@ static void print_dot_function_def(struct mCc_ast_function_def *func, void *data
     print_dot_edge(out, func, func->cmp, "compound statement");
 }
 
+static void print_dot_program(struct mCc_ast_program *prog, void *data) {
+    assert(prog);
+    assert(data);
+
+    FILE *out = data;
+    print_dot_node(out, prog, "prog: func");
+    for (unsigned int i = 0; i < prog->func_def_count; ++i)
+        print_dot_edge(out, prog, prog->func_defs[i],
+                       "subfunctions");
+
+}
+
 static struct mCc_ast_visitor print_dot_visitor(FILE *out)
 {
 	assert(out);
@@ -458,6 +470,7 @@ static struct mCc_ast_visitor print_dot_visitor(FILE *out)
 		.arguments = print_dot_arguments,
 		.parameter = print_dot_parameter,
         .function_def = print_dot_function_def,
+        .program = print_dot_program,
 
 		.literal_int = print_dot_literal_int,
 		.literal_float = print_dot_literal_float,
@@ -564,11 +577,23 @@ void mCc_ast_print_dot_function_def(FILE *out,
 {
     assert(out);
     assert(func);
-    printf("%s","HIER2");
     print_dot_begin(out);
 
     struct mCc_ast_visitor visitor = print_dot_visitor(out);
     mCc_ast_visit_function_def(func, &visitor);
+
+    print_dot_end(out);
+}
+
+void mCc_ast_print_dot_program(FILE *out,
+                                    struct mCc_ast_program *prog)
+{
+    assert(out);
+    assert(prog);
+    print_dot_begin(out);
+
+    struct mCc_ast_visitor visitor = print_dot_visitor(out);
+    mCc_ast_visit_program(prog, &visitor);
 
     print_dot_end(out);
 }

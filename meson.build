@@ -62,6 +62,7 @@ mCc_uts = [
             'identifier',
             'tdd_parser_assgn',
             'tdd_parser_callexpr',
+            'tdd_parser_program',
 ]
 
 foreach ut : mCc_uts
