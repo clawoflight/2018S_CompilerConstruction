@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 /// Size by which to increase compound_stmts when reallocing
 const int compound_stmt_alloc_block_size = 10;
@@ -260,10 +261,10 @@ void mCc_ast_delete_declaration(struct mCc_ast_declaration *decl)
 struct mCc_ast_function_def *
 mCc_ast_new_function_def_void(struct mCc_ast_identifier *id,
                               struct mCc_ast_parameters *para,
-                              struct mCc_ast_statement *cmp)
+                              struct mCc_ast_statement *body)
 {
 	assert(id);
-	assert(cmp);
+	assert(body);
 	struct mCc_ast_function_def *func = malloc(sizeof(*func));
 	if (!func) {
 		return NULL;
@@ -274,17 +275,17 @@ mCc_ast_new_function_def_void(struct mCc_ast_identifier *id,
 	if (para) {
 		func->para = para;
 	}
-	func->cmp = cmp;
+	func->body = body;
 
 	return func;
 }
 
 struct mCc_ast_function_def *mCc_ast_new_function_def_type(
     enum mCc_ast_declaration_type type, struct mCc_ast_identifier *id,
-    struct mCc_ast_parameters *para, struct mCc_ast_statement *cmp)
+    struct mCc_ast_parameters *para, struct mCc_ast_statement *body)
 {
 	assert(id);
-	assert(cmp);
+	assert(body);
 
 	struct mCc_ast_function_def *func = malloc(sizeof(*func));
 	if (!func) {
@@ -299,7 +300,7 @@ struct mCc_ast_function_def *mCc_ast_new_function_def_type(
 	} else {
 		func->para = NULL;
 	}
-	func->cmp = cmp;
+	func->body = body;
 	return func;
 }
 
@@ -307,7 +308,7 @@ void mCc_ast_delete_func_def(struct mCc_ast_function_def *func)
 {
 	assert(func);
 	mCc_ast_delete_identifier(func->identifier);
-	mCc_ast_delete_statement(func->cmp);
+	mCc_ast_delete_statement(func->body);
 	if (func->para) {
 		mCc_ast_delete_parameters(func->para);
 	}

@@ -414,11 +414,11 @@ static void print_dot_function_def(struct mCc_ast_function_def *func,
 		print_dot_node(out, func, "void function");
 	}
 
-	print_dot_edge(out, func, func->identifier, "identifier");
-	if (func->para) {
-		print_dot_edge(out, func, func->para, "parameter");
-	}
-	print_dot_edge(out, func, func->cmp, "compound statement");
+    print_dot_edge(out, func, func->identifier, "identifier");
+    if (func->para) {
+        print_dot_edge(out, func, func->para, "parameter");
+    }
+    print_dot_edge(out, func, func->body, "compound statement");
 }
 
 static void print_dot_program(struct mCc_ast_program *prog, void *data)
