@@ -32,7 +32,7 @@ enum mCc_ast_statement_type {
 /**
  * The available function types
  */
-enum mCc_ast_function_type{
+enum mCc_ast_function_type {
 	MCC_AST_FUNCTION_DEF_VOID,
 	MCC_AST_FUNCTION_DEF_TYPE,
 };
@@ -243,27 +243,27 @@ struct mCc_ast_function_def {
  * @return a new function
  */
 struct mCc_ast_function_def *
-mCc_ast_new_function_def_void(struct mCc_ast_identifier *id, struct mCc_ast_parameters *para,
-                              struct mCc_ast_statement * cmp);
+mCc_ast_new_function_def_void(struct mCc_ast_identifier *id,
+                              struct mCc_ast_parameters *para,
+                              struct mCc_ast_statement *cmp);
 
 /**
  * @brief Construct function definition with return value
  *
- * @param a return type, an identifier, parameter (can be null) and a compound statement
+ * @param a return type, an identifier, parameter (can be null) and a compound
+ * statement
  *
  * @return a new function
  */
-struct mCc_ast_function_def *
-mCc_ast_new_function_def_type(enum mCc_ast_declaration_type type, struct mCc_ast_identifier *id,
-							  struct mCc_ast_parameters *para,
-                              struct mCc_ast_statement * cmp);
+struct mCc_ast_function_def *mCc_ast_new_function_def_type(
+    enum mCc_ast_declaration_type type, struct mCc_ast_identifier *id,
+    struct mCc_ast_parameters *para, struct mCc_ast_statement *cmp);
 /**
  * @brief Delete function.
  *
  * @param function  to delete
  */
 void mCc_ast_delete_func_def(struct mCc_ast_function_def *func);
-
 
 #ifdef __cplusplus
 }

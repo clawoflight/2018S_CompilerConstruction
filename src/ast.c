@@ -395,7 +395,7 @@ mCc_ast_new_program(struct mCc_ast_function_def *func_def)
 	program->func_defs = NULL;
 
 	if (func_def && (program->func_defs = malloc(parameter_alloc_block_size *
-	                                 sizeof(program))) != NULL) {
+	                                             sizeof(program))) != NULL) {
 		program->func_def_count = 1;
 		program->func_def_alloc_size = parameter_alloc_block_size;
 		program->func_defs[0] = func_def;

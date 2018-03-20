@@ -220,7 +220,7 @@ void mCc_ast_visit_arguments(struct mCc_ast_arguments *arguments,
 }
 
 void mCc_ast_visit_parameter(struct mCc_ast_parameters *parameter,
-							 struct mCc_ast_visitor *visitor)
+                             struct mCc_ast_visitor *visitor)
 {
 	assert(visitor);
 
@@ -248,26 +248,28 @@ void mCc_ast_visit_declaration(struct mCc_ast_declaration *decl,
 }
 
 void mCc_ast_visit_function_def(struct mCc_ast_function_def *func,
-                           struct mCc_ast_visitor *visitor) {
-    assert(func);
-    assert(visitor);
+                                struct mCc_ast_visitor *visitor)
+{
+	assert(func);
+	assert(visitor);
 
-    visit_if_pre_order(func, visitor->function_def, visitor);
-    mCc_ast_visit_identifier(func->identifier, visitor);
-    mCc_ast_visit_statement(func->cmp, visitor);
-    if(func->para) {
-        mCc_ast_visit_parameter(func->para,visitor);
-    }
-    visit_if_post_order(func, visitor->function_def, visitor);
+	visit_if_pre_order(func, visitor->function_def, visitor);
+	mCc_ast_visit_identifier(func->identifier, visitor);
+	mCc_ast_visit_statement(func->cmp, visitor);
+	if (func->para) {
+		mCc_ast_visit_parameter(func->para, visitor);
+	}
+	visit_if_post_order(func, visitor->function_def, visitor);
 }
 
 void mCc_ast_visit_program(struct mCc_ast_program *prog,
-                                struct mCc_ast_visitor *visitor) {
-    assert(prog);
-    assert(visitor);
+                           struct mCc_ast_visitor *visitor)
+{
+	assert(prog);
+	assert(visitor);
 
-    visit_if_post_order(prog, visitor->program, visitor);
-    for (unsigned int i = 0; i < prog->func_def_count; ++i)
-        mCc_ast_visit_function_def(prog->func_defs[i], visitor);
-    visit_if_post_order(prog, visitor->program, visitor);
+	visit_if_post_order(prog, visitor->program, visitor);
+	for (unsigned int i = 0; i < prog->func_def_count; ++i)
+		mCc_ast_visit_function_def(prog->func_defs[i], visitor);
+	visit_if_post_order(prog, visitor->program, visitor);
 }

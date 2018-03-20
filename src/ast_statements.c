@@ -7,9 +7,9 @@
 #include "mCc/ast.h"
 
 #include <assert.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 
 /// Size by which to increase compound_stmts when reallocing
 const int compound_stmt_alloc_block_size = 10;
@@ -258,12 +258,14 @@ void mCc_ast_delete_declaration(struct mCc_ast_declaration *decl)
 /*--------------------------------------------------------------- Function */
 
 struct mCc_ast_function_def *
-mCc_ast_new_function_def_void(struct mCc_ast_identifier *id, struct mCc_ast_parameters *para,
-                              struct mCc_ast_statement * cmp){
+mCc_ast_new_function_def_void(struct mCc_ast_identifier *id,
+                              struct mCc_ast_parameters *para,
+                              struct mCc_ast_statement *cmp)
+{
 	assert(id);
 	assert(cmp);
 	struct mCc_ast_function_def *func = malloc(sizeof(*func));
-	if(!func){
+	if (!func) {
 		return NULL;
 	}
 
@@ -277,14 +279,15 @@ mCc_ast_new_function_def_void(struct mCc_ast_identifier *id, struct mCc_ast_para
 	return func;
 }
 
-struct mCc_ast_function_def *
-mCc_ast_new_function_def_type(enum mCc_ast_declaration_type type, struct mCc_ast_identifier *id, struct mCc_ast_parameters *para,
-                              struct mCc_ast_statement * cmp){
+struct mCc_ast_function_def *mCc_ast_new_function_def_type(
+    enum mCc_ast_declaration_type type, struct mCc_ast_identifier *id,
+    struct mCc_ast_parameters *para, struct mCc_ast_statement *cmp)
+{
 	assert(id);
 	assert(cmp);
 
 	struct mCc_ast_function_def *func = malloc(sizeof(*func));
-	if(!func){
+	if (!func) {
 		return NULL;
 	}
 
@@ -293,23 +296,20 @@ mCc_ast_new_function_def_type(enum mCc_ast_declaration_type type, struct mCc_ast
 	func->identifier = id;
 	if (para) {
 		func->para = para;
+	} else {
+		func->para = NULL;
 	}
-    else{
-        func->para =NULL;
-    }
 	func->cmp = cmp;
 	return func;
-
 }
 
 void mCc_ast_delete_func_def(struct mCc_ast_function_def *func)
 {
 	assert(func);
 	mCc_ast_delete_identifier(func->identifier);
-    mCc_ast_delete_statement(func->cmp);
-	if(func->para){
+	mCc_ast_delete_statement(func->cmp);
+	if (func->para) {
 		mCc_ast_delete_parameters(func->para);
 	}
 	free(func);
-
 }

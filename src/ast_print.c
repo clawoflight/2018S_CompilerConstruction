@@ -350,11 +350,11 @@ static void print_dot_arguments(struct mCc_ast_arguments *arguments, void *data)
 	FILE *out = data;
 	print_dot_node(out, arguments, "args: expr");
 	for (unsigned int i = 0; i < arguments->expression_count; ++i)
-		print_dot_edge(out, arguments, arguments->expressions[i],
-		               "expression");
+		print_dot_edge(out, arguments, arguments->expressions[i], "expression");
 }
 
-static void print_dot_parameter(struct mCc_ast_parameters *parameter, void *data)
+static void print_dot_parameter(struct mCc_ast_parameters *parameter,
+                                void *data)
 {
 	assert(parameter);
 	assert(data);
@@ -362,8 +362,7 @@ static void print_dot_parameter(struct mCc_ast_parameters *parameter, void *data
 	FILE *out = data;
 	print_dot_node(out, parameter, "args: decl");
 	for (unsigned int i = 0; i < parameter->decl_count; ++i)
-		print_dot_edge(out, parameter, parameter->decl[i],
-					   "declaration");
+		print_dot_edge(out, parameter, parameter->decl[i], "declaration");
 }
 
 static void print_dot_declaration(struct mCc_ast_declaration *decl, void *data)
@@ -391,49 +390,46 @@ static void print_dot_declaration(struct mCc_ast_declaration *decl, void *data)
 	}
 }
 
-static void print_dot_function_def(struct mCc_ast_function_def *func, void *data)
+static void print_dot_function_def(struct mCc_ast_function_def *func,
+                                   void *data)
 {
-    assert(func);
-    assert(data);
+	assert(func);
+	assert(data);
 
-    FILE *out = data;
-    if(func->type) {
-        switch (func->func_type) {
-            case MCC_AST_TYPE_BOOL:
-                print_dot_node(out, func, "bool function");
-                break;
-            case MCC_AST_TYPE_INT:
-                print_dot_node(out, func, "int function");
-                break;
-            case MCC_AST_TYPE_FLOAT:
-                print_dot_node(out, func, "float function");
-                break;
-            case MCC_AST_TYPE_STRING:
-                print_dot_node(out, func, "string function");
-                break;
-        }
-    }
-    else{
-        print_dot_node(out, func, "void function");
-    }
+	FILE *out = data;
+	if (func->type) {
+		switch (func->func_type) {
+		case MCC_AST_TYPE_BOOL:
+			print_dot_node(out, func, "bool function");
+			break;
+		case MCC_AST_TYPE_INT: print_dot_node(out, func, "int function"); break;
+		case MCC_AST_TYPE_FLOAT:
+			print_dot_node(out, func, "float function");
+			break;
+		case MCC_AST_TYPE_STRING:
+			print_dot_node(out, func, "string function");
+			break;
+		}
+	} else {
+		print_dot_node(out, func, "void function");
+	}
 
-    print_dot_edge(out, func, func->identifier, "identifier");
-    if (func->para) {
-        print_dot_edge(out, func, func->para, "parameter");
-    }
-    print_dot_edge(out, func, func->cmp, "compound statement");
+	print_dot_edge(out, func, func->identifier, "identifier");
+	if (func->para) {
+		print_dot_edge(out, func, func->para, "parameter");
+	}
+	print_dot_edge(out, func, func->cmp, "compound statement");
 }
 
-static void print_dot_program(struct mCc_ast_program *prog, void *data) {
-    assert(prog);
-    assert(data);
+static void print_dot_program(struct mCc_ast_program *prog, void *data)
+{
+	assert(prog);
+	assert(data);
 
-    FILE *out = data;
-    print_dot_node(out, prog, "program");
-    for (unsigned int i = 0; i < prog->func_def_count; ++i)
-        print_dot_edge(out, prog, prog->func_defs[i],
-                       "func def");
-
+	FILE *out = data;
+	print_dot_node(out, prog, "program");
+	for (unsigned int i = 0; i < prog->func_def_count; ++i)
+		print_dot_edge(out, prog, prog->func_defs[i], "func def");
 }
 
 static struct mCc_ast_visitor print_dot_visitor(FILE *out)
@@ -469,8 +465,8 @@ static struct mCc_ast_visitor print_dot_visitor(FILE *out)
 
 		.arguments = print_dot_arguments,
 		.parameter = print_dot_parameter,
-        .function_def = print_dot_function_def,
-        .program = print_dot_program,
+		.function_def = print_dot_function_def,
+		.program = print_dot_program,
 
 		.literal_int = print_dot_literal_int,
 		.literal_float = print_dot_literal_float,
@@ -505,7 +501,8 @@ void mCc_ast_print_dot_arguments(FILE *out, struct mCc_ast_arguments *arguments)
 	print_dot_end(out);
 }
 
-void mCc_ast_print_dot_parameter(FILE *out, struct mCc_ast_parameters *parameter)
+void mCc_ast_print_dot_parameter(FILE *out,
+                                 struct mCc_ast_parameters *parameter)
 {
 	assert(out);
 	assert(parameter);
@@ -573,27 +570,26 @@ void mCc_ast_print_dot_identifier(FILE *out,
 }
 
 void mCc_ast_print_dot_function_def(FILE *out,
-                                  struct mCc_ast_function_def *func)
+                                    struct mCc_ast_function_def *func)
 {
-    assert(out);
-    assert(func);
-    print_dot_begin(out);
+	assert(out);
+	assert(func);
+	print_dot_begin(out);
 
-    struct mCc_ast_visitor visitor = print_dot_visitor(out);
-    mCc_ast_visit_function_def(func, &visitor);
+	struct mCc_ast_visitor visitor = print_dot_visitor(out);
+	mCc_ast_visit_function_def(func, &visitor);
 
-    print_dot_end(out);
+	print_dot_end(out);
 }
 
-void mCc_ast_print_dot_program(FILE *out,
-                                    struct mCc_ast_program *prog)
+void mCc_ast_print_dot_program(FILE *out, struct mCc_ast_program *prog)
 {
-    assert(out);
-    assert(prog);
-    print_dot_begin(out);
+	assert(out);
+	assert(prog);
+	print_dot_begin(out);
 
-    struct mCc_ast_visitor visitor = print_dot_visitor(out);
-    mCc_ast_visit_program(prog, &visitor);
+	struct mCc_ast_visitor visitor = print_dot_visitor(out);
+	mCc_ast_visit_program(prog, &visitor);
 
-    print_dot_end(out);
+	print_dot_end(out);
 }
