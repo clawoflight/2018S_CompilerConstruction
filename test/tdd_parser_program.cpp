@@ -17,6 +17,20 @@ TEST(TDD_PARSER_PROGRAM, PROGRAM)
     mCc_ast_delete_program(prog);
 }
 
+TEST(TDD_PARSER_PROGRAM, PROGRAMS)
+{
+    const char str[] = "int f(){ return a;} void g(int a){ bool a;}";
+    auto result = mCc_parser_parse_string(str);
+
+    ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);
+    auto prog = result.program;
+
+    // root -> program
+    ASSERT_EQ(2, prog->func_def_count);
+
+    mCc_ast_delete_program(prog);
+}
+
 TEST(TDD_PARSER_PROGRAM, PROGRAM_VOID)
 {
 const char str[] = "void f(int a){ bool a;}";
