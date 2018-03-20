@@ -219,7 +219,7 @@ void mCc_ast_visit_arguments(struct mCc_ast_arguments *arguments,
 	}
 }
 
-void mCc_ast_visit_parameter(struct mCc_ast_parameter *parameter,
+void mCc_ast_visit_parameter(struct mCc_ast_parameters *parameter,
 							 struct mCc_ast_visitor *visitor)
 {
 	assert(visitor);

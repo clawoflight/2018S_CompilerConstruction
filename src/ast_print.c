@@ -354,7 +354,7 @@ static void print_dot_arguments(struct mCc_ast_arguments *arguments, void *data)
 		               "subarguments");
 }
 
-static void print_dot_parameter(struct mCc_ast_parameter *parameter, void *data)
+static void print_dot_parameter(struct mCc_ast_parameters *parameter, void *data)
 {
 	assert(parameter);
 	assert(data);
@@ -492,7 +492,7 @@ void mCc_ast_print_dot_arguments(FILE *out, struct mCc_ast_arguments *arguments)
 	print_dot_end(out);
 }
 
-void mCc_ast_print_dot_parameter(FILE *out, struct mCc_ast_parameter *parameter)
+void mCc_ast_print_dot_parameter(FILE *out, struct mCc_ast_parameters *parameter)
 {
 	assert(out);
 	assert(parameter);

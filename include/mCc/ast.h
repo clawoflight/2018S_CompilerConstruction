@@ -39,10 +39,10 @@ struct mCc_ast_source_location {
  * The available primitive types
  */
 enum mCc_ast_declaration_type {
-    MCC_AST_TYPE_BOOL,  ///< Boolean
-    MCC_AST_TYPE_INT,   ///< Integer
-    MCC_AST_TYPE_FLOAT, ///< Floating-point number
-    MCC_AST_TYPE_STRING ///< String
+	MCC_AST_TYPE_BOOL,  ///< Boolean
+	MCC_AST_TYPE_INT,   ///< Integer
+	MCC_AST_TYPE_FLOAT, ///< Floating-point number
+	MCC_AST_TYPE_STRING ///< String
 };
 
 /* Data contained by every AST node. */
@@ -420,9 +420,8 @@ void mCc_ast_delete_arguments(struct mCc_ast_arguments *arguments);
 /**
  * Node representing parameter.
  */
-struct mCc_ast_parameter {
+struct mCc_ast_parameters {
 	struct mCc_ast_node node; ///< Common node attributes
-	/// The concrete type of this statement (no inheritance in C)
 
 	unsigned int parameter_alloc_block_size;
 	unsigned int decl_count;           ///< Number of sub-expressions
@@ -432,34 +431,74 @@ struct mCc_ast_parameter {
 /**
  * @brief Construct parameter from an expression
  *
- * @param expression The underlying expression
+ * @param decl The underlying declaration
  *
  * @return A new list of parameter
  */
-struct mCc_ast_parameter *
-mCc_ast_new_parameter(struct mCc_ast_declaration *decl);
+struct mCc_ast_parameters *
+mCc_ast_new_parameters(struct mCc_ast_declaration *decl);
 
 /**
  * @brief Add a subexpression to parameter.
  *
  * @param self parameter to which to add another
- * @param expression The sub-expression to add to the parameter
+ * @param decl The declaration to add to the parameter
  *
  * @return self
  */
-struct mCc_ast_parameter *
-mCc_ast_parameter_add(struct mCc_ast_parameter *self,
-					  struct mCc_ast_declaration *decl);
+struct mCc_ast_parameters *
+mCc_ast_parameters_add(struct mCc_ast_parameters *self,
+                       struct mCc_ast_declaration *decl);
 
 /**
  * @brief Delete parameter.
  *
- * @param statement The parameter to delete
+ * @param parameter The parameter to delete
  */
-void mCc_ast_delete_parameter(struct mCc_ast_parameter *parameter);
+void mCc_ast_delete_parameters(struct mCc_ast_parameters *parameter);
 
+/********************************************************* Program */
 
+/**
+ * @brief Node representing an entire program.
+ */
+struct mCc_ast_program {
+	struct mCc_ast_node node; ///< Common node attributes
 
+	/// Memory allocated for function definitions
+	unsigned int func_def_alloc_size;
+	unsigned int func_def_count;             ///< Number of function definitions
+	struct mCc_ast_function_def **func_defs; ///< Function definitions
+};
+
+/**
+ * @brief Create a new program from a function definition.
+ *
+ * @param fun_def The (optional) function definition to add
+ *
+ * @return A new program
+ */
+struct mCc_ast_program *
+mCc_ast_new_program(struct mCc_ast_function_def *fun_def);
+
+/**
+ * @brief Add a function definition to a program
+ *
+ * @param self The program to which to add the function definition
+ * @param fun_def The function definition to add
+ *
+ * @return self
+ */
+struct mCc_ast_program *
+mCc_ast_program_add(struct mCc_ast_program *self,
+                    struct mCc_ast_function_def *fun_def);
+
+/**
+ * @brief Delete a program
+ *
+ * @param self The program to delete
+ */
+void mCc_ast_delete_program(struct mCc_ast_program *self);
 
 #ifdef __cplusplus
 }

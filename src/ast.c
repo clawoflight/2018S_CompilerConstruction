@@ -318,62 +318,126 @@ void mCc_ast_delete_arguments(struct mCc_ast_arguments *arguments)
 /// Size by which to increase parameter when reallocating
 const int parameter_alloc_block_size = 10;
 
-struct mCc_ast_parameter *
-mCc_ast_new_parameter(struct mCc_ast_declaration *decl)
+struct mCc_ast_parameters *
+mCc_ast_new_parameters(struct mCc_ast_declaration *decl)
 {
-    assert(decl);
+	assert(decl);
 
-    struct mCc_ast_parameter *args = malloc(sizeof(*args));
-    if (!args)
-        return NULL;
+	struct mCc_ast_parameters *args = malloc(sizeof(*args));
+	if (!args)
+		return NULL;
 
-    args->decl_count = 0;
-    args->decl = NULL;
+	args->decl_count = 0;
+	args->decl = NULL;
 
-    if (decl && (args->decl = malloc(parameter_alloc_block_size *
-                                                  sizeof(args))) != NULL) {
-        args->decl_count = 1;
-        args->parameter_alloc_block_size = parameter_alloc_block_size;
-        args->decl[0] = decl;
-    }
+	if (decl && (args->decl = malloc(parameter_alloc_block_size *
+	                                 sizeof(args))) != NULL) {
+		args->decl_count = 1;
+		args->parameter_alloc_block_size = parameter_alloc_block_size;
+		args->decl[0] = decl;
+	}
 
-    return args;
+	return args;
 }
 
-struct mCc_ast_parameter *
-mCc_ast_parameter_add(struct mCc_ast_parameter *self,
-                      struct mCc_ast_declaration *decl)
+struct mCc_ast_parameters *
+mCc_ast_parameters_add(struct mCc_ast_parameters *self,
+                       struct mCc_ast_declaration *decl)
 {
-    assert(self);
-    assert(decl);
+	assert(self);
+	assert(decl);
 
-    if (self->decl_count < self->parameter_alloc_block_size) {
-        self->decl[self->decl_count++] = decl;
-        return self;
-    }
+	if (self->decl_count < self->parameter_alloc_block_size) {
+		self->decl[self->decl_count++] = decl;
+		return self;
+	}
 
-    struct mCc_ast_declaration **tmp;
-    self->parameter_alloc_block_size += parameter_alloc_block_size;
-    if ((tmp = realloc(self->decl, self->parameter_alloc_block_size *
-                                          sizeof(self))) == NULL) {
-        mCc_ast_delete_parameter(self);
-        return NULL;
-    }
+	struct mCc_ast_declaration **tmp;
+	self->parameter_alloc_block_size += parameter_alloc_block_size;
+	if ((tmp = realloc(self->decl, self->parameter_alloc_block_size *
+	                                   sizeof(self))) == NULL) {
+		mCc_ast_delete_parameters(self);
+		return NULL;
+	}
 
-    self->decl = tmp;
-    self->decl[self->decl_count++] = decl;
-    return self;
+	self->decl = tmp;
+	self->decl[self->decl_count++] = decl;
+	return self;
 }
 
-void mCc_ast_delete_parameter(struct mCc_ast_parameter *parameter)
+void mCc_ast_delete_parameters(struct mCc_ast_parameters *parameter)
 {
-    if (parameter) {
+	if (parameter) {
 
-        for (unsigned int i = 0; i < parameter->decl_count; ++i)
-            mCc_ast_delete_declaration(parameter->decl[i]);
-        if (parameter->decl)
-            free(parameter->decl);
+		for (unsigned int i = 0; i < parameter->decl_count; ++i)
+			mCc_ast_delete_declaration(parameter->decl[i]);
+		if (parameter->decl)
+			free(parameter->decl);
 
-        free(parameter);
-    }
+		free(parameter);
+	}
+}
+
+/************************************************************** Program */
+
+const unsigned int program_alloc_block_size = 10;
+
+struct mCc_ast_program *
+mCc_ast_new_program(struct mCc_ast_function_def *func_def)
+{
+	assert(func_def);
+
+	struct mCc_ast_program *program = malloc(sizeof(*program));
+	if (!program)
+		return NULL;
+
+	program->func_def_count = 0;
+	program->func_defs = NULL;
+
+	if (func_def && (program->func_defs = malloc(parameter_alloc_block_size *
+	                                 sizeof(program))) != NULL) {
+		program->func_def_count = 1;
+		program->func_def_alloc_size = parameter_alloc_block_size;
+		program->func_defs[0] = func_def;
+	}
+
+	return program;
+}
+
+struct mCc_ast_program *
+mCc_ast_program_add(struct mCc_ast_program *self,
+                    struct mCc_ast_function_def *func_def)
+{
+	assert(self);
+	assert(func_def);
+
+	if (self->func_def_count < self->func_def_alloc_size) {
+		self->func_defs[self->func_def_count++] = func_def;
+		return self;
+	}
+
+	struct mCc_ast_function_def **tmp;
+	self->func_def_alloc_size += program_alloc_block_size;
+	if ((tmp = realloc(self->func_defs,
+	                   self->func_def_alloc_size * sizeof(self))) == NULL) {
+		mCc_ast_delete_program(self);
+		return NULL;
+	}
+
+	self->func_defs = tmp;
+	self->func_defs[self->func_def_count++] = func_def;
+	return self;
+}
+
+void mCc_ast_delete_program(struct mCc_ast_program *self)
+{
+	if (self) {
+
+		for (unsigned int i = 0; i < self->func_def_count; ++i)
+			mCc_ast_delete_func_def(self->func_defs[i]);
+		if (self->func_defs)
+			free(self->func_defs);
+
+		free(self);
+	}
 }

@@ -258,7 +258,7 @@ void mCc_ast_delete_declaration(struct mCc_ast_declaration *decl)
 /*--------------------------------------------------------------- Function */
 
 struct mCc_ast_function_def *
-mCc_ast_new_function_def_void(struct mCc_ast_identifier *id, struct mCc_ast_parameter *para,
+mCc_ast_new_function_def_void(struct mCc_ast_identifier *id, struct mCc_ast_parameters *para,
                               struct mCc_ast_statement * cmp){
 	assert(id);
 	assert(cmp);
@@ -279,7 +279,7 @@ mCc_ast_new_function_def_void(struct mCc_ast_identifier *id, struct mCc_ast_para
 }
 
 struct mCc_ast_function_def *
-mCc_ast_new_function_def_type(enum mCc_ast_declaration_type type, struct mCc_ast_identifier *id, struct mCc_ast_parameter *para,
+mCc_ast_new_function_def_type(enum mCc_ast_declaration_type type, struct mCc_ast_identifier *id, struct mCc_ast_parameters *para,
                               struct mCc_ast_statement * cmp){
 	assert(id);
 	assert(cmp);
@@ -306,7 +306,7 @@ void mCc_ast_delete_func_def(struct mCc_ast_function_def *func)
 	mCc_ast_delete_identifier(func->identifier);
     mCc_ast_delete_statement(func->cmp);
 	if(func->para){
-		mCc_ast_delete_parameter(func->para);
+		mCc_ast_delete_parameters(func->para);
 	}
 	free(func);
 

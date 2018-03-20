@@ -232,7 +232,7 @@ struct mCc_ast_function_def {
 	enum mCc_ast_declaration_type func_type;
 	struct mCc_ast_statement *cmp;
 	struct mCc_ast_identifier *identifier;
-	struct mCc_ast_parameter *para;
+	struct mCc_ast_parameters *para;
 };
 
 /**
@@ -243,7 +243,7 @@ struct mCc_ast_function_def {
  * @return a new function
  */
 struct mCc_ast_function_def *
-mCc_ast_new_function_def_void(struct mCc_ast_identifier *id, struct mCc_ast_parameter *para,
+mCc_ast_new_function_def_void(struct mCc_ast_identifier *id, struct mCc_ast_parameters *para,
                               struct mCc_ast_statement * cmp);
 
 /**
@@ -255,7 +255,7 @@ mCc_ast_new_function_def_void(struct mCc_ast_identifier *id, struct mCc_ast_para
  */
 struct mCc_ast_function_def *
 mCc_ast_new_function_def_type(enum mCc_ast_declaration_type type, struct mCc_ast_identifier *id,
-							  struct mCc_ast_parameter *para,
+							  struct mCc_ast_parameters *para,
                               struct mCc_ast_statement * cmp);
 /**
  * @brief Delete function.

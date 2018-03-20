@@ -2,7 +2,7 @@
 
 %define api.pure full
 %lex-param   {void *scanner}
-%parse-param {void *scanner} {struct mCc_ast_expression **result} {struct mCc_ast_statement **stmt_result}
+%parse-param {void *scanner} {struct mCc_ast_expression **result} {struct mCc_ast_statement **stmt_result} {struct mCc_ast_program **program_result}
 
 %define parse.trace
 %define parse.error verbose
@@ -63,7 +63,6 @@ void mCc_parser_error();
 %token <char*> TYPE "type"
 
 /* TYPES */
-
 %type <enum mCc_ast_unary_op>  unary_op
 %type <enum mCc_ast_declaration_type> type
 
@@ -72,9 +71,10 @@ void mCc_parser_error();
 %type <struct mCc_ast_statement *> statement compound_stmt
 %type <struct mCc_ast_identifier *> identifier
 %type <struct mCc_ast_arguments *> arguments
-%type <struct mCc_ast_parameter *> parameter
+%type <struct mCc_ast_parameters *> parameters
 %type <struct mCc_ast_declaration *> declaration
 %type <struct mCc_ast_function_def *> function_def
+%type <struct mCc_ast_program *> program
 
 %start toplevel
 
@@ -94,14 +94,17 @@ void mCc_parser_error();
 %destructor { mCc_ast_delete_statement($$); } statement compound_stmt
 %destructor { mCc_ast_delete_identifier($$); } identifier
 %destructor { mCc_ast_delete_arguments($$); } arguments
-%destructor { mCc_ast_delete_parameter($$); } parameter
+%destructor { mCc_ast_delete_parameters($$); } parameters
 %destructor { mCc_ast_delete_declaration($$); } declaration
-//%destructor { mCc_ast_delete_function_def($$); } function_def
+%destructor { mCc_ast_delete_func_def($$); } function_def
+%destructor { mCc_ast_delete_program($$); } program
 
 %%
 
-toplevel : expression {  *result = $1; }
+toplevel : expression { *result = $1; }
          | statement  { *stmt_result = $1; }
+         | %empty     { *program_result = mCc_ast_new_program(NULL); }
+         | program    { *program_result = $1; }
          ;
 
 type : TYPE {
@@ -177,15 +180,19 @@ arguments : expression                 { $$ = mCc_ast_new_arguments($1);     }
           | arguments COMMA expression { $$ = mCc_ast_arguments_add($1, $3); }
           ;
 
-parameter : declaration                 { $$ = mCc_ast_new_parameter($1);     }
-            | parameter COMMA declaration { $$ = mCc_ast_parameter_add($1, $3); }
-            ;
+parameters : declaration                  { $$ = mCc_ast_new_parameters($1);     }
+           | parameters COMMA declaration { $$ = mCc_ast_parameters_add($1, $3); }
+           ;
 
-function_def : VOID identifier LPARENTH RPARENTH compound_stmt            { $$ = mCc_ast_new_function_def_void($2,NULL,$5);}
-            | VOID identifier LPARENTH parameter RPARENTH compound_stmt   { $$ = mCc_ast_new_function_def_void($2,$4,$6);}
-            | type identifier LPARENTH RPARENTH compound_stmt             { $$ = mCc_ast_new_function_def_type($1,$2,NULL,$5);}
-            | type identifier LPARENTH parameter RPARENTH compound_stmt   { $$ = mCc_ast_new_function_def_type($1,$2,$4,$6);}
-            ;
+function_def : VOID identifier LPARENTH RPARENTH compound_stmt            { $$ = mCc_ast_new_function_def_void($2, NULL ,$5); }
+             | VOID identifier LPARENTH parameters RPARENTH compound_stmt { $$ = mCc_ast_new_function_def_void($2, $4, $6); }
+             | type identifier LPARENTH RPARENTH compound_stmt            { $$ = mCc_ast_new_function_def_type($1, $2, NULL, $5); }
+             | type identifier LPARENTH parameters RPARENTH compound_stmt { $$ = mCc_ast_new_function_def_type($1, $2, $4, $6); }
+             ;
+
+program : function_def         { $$ = mCc_ast_new_program($1); }
+        | program function_def { $$ = mCc_ast_program_add($1, $2); }
+        ;
 %%
 
 #include <assert.h>
@@ -225,7 +232,7 @@ struct mCc_parser_result mCc_parser_parse_file(FILE *input)
 		.status = MCC_PARSER_STATUS_OK,
 	};
 
-	if (yyparse(scanner, &result.expression, &result.statement) != 0) {
+	if (yyparse(scanner, &result.expression, &result.statement, &result.program) != 0) {
 		result.status = MCC_PARSER_STATUS_UNKNOWN_ERROR;
 	}
 
