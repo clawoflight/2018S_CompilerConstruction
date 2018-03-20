@@ -98,6 +98,6 @@ program          = [ { function_def } ]
 ## Task 3: Error handling
 - [Location tracking](https://www.gnu.org/software/bison/manual/html_node/Tracking-Locations.html#Tracking-Locations)
   and also [SO](https://stackoverflow.com/questions/22407730/bison-line-number-included-in-the-error-messages) and [IBM](https://www.ibm.com/developerworks/library/l-flexbison/index.html)
-~~[Precedence] https://www.gnu.org/software/bison/manual/html_node/Precedence.html#Precedence~~
+- Kill memory leaks with fire! --> Always handle `malloc` failures, and whenever a constructor returns `NULL`, destroy all children first!
 
 ## Task 4: Examples
