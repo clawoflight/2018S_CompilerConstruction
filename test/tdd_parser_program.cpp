@@ -12,7 +12,7 @@ TEST(TDD_PARSER_PROGRAM, PROGRAM)
     auto prog = result.program;
 
     // root -> program
-    ASSERT_EQ(1, prog->func_def_count);
+    ASSERT_EQ((unsigned int) 1, prog->func_def_count);
 
     mCc_ast_delete_program(prog);
 }
@@ -26,7 +26,7 @@ TEST(TDD_PARSER_PROGRAM, PROGRAMS)
     auto prog = result.program;
 
     // root -> program
-    ASSERT_EQ(2, prog->func_def_count);
+    ASSERT_EQ((unsigned int) 2, prog->func_def_count);
 
     mCc_ast_delete_program(prog);
 }
@@ -87,7 +87,7 @@ TEST(TDD_PARSER_PROGRAM, PARAMETERS)
     auto prog = result.program;
 
     // root -> literal
-    ASSERT_EQ(2, prog->func_defs[0]->para->decl_count);
+    ASSERT_EQ((unsigned int) 2, prog->func_defs[0]->para->decl_count);
     ASSERT_EQ(0, strcmp(prog->func_defs[0]->para->decl[0]->decl_id->id_value,"a"));
     ASSERT_EQ(0, strcmp(prog->func_defs[0]->para->decl[1]->decl_id->id_value,"b"));
 
