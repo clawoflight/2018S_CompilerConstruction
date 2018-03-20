@@ -35,6 +35,16 @@ struct mCc_ast_source_location {
 	int end_col;
 };
 
+/**
+ * The available primitive types
+ */
+enum mCc_ast_declaration_type {
+    MCC_AST_TYPE_BOOL,  ///< Boolean
+    MCC_AST_TYPE_INT,   ///< Integer
+    MCC_AST_TYPE_FLOAT, ///< Floating-point number
+    MCC_AST_TYPE_STRING ///< String
+};
+
 /* Data contained by every AST node. */
 /**
  * Attributes contained by every AST node.
@@ -404,6 +414,52 @@ mCc_ast_arguments_add(struct mCc_ast_arguments *self,
  * @param statement The arguments to delete
  */
 void mCc_ast_delete_arguments(struct mCc_ast_arguments *arguments);
+
+/* -------------------------------------------------------------- Parameter */
+
+/**
+ * Node representing parameter.
+ */
+struct mCc_ast_parameter {
+	struct mCc_ast_node node; ///< Common node attributes
+	/// The concrete type of this statement (no inheritance in C)
+
+	unsigned int parameter_alloc_block_size;
+	unsigned int decl_count;           ///< Number of sub-expressions
+	struct mCc_ast_declaration **decl; ///< Sub expressions
+};
+
+/**
+ * @brief Construct parameter from an expression
+ *
+ * @param expression The underlying expression
+ *
+ * @return A new list of parameter
+ */
+struct mCc_ast_parameter *
+mCc_ast_new_parameter(struct mCc_ast_declaration *decl);
+
+/**
+ * @brief Add a subexpression to parameter.
+ *
+ * @param self parameter to which to add another
+ * @param expression The sub-expression to add to the parameter
+ *
+ * @return self
+ */
+struct mCc_ast_parameter *
+mCc_ast_parameter_add(struct mCc_ast_parameter *self,
+					  struct mCc_ast_declaration *decl);
+
+/**
+ * @brief Delete parameter.
+ *
+ * @param statement The parameter to delete
+ */
+void mCc_ast_delete_parameter(struct mCc_ast_parameter *parameter);
+
+
+
 
 #ifdef __cplusplus
 }

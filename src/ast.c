@@ -312,3 +312,68 @@ void mCc_ast_delete_arguments(struct mCc_ast_arguments *arguments)
 		free(arguments);
 	}
 }
+
+/*--------------------------------------------------------------- Parameter */
+
+/// Size by which to increase parameter when reallocating
+const int parameter_alloc_block_size = 10;
+
+struct mCc_ast_parameter *
+mCc_ast_new_parameter(struct mCc_ast_declaration *decl)
+{
+    assert(decl);
+
+    struct mCc_ast_parameter *args = malloc(sizeof(*args));
+    if (!args)
+        return NULL;
+
+    args->decl_count = 0;
+    args->decl = NULL;
+
+    if (decl && (args->decl = malloc(parameter_alloc_block_size *
+                                                  sizeof(args))) != NULL) {
+        args->decl_count = 1;
+        args->parameter_alloc_block_size = parameter_alloc_block_size;
+        args->decl[0] = decl;
+    }
+
+    return args;
+}
+
+struct mCc_ast_parameter *
+mCc_ast_parameter_add(struct mCc_ast_parameter *self,
+                      struct mCc_ast_declaration *decl)
+{
+    assert(self);
+    assert(decl);
+
+    if (self->decl_count < self->parameter_alloc_block_size) {
+        self->decl[self->decl_count++] = decl;
+        return self;
+    }
+
+    struct mCc_ast_declaration **tmp;
+    self->parameter_alloc_block_size += parameter_alloc_block_size;
+    if ((tmp = realloc(self->decl, self->parameter_alloc_block_size *
+                                          sizeof(self))) == NULL) {
+        mCc_ast_delete_parameter(self);
+        return NULL;
+    }
+
+    self->decl = tmp;
+    self->decl[self->decl_count++] = decl;
+    return self;
+}
+
+void mCc_ast_delete_parameter(struct mCc_ast_parameter *parameter)
+{
+    if (parameter) {
+
+        for (unsigned int i = 0; i < parameter->decl_count; ++i)
+            mCc_ast_delete_declaration(parameter->decl[i]);
+        if (parameter->decl)
+            free(parameter->decl);
+
+        free(parameter);
+    }
+}

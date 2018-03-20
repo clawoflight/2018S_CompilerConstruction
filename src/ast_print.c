@@ -354,6 +354,18 @@ static void print_dot_arguments(struct mCc_ast_arguments *arguments, void *data)
 		               "subarguments");
 }
 
+static void print_dot_parameter(struct mCc_ast_parameter *parameter, void *data)
+{
+	assert(parameter);
+	assert(data);
+
+	FILE *out = data;
+	print_dot_node(out, parameter, "args: decl");
+	for (unsigned int i = 0; i < parameter->decl_count; ++i)
+		print_dot_edge(out, parameter, parameter->decl[i],
+					   "subparameter");
+}
+
 static void print_dot_declaration(struct mCc_ast_declaration *decl, void *data)
 {
 	assert(decl);
@@ -377,6 +389,39 @@ static void print_dot_declaration(struct mCc_ast_declaration *decl, void *data)
 	if (decl->decl_array_size) {
 		print_dot_edge(out, decl, decl->decl_array_size, "arr size");
 	}
+}
+
+static void print_dot_function_def(struct mCc_ast_function_def *func, void *data)
+{
+    assert(func);
+    assert(data);
+
+    FILE *out = data;
+    if(func->type) {
+        switch (func->func_type) {
+            case MCC_AST_TYPE_BOOL:
+                print_dot_node(out, func, "bool function");
+                break;
+            case MCC_AST_TYPE_INT:
+                print_dot_node(out, func, "int function");
+                break;
+            case MCC_AST_TYPE_FLOAT:
+                print_dot_node(out, func, "float function");
+                break;
+            case MCC_AST_TYPE_STRING:
+                print_dot_node(out, func, "string function");
+                break;
+        }
+    }
+    else{
+        print_dot_node(out, func, "void function");
+    }
+
+    print_dot_edge(out, func, func->identifier, "identifier");
+    if (func->para) {
+        print_dot_edge(out, func, func->para, "parameter");
+    }
+    print_dot_edge(out, func, func->cmp, "compound statement");
 }
 
 static struct mCc_ast_visitor print_dot_visitor(FILE *out)
@@ -411,6 +456,8 @@ static struct mCc_ast_visitor print_dot_visitor(FILE *out)
 		.identifier = print_dot_identifier,
 
 		.arguments = print_dot_arguments,
+		.parameter = print_dot_parameter,
+        .function_def = print_dot_function_def,
 
 		.literal_int = print_dot_literal_int,
 		.literal_float = print_dot_literal_float,
@@ -441,6 +488,19 @@ void mCc_ast_print_dot_arguments(FILE *out, struct mCc_ast_arguments *arguments)
 
 	struct mCc_ast_visitor visitor = print_dot_visitor(out);
 	mCc_ast_visit_arguments(arguments, &visitor);
+
+	print_dot_end(out);
+}
+
+void mCc_ast_print_dot_parameter(FILE *out, struct mCc_ast_parameter *parameter)
+{
+	assert(out);
+	assert(parameter);
+
+	print_dot_begin(out);
+
+	struct mCc_ast_visitor visitor = print_dot_visitor(out);
+	mCc_ast_visit_parameter(parameter, &visitor);
 
 	print_dot_end(out);
 }
@@ -497,4 +557,18 @@ void mCc_ast_print_dot_identifier(FILE *out,
 	mCc_ast_visit_identifier(identifier, &visitor);
 
 	print_dot_end(out);
+}
+
+void mCc_ast_print_dot_function_def(FILE *out,
+                                  struct mCc_ast_function_def *func)
+{
+    assert(out);
+    assert(func);
+    printf("%s","HIER2");
+    print_dot_begin(out);
+
+    struct mCc_ast_visitor visitor = print_dot_visitor(out);
+    mCc_ast_visit_function_def(func, &visitor);
+
+    print_dot_end(out);
 }

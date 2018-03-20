@@ -57,6 +57,7 @@ void mCc_parser_error();
 %token ELSE "else"
 %token WHILE "while"
 %token RETURN "return"
+%token VOID "void"
 %token SEMICOLON ";"
 %token COMMA ","
 %token <char*> TYPE "type"
@@ -71,7 +72,9 @@ void mCc_parser_error();
 %type <struct mCc_ast_statement *> statement compound_stmt
 %type <struct mCc_ast_identifier *> identifier
 %type <struct mCc_ast_arguments *> arguments
+%type <struct mCc_ast_parameter *> parameter
 %type <struct mCc_ast_declaration *> declaration
+%type <struct mCc_ast_function_def *> function_def
 
 %start toplevel
 
@@ -91,11 +94,13 @@ void mCc_parser_error();
 %destructor { mCc_ast_delete_statement($$); } statement compound_stmt
 %destructor { mCc_ast_delete_identifier($$); } identifier
 %destructor { mCc_ast_delete_arguments($$); } arguments
+%destructor { mCc_ast_delete_parameter($$); } parameter
 %destructor { mCc_ast_delete_declaration($$); } declaration
+//%destructor { mCc_ast_delete_function_def($$); } function_def
 
 %%
 
-toplevel : expression { *result = $1; }
+toplevel : expression {  *result = $1; }
          | statement  { *stmt_result = $1; }
          ;
 
@@ -171,6 +176,16 @@ declaration : type identifier                       {$$ = mCc_ast_new_declaratio
 arguments : expression                 { $$ = mCc_ast_new_arguments($1);     }
           | arguments COMMA expression { $$ = mCc_ast_arguments_add($1, $3); }
           ;
+
+parameter : declaration                 { $$ = mCc_ast_new_parameter($1);     }
+            | parameter COMMA declaration { $$ = mCc_ast_parameter_add($1, $3); }
+            ;
+
+function_def : VOID identifier LPARENTH RPARENTH compound_stmt            { $$ = mCc_ast_new_function_def_void($2,NULL,$5);}
+            | VOID identifier LPARENTH parameter RPARENTH compound_stmt   { $$ = mCc_ast_new_function_def_void($2,$4,$6);}
+            | type identifier LPARENTH RPARENTH compound_stmt             { $$ = mCc_ast_new_function_def_type($1,$2,NULL,$5);}
+            | type identifier LPARENTH parameter RPARENTH compound_stmt   { $$ = mCc_ast_new_function_def_type($1,$2,$4,$6);}
+            ;
 %%
 
 #include <assert.h>

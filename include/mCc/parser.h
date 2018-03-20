@@ -20,6 +20,7 @@ struct mCc_parser_result {
 	enum mCc_parser_status status;
 	struct mCc_ast_expression *expression;
 	struct mCc_ast_statement *statement;
+	struct mCc_ast_function_def *function_def;
 };
 
 struct mCc_parser_result mCc_parser_parse_string(const char *input);
