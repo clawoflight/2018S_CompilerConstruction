@@ -78,6 +78,21 @@ TEST(TDD_PARSER_PROGRAM, FUNC_VOID)
     mCc_ast_delete_program(prog);
 }
 
+TEST(TDD_PARSER_PROGRAM, FUNC_NO_BODY)
+{
+    const char str[] = "void f(int a){ }";
+    auto result = mCc_parser_parse_string(str);
+
+    ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);
+    auto prog = result.program;
+
+    // root -> function
+    ASSERT_EQ(MCC_AST_FUNCTION_DEF_VOID, prog->func_defs[0]->type);
+    ASSERT_EQ(0, strcmp(prog->func_defs[0]->identifier->id_value,"f"));
+    ASSERT_EQ(NULL, prog->func_defs[0]->body);
+    mCc_ast_delete_program(prog);
+}
+
 TEST(TDD_PARSER_PROGRAM, PARAMETERS)
 {
     const char str[] = "int f(int a, bool b){ return a;}";
