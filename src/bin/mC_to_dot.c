@@ -21,6 +21,11 @@ int main(void)
 	{
 		struct mCc_parser_result result = mCc_parser_parse_file(stdin);
 		if (result.status != MCC_PARSER_STATUS_OK) {
+			fprintf(stderr, "Error: %d:%d - %d:%d %s\n",
+			        result.err_loc.start_line, result.err_loc.start_col,
+			        result.err_loc.end_line, result.err_loc.end_col,
+			        result.err_msg);
+			free((void *) result.err_msg);
 			return EXIT_FAILURE;
 		}
 		expr = result.expression;

@@ -2,7 +2,7 @@
 
 %define api.pure full
 %lex-param   {void *scanner}
-%parse-param {void *scanner} {struct mCc_ast_expression **result} {struct mCc_ast_statement **stmt_result} {struct mCc_ast_program **program_result}
+%parse-param {void *scanner} {struct mCc_parser_result *result}
 
 %define parse.trace
 %define parse.error verbose
@@ -16,6 +16,8 @@
 %{
 #include <string.h>
 #include <stdbool.h>
+
+#define UNUSED(id) {(void) (id) ;}
 
 int mCc_parser_lex();
 void mCc_parser_error();
@@ -103,10 +105,10 @@ void mCc_parser_error();
 
 %%
 
-toplevel : expression { *result = $1; }
-         | statement  { *stmt_result = $1; }
-         | %empty     { *program_result = mCc_ast_new_program(NULL); }
-         | program    { *program_result = $1; }
+toplevel : expression { result->expression = $1; }
+         | statement  { result->statement = $1; }
+         | %empty     { result->program = mCc_ast_new_program(NULL); }
+         | program    { result->program = $1; }
          ;
 
 type : TYPE {
@@ -206,10 +208,19 @@ program : function_def         { $$ = mCc_ast_new_program($1); }
 #include "scanner.h"
 
 void mCc_parser_error(struct MCC_PARSER_LTYPE *yylloc, yyscan_t *scanner,
-                      void *result, void *stmt_result, const char *msg)
+                      void *result, const char *msg)
 {
-	fprintf(stderr, "ERROR line %d:%d - %d:%d: %s\n", yylloc->first_line, yylloc->first_column,
-            yylloc->last_line, yylloc->last_column, msg);
+	UNUSED(scanner);
+	struct mCc_parser_result *r = result;
+
+	r->status = MCC_PARSER_STATUS_PARSE_ERROR;
+	r->err_msg = strdup(msg);
+
+	// Copy error location to result
+	r->err_loc.start_line = yylloc->first_line;
+	r->err_loc.end_line = yylloc->last_line;
+	r->err_loc.start_col = yylloc->first_column;
+	r->err_loc.end_col = yylloc->last_column;
 }
 
 struct mCc_parser_result mCc_parser_parse_string(const char *input)
@@ -243,7 +254,7 @@ struct mCc_parser_result mCc_parser_parse_file(FILE *input)
 		.status = MCC_PARSER_STATUS_OK,
 	};
 
-	if (yyparse(scanner, &result.expression, &result.statement, &result.program) != 0) {
+	if (yyparse(scanner, &result) != 0 && result.status == MCC_PARSER_STATUS_OK) {
 		result.status = MCC_PARSER_STATUS_UNKNOWN_ERROR;
 	}
 

@@ -14,13 +14,20 @@ enum mCc_parser_status {
 	MCC_PARSER_STATUS_OK,
 	MCC_PARSER_STATUS_UNABLE_TO_OPEN_STREAM,
 	MCC_PARSER_STATUS_UNKNOWN_ERROR,
+	MCC_PARSER_STATUS_PARSE_ERROR,
 };
 
 struct mCc_parser_result {
 	enum mCc_parser_status status;
+
 	struct mCc_ast_expression *expression;
 	struct mCc_ast_statement *statement;
 	struct mCc_ast_program *program;
+
+	/// Human-readable error description.
+	/// This *must be freed* if it is not NULL!
+	const char *err_msg;
+	struct mCc_ast_source_location err_loc;
 };
 
 struct mCc_parser_result mCc_parser_parse_string(const char *input);
