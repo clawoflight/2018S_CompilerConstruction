@@ -270,7 +270,7 @@ void mCc_ast_visit_program(struct mCc_ast_program *prog,
 	assert(prog);
 	assert(visitor);
 
-	visit_if_post_order(prog, visitor->program, visitor);
+	visit_if_pre_order(prog, visitor->program, visitor);
 	for (unsigned int i = 0; i < prog->func_def_count; ++i)
 		mCc_ast_visit_function_def(prog->func_defs[i], visitor);
 	visit_if_post_order(prog, visitor->program, visitor);
