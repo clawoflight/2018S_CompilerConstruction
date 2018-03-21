@@ -255,7 +255,9 @@ void mCc_ast_visit_function_def(struct mCc_ast_function_def *func,
 
 	visit_if_pre_order(func, visitor->function_def, visitor);
 	mCc_ast_visit_identifier(func->identifier, visitor);
-	mCc_ast_visit_statement(func->body, visitor);
+	if (func->body) {
+		mCc_ast_visit_statement(func->body, visitor);
+	}
 	if (func->para) {
 		mCc_ast_visit_parameter(func->para, visitor);
 	}
