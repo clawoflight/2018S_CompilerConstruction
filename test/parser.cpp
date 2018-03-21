@@ -200,3 +200,11 @@ TEST(Parser, ArraySubscript)
 
 	mCc_ast_delete_expression(expr);
 }
+
+TEST(Parser, LiteralDestructor)
+{
+const char input[] = "(\"weer\"";
+auto result = mCc_parser_parse_string(input);
+
+ASSERT_NE(MCC_PARSER_STATUS_OK, result.status);
+}
