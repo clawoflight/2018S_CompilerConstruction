@@ -184,10 +184,14 @@ parameters : declaration                  { $$ = mCc_ast_new_parameters($1);    
            | parameters COMMA declaration { $$ = mCc_ast_parameters_add($1, $3); }
            ;
 
-function_def : VOID identifier LPARENTH RPARENTH compound_stmt            { $$ = mCc_ast_new_function_def_void($2, NULL ,$5); }
-             | VOID identifier LPARENTH parameters RPARENTH compound_stmt { $$ = mCc_ast_new_function_def_void($2, $4, $6); }
-             | type identifier LPARENTH RPARENTH compound_stmt            { $$ = mCc_ast_new_function_def_type($1, $2, NULL, $5); }
-             | type identifier LPARENTH parameters RPARENTH compound_stmt { $$ = mCc_ast_new_function_def_type($1, $2, $4, $6); }
+function_def : VOID identifier LPARENTH RPARENTH LBRACE RBRACE                          { $$ = mCc_ast_new_function_def_void($2, NULL, NULL); }
+             | VOID identifier LPARENTH RPARENTH LBRACE compound_stmt RBRACE            { $$ = mCc_ast_new_function_def_void($2, NULL, $6); }
+             | VOID identifier LPARENTH parameters RPARENTH LBRACE RBRACE               { $$ = mCc_ast_new_function_def_void($2, $4, NULL); }
+             | VOID identifier LPARENTH parameters RPARENTH LBRACE compound_stmt RBRACE { $$ = mCc_ast_new_function_def_void($2, $4, $7); }
+             | type identifier LPARENTH RPARENTH LBRACE RBRACE                          { $$ = mCc_ast_new_function_def_type($1, $2, NULL, NULL); }
+             | type identifier LPARENTH RPARENTH LBRACE compound_stmt RBRACE            { $$ = mCc_ast_new_function_def_type($1, $2, NULL, $6); }
+             | type identifier LPARENTH parameters RPARENTH LBRACE RBRACE               { $$ = mCc_ast_new_function_def_type($1, $2, $4, NULL); }
+             | type identifier LPARENTH parameters RPARENTH LBRACE compound_stmt RBRACE { $$ = mCc_ast_new_function_def_type($1, $2, $4, $7); }
              ;
 
 program : function_def         { $$ = mCc_ast_new_program($1); }
