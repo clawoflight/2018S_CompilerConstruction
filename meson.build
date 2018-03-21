@@ -21,6 +21,7 @@ bison = find_program('bison')
 pgen = generator(bison,
                  output: ['@BASENAME@.tab.c', '@BASENAME@.tab.h'],
                  arguments: [ '-Wall',
+		              '-v',
                               '--output=@OUTPUT0@',
                               '--defines=@OUTPUT1@',
                               '@INPUT@' ])
