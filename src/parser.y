@@ -13,6 +13,7 @@
 
 %{
 #include <string.h>
+#include <stdio.h>
 #include <stdbool.h>
 
 int mCc_parser_lex();
@@ -86,12 +87,12 @@ void mCc_parser_error();
 %precedence ELSE
 
 /* DESTRUCTORS */
-%destructor { mCc_ast_delete_expression($$); } expression single_expr binary_op
-%destructor { mCc_ast_delete_literal($$); } literal
-%destructor { mCc_ast_delete_statement($$); } statement compound_stmt
-%destructor { mCc_ast_delete_identifier($$); } identifier
-%destructor { mCc_ast_delete_arguments($$); } arguments
-%destructor { mCc_ast_delete_declaration($$); } declaration
+%destructor { mCc_ast_delete_expression($$); printf("\nExpression Destructor\n\n"); } expression single_expr binary_op
+%destructor { mCc_ast_delete_literal($$); printf("\nLiteral Destructor\n"); } literal
+%destructor { mCc_ast_delete_statement($$); printf("\nStatement Destructor\n\n");} statement compound_stmt
+%destructor { mCc_ast_delete_identifier($$); printf("\nIdentifier Destructor\n\n");} identifier
+%destructor { mCc_ast_delete_arguments($$); printf("\nArguments Destructor\n\n");} arguments
+%destructor { mCc_ast_delete_declaration($$); printf("\nDeclaration Destructor\n\n");} declaration
 
 %%
 
