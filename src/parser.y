@@ -19,6 +19,13 @@
 
 #define UNUSED(id) {(void) (id) ;}
 
+/* Idea to pass start and end location taken from group 16 */
+#define loc(ast_node, yylloc_start, yylloc_end) \
+        (ast_node)->node.sloc.start_col  = (yylloc_start).first_column; \
+        (ast_node)->node.sloc.start_line = (yylloc_start).first_line; \
+        (ast_node)->node.sloc.end_col    = (yylloc_end).last_column; \
+        (ast_node)->node.sloc.end_line   = (yylloc_end).last_line;
+
 int mCc_parser_lex();
 void mCc_parser_error();
 %}
