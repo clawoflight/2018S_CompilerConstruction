@@ -41,6 +41,7 @@ int main(void)
 		mCc_ast_delete_statement(stmt);
 	} else if (program) {
 		mCc_ast_print_dot_program(stdout, program);
+		/* printf("Lines: %d-%d, Cols: %d-%d\n", program->node.sloc.start_line, program->node.sloc.end_line, program->node.sloc.start_col, program->node.sloc.end_col); */
 		mCc_ast_delete_program(program);
 	} else {
 		fprintf(stderr, "Invalid top-level or forgotten to implement!");
