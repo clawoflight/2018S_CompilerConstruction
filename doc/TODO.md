@@ -30,13 +30,13 @@
                  | "<"  | ">" | "<=" | ">=" 
                  | "&&" | "||" 
                  | "==" | "!="~~
-```
+
 
 ### Types
 
-type             = "bool" | "int" | "float" | "string"
+~~type             = "bool" | "int" | "float" | "string"~~
 
-```
+
 ### Declaration / Assignment
 
 ~~declaration      = type , [ "[" , int_literal , "]" ] , identifier~~
@@ -61,13 +61,13 @@ type             = "bool" | "int" | "float" | "string"
 
 ### Statements
 
-statement        = 
-                ~~ if_stmt ~~ done
-               ~~| while_stmt ~~ done
-               ~~| ret_stmt ~~ done
-                ~~ | declaration , ";"~~
+~~statement        = 
+                ~~ if_stmt ~~ 
+               ~~| while_stmt ~~ 
+               ~~| ret_stmt ~~ 
+                ~~ | declaration , ";"~~
                ~~| assignment  , ";"~~ 
-              ~~ | expression  , ";"~~ 
+              ~~ | expression  , ";"~~ 
                ~~| compound_stmt ~~
 
 ~~if_stmt          = "if" , "(" , expression , ")" , statement , [ "else" , statement ]~~
@@ -77,22 +77,22 @@ statement        =
 ~~ret_stmt         = "return" , [ expression ] , ";"~~
 
 ~~compound_stmt    = "{" , [ { statement } ] , "}"~~
-```
+
 
 ### Function Definition / Call
 
-function_def     = ( "void" | type ) , identifier , "(" , [ parameters ] , ")" , compound_stmt
+~~function_def     = ( "void" | type ) , identifier , "(" , [ parameters ] , ")" , compound_stmt~~
 
-parameters       = declaration , [ { "," , declaration } ]
-```
-~~call_expr        = identifier , "(" , [ arguments ] , ")"~~
+~~parameters       = declaration , [ { "," , declaration } ]~~
+
+~~call_expr      = identifier , "(" , [ arguments ] , ")"~~
 
 ~~arguments        = expression , [ { "," expression } ]~~
-```
+
 
 ### Program
 
-program          = [ { function_def } ]
+~~program          = [ { function_def } ]~~
 ```
 
 ## Task 3: Error handling
