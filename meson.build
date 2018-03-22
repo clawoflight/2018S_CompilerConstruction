@@ -21,6 +21,7 @@ bison = find_program('bison')
 pgen = generator(bison,
                  output: ['@BASENAME@.tab.c', '@BASENAME@.tab.h'],
                  arguments: [ '-Wall',
+		              '-Werror',
 		              '-v',
                               '--output=@OUTPUT0@',
                               '--defines=@OUTPUT1@',
@@ -38,7 +39,7 @@ mCc_src = [ 'src/ast.c',
             pgen.process('src/parser.y') ]
 
 mCc_lib = library('mCc', mCc_src,
-                  c_args: '-D_POSIX_C_SOURCE=200809L',
+                  c_args: ['-D_POSIX_C_SOURCE=200809L', '-Werror'],
                   include_directories: mCc_inc)
 
 # ----------------------------------------------------------------- EXECUTABLES
