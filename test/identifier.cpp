@@ -25,7 +25,7 @@ TEST(Parser, Identifier_2)
 {
     const char input[] = "4r";
     auto result = mCc_parser_parse_string(input);
-
+    free((void *) result.err_msg);
     ASSERT_NE(MCC_PARSER_STATUS_OK, result.status);
 
     mCc_ast_delete_expression(result.expression);
