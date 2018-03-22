@@ -10,7 +10,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 
 /// Size by which to increase compound_stmts when reallocing
 const int compound_stmt_alloc_block_size = 10;
@@ -279,7 +278,7 @@ mCc_ast_new_function_def_void(struct mCc_ast_identifier *id,
 	if (body) {
 		func->body = body;
 	} else {
-		func->body =NULL;
+		func->body = NULL;
 	}
 
 	return func;
@@ -290,7 +289,7 @@ struct mCc_ast_function_def *mCc_ast_new_function_def_type(
     struct mCc_ast_parameters *para, struct mCc_ast_statement *body)
 {
 	assert(id);
-//	assert(body);
+	//	assert(body);
 
 	struct mCc_ast_function_def *func = malloc(sizeof(*func));
 	if (!func) {
@@ -308,7 +307,7 @@ struct mCc_ast_function_def *mCc_ast_new_function_def_type(
 	if (body) {
 		func->body = body;
 	} else {
-		func->body =NULL;
+		func->body = NULL;
 	}
 	return func;
 }
@@ -317,7 +316,7 @@ void mCc_ast_delete_func_def(struct mCc_ast_function_def *func)
 {
 	assert(func);
 	mCc_ast_delete_identifier(func->identifier);
-	if(func->body) {
+	if (func->body) {
 		mCc_ast_delete_statement(func->body);
 	}
 	if (func->para) {

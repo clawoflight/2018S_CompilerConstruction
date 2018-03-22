@@ -265,7 +265,6 @@ struct mCc_ast_function_def *mCc_ast_new_function_def_type(
  */
 void mCc_ast_delete_func_def(struct mCc_ast_function_def *func);
 
-
 #ifdef __cplusplus
 }
 #endif

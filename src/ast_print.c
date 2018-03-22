@@ -413,14 +413,13 @@ static void print_dot_function_def(struct mCc_ast_function_def *func,
 	} else {
 		print_dot_node(out, func, "void function");
 	}
-    print_dot_edge(out, func, func->identifier, "id");
-	if(func->body) {
-        print_dot_edge(out, func, func->body, "body");
+	print_dot_edge(out, func, func->identifier, "id");
+	if (func->body) {
+		print_dot_edge(out, func, func->body, "body");
 	}
-    if (func->para) {
-        print_dot_edge(out, func, func->para, "params");
-    }
-
+	if (func->para) {
+		print_dot_edge(out, func, func->para, "params");
+	}
 }
 
 static void print_dot_program(struct mCc_ast_program *prog, void *data)
