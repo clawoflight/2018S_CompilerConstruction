@@ -113,9 +113,9 @@ void mCc_parser_error();
 %%
 
 toplevel : expression { result->expression = $1; }
-         | statement  { result->statement = $1; }
-         | %empty     { result->program = mCc_ast_new_program(NULL); }
-         | program    { result->program = $1; }
+         | statement  { result->statement  = $1; }
+         | %empty     { result->program    = mCc_ast_new_program(NULL); }
+         | program    { result->program    = $1; }
          ;
 
 type : TYPE {
