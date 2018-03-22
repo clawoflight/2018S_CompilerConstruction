@@ -60,6 +60,7 @@ type (bool)|(int)|(float)|(string)
 "else"            { return TK_ELSE; }
 "while"           { return TK_WHILE; }
 "return"          { return TK_RETURN; }
+"void"            { return TK_VOID; }
 
 [ \t\r\n]+        { /* ignore */ }
 

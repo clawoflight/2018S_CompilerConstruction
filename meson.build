@@ -21,6 +21,7 @@ bison = find_program('bison')
 pgen = generator(bison,
                  output: ['@BASENAME@.tab.c', '@BASENAME@.tab.h'],
                  arguments: [ '-Wall',
+		              '-v',
                               '--output=@OUTPUT0@',
                               '--defines=@OUTPUT1@',
                               '@INPUT@' ])
@@ -62,6 +63,7 @@ mCc_uts = [
             'identifier',
             'tdd_parser_assgn',
             'tdd_parser_callexpr',
+            'tdd_parser_program',
 ]
 
 foreach ut : mCc_uts

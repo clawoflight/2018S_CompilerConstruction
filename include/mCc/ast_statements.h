@@ -14,15 +14,6 @@ extern "C" {
 #include "ast.h"
 
 /* -------------------------------------------------------------- Statements */
-/**
- * The available primitive types
- */
-enum mCc_ast_declaration_type {
-	MCC_AST_TYPE_BOOL,  ///< Boolean
-	MCC_AST_TYPE_INT,   ///< Integer
-	MCC_AST_TYPE_FLOAT, ///< Floating-point number
-	MCC_AST_TYPE_STRING ///< String
-};
 
 /**
  * The available statement types
@@ -37,6 +28,13 @@ enum mCc_ast_statement_type {
 	MCC_AST_STATEMENT_TYPE_ASSGN,    ///< Variable assignment statement
 	MCC_AST_STATEMENT_TYPE_EXPR,     ///< Expression statement
 	MCC_AST_STATEMENT_TYPE_CMPND     ///< Compound statement
+};
+/**
+ * The available function types
+ */
+enum mCc_ast_function_type {
+	MCC_AST_FUNCTION_DEF_VOID,
+	MCC_AST_FUNCTION_DEF_TYPE,
 };
 
 /**
@@ -223,6 +221,49 @@ mCc_ast_new_declaration(enum mCc_ast_declaration_type decl_type,
  * @param decl The declaration to delete
  */
 void mCc_ast_delete_declaration(struct mCc_ast_declaration *decl);
+
+/************************************************************* Function */
+
+struct mCc_ast_function_def {
+	struct mCc_ast_node node; ///< Common node attributes
+	/// The concrete type of this statement (no inheritance in C)
+	enum mCc_ast_function_type type;
+
+	enum mCc_ast_declaration_type func_type;
+	struct mCc_ast_statement *body;
+	struct mCc_ast_identifier *identifier;
+	struct mCc_ast_parameters *para;
+};
+
+/**
+ * @brief Construct void function definition
+ *
+ * @param an identifier, parameter (can be null) and a compound statement
+ *
+ * @return a new function
+ */
+struct mCc_ast_function_def *
+mCc_ast_new_function_def_void(struct mCc_ast_identifier *id,
+                              struct mCc_ast_parameters *para,
+                              struct mCc_ast_statement *body);
+
+/**
+ * @brief Construct function definition with return value
+ *
+ * @param a return type, an identifier, parameter (can be null) and a compound
+ * statement
+ *
+ * @return a new function
+ */
+struct mCc_ast_function_def *mCc_ast_new_function_def_type(
+    enum mCc_ast_declaration_type type, struct mCc_ast_identifier *id,
+    struct mCc_ast_parameters *para, struct mCc_ast_statement *body);
+/**
+ * @brief Delete function.
+ *
+ * @param function  to delete
+ */
+void mCc_ast_delete_func_def(struct mCc_ast_function_def *func);
 
 #ifdef __cplusplus
 }

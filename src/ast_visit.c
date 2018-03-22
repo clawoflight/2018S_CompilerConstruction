@@ -219,6 +219,21 @@ void mCc_ast_visit_arguments(struct mCc_ast_arguments *arguments,
 	}
 }
 
+void mCc_ast_visit_parameter(struct mCc_ast_parameters *parameter,
+                             struct mCc_ast_visitor *visitor)
+{
+	assert(visitor);
+
+	if (parameter) {
+
+		visit_if_pre_order(parameter, visitor->parameter, visitor);
+
+		for (unsigned int i = 0; i < parameter->decl_count; ++i)
+			mCc_ast_visit_declaration(parameter->decl[i], visitor);
+		visit_if_post_order(parameter, visitor->parameter, visitor);
+	}
+}
+
 void mCc_ast_visit_declaration(struct mCc_ast_declaration *decl,
                                struct mCc_ast_visitor *visitor)
 {
@@ -230,4 +245,33 @@ void mCc_ast_visit_declaration(struct mCc_ast_declaration *decl,
 		mCc_ast_visit_literal(decl->decl_array_size, visitor);
 	}
 	mCc_ast_visit_identifier(decl->decl_id, visitor);
+}
+
+void mCc_ast_visit_function_def(struct mCc_ast_function_def *func,
+                                struct mCc_ast_visitor *visitor)
+{
+	assert(func);
+	assert(visitor);
+
+	visit_if_pre_order(func, visitor->function_def, visitor);
+	mCc_ast_visit_identifier(func->identifier, visitor);
+	if (func->body) {
+		mCc_ast_visit_statement(func->body, visitor);
+	}
+	if (func->para) {
+		mCc_ast_visit_parameter(func->para, visitor);
+	}
+	visit_if_post_order(func, visitor->function_def, visitor);
+}
+
+void mCc_ast_visit_program(struct mCc_ast_program *prog,
+                           struct mCc_ast_visitor *visitor)
+{
+	assert(prog);
+	assert(visitor);
+
+	visit_if_pre_order(prog, visitor->program, visitor);
+	for (unsigned int i = 0; i < prog->func_def_count; ++i)
+		mCc_ast_visit_function_def(prog->func_defs[i], visitor);
+	visit_if_post_order(prog, visitor->program, visitor);
 }
