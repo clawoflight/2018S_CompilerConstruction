@@ -62,7 +62,7 @@
 ### Statements
 
 ~~statement        = 
-                  if_stmt ~~ 
+                  if_stmt
                  | while_stmt  
                  | ret_stmt  
                  | declaration , ";"
@@ -107,4 +107,3 @@
 ## Homework requirements
  Update the changed.md file if any changes where done (e.g.binops) 
  C like commands /*..*/
- Queries like: int i; i =0;
