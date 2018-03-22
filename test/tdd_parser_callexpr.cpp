@@ -80,3 +80,11 @@ TEST(TDD_PARSER_CALL_EXPR, ARGUMENT_REALLOC) {
 
   mCc_ast_delete_expression(call);
 }
+
+TEST(TDD_PARSER_ASSGN, ARG_ID_DESTRUCTOR)
+{
+  const char str[] = "f(1,2,)";
+  auto result = mCc_parser_parse_string(str);
+
+  ASSERT_NE(MCC_PARSER_STATUS_OK, result.status);
+}
