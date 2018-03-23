@@ -24,10 +24,10 @@
 		    if(yytext[i] == '\n'){ \
 		        yylloc->last_line++; \
 		        yylloc->last_column = 1; \
-            } else { \
-                yylloc->last_column++; \
-            } \
-        } \
+                    } else { \
+                        yylloc->last_column++; \
+                    } \
+                } \
 }
 
 %}
