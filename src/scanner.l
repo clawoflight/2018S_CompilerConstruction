@@ -16,12 +16,20 @@
 #define YYLTYPE MCC_PARSER_LTYPE
 
 /* Source Location tracking adapted from Group 16. */
-int col;
 
-#define YY_USER_ACTION { col += yyleng; \
-		yylloc->first_line = yylloc->last_line = yylineno; \
-		yylloc->first_column = col - yyleng + 1; \
-		yylloc->last_column = col; }
+#define YY_USER_ACTION { \
+        yylloc->first_line = yylloc->last_line; \
+        yylloc->first_column = yylloc->last_column; \
+		for(unsigned int i=0; yytext[i] != '\0'; ++i){ \
+		    if(yytext[i] == '\n'){ \
+		        yylloc->last_line++; \
+		        yylloc->last_column = 1; \
+            } else { \
+                yylloc->last_column++; \
+            } \
+        } \
+}
+
 %}
 identifier    [a-zA-Z_][a-zA-Z0-9_]*
 int_literal   [0-9]+
@@ -73,9 +81,7 @@ type (bool)|(int)|(float)|(string)
 "return"          { return TK_RETURN; }
 "void"            { return TK_VOID; }
 
-[ \t\r]+          { /* ignore */ }
-
-\n                { col = 1; }
+[ \t\n\r]+          { /* ignore */ }
 
 <<EOF>>           { return TK_END; }
 

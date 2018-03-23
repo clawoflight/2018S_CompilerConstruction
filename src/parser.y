@@ -23,7 +23,7 @@
 #define loc(ast_node, yylloc_start, yylloc_end) \
         (ast_node)->node.sloc.start_col  = (yylloc_start).first_column; \
         (ast_node)->node.sloc.start_line = (yylloc_start).first_line; \
-        (ast_node)->node.sloc.end_col    = (yylloc_end).last_column; \
+        (ast_node)->node.sloc.end_col    = (yylloc_end).last_column - 1; \
         (ast_node)->node.sloc.end_line   = (yylloc_end).last_line;
 
 int mCc_parser_lex();
@@ -228,7 +228,7 @@ void mCc_parser_error(struct MCC_PARSER_LTYPE *yylloc, yyscan_t *scanner,
 	r->err_loc.start_line = yylloc->first_line;
 	r->err_loc.end_line = yylloc->last_line;
 	r->err_loc.start_col = yylloc->first_column;
-	r->err_loc.end_col = yylloc->last_column;
+	r->err_loc.end_col = yylloc->last_column - 1;
 }
 
 struct mCc_parser_result mCc_parser_parse_string(const char *input)
