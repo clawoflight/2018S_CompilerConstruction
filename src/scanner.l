@@ -31,12 +31,13 @@
 }
 
 %}
-identifier    [a-zA-Z_][a-zA-Z0-9_]*
-int_literal   [0-9]+
-float_literal [0-9]+\.[0-9]+
+identifier     [a-zA-Z_][a-zA-Z0-9_]*
+int_literal    [0-9]+
+float_literal  [0-9]+\.[0-9]+
 string_literal \"[^"]*\"
-bool_literal (true)|(false)
-type (bool)|(int)|(float)|(string)
+bool_literal   (true)|(false)
+type           (bool)|(int)|(float)|(string)
+cpp_comment    "/*"(.|[ \t\n\r])*"*/"
 
 %%
 
@@ -81,7 +82,9 @@ type (bool)|(int)|(float)|(string)
 "return"          { return TK_RETURN; }
 "void"            { return TK_VOID; }
 
-[ \t\n\r]+          { /* ignore */ }
+[ \t\n\r]+        { /* ignore */ }
+
+{cpp_comment}     { /* ignore */ }
 
 <<EOF>>           { return TK_END; }
 
