@@ -233,3 +233,12 @@ TEST(TDD_PARSER_STATEMENTS, DECL_ARR)
 
 	mCc_ast_delete_statement(stmt);
 }
+
+
+TEST(TDD_PARSER_STATEMENTS, STMT_DESTRUCTOR)
+{
+const char str[] = "{test;";
+auto result = mCc_parser_parse_string(str);
+
+ASSERT_NE(MCC_PARSER_STATUS_OK, result.status);
+}
