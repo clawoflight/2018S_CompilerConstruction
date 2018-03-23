@@ -100,10 +100,9 @@
   and also [SO](https://stackoverflow.com/questions/22407730/bison-line-number-included-in-the-error-messages) and [IBM](https://www.ibm.com/developerworks/library/l-flexbison/index.html)~~
 - Kill memory leaks with fire! --> Always handle `malloc` failures, and whenever a constructor returns `NULL`, destroy all children first!
 ~~-Error handling ~~
-- parser: pure (re-entrant)
+~~- parser: pure (re-entrant)~~
 
 ## Task 4: Examples
 
 ## Homework requirements
- Update the changed.md file if any changes where done (e.g.binops) 
  C like commands /*..*/
