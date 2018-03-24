@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	struct mCc_ast_expression *expr = NULL;
+	struct mCc_ast_program *expr = NULL;
 
 	/* parsing phase */
 	{
@@ -39,8 +39,9 @@ int main(int argc, char *argv[])
 		if (result.status != MCC_PARSER_STATUS_OK) {
 			return EXIT_FAILURE;
 		}
-		expr = result.expression;
+		expr = result.program;
 	}
+
 
 	/*    TODO
 	 * - run semantic checks
