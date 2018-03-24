@@ -46,6 +46,20 @@ TEST(TDD_PARSER_PROGRAM, PROGRAM_VOID)
 	mCc_ast_delete_program(prog);
 }
 
+TEST(TDD_PARSER_PROGRAM, PROGRAM_EMPTY)
+{
+	const char str[] = "";
+	auto result = mCc_parser_parse_string(str);
+
+	ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);
+	auto prog = result.program;
+
+	// root -> program
+	ASSERT_EQ((unsigned int)0, prog->func_def_count);
+
+	mCc_ast_delete_program(prog);
+}
+
 TEST(TDD_PARSER_PROGRAM, PROGRAM_REALLOC)
 {
 	const char str[] =

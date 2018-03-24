@@ -385,8 +385,6 @@ const unsigned int program_alloc_block_size = 10;
 struct mCc_ast_program *
 mCc_ast_new_program(struct mCc_ast_function_def *func_def)
 {
-	assert(func_def);
-
 	struct mCc_ast_program *program = malloc(sizeof(*program));
 	if (!program)
 		return NULL;
