@@ -220,11 +220,10 @@ struct mCc_ast_literal *mCc_ast_new_literal_string(char *value)
 		return NULL;
 	}
 
-	char *str = malloc((strlen(value) + 1) * sizeof(char));
-	strcpy(str, value);
-
 	lit->type = MCC_AST_LITERAL_TYPE_STRING;
-	lit->s_value = str;
+	// Copy the string, removing the double quotes
+	value[strlen(value) - 1] = '\0';
+	lit->s_value = strdup(value + 1);
 	return lit;
 }
 
