@@ -50,15 +50,31 @@ TEST(TDD_PARSER_ASSGN, ARRAY)
 
 TEST(TDD_PARSER_ASSGN, ARRAY_EXPR)
 {
-    const char str[] = "a[4+5] = 5;";
-    auto result = mCc_parser_parse_string(str);
+	const char str[] = "a[4+5] = 5;";
+	auto result = mCc_parser_parse_string(str);
 
-    ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);
-    auto assgn = result.statement;
+	ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);
+	auto assgn = result.statement;
 
-    // root
-    ASSERT_EQ(MCC_AST_STATEMENT_TYPE_ASSGN, assgn->type);
-    ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_BINARY_OP, assgn->lhs_assgn->type);
+	// root
+	ASSERT_EQ(MCC_AST_STATEMENT_TYPE_ASSGN, assgn->type);
+	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_BINARY_OP, assgn->lhs_assgn->type);
 
-    mCc_ast_delete_statement(assgn);
+	mCc_ast_delete_statement(assgn);
+}
+
+TEST(TDD_PARSER_ASSGN, DECL_DESTRUCTOR)
+{
+	const char str[] = "int a[4] = 5;";
+	auto result = mCc_parser_parse_string(str);
+	free((void *)result.err_msg);
+	ASSERT_NE(MCC_PARSER_STATUS_OK, result.status);
+}
+
+TEST(TDD_PARSER_ASSGN, LIT_DESTRUCTOR)
+{
+	const char str[] = "int a[4";
+	auto result = mCc_parser_parse_string(str);
+	free((void *)result.err_msg);
+	ASSERT_NE(MCC_PARSER_STATUS_OK, result.status);
 }

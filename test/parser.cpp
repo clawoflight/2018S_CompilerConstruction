@@ -47,7 +47,7 @@ TEST(Parser, StringLiteral_1)
 
 	// root -> literal
 	ASSERT_EQ(MCC_AST_LITERAL_TYPE_STRING, expr->literal->type);
-	ASSERT_EQ(0, strcmp(expr->literal->s_value,"\"3_n4f$f\""));
+	ASSERT_EQ(0, strcmp(expr->literal->s_value, "\"3_n4f$f\""));
 
 	mCc_ast_delete_expression(expr);
 }
@@ -66,7 +66,7 @@ TEST(Parser, StringLiteral_2)
 
 	// root -> literal
 	ASSERT_EQ(MCC_AST_LITERAL_TYPE_STRING, expr->literal->type);
-	ASSERT_EQ(1, strcmp(expr->literal->s_value,"\"3f\""));
+	ASSERT_EQ(1, strcmp(expr->literal->s_value, "\"3f\""));
 
 	mCc_ast_delete_expression(expr);
 }
@@ -85,7 +85,7 @@ TEST(Parser, StringLiteral_Empty)
 
 	// root -> literal
 	ASSERT_EQ(MCC_AST_LITERAL_TYPE_STRING, expr->literal->type);
-	ASSERT_EQ(0, strcmp(expr->literal->s_value,"\"\""));
+	ASSERT_EQ(0, strcmp(expr->literal->s_value, "\"\""));
 
 	mCc_ast_delete_expression(expr);
 }
@@ -168,10 +168,10 @@ TEST(Parser, NestedExpression_1)
 	ASSERT_EQ(MCC_AST_LITERAL_TYPE_FLOAT, subexpr->rhs->literal->type);
 	ASSERT_EQ(3.14, subexpr->rhs->literal->f_value);
 
-    auto subsubexpr = subexpr->lhs->unary_expression;
-    // subsubexpr -> literal
-    ASSERT_EQ(MCC_AST_LITERAL_TYPE_INT, subsubexpr->literal->type);
-    ASSERT_EQ(192, subsubexpr->literal->i_value);
+	auto subsubexpr = subexpr->lhs->unary_expression;
+	// subsubexpr -> literal
+	ASSERT_EQ(MCC_AST_LITERAL_TYPE_INT, subsubexpr->literal->type);
+	ASSERT_EQ(192, subsubexpr->literal->i_value);
 
 	mCc_ast_delete_expression(expr);
 }
@@ -180,7 +180,7 @@ TEST(Parser, MissingClosingParenthesis_1)
 {
 	const char input[] = "(42";
 	auto result = mCc_parser_parse_string(input);
-
+	free((void *)result.err_msg);
 	ASSERT_NE(MCC_PARSER_STATUS_OK, result.status);
 }
 
@@ -195,7 +195,7 @@ TEST(Parser, ArraySubscript)
 
 	// root
 	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_ARR_SUBSCR, expr->type);
-	ASSERT_EQ(0, strcmp("a",expr->array_id->id_value) );
+	ASSERT_EQ(0, strcmp("a", expr->array_id->id_value));
 	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_BINARY_OP, expr->subscript_expr->type);
 
 	mCc_ast_delete_expression(expr);

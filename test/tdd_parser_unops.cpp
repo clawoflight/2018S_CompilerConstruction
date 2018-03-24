@@ -45,15 +45,15 @@ TEST(TDD_PARSER_UNOPS_PREC, NEG_PREG)
 	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_BINARY_OP, expr->type);
 	ASSERT_EQ(MCC_AST_BINARY_OP_ADD, expr->op);
 
-	//next left
+	// next left
 	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_UNARY_OP, expr->lhs->type);
 	ASSERT_EQ(MCC_AST_UNARY_OP_NEG, expr->lhs->unary_op);
 
-	//next right
+	// next right
 	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_LITERAL, expr->rhs->type);
 	ASSERT_EQ(3, expr->rhs->literal->i_value);
 
-	//sub expression (-2)
+	// sub expression (-2)
 	auto subexpr = expr->lhs->unary_expression;
 	ASSERT_EQ(MCC_AST_LITERAL_TYPE_INT, subexpr->literal->type);
 	ASSERT_EQ(2, subexpr->literal->i_value);

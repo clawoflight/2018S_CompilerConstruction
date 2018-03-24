@@ -15,6 +15,7 @@
 
 %{
 #include <string.h>
+#include <stdio.h>
 #include <stdbool.h>
 
 #define UNUSED(id) {(void) (id) ;}
@@ -213,8 +214,6 @@ program : function_def         { $$ = mCc_ast_new_program($1);     loc($$, @1, @
 #include <assert.h>
 
 #include "scanner.h"
-extern char *yyget_text(yyscan_t scanner);
-
 void mCc_parser_error(struct MCC_PARSER_LTYPE *yylloc, yyscan_t *scanner,
                       void *result, const char *msg)
 {

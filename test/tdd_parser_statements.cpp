@@ -84,7 +84,7 @@ TEST(TDD_PARSER_STATEMENTS, WHILE)
 
 	// () expression
 	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_LITERAL, stmt->while_cond->type);
-    ASSERT_EQ(true, stmt->while_cond->literal->b_value);
+	ASSERT_EQ(true, stmt->while_cond->literal->b_value);
 
 	// while body
 	ASSERT_EQ(MCC_AST_STATEMENT_TYPE_EXPR, stmt->while_stmt->type);
@@ -130,7 +130,6 @@ TEST(TDD_PARSER_STATEMENTS, RETURN_VOID)
 	mCc_ast_delete_statement(stmt);
 }
 
-
 TEST(TDD_PARSER_STATEMENTS, COMPOUND_EMPTY)
 {
 	const char str[] = "{ }";
@@ -169,7 +168,6 @@ TEST(TDD_PARSER_STATEMENTS, COMPOUND_REALLOC)
 	          stmt->compound_stmts[1]->expression->type);
 
 	mCc_ast_delete_statement(stmt);
-
 }
 
 TEST(TDD_PARSER_STATEMENTS, COMPOUND_MULTIPLE)
@@ -210,7 +208,7 @@ TEST(TDD_PARSER_STATEMENTS, DECL)
 	ASSERT_EQ(MCC_AST_STATEMENT_TYPE_DECL, stmt->type);
 
 	// root -> literal
-	ASSERT_EQ(0, strcmp(stmt->declaration->decl_id->id_value,"a"));
+	ASSERT_EQ(0, strcmp(stmt->declaration->decl_id->id_value, "a"));
 
 	mCc_ast_delete_statement(stmt);
 }
@@ -228,8 +226,16 @@ TEST(TDD_PARSER_STATEMENTS, DECL_ARR)
 	ASSERT_EQ(MCC_AST_STATEMENT_TYPE_DECL, stmt->type);
 
 	// root -> literal
-	ASSERT_EQ(stmt->declaration->decl_array_size->i_value,3);
-	ASSERT_EQ(0, strcmp(stmt->declaration->decl_id->id_value,"a"));
+	ASSERT_EQ(stmt->declaration->decl_array_size->i_value, 3);
+	ASSERT_EQ(0, strcmp(stmt->declaration->decl_id->id_value, "a"));
 
 	mCc_ast_delete_statement(stmt);
+}
+
+TEST(TDD_PARSER_STATEMENTS, STMT_DESTRUCTOR)
+{
+	const char str[] = "{test;";
+	auto result = mCc_parser_parse_string(str);
+	free((void *)result.err_msg);
+	ASSERT_NE(MCC_PARSER_STATUS_OK, result.status);
 }

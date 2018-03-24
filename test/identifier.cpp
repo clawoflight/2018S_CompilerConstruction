@@ -5,64 +5,64 @@
 
 TEST(Parser, Identifier_1)
 {
-    const char input[] = "e";
-    auto result = mCc_parser_parse_string(input);
+	const char input[] = "e";
+	auto result = mCc_parser_parse_string(input);
 
-    ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);
+	ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);
 
-    auto expr = result.expression;
+	auto expr = result.expression;
 
-    // root
-    ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_IDENTIFIER, expr->type);
+	// root
+	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_IDENTIFIER, expr->type);
 
-    // root -> literal
-    ASSERT_EQ(0, strcmp(expr->identifier->id_value,"e"));
+	// root -> literal
+	ASSERT_EQ(0, strcmp(expr->identifier->id_value, "e"));
 
-    mCc_ast_delete_expression(expr);
+	mCc_ast_delete_expression(expr);
 }
 
 TEST(Parser, Identifier_2)
 {
-    const char input[] = "4r";
-    auto result = mCc_parser_parse_string(input);
+	const char input[] = "4r";
+	auto result = mCc_parser_parse_string(input);
+	free((void *)result.err_msg);
+	ASSERT_NE(MCC_PARSER_STATUS_OK, result.status);
 
-    ASSERT_NE(MCC_PARSER_STATUS_OK, result.status);
-
-    mCc_ast_delete_expression(result.expression);
+	mCc_ast_delete_expression(result.expression);
 }
 
 TEST(Parser, Identifier_3)
 {
-    const char input[] = "en43r";
-    auto result = mCc_parser_parse_string(input);
+	const char input[] = "en43r";
+	auto result = mCc_parser_parse_string(input);
 
-    ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);
+	ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);
 
-    auto expr = result.expression;
+	auto expr = result.expression;
 
-    // root
-    ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_IDENTIFIER, expr->type);
+	// root
+	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_IDENTIFIER, expr->type);
 
-    // root -> literal
-    ASSERT_EQ(0, strcmp(expr->identifier->id_value,"en43r"));
+	// root -> literal
+	ASSERT_EQ(0, strcmp(expr->identifier->id_value, "en43r"));
 
-    mCc_ast_delete_expression(expr);
+	mCc_ast_delete_expression(expr);
 }
 
 TEST(Parser, Identifier_4)
 {
-    const char input[] = "e4_r";
-    auto result = mCc_parser_parse_string(input);
+	const char input[] = "e4_r";
+	auto result = mCc_parser_parse_string(input);
 
-    ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);
+	ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);
 
-    auto expr = result.expression;
+	auto expr = result.expression;
 
-    // root
-    ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_IDENTIFIER, expr->type);
+	// root
+	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_IDENTIFIER, expr->type);
 
-    // root -> literal
-    ASSERT_EQ(0, strcmp(expr->identifier->id_value,"e4_r"));
+	// root -> literal
+	ASSERT_EQ(0, strcmp(expr->identifier->id_value, "e4_r"));
 
-    mCc_ast_delete_expression(expr);
+	mCc_ast_delete_expression(expr);
 }

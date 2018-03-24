@@ -155,3 +155,18 @@ TEST(TDD_PARSER_BINOPS_PREC, BIN_PREC)
 
 	mCc_ast_delete_expression(expr);
 }
+
+TEST(TDD_PARSER_BINOPS, DIV)
+{
+	const char str[] = "6 / 3";
+	auto result = mCc_parser_parse_string(str);
+
+	ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);
+	auto expr = result.expression;
+
+	// root
+	ASSERT_EQ(MCC_AST_EXPRESSION_TYPE_BINARY_OP, expr->type);
+	ASSERT_EQ(MCC_AST_BINARY_OP_DIV, expr->op);
+
+	mCc_ast_delete_expression(expr);
+}
