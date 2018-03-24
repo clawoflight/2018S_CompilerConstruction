@@ -46,6 +46,23 @@ TEST(TDD_PARSER_PROGRAM, PROGRAM_VOID)
 	mCc_ast_delete_program(prog);
 }
 
+TEST(TDD_PARSER_PROGRAM, PROGRAM_REALLOC)
+{
+	const char str[] =
+	    "void f(){}void g(){}void h(){}void i(){}void j(){}void k(){}void "
+	    "l(){}void m(){}void n(){}void o(){}void p(){}";
+	auto result = mCc_parser_parse_string(str);
+
+	ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);
+	auto prog = result.program;
+
+	// root -> function
+	ASSERT_EQ(MCC_AST_FUNCTION_DEF_VOID, prog->func_defs[0]->type);
+	ASSERT_EQ(0, strcmp(prog->func_defs[0]->identifier->id_value, "f"));
+
+	mCc_ast_delete_program(prog);
+}
+
 TEST(TDD_PARSER_PROGRAM, FUNC_INT)
 {
 	const char str[] = "int f(int a){ return a;}";
@@ -124,6 +141,20 @@ TEST(TDD_PARSER_PROGRAM, PARAMETER_VOID)
 	mCc_ast_delete_program(prog);
 }
 
+TEST(TDD_PARSER_PROGRAM, PARAM_REALLOC)
+{
+	const char str[] = "void f(int a,int a,int a,int a,int a,int a,int a,int "
+	                   "a,int a,int a,int a){ }";
+	auto result = mCc_parser_parse_string(str);
+
+	ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);
+	auto prog = result.program;
+
+	// root -> literal
+	ASSERT_EQ(NULL, prog->func_defs[0]->body);
+	mCc_ast_delete_program(prog);
+}
+
 TEST(TDD_PARSER_PROGRAM, VOID_EMPTY)
 {
 	const char str[] = "void f(){}";
@@ -191,4 +222,12 @@ TEST(TDD_PARSER_PROGRAM, TYPE_NO_BODY)
 	// root -> literal
 	ASSERT_EQ(NULL, prog->func_defs[0]->body);
 	mCc_ast_delete_program(prog);
+}
+
+TEST(TDD_PARSER_PROGRAM, PARAM_DESTRUCTOR)
+{
+	const char input[] = "int f(float a, string b";
+	auto result = mCc_parser_parse_string(input);
+	free((void *)result.err_msg);
+	ASSERT_NE(MCC_PARSER_STATUS_OK, result.status);
 }

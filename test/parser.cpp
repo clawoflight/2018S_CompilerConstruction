@@ -200,3 +200,11 @@ TEST(Parser, ArraySubscript)
 
 	mCc_ast_delete_expression(expr);
 }
+
+TEST(Parser, LiteralDestructor)
+{
+	const char input[] = "int [42";
+	auto result = mCc_parser_parse_string(input);
+	free((void *)result.err_msg);
+	ASSERT_NE(MCC_PARSER_STATUS_OK, result.status);
+}

@@ -225,9 +225,9 @@ void mCc_parser_error(struct MCC_PARSER_LTYPE *yylloc, yyscan_t *scanner,
 
 	// Copy error location to result
 	r->err_loc.start_line = yylloc->first_line;
-	r->err_loc.end_line = yylloc->last_line;
-	r->err_loc.start_col = yylloc->first_column;
-	r->err_loc.end_col = yylloc->last_column - 1;
+	r->err_loc.end_line   = yylloc->last_line;
+	r->err_loc.start_col  = yylloc->first_column;
+	r->err_loc.end_col    = yylloc->last_column - 1;
 }
 
 struct mCc_parser_result mCc_parser_parse_string(const char *input)
