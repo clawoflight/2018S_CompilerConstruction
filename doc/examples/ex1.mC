@@ -1,5 +1,5 @@
 
-int checkEvenOdd(int n){
+void checkEvenOdd(int n, bool m){
     if((n/2)*2 == n){
         print("Even");
     }
@@ -7,7 +7,7 @@ int checkEvenOdd(int n){
         print("Odd");
     }
     print_nl();
-    return 0;
+    return ;
 }
 
 bool checkPrim(int n){
@@ -37,7 +37,7 @@ void main(){
     n = read_int();
     print_nl();
 
-    checkEvenOdd(n);
+    checkEvenOdd(n,false);
     prim=checkPrim(n);
     print_nl();
     print("Primenumber ?");

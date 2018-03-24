@@ -1,16 +1,16 @@
 void main(){
 
-    print("How long should your array be?");
+    print("Which number do you want to fill into your array?");
     print_nl();
     int n;
     n = read_int();
     print_nl();
-    int a[n];
+    int[3] a;
 
     int i;
-    i=0
-    while(i<n){
-        a[i]=i;
+    i =0;
+    while(i<=2){
+        a[i]=n;
         i=i+1;
     }
     print("This is your array: ");
@@ -18,7 +18,7 @@ void main(){
 
     int j;
     j=0;
-    while(j<n){
+    while(j<3){
         print(a[j]);
         print_nl();
     }
