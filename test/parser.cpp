@@ -47,7 +47,7 @@ TEST(Parser, StringLiteral_1)
 
 	// root -> literal
 	ASSERT_EQ(MCC_AST_LITERAL_TYPE_STRING, expr->literal->type);
-	ASSERT_EQ(0, strcmp(expr->literal->s_value, "\"3_n4f$f\""));
+	ASSERT_EQ(0, strcmp(expr->literal->s_value, "3_n4f$f"));
 
 	mCc_ast_delete_expression(expr);
 }
@@ -66,7 +66,7 @@ TEST(Parser, StringLiteral_2)
 
 	// root -> literal
 	ASSERT_EQ(MCC_AST_LITERAL_TYPE_STRING, expr->literal->type);
-	ASSERT_EQ(1, strcmp(expr->literal->s_value, "\"3f\""));
+	ASSERT_EQ(1, strcmp(expr->literal->s_value, "3f"));
 
 	mCc_ast_delete_expression(expr);
 }
@@ -85,7 +85,7 @@ TEST(Parser, StringLiteral_Empty)
 
 	// root -> literal
 	ASSERT_EQ(MCC_AST_LITERAL_TYPE_STRING, expr->literal->type);
-	ASSERT_EQ(0, strcmp(expr->literal->s_value, "\"\""));
+	ASSERT_EQ(0, strcmp(expr->literal->s_value, ""));
 
 	mCc_ast_delete_expression(expr);
 }
