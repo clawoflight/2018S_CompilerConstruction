@@ -7,7 +7,8 @@ void main(){
     print_nl();
     int a[n];
 
-    int i=0;
+    int i;
+    i=0
     while(i<n){
         a[i]=i;
         i=i+1;
@@ -15,7 +16,8 @@ void main(){
     print("This is your array: ");
     print_nl();
 
-    int j=0;
+    int j;
+    j=0;
     while(j<n){
         print(a[j]);
         print_nl();
