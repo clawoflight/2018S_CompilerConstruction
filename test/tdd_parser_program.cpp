@@ -243,5 +243,6 @@ TEST(TDD_PARSER_PROGRAM, PARAM_DESTRUCTOR)
 	const char input[] = "int f(float a, string b";
 	auto result = mCc_parser_parse_string(input);
 	free((void *)result.err_msg);
+	free((void *)result.err_text);
 	ASSERT_NE(MCC_PARSER_STATUS_OK, result.status);
 }

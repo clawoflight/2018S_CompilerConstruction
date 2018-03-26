@@ -21,11 +21,12 @@ int main(void)
 	{
 		struct mCc_parser_result result = mCc_parser_parse_file(stdin);
 		if (result.status != MCC_PARSER_STATUS_OK) {
-			fprintf(stderr, "Error: %d:%d - %d:%d %s\n",
+			fprintf(stderr, "Error: %d:%d - %d:%d at \e[4m%s\e[24m: %s\n",
 			        result.err_loc.start_line, result.err_loc.start_col,
 			        result.err_loc.end_line, result.err_loc.end_col,
-			        result.err_msg);
-			free((void *) result.err_msg);
+			        result.err_text, result.err_msg);
+			free((void *)result.err_msg);
+			free((void *)result.err_text);
 			return EXIT_FAILURE;
 		}
 		expr = result.expression;
@@ -41,7 +42,6 @@ int main(void)
 		mCc_ast_delete_statement(stmt);
 	} else if (program) {
 		mCc_ast_print_dot_program(stdout, program);
-		/* printf("Lines: %d-%d, Cols: %d-%d\n", program->node.sloc.start_line, program->node.sloc.end_line, program->node.sloc.start_col, program->node.sloc.end_col); */
 		mCc_ast_delete_program(program);
 	} else {
 		fprintf(stderr, "Invalid top-level or forgotten to implement!");

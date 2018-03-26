@@ -181,6 +181,7 @@ TEST(Parser, MissingClosingParenthesis_1)
 	const char input[] = "(42";
 	auto result = mCc_parser_parse_string(input);
 	free((void *)result.err_msg);
+	free((void *)result.err_text);
 	ASSERT_NE(MCC_PARSER_STATUS_OK, result.status);
 }
 
@@ -206,5 +207,6 @@ TEST(Parser, LiteralDestructor)
 	const char input[] = "int [42";
 	auto result = mCc_parser_parse_string(input);
 	free((void *)result.err_msg);
+	free((void *)result.err_text);
 	ASSERT_NE(MCC_PARSER_STATUS_OK, result.status);
 }

@@ -68,6 +68,7 @@ TEST(TDD_PARSER_ASSGN, DECL_DESTRUCTOR)
 	const char str[] = "int a[4] = 5;";
 	auto result = mCc_parser_parse_string(str);
 	free((void *)result.err_msg);
+	free((void *)result.err_text);
 	ASSERT_NE(MCC_PARSER_STATUS_OK, result.status);
 }
 
@@ -76,5 +77,6 @@ TEST(TDD_PARSER_ASSGN, LIT_DESTRUCTOR)
 	const char str[] = "int a[4";
 	auto result = mCc_parser_parse_string(str);
 	free((void *)result.err_msg);
+	free((void *)result.err_text);
 	ASSERT_NE(MCC_PARSER_STATUS_OK, result.status);
 }

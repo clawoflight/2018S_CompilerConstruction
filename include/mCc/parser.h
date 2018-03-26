@@ -27,6 +27,8 @@ struct mCc_parser_result {
 	/// Human-readable error description.
 	/// This *must be freed* if it is not NULL!
 	const char *err_msg;
+	/// The text at the error location. Also free this!
+	const char *err_text;
 	struct mCc_ast_source_location err_loc;
 };
 

@@ -214,6 +214,7 @@ program : function_def         { $$ = mCc_ast_new_program($1);     loc($$, @1, @
 #include <assert.h>
 
 #include "scanner.h"
+
 void mCc_parser_error(struct MCC_PARSER_LTYPE *yylloc, yyscan_t *scanner,
                       void *result, const char *msg)
 {
@@ -222,6 +223,7 @@ void mCc_parser_error(struct MCC_PARSER_LTYPE *yylloc, yyscan_t *scanner,
 
 	r->status = MCC_PARSER_STATUS_PARSE_ERROR;
 	r->err_msg = strdup(msg);
+	r->err_text = strdup(mCc_parser_get_text(scanner));
 
 	// Copy error location to result
 	r->err_loc.start_line = yylloc->first_line;

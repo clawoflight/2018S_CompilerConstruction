@@ -237,5 +237,6 @@ TEST(TDD_PARSER_STATEMENTS, STMT_DESTRUCTOR)
 	const char str[] = "{test;";
 	auto result = mCc_parser_parse_string(str);
 	free((void *)result.err_msg);
+	free((void *)result.err_text);
 	ASSERT_NE(MCC_PARSER_STATUS_OK, result.status);
 }

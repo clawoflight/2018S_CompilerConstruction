@@ -90,5 +90,6 @@ TEST(TDD_PARSER_ASSGN, ARG_ID_DESTRUCTOR)
 	const char str[] = "f(1,2,)";
 	auto result = mCc_parser_parse_string(str);
 	free((void *)result.err_msg);
+	free((void *)result.err_text);
 	ASSERT_NE(MCC_PARSER_STATUS_OK, result.status);
 }
