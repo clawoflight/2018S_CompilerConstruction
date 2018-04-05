@@ -103,3 +103,27 @@
 
 ## Task 4: Examples
 
+# Assignment 2 
+
+## Task 0 
+integrate all the test inputs and test if all inputs are parsed correctly.
+
+## Task 1
+Find out what symbol tables are and how they are typically used.
+Implement the creation of symbol tables.
+
+## Task 2
+Implement a check to detect uses of unknown functions.
+Implement a check which ensures there is one function named main present. It should not take any parameters and return an int.
+Implement a check which ensures that every function has a unique name. Also take the built-in functions into account.
+
+## Task 3
+Implement a check which ensures that all execution paths of a function return a value, unless the function is declared to return void
+
+## Task 4
+Implement type checking. (also for return types)
+
+## Task 5 
+Implement the conversion from AST (including symbol tables) to three-address code (TAC).
+Implement a way to output the generated TAC
+
