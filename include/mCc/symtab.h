@@ -10,6 +10,8 @@
 
 #include "ast.h"
 
+#include "lib/uthash.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -21,8 +23,9 @@ enum mCc_symtab_entry_type {
 };
 
 struct mCc_symtab_entry {
+	/// Scope/Symbol Table containing this entry
 	struct mCc_symtab_scope *scope;
-	struct mCc_symtab_entry *next_entry;
+	UT_hash_handle hh; ///< Internal data for hash table
 
 	enum mCc_symtab_entry_type entry_type;
 	struct mCc_ast_identifier *identifier;
@@ -51,17 +54,21 @@ struct mCc_symtab_entry {
  * the nodes are #mCc_symtab_entry.
  */
 struct mCc_symtab_scope {
+	/// Parent scope, needed for lookup
 	struct mCc_symtab_scope *parent;
 
-	struct mCc_symtab_scope *
-	    *child_scopes; // needed only to be able to free later? Or do we want 1
-	                   // global such list instead? less clean, but more
-	                   // efficient.
-	unsigned int child_scope_alloc_size;
-	unsigned int child_scope_count;
+	/// Child scopes, needed for dump and free
+	struct mCc_symtab_scope **child_scopes;
+	unsigned int child_scope_alloc_size; ///< Memory allocated for child scopes
+	unsigned int child_scope_count;      ///< Number of child scopes
 
-	struct mCc_symtab_entry *first_entry;
-	struct mCc_symtab_entry *last_entry;
+	/** Contains the entries.
+	 *
+	 * MUST BE INITIALIZED TO NULL.
+	 *
+	 * Not actually an array!
+	 * Instead, it is used by uthash to store the hash table.  */
+	struct mCc_symtab_entry **hash_table;
 };
 
 /************************************************ Functions */
