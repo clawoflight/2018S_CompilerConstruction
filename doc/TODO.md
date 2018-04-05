@@ -110,11 +110,14 @@ integrate all the test inputs and test if all inputs are parsed correctly.
 
 ## Task 1
 Find out what symbol tables are and how they are typically used.
+
 Implement the creation of symbol tables.
 
 ## Task 2
 Implement a check to detect uses of unknown functions.
+
 Implement a check which ensures there is one function named main present. It should not take any parameters and return an int.
+
 Implement a check which ensures that every function has a unique name. Also take the built-in functions into account.
 
 ## Task 3
@@ -125,5 +128,12 @@ Implement type checking. (also for return types)
 
 ## Task 5 
 Implement the conversion from AST (including symbol tables) to three-address code (TAC).
+
 Implement a way to output the generated TAC
 
+## Bonus Task
+Implement some form of trace output for the type checking process. 
+
+Provide an executable to dump symbol tables in a human readable format.
+
+Use static single assignment (SSA).
