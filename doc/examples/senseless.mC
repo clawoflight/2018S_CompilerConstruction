@@ -1,5 +1,3 @@
-#include <stdbool.h>
-
 void main() {
     bool x;
     bool y;

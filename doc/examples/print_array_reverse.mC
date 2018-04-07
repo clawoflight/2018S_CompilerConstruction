@@ -6,7 +6,7 @@ void main(){
 
     int max;
     max = 5;
-    int  array[5];
+    int[5] array;
 
     /* Fill in reverse order */
     print("Enter 5 int's");

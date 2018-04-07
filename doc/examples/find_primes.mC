@@ -16,7 +16,8 @@ bool check_primes(int n)
 
 int modulo(int a, int b)
 {
-    int tmp = a / b;
+    int tmp;
+    tmp = a / b;
     tmp = b * tmp;
     return a - tmp;
 

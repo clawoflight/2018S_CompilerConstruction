@@ -1,6 +1,7 @@
 void find_even(int n)
 {
-    int i = 0;
+    int i;
+    i = 0;
 	while (i < n) {
 	    if ((i / 2) * 2 == i) {
 	        print_int(i);
