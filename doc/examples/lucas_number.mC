@@ -1,4 +1,6 @@
-void lucas_number (int x, int y, int z, int num){
+void lucas_number (int x, int y, int num){
+ int z;
+ z=0;
  while(num >= x)
  {
    print_int(x);
@@ -14,7 +16,6 @@ void main()
 {
     int x;
     int y;
-    int z;
     int num;
     print("Enter the limit of the Lucas number:");
     print_nl();
@@ -22,7 +23,7 @@ void main()
     y=1;
     num= read_int();
     print("The Lucas numbers are: ");
-    lucas_number(x, y, z, num);
+    lucas_number(x, y, num);
     print_nl();
 
 
