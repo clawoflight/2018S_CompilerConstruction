@@ -103,7 +103,8 @@ struct mCc_symtab_scope {
  * the params) and another for each body.
  * */
 
-// Make static in the implementation file if possible?
+// Make static in the implementation file if possible? Append the name to
+// parent->name + "_"
 mCc_symtab_scope *mCc_symtab_new_scope(struct mCc_symtab_scope *parent,
                                        char *name);
 // Make static in the implementation file!
@@ -118,31 +119,7 @@ mCc_symtab_entry *mCc_symtab_new_entry(struct mCc_symtab_scope *scope,
 inline void mCc_symtab_scope_add_entry(struct mCc_symtab_scope *self,
                                        struct mCc_symtab_entry *entry);
 
-/**
- * @brief Add a new child scope to an existing one.
- *
- * @param self The scope to add to
- * @param childscope_name The human-readable name of the new scope
- *
- * @return A pointer to the new scope, or NULL on failure.
- */
-mCc_symtab_scope *mCc_symtab_scope_add_childscope(struct mCc_symtab_scope *self,
-                                                  char *childscope_name);
-
-/**
- * @brief Record a declaration in a new entry in the given scope.
- *
- * An error is returned if the ID was already declared in this scope.
- * To do that, first check whether the hash table contains the ID.
- *
- * @param self The scope to record the declaration in
- * @param decl The declaration to record
- *
- * @return 0 on success, non-zero if the ID was already declared in this scope.
- */
-int mCc_symtab_scope_add_decl(struct mCc_symtab_scope *self,
-                              struct mCc_ast_declaration *decl);
-
+// Make static in the implementation file
 /**
  * @brief Recursively lookup an ID, starting from the given scope.
  *
@@ -156,6 +133,49 @@ int mCc_symtab_scope_add_decl(struct mCc_symtab_scope *self,
  */
 mCc_symtab_entry *mCc_symtab_lookup(struct mCc_symtab_scope *scope,
                                     struct mCc_ast_identifier *id);
+
+/**
+ * @brief Open a new scope inside an existing one.
+ *
+ * @param self The scope to add to
+ * @param childscope_name The human-readable name of the new scope
+ *
+ * @return A pointer to the new scope, or NULL on failure.
+ */
+mCc_symtab_scope *mCc_symtab_new_scope_in(struct mCc_symtab_scope *self,
+                                          char *childscope_name);
+
+/**
+ * @brief Record a declaration in a new entry in the given scope.
+ *
+ * An error is returned if the ID was already declared in this scope.
+ * To do that, first check whether the hash table contains the ID.
+ *
+ * TODO: call #mCc_symtab_new_entry and #mCc_symtab_scope_add_entry
+ *
+ * @param self The scope to record the declaration in
+ * @param decl The declaration to record
+ *
+ * @return 0 on success, non-zero if the ID was already declared in this scope.
+ */
+int mCc_symtab_scope_add_decl(struct mCc_symtab_scope *self,
+                              struct mCc_ast_declaration *decl);
+
+// TODO: Document
+int mCc_symtab_scope_link_ref_expression(struct mCc_symtab_scope *self, struct mCc_ast_expression *expr);
+
+/**
+ * @brief Link the identifier from an assignment to the corresponding symtab entry.
+ *
+ * TODO: call #mCc_symtab_scope_lookup internally, then set stmt->symtab_entry appropriately
+ *
+ * @param self The current scope, to begin lookup in
+ * @param stmt The assignment statement to link
+ *
+ * TODO(bennett): define multiple return values (undeclared, was function, was array instead of array or opposite) if part of task
+ * @return 0 on success, non-zero if the identifier is undeclared.
+ */
+int mCc_symtab_scope_link_ref_assignment(struct mCc_symtab_scope *self, struct mCc_ast_statement *stmt);
 
 void mCc_symtab_delete_entry(struct mCc_symtab_entry *entry);
 void mCc_symtab_delete_scope(struct mCc_symtab_scope *scope);
