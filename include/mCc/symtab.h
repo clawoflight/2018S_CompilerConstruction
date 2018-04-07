@@ -2,7 +2,6 @@
  * @file symtab.h
  * @brief Symbol table declarations.
  * @author bennett
- * @version
  * @date 2018-03-27
  */
 #ifndef MCC_ST_H
@@ -58,11 +57,6 @@ struct mCc_symtab_scope {
 	struct mCc_symtab_scope *parent;
 	char *name; ///< Human-readable name for debugging
 
-	/// Child scopes, needed for dump and free
-	struct mCc_symtab_scope **child_scopes;
-	unsigned int child_scope_alloc_size; ///< Memory allocated for child scopes
-	unsigned int child_scope_count;      ///< Number of child scopes
-
 	/** Contains the entries.
 	 *
 	 * MUST BE INITIALIZED TO NULL.
@@ -103,37 +97,6 @@ struct mCc_symtab_scope {
  * the params) and another for each body.
  * */
 
-// Make static in the implementation file if possible? Append the name to
-// parent->name + "_"
-mCc_symtab_scope *mCc_symtab_new_scope(struct mCc_symtab_scope *parent,
-                                       char *name);
-// Make static in the implementation file!
-mCc_symtab_entry *mCc_symtab_new_entry(struct mCc_symtab_scope *scope,
-                                       enum mCc_symtab_entry_type entry_type,
-                                       struct mCc_ast_source_location *sloc,
-                                       struct mCc_ast_identifier *identifier,
-                                       enum mCc_ast_declaration_type decl_type,
-                                       void *optarg);
-
-// Make static in the implementation file!
-inline void mCc_symtab_scope_add_entry(struct mCc_symtab_scope *self,
-                                       struct mCc_symtab_entry *entry);
-
-// Make static in the implementation file
-/**
- * @brief Recursively lookup an ID, starting from the given scope.
- *
- * Internally, this will perform a hash table lookup in each scope until a scope
- * without parent is reached.
- *
- * @param scope The scope to start lookup in
- * @param id The ID to look for
- *
- * @return A pointer to the entry, or NULL if the ID is undeclared.
- */
-mCc_symtab_entry *mCc_symtab_lookup(struct mCc_symtab_scope *scope,
-                                    struct mCc_ast_identifier *id);
-
 /**
  * @brief Open a new scope inside an existing one.
  *
@@ -142,8 +105,8 @@ mCc_symtab_entry *mCc_symtab_lookup(struct mCc_symtab_scope *scope,
  *
  * @return A pointer to the new scope, or NULL on failure.
  */
-mCc_symtab_scope *mCc_symtab_new_scope_in(struct mCc_symtab_scope *self,
-                                          char *childscope_name);
+struct mCc_symtab_scope *mCc_symtab_new_scope_in(struct mCc_symtab_scope *self,
+                                                 char *childscope_name);
 
 /**
  * @brief Record a declaration in a new entry in the given scope.
@@ -161,24 +124,49 @@ mCc_symtab_scope *mCc_symtab_new_scope_in(struct mCc_symtab_scope *self,
 int mCc_symtab_scope_add_decl(struct mCc_symtab_scope *self,
                               struct mCc_ast_declaration *decl);
 
-// TODO: Document
-int mCc_symtab_scope_link_ref_expression(struct mCc_symtab_scope *self, struct mCc_ast_expression *expr);
+/**
+ * @brief Link the identifier from an expression to the corresponding symtab
+ * entry.
+ *
+ * TODO: call #mCc_symtab_scope_lookup_id internally, then set
+ * expr->id->symtab_entry appropriately
+ *
+ * @param self The current scope, to begin lookup in
+ * @param expr The id, call or arr_subscr expression to link
+ *
+ * TODO(bennett): define multiple return values (undeclared, was function, was
+ * array instead of array or opposite) if part of linking rather than type
+ * checking
+ * @return 0 on success, non-zero if the identifier is undeclared.
+ */
+int mCc_symtab_scope_link_ref_expression(struct mCc_symtab_scope *self,
+                                         struct mCc_ast_expression *expr);
 
 /**
- * @brief Link the identifier from an assignment to the corresponding symtab entry.
+ * @brief Link the identifier from an assignment to the corresponding symtab
+ * entry.
  *
- * TODO: call #mCc_symtab_scope_lookup internally, then set stmt->symtab_entry appropriately
+ * TODO: call #mCc_symtab_scope_lookup_id internally, then set
+ * stmt->id->symtab_entry appropriately
  *
  * @param self The current scope, to begin lookup in
  * @param stmt The assignment statement to link
  *
- * TODO(bennett): define multiple return values (undeclared, was function, was array instead of array or opposite) if part of task
+ * TODO(bennett): define multiple return values (undeclared, was function, was
+ * array instead of array or opposite) if part of linking rather than type
+ * checking
  * @return 0 on success, non-zero if the identifier is undeclared.
  */
-int mCc_symtab_scope_link_ref_assignment(struct mCc_symtab_scope *self, struct mCc_ast_statement *stmt);
+int mCc_symtab_scope_link_ref_assignment(struct mCc_symtab_scope *self,
+                                         struct mCc_ast_statement *stmt);
 
-void mCc_symtab_delete_entry(struct mCc_symtab_entry *entry);
-void mCc_symtab_delete_scope(struct mCc_symtab_scope *scope);
+/**
+ * @brief Free all scopes, their hash tables and entries.
+ *
+ * This is needed because the program usually only holds pointers to entries and
+ * the top-level symbol table, which doesn't hold pointers to it's children.
+ */
+void mCc_symtab_delete_all_scopes(void);
 
 #ifdef __cplusplus
 }
