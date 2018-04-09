@@ -289,7 +289,7 @@ mCc_ast_arguments_add(struct mCc_ast_arguments *self,
 	struct mCc_ast_expression **tmp;
 	self->arguments_alloc_block_size += arguments_alloc_block_size;
 	if ((tmp = realloc(self->expressions, self->arguments_alloc_block_size *
-	                                          sizeof(self))) == NULL) {
+	                                          sizeof(*tmp))) == NULL) {
 		mCc_ast_delete_arguments(self);
 		return NULL;
 	}
