@@ -7,6 +7,7 @@
   
 * library symbols: Double check that all exported symbols of your library are prefixed. Have a look using nm -g --defined-only libmCc.so. If one of your symbols has no prefix, either add one or make it static.
 
+* Update integration script: https://github.com/W4RH4WK/mCc/commit/d4d9fef8fc4e1e4f1d393b032dc2f26a4d6c70eb
 
 # Assignment 1
 
