@@ -154,6 +154,21 @@ enum MCC_SYMTAB_SCOPE_LINK_ERROR {
 };
 
 /**
+ * @brief Recursively lookup an ID, starting from the given scope.
+ *
+ * Internally, this will perform a hash table lookup in each scope until a scope
+ * without parent is reached.
+ *
+ * @param scope The scope to start lookup in
+ * @param id The ID to look for
+ *
+ * @return A pointer to the entry, or NULL if the ID is undeclared.
+ */
+struct mCc_symtab_entry *
+mCc_symtab_scope_lookup_id(struct mCc_symtab_scope *scope,
+                           struct mCc_ast_identifier *id);
+
+/**
  * @brief Link the identifier from an expression to the corresponding symtab
  * entry.
  *

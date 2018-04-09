@@ -66,9 +66,11 @@ mCc_symtab_new_scope(struct mCc_symtab_scope *parent, char *name)
 	new_scope->hash_table = NULL; // Important for uthash to funtion properly
 	new_scope->name = name;
 
-	if (mCc_symtab_add_scope_to_gc(new_scope))
+	if (mCc_symtab_add_scope_to_gc(new_scope)) {
 		mCc_symtab_delete_scope(new_scope);
-	return NULL;
+		return NULL;
+	}
+	return new_scope;
 }
 
 /**
@@ -128,18 +130,7 @@ static inline void mCc_symtab_scope_add_entry(struct mCc_symtab_scope *self,
 	                strlen(entry->identifier->id_value), entry);
 }
 
-/**
- * @brief Recursively lookup an ID, starting from the given scope.
- *
- * Internally, this will perform a hash table lookup in each scope until a scope
- * without parent is reached.
- *
- * @param scope The scope to start lookup in
- * @param id The ID to look for
- *
- * @return A pointer to the entry, or NULL if the ID is undeclared.
- */
-static struct mCc_symtab_entry *
+struct mCc_symtab_entry *
 mCc_symtab_scope_lookup_id(struct mCc_symtab_scope *scope,
                            struct mCc_ast_identifier *id)
 {
