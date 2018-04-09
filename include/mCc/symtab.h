@@ -124,6 +124,18 @@ struct mCc_symtab_scope *mCc_symtab_new_scope_in(struct mCc_symtab_scope *self,
 int mCc_symtab_scope_add_decl(struct mCc_symtab_scope *self,
                               struct mCc_ast_declaration *decl);
 
+/// The possible errors when linking a reference to the symbol table.
+enum MCC_SYMTAB_SCOPE_LINK_ERROR {
+	MCC_SYMTAB_SCOPE_LINK_ERR_OK,                   ///< No error
+	MCC_SYMTAB_SCOPE_LINK_ERR_UNDECLARED_ID,        ///< Use of undeclared id
+	MCC_SYMTAB_SCOPE_LINK_ERR_ASSIGN_TO_FUNCTION,   ///< Use of function name as
+	                                                ///< lvalue
+	MCC_SYMTAB_SCOPE_LINK_ERR_VAR_WITH_SUBSCRIPT,   ///< Use of variable like an
+	                                                ///< array
+	MCC_SYMTAB_SCOPE_LINK_ERR_ARR_WITHOUT_SUBSCRIPT ///< Use of array like a
+	                                                ///< variable
+};
+
 /**
  * @brief Link the identifier from an expression to the corresponding symtab
  * entry.
@@ -134,13 +146,11 @@ int mCc_symtab_scope_add_decl(struct mCc_symtab_scope *self,
  * @param self The current scope, to begin lookup in
  * @param expr The id, call or arr_subscr expression to link
  *
- * TODO(bennett): define multiple return values (undeclared, was function, was
- * array instead of array or opposite) if part of linking rather than type
- * checking
- * @return 0 on success, non-zero if the identifier is undeclared.
+ * @return 0 on success, or an #MCC_SYMTAB_SCOPE_LINK_ERROR
  */
-int mCc_symtab_scope_link_ref_expression(struct mCc_symtab_scope *self,
-                                         struct mCc_ast_expression *expr);
+enum MCC_SYMTAB_SCOPE_LINK_ERROR
+mCc_symtab_scope_link_ref_expression(struct mCc_symtab_scope *self,
+                                     struct mCc_ast_expression *expr);
 
 /**
  * @brief Link the identifier from an assignment to the corresponding symtab
@@ -152,13 +162,11 @@ int mCc_symtab_scope_link_ref_expression(struct mCc_symtab_scope *self,
  * @param self The current scope, to begin lookup in
  * @param stmt The assignment statement to link
  *
- * TODO(bennett): define multiple return values (undeclared, was function, was
- * array instead of array or opposite) if part of linking rather than type
- * checking
- * @return 0 on success, non-zero if the identifier is undeclared.
+ * @return 0 on success, or an #MCC_SYMTAB_SCOPE_LINK_ERROR
  */
-int mCc_symtab_scope_link_ref_assignment(struct mCc_symtab_scope *self,
-                                         struct mCc_ast_statement *stmt);
+enum MCC_SYMTAB_SCOPE_LINK_ERROR
+mCc_symtab_scope_link_ref_assignment(struct mCc_symtab_scope *self,
+                                     struct mCc_ast_statement *stmt);
 
 /**
  * @brief Free all scopes, their hash tables and entries.

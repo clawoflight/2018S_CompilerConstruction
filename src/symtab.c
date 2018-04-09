@@ -100,13 +100,15 @@ int mCc_symtab_scope_add_decl(struct mCc_symtab_scope *self,
 {
 }
 
-int mCc_symtab_scope_link_ref_expression(struct mCc_symtab_scope *self,
-                                         struct mCc_ast_expression *expr)
+enum MCC_SYMTAB_SCOPE_LINK_ERROR
+mCc_symtab_scope_link_ref_expression(struct mCc_symtab_scope *self,
+                                     struct mCc_ast_expression *expr)
 {
 }
 
-int mCc_symtab_scope_link_ref_assignment(struct mCc_symtab_scope *self,
-                                         struct mCc_ast_statement *stmt)
+enum MCC_SYMTAB_SCOPE_LINK_ERROR
+mCc_symtab_scope_link_ref_assignment(struct mCc_symtab_scope *self,
+                                     struct mCc_ast_statement *stmt)
 {
 }
 
