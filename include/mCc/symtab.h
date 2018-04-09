@@ -63,7 +63,7 @@ struct mCc_symtab_scope {
 	 *
 	 * Not actually an array!
 	 * Instead, it is used by uthash to store the hash table.  */
-	struct mCc_symtab_entry **hash_table;
+	struct mCc_symtab_entry *hash_table;
 };
 
 /************************************************ Functions */
@@ -99,6 +99,8 @@ struct mCc_symtab_scope {
 
 /**
  * @brief Open a new scope inside an existing one.
+ *
+ * If childscope_name is dynamic, the caller must free it after this function returns because it is copied.
  *
  * @param self The scope to add to
  * @param childscope_name The human-readable name of the new scope
