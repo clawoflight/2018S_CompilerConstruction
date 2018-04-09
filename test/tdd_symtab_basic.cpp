@@ -20,9 +20,12 @@ TEST(SYMTAB_BASIC, INSERT_LOOKUP_ENTRY)
 	id.id_value = "id";
 	struct mCc_ast_declaration decl;
 	decl.decl_type = MCC_AST_TYPE_INT;
-	ASSERT_EQ(0, mCc_symtab_scope_add_decl(scope, &decl));
+	decl.decl_id = &id;
+    mCc_symtab_scope_add_decl(scope, &decl);
 
 	struct mCc_symtab_entry *found = mCc_symtab_scope_lookup_id(scope, &id);
 	ASSERT_NE((void *)NULL, found);
 	ASSERT_STREQ(id.id_value, found->identifier->id_value);
+
+	mCc_symtab_delete_all_scopes();
 }
