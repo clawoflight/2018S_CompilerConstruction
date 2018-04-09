@@ -18,7 +18,8 @@ extern "C" {
 enum mCc_symtab_entry_type {
 	MCC_SYMTAB_ENTRY_TYPE_VAR,
 	MCC_SYMTAB_ENTRY_TYPE_ARR,
-	MCC_SYMTAB_ENTRY_TYPE_FUNC
+	MCC_SYMTAB_ENTRY_TYPE_FUNC_TYPED,
+	MCC_SYMTAB_ENTRY_TYPE_FUNC_VOID
 };
 
 struct mCc_symtab_entry {
@@ -100,7 +101,8 @@ struct mCc_symtab_scope {
 /**
  * @brief Open a new scope inside an existing one.
  *
- * If childscope_name is dynamic, the caller must free it after this function returns because it is copied.
+ * If childscope_name is dynamic, the caller must free it after this function
+ * returns because it is copied.
  *
  * @param self The scope to add to
  * @param childscope_name The human-readable name of the new scope
@@ -116,15 +118,28 @@ struct mCc_symtab_scope *mCc_symtab_new_scope_in(struct mCc_symtab_scope *self,
  * An error is returned if the ID was already declared in this scope.
  * To do that, first check whether the hash table contains the ID.
  *
- * TODO: call #mCc_symtab_new_entry and #mCc_symtab_scope_add_entry
- *
  * @param self The scope to record the declaration in
  * @param decl The declaration to record
  *
- * @return 0 on success, non-zero if the ID was already declared in this scope.
+ * @return 0 on success, 1 if the ID was already declared in this scope, -1 on
+ * memory error.
  */
 int mCc_symtab_scope_add_decl(struct mCc_symtab_scope *self,
                               struct mCc_ast_declaration *decl);
+
+/**
+ * @brief Record a function definition in a new entry in the given scope.
+ *
+ * An error is returned if the ID was already declared in this scope.
+ * To do that, first check whether the hash table contains the ID.
+ *
+ * @param self The scope to record the declaration in
+ * @param func_def The function definition to record
+ *
+ * @return 0 on success, 1 if the ID was already declared in this scope, -1 on
+ * memory error.
+ */int mCc_symtab_scope_add_func_def(struct mCc_symtab_scope *self,
+                                  struct mCc_ast_function_def *func_def);
 
 /// The possible errors when linking a reference to the symbol table.
 enum MCC_SYMTAB_SCOPE_LINK_ERROR {

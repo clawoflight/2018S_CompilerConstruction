@@ -105,7 +105,8 @@ static struct mCc_symtab_entry *mCc_symtab_new_entry(
 	case MCC_SYMTAB_ENTRY_TYPE_ARR:
 		new_entry->arr_size = (unsigned int)optarg;
 		break;
-	case MCC_SYMTAB_ENTRY_TYPE_FUNC: new_entry->params = optarg; break;
+	case MCC_SYMTAB_ENTRY_TYPE_FUNC_VOID: /* fallthrough */
+	case MCC_SYMTAB_ENTRY_TYPE_FUNC_TYPED: new_entry->params = optarg; break;
 	case MCC_SYMTAB_ENTRY_TYPE_VAR: break;
 	}
 
@@ -142,6 +143,13 @@ static struct mCc_symtab_entry *
 mCc_symtab_scope_lookup_id(struct mCc_symtab_scope *scope,
                            struct mCc_ast_identifier *id)
 {
+	struct mCc_symtab_entry *entry = NULL;
+	HASH_FIND(hh, scope->hash_table, id->id_value, strlen(id->id_value), entry);
+
+	// Recursively lookup until top scope
+	if (!entry && scope->parent)
+		return mCc_symtab_scope_lookup_id(scope->parent, id);
+	return entry;
 }
 
 /******************************* Public Functions */
@@ -171,6 +179,65 @@ struct mCc_symtab_scope *mCc_symtab_new_scope_in(struct mCc_symtab_scope *self,
 int mCc_symtab_scope_add_decl(struct mCc_symtab_scope *self,
                               struct mCc_ast_declaration *decl)
 {
+	enum mCc_symtab_entry_type entry_type = MCC_SYMTAB_ENTRY_TYPE_VAR;
+	void *array_size = NULL;
+
+	if (decl->decl_array_size) {
+		entry_type = MCC_SYMTAB_ENTRY_TYPE_ARR;
+		array_size = (void *)decl->decl_array_size->i_value;
+	}
+
+	struct mCc_symtab_entry *entry =
+	    mCc_symtab_new_entry(self, entry_type, decl->node.sloc, decl->decl_id,
+	                         decl->decl_type, array_size);
+	if (!entry)
+		return -1;
+
+	// Check whether the ID was declared in the same scope
+	struct mCc_symtab_entry *tmp = NULL;
+	HASH_FIND(hh, self->hash_table, decl->decl_id->id_value,
+	          strlen(decl->decl_id->id_value), tmp);
+	if (tmp) {
+		mCc_symtab_delete_entry(entry);
+		return 1;
+	}
+
+	mCc_symtab_scope_add_entry(self, entry);
+
+	return 0;
+}
+
+int mCc_symtab_scope_add_func_def(struct mCc_symtab_scope *self,
+                                  struct mCc_ast_function_def *func_def)
+{
+	enum mCc_symtab_entry_type entry_type;
+	switch (func_def->type) {
+	case MCC_AST_FUNCTION_DEF_TYPE:
+		entry_type = MCC_SYMTAB_ENTRY_TYPE_FUNC_TYPED;
+		break;
+	case MCC_AST_FUNCTION_DEF_VOID:
+		entry_type = MCC_SYMTAB_ENTRY_TYPE_FUNC_VOID;
+		break;
+	}
+
+	struct mCc_symtab_entry *entry = mCc_symtab_new_entry(
+	    self, entry_type, func_def->node.sloc, func_def->identifier,
+	    func_def->func_type, func_def->para);
+	if (!entry)
+		return -1;
+
+	// Check whether the ID was declared in the same scope
+	struct mCc_symtab_entry *tmp = NULL;
+	HASH_FIND(hh, self->hash_table, func_def->identifier->id_value,
+	          strlen(func_def->identifier->id_value), tmp);
+	if (tmp) {
+		mCc_symtab_delete_entry(entry);
+		return 1;
+	}
+
+	mCc_symtab_scope_add_entry(self, entry);
+
+	return 0;
 }
 
 enum MCC_SYMTAB_SCOPE_LINK_ERROR
