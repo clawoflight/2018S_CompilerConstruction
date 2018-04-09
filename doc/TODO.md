@@ -1,3 +1,13 @@
+# General Feedback Corrections:
+
+* only one Readme which contains 
+  * list of all required dependencies    
+  * instructions on how to build everything and execute unit / integration tests   
+  * a section listing known issues
+  
+* library symbols: Double check that all exported symbols of your library are prefixed. Have a look using nm -g --defined-only libmCc.so. If one of your symbols has no prefix, either add one or make it static.
+
+
 # Assignment 1
 
 ## Tasks 1 and 2: AST, lexer, parser
