@@ -29,13 +29,6 @@ enum mCc_ast_statement_type {
 	MCC_AST_STATEMENT_TYPE_EXPR,     ///< Expression statement
 	MCC_AST_STATEMENT_TYPE_CMPND     ///< Compound statement
 };
-/**
- * The available function types
- */
-enum mCc_ast_function_type {
-	MCC_AST_FUNCTION_DEF_VOID,
-	MCC_AST_FUNCTION_DEF_TYPE,
-};
 
 /**
  * Node representing a statement.
@@ -90,9 +83,9 @@ struct mCc_ast_statement {
 struct mCc_ast_declaration {
 	struct mCc_ast_node node; ///< Common node attributes
 	/// The concrete type of this statement (no inheritance in C)
-	enum mCc_ast_declaration_type type;
+	enum mCc_ast_type type;
 
-	enum mCc_ast_declaration_type decl_type;
+	enum mCc_ast_type decl_type;
 	struct mCc_ast_literal *decl_array_size;
 	struct mCc_ast_identifier *decl_id;
 };
@@ -211,7 +204,7 @@ void mCc_ast_delete_statement(struct mCc_ast_statement *statement);
  * @return A new declaraton
  */
 struct mCc_ast_declaration *
-mCc_ast_new_declaration(enum mCc_ast_declaration_type decl_type,
+mCc_ast_new_declaration(enum mCc_ast_type decl_type,
                         struct mCc_ast_literal *dec_array_size,
                         struct mCc_ast_identifier *decl_id);
 
@@ -226,10 +219,8 @@ void mCc_ast_delete_declaration(struct mCc_ast_declaration *decl);
 
 struct mCc_ast_function_def {
 	struct mCc_ast_node node; ///< Common node attributes
-	/// The concrete type of this statement (no inheritance in C)
-	enum mCc_ast_function_type type;
 
-	enum mCc_ast_declaration_type func_type;
+	enum mCc_ast_type func_type;
 	struct mCc_ast_statement *body;
 	struct mCc_ast_identifier *identifier;
 	struct mCc_ast_parameters *para;
@@ -256,7 +247,7 @@ mCc_ast_new_function_def_void(struct mCc_ast_identifier *id,
  * @return a new function
  */
 struct mCc_ast_function_def *mCc_ast_new_function_def_type(
-    enum mCc_ast_declaration_type type, struct mCc_ast_identifier *id,
+    enum mCc_ast_type type, struct mCc_ast_identifier *id,
     struct mCc_ast_parameters *para, struct mCc_ast_statement *body);
 /**
  * @brief Delete function.

@@ -88,7 +88,7 @@ mCc_symtab_new_scope(struct mCc_symtab_scope *parent, char *name)
 static struct mCc_symtab_entry *mCc_symtab_new_entry(
     struct mCc_symtab_scope *scope, enum mCc_symtab_entry_type entry_type,
     struct mCc_ast_source_location sloc, struct mCc_ast_identifier *identifier,
-    enum mCc_ast_declaration_type decl_type, void *optarg)
+    enum mCc_ast_type primitive_type, void *optarg)
 {
 	assert(scope);
 	assert(identifier);
@@ -101,14 +101,13 @@ static struct mCc_symtab_entry *mCc_symtab_new_entry(
 	new_entry->entry_type = entry_type;
 	new_entry->sloc = sloc;
 	new_entry->identifier = identifier;
-	new_entry->decl_type = decl_type;
+	new_entry->primitive_type = primitive_type;
 
 	switch (entry_type) {
 	case MCC_SYMTAB_ENTRY_TYPE_ARR:
 		new_entry->arr_size = (unsigned int)optarg;
 		break;
-	case MCC_SYMTAB_ENTRY_TYPE_FUNC_VOID: /* fallthrough */
-	case MCC_SYMTAB_ENTRY_TYPE_FUNC_TYPED: new_entry->params = optarg; break;
+	case MCC_SYMTAB_ENTRY_TYPE_FUNC: new_entry->params = optarg; break;
 	case MCC_SYMTAB_ENTRY_TYPE_VAR: break;
 	}
 
@@ -203,16 +202,7 @@ int mCc_symtab_scope_add_decl(struct mCc_symtab_scope *self,
 int mCc_symtab_scope_add_func_def(struct mCc_symtab_scope *self,
                                   struct mCc_ast_function_def *func_def)
 {
-	enum mCc_symtab_entry_type entry_type = MCC_SYMTAB_ENTRY_TYPE_FUNC_VOID;
-	switch (func_def->type) {
-	case MCC_AST_FUNCTION_DEF_TYPE:
-		entry_type = MCC_SYMTAB_ENTRY_TYPE_FUNC_TYPED;
-		break;
-	case MCC_AST_FUNCTION_DEF_VOID:
-		entry_type = MCC_SYMTAB_ENTRY_TYPE_FUNC_VOID;
-		break;
-	}
-
+	enum mCc_symtab_entry_type entry_type = MCC_SYMTAB_ENTRY_TYPE_FUNC;
 	struct mCc_symtab_entry *entry = mCc_symtab_new_entry(
 	    self, entry_type, func_def->node.sloc, func_def->identifier,
 	    func_def->func_type, func_def->para);
@@ -259,8 +249,7 @@ mCc_symtab_scope_link_ref_expression(struct mCc_symtab_scope *self,
 
 	// Basic error checking, though not full type checking
 	switch (entry->entry_type) {
-		case MCC_SYMTAB_ENTRY_TYPE_FUNC_VOID: /* Fallthrough */
-		case MCC_SYMTAB_ENTRY_TYPE_FUNC_TYPED:
+		case MCC_SYMTAB_ENTRY_TYPE_FUNC:
 			if (expr->type != MCC_AST_EXPRESSION_TYPE_CALL_EXPR)
 				return MCC_SYMTAB_SCOPE_LINK_ERR_FUN_WITHOUT_CALL;
 			break;

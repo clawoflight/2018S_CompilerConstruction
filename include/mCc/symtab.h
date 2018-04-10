@@ -18,8 +18,7 @@ extern "C" {
 enum mCc_symtab_entry_type {
 	MCC_SYMTAB_ENTRY_TYPE_VAR,
 	MCC_SYMTAB_ENTRY_TYPE_ARR,
-	MCC_SYMTAB_ENTRY_TYPE_FUNC_TYPED,
-	MCC_SYMTAB_ENTRY_TYPE_FUNC_VOID
+	MCC_SYMTAB_ENTRY_TYPE_FUNC,
 };
 
 struct mCc_symtab_entry {
@@ -36,9 +35,7 @@ struct mCc_symtab_entry {
 	struct mCc_ast_identifier *identifier;
 
 	/// The primitive type (int, bool, ...)
-	// TODO(ramona): we should really rename this struct to primitive type, it's
-	// confusing that we cannot reuse it.
-	enum mCc_ast_declaration_type decl_type;
+	enum mCc_ast_type primitive_type;
 
 	union {
 		/// If entry_type is #MCC_SYMTAB_ENTRY_TYPE_ARR

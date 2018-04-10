@@ -38,11 +38,12 @@ struct mCc_ast_source_location {
 /**
  * The available primitive types
  */
-enum mCc_ast_declaration_type {
-	MCC_AST_TYPE_BOOL,  ///< Boolean
-	MCC_AST_TYPE_INT,   ///< Integer
-	MCC_AST_TYPE_FLOAT, ///< Floating-point number
-	MCC_AST_TYPE_STRING ///< String
+enum mCc_ast_type {
+	MCC_AST_TYPE_BOOL,   ///< Boolean
+	MCC_AST_TYPE_INT,    ///< Integer
+	MCC_AST_TYPE_FLOAT,  ///< Floating-point number
+	MCC_AST_TYPE_STRING, ///< String
+	MCC_AST_TYPE_VOID    ///< No type, but cleaner here
 };
 
 /* Data contained by every AST node. */

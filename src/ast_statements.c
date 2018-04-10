@@ -225,7 +225,7 @@ void mCc_ast_delete_statement(struct mCc_ast_statement *statement)
 /************************************************************** Declarations */
 
 struct mCc_ast_declaration *
-mCc_ast_new_declaration(enum mCc_ast_declaration_type type,
+mCc_ast_new_declaration(enum mCc_ast_type type,
                         struct mCc_ast_literal *val,
                         struct mCc_ast_identifier *id)
 {
@@ -268,7 +268,7 @@ mCc_ast_new_function_def_void(struct mCc_ast_identifier *id,
 		return NULL;
 	}
 
-	func->type = MCC_AST_FUNCTION_DEF_VOID;
+	func->func_type = MCC_AST_TYPE_VOID;
 	func->identifier = id;
 	if (para) {
 		func->para = para;
@@ -285,7 +285,7 @@ mCc_ast_new_function_def_void(struct mCc_ast_identifier *id,
 }
 
 struct mCc_ast_function_def *mCc_ast_new_function_def_type(
-    enum mCc_ast_declaration_type type, struct mCc_ast_identifier *id,
+    enum mCc_ast_type type, struct mCc_ast_identifier *id,
     struct mCc_ast_parameters *para, struct mCc_ast_statement *body)
 {
 	assert(id);
@@ -296,7 +296,6 @@ struct mCc_ast_function_def *mCc_ast_new_function_def_type(
 		return NULL;
 	}
 
-	func->type = MCC_AST_FUNCTION_DEF_TYPE;
 	func->func_type = type;
 	func->identifier = id;
 	if (para) {

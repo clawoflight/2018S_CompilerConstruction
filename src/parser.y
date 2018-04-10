@@ -76,7 +76,7 @@ void mCc_parser_error();
 
 /* TYPES */
 %type <enum mCc_ast_unary_op>  unary_op
-%type <enum mCc_ast_declaration_type> type
+%type <enum mCc_ast_type> type
 
 %type <struct mCc_ast_expression *> expression single_expr binary_op
 %type <struct mCc_ast_literal *> literal
