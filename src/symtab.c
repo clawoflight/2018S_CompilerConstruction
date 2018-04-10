@@ -20,7 +20,7 @@ static unsigned int global_scope_gc_alloc_size = 0;
 static unsigned int global_scope_gc_count = 0;
 
 /// All scopes ever created, to use when printing or freeing
-static struct mCc_symtab_scope **global_scope_gc_arr;
+static struct mCc_symtab_scope **global_scope_gc_arr = NULL;
 
 /*********************************** File-static helpers */
 
@@ -146,16 +146,18 @@ mCc_symtab_scope_lookup_id(struct mCc_symtab_scope *scope,
 /******************************* Public Functions */
 
 struct mCc_symtab_scope *mCc_symtab_new_scope_in(struct mCc_symtab_scope *self,
-                                                 char *childscope_name)
+                                                 const char *childscope_name)
 {
 	assert(childscope_name);
 
 	// create the scope name by concatenating it to the parent scope's name
 	char *name;
 	if (!self) {
-		name = childscope_name;
+		name = malloc(strlen(childscope_name) + 1);
+		strcpy(name, childscope_name);
 	} else {
-		name = malloc(strlen(self->name) + 2); // _ + null byte
+		name = malloc(strlen(self->name) + strlen(childscope_name) +
+		              2); // _ + null byte
 		if (!name)
 			return NULL;
 		strcpy(name, self->name);
@@ -201,7 +203,7 @@ int mCc_symtab_scope_add_decl(struct mCc_symtab_scope *self,
 int mCc_symtab_scope_add_func_def(struct mCc_symtab_scope *self,
                                   struct mCc_ast_function_def *func_def)
 {
-	enum mCc_symtab_entry_type entry_type;
+	enum mCc_symtab_entry_type entry_type = MCC_SYMTAB_ENTRY_TYPE_FUNC_VOID;
 	switch (func_def->type) {
 	case MCC_AST_FUNCTION_DEF_TYPE:
 		entry_type = MCC_SYMTAB_ENTRY_TYPE_FUNC_TYPED;
@@ -244,16 +246,35 @@ mCc_symtab_scope_link_ref_assignment(struct mCc_symtab_scope *self,
 }
 
 /******************************* Destructors */
-static void mCc_symtab_delete_scope(struct mCc_symtab_scope *scope) {}
+static void mCc_symtab_delete_scope(struct mCc_symtab_scope *scope)
+{
+	// Free all entries in the hash table
+	struct mCc_symtab_entry *e, *tmp;
+	HASH_ITER(hh, scope->hash_table, e, tmp) {
+		HASH_DEL(scope->hash_table, e);
+		mCc_symtab_delete_entry(e);
+	}
 
-static void mCc_symtab_delete_entry(struct mCc_symtab_entry *entry) {}
+	free(scope->name);
+	free(scope);
+}
+
+static void mCc_symtab_delete_entry(struct mCc_symtab_entry *entry)
+{
+	free(entry);
+}
 
 void mCc_symtab_delete_all_scopes(void)
 {
 	for (unsigned int i = 0; i < global_scope_gc_count; ++i) {
 		mCc_symtab_delete_scope(global_scope_gc_arr[i]);
 	}
+
+	if (global_scope_gc_arr) {
+		free(global_scope_gc_arr);
+		global_scope_gc_arr = NULL;
+	}
+
 	global_scope_gc_count = 0;
-	free(global_scope_gc_arr);
 	global_scope_gc_alloc_size = 0;
 }

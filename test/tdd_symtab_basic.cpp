@@ -15,13 +15,17 @@ TEST(SYMTAB_BASIC, SCOPE_NAMING)
 TEST(SYMTAB_BASIC, INSERT_LOOKUP_ENTRY)
 {
 	struct mCc_symtab_scope *scope = mCc_symtab_new_scope_in(NULL, "");
+	ASSERT_NE((void*)NULL, scope);
 
 	struct mCc_ast_identifier id;
-	id.id_value = "id";
+	id.id_value = (char *) "id";
+
 	struct mCc_ast_declaration decl;
 	decl.decl_type = MCC_AST_TYPE_INT;
 	decl.decl_id = &id;
-    mCc_symtab_scope_add_decl(scope, &decl);
+	decl.decl_array_size = NULL;
+
+	mCc_symtab_scope_add_decl(scope, &decl);
 
 	struct mCc_symtab_entry *found = mCc_symtab_scope_lookup_id(scope, &id);
 	ASSERT_NE((void *)NULL, found);

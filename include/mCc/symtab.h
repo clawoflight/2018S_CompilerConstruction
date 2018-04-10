@@ -110,7 +110,7 @@ struct mCc_symtab_scope {
  * @return A pointer to the new scope, or NULL on failure.
  */
 struct mCc_symtab_scope *mCc_symtab_new_scope_in(struct mCc_symtab_scope *self,
-                                                 char *childscope_name);
+                                                 const char *childscope_name);
 
 /**
  * @brief Record a declaration in a new entry in the given scope.
@@ -205,6 +205,8 @@ mCc_symtab_scope_link_ref_assignment(struct mCc_symtab_scope *self,
  *
  * This is needed because the program usually only holds pointers to entries and
  * the top-level symbol table, which doesn't hold pointers to it's children.
+ *
+ * This should reset properly so that new scopes can be created afterwards.
  */
 void mCc_symtab_delete_all_scopes(void);
 
