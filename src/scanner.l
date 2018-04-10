@@ -37,7 +37,7 @@ float_literal  [0-9]+\.[0-9]+
 string_literal \"[^"]*\"
 bool_literal   (true)|(false)
 type           (bool)|(int)|(float)|(string)
-cpp_comment    "/*"(.|[ \t\n\r])*"*/"
+cpp_comment    "/*"([^*]|[\r\n]|(\*([^/]|[\r\n])))*"*/"
 
 %%
 
