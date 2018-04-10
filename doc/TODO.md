@@ -117,7 +117,7 @@
 # Assignment 2 
 
 ## Task 0 
-integrate all the test inputs and test if all inputs are parsed correctly.
+~~integrate all the test inputs and test if all inputs are parsed correctly.~~
 
 ## Task 1
 Find out what symbol tables are and how they are typically used.
