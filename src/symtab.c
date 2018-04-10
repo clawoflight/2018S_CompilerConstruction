@@ -237,6 +237,47 @@ enum MCC_SYMTAB_SCOPE_LINK_ERROR
 mCc_symtab_scope_link_ref_expression(struct mCc_symtab_scope *self,
                                      struct mCc_ast_expression *expr)
 {
+	// Get the ID to link
+	struct mCc_ast_identifier *id;
+	switch(expr->type) {
+		case MCC_AST_EXPRESSION_TYPE_IDENTIFIER:
+			id = expr->identifier;
+			break;
+		case MCC_AST_EXPRESSION_TYPE_ARR_SUBSCR:
+			id = expr->array_id;
+			break;
+		case MCC_AST_EXPRESSION_TYPE_CALL_EXPR:
+			id = expr->f_name;
+			break;
+		default:
+			return MCC_SYMTAB_SCOPE_LINK_ERROR_INVALID_AST_OBJECT;
+	}
+
+	struct mCc_symtab_entry *entry = mCc_symtab_scope_lookup_id(self, id);
+	if (!entry)
+		return MCC_SYMTAB_SCOPE_LINK_ERR_UNDECLARED_ID;
+
+	// Basic error checking, though not full type checking
+	switch (entry->entry_type) {
+		case MCC_SYMTAB_ENTRY_TYPE_FUNC_VOID: /* Fallthrough */
+		case MCC_SYMTAB_ENTRY_TYPE_FUNC_TYPED:
+			if (expr->type != MCC_AST_EXPRESSION_TYPE_CALL_EXPR)
+				return MCC_SYMTAB_SCOPE_LINK_ERR_FUN_WITHOUT_CALL;
+			break;
+		case MCC_SYMTAB_ENTRY_TYPE_ARR:
+			if (expr->type != MCC_AST_EXPRESSION_TYPE_ARR_SUBSCR)
+				return MCC_SYMTAB_SCOPE_LINK_ERR_ARR_WITHOUT_BRACKS;
+			break;
+		case MCC_SYMTAB_ENTRY_TYPE_VAR:
+			if (expr->type != MCC_AST_EXPRESSION_TYPE_IDENTIFIER)
+				return MCC_SYMTAB_SCOPE_LINK_ERR_VAR;
+			break;
+
+	// TODO: Link in identifier
+	// id->symtab_ref = entry;
+	// return MCC_SYMTAB_SCOPE_LINK_ERR_OK;
+	}
+
 }
 
 enum MCC_SYMTAB_SCOPE_LINK_ERROR

@@ -138,19 +138,24 @@ int mCc_symtab_scope_add_decl(struct mCc_symtab_scope *self,
  *
  * @return 0 on success, 1 if the ID was already declared in this scope, -1 on
  * memory error.
- */int mCc_symtab_scope_add_func_def(struct mCc_symtab_scope *self,
+ */
+int mCc_symtab_scope_add_func_def(struct mCc_symtab_scope *self,
                                   struct mCc_ast_function_def *func_def);
 
 /// The possible errors when linking a reference to the symbol table.
 enum MCC_SYMTAB_SCOPE_LINK_ERROR {
-	MCC_SYMTAB_SCOPE_LINK_ERR_OK,                   ///< No error
-	MCC_SYMTAB_SCOPE_LINK_ERR_UNDECLARED_ID,        ///< Use of undeclared id
-	MCC_SYMTAB_SCOPE_LINK_ERR_ASSIGN_TO_FUNCTION,   ///< Use of function name as
-	                                                ///< lvalue
-	MCC_SYMTAB_SCOPE_LINK_ERR_VAR_WITH_SUBSCRIPT,   ///< Use of variable like an
-	                                                ///< array
-	MCC_SYMTAB_SCOPE_LINK_ERR_ARR_WITHOUT_SUBSCRIPT ///< Use of array like a
-	                                                ///< variable
+	MCC_SYMTAB_SCOPE_LINK_ERR_OK,                 ///< No error
+	MCC_SYMTAB_SCOPE_LINK_ERR_UNDECLARED_ID,      ///< Use of undeclared id
+	MCC_SYMTAB_SCOPE_LINK_ERR_FUN_WITHOUT_CALL,   ///< Use of function as var or
+	                                              ///< arr
+	MCC_SYMTAB_SCOPE_LINK_ERR_ASSIGN_TO_FUNCTION, ///< Use of function name as
+	                                              ///< lvalue
+	MCC_SYMTAB_SCOPE_LINK_ERR_VAR, ///< Use of variable like an array or
+	                               ///< function
+	MCC_SYMTAB_SCOPE_LINK_ERR_ARR_WITHOUT_BRACKS,  ///< Use of array like a
+	                                               ///< variable or function
+	MCC_SYMTAB_SCOPE_LINK_ERROR_INVALID_AST_OBJECT ///< Attempt to link an ast
+	                                               ///< object without ID
 };
 
 /**
