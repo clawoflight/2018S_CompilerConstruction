@@ -3,17 +3,17 @@ Homework for compiler construction
 
 ## Requirments
 
-Meson in a recent version (0.44.0) (you may want to install it via pip3 install --user meson)
+* Meson in a recent version (0.44.0) (you may want to install it via pip3 install --user meson)
 
-Ninja
+* Ninja
 
-time, typically located at /usr/bin/time, do not confuse with the Bash built-in
+* time, typically located at /usr/bin/time, do not confuse with the Bash built-in
 
-flex for generating the lexer
+* flex for generating the lexer
 
-bison for generating the parser
+* bison for generating the parser
 
-a compiler supporting C11 (and C++14 for unit tests) -- typically GCC or Clang
+* a compiler supporting C11 (and C++14 for unit tests) -- typically GCC or Clang
 
 ## Building
 First get the Code of the compiler:
