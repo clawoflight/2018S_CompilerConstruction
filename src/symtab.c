@@ -5,7 +5,9 @@
  * @date 2018-04-07
  */
 #include "mCc/symtab.h"
+#include "mCc/ast_statements.h"
 #include <assert.h>
+#include <stdio.h>
 
 static void mCc_symtab_delete_scope(struct mCc_symtab_scope *scope);
 static void mCc_symtab_delete_entry(struct mCc_symtab_entry *entry);
@@ -45,6 +47,48 @@ static int mCc_symtab_add_scope_to_gc(struct mCc_symtab_scope *scope)
 	return 0;
 }
 
+static inline void mCc_symtab_add_built_in_functions(struct mCc_symtab_scope *scope)
+{
+    assert(scope);
+
+    struct mCc_ast_identifier func_id;
+    struct mCc_ast_identifier param_id;
+    struct mCc_ast_declaration decl;
+    struct mCc_ast_parameters para;
+    struct mCc_ast_function_def *built_in;
+
+    func_id.id_value = "print";
+    param_id.id_value = "msg";
+    decl.decl_type = MCC_AST_TYPE_STRING;
+    decl.decl_id = &param_id;
+    para = *mCc_ast_new_parameters(&decl);
+
+    built_in = mCc_ast_new_function_def_void(&func_id, &para, NULL);
+
+    mCc_symtab_scope_add_func_def(scope, built_in);
+
+
+  //  struct mCc_symtab_entry *found = mCc_symtab_scope_lookup_id(scope, &func_id);
+
+//    assert(found);
+
+  //  printf("\nParam Id: %s\n", found->params->decl[0]->decl_id->id_value);
+  /*  mCc_ast_new_function_def_void();
+    mCc_ast_new_function_def_void();
+    mCc_ast_new_function_def_void();
+
+    mCc_ast_new_function_def_type();
+    mCc_ast_new_function_def_type();
+
+
+    mCc_symtab_scope_add_func_def(scope, );
+    mCc_symtab_scope_add_func_def(scope, );
+    mCc_symtab_scope_add_func_def(scope, );
+    mCc_symtab_scope_add_func_def(scope, );
+    mCc_symtab_scope_add_func_def(scope, ); */
+}
+
+
 /**
  * @brief Symbol table (scope) constructor.
  *
@@ -63,8 +107,12 @@ mCc_symtab_new_scope(struct mCc_symtab_scope *parent, char *name)
 		return NULL;
 
 	new_scope->parent = parent;
-	new_scope->hash_table = NULL; // Important for uthash to funtion properly
+	new_scope->hash_table = NULL; // Important for uthash to function properly
 	new_scope->name = name;
+
+    if (!parent){
+        mCc_symtab_add_built_in_functions(new_scope);
+    }
 
 	if (mCc_symtab_add_scope_to_gc(new_scope)) {
 		mCc_symtab_delete_scope(new_scope);
