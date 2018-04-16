@@ -59,7 +59,7 @@ TEST(SYMTAB_FUNC, INSERT_LOOKUP_FUNC_NAME)
 }
 
 
-TEST(SYMTAB_FUNC, LOOKUP_BUILT_IN_FUNC)
+TEST(SYMTAB_FUNC, LOOKUP_BUILT_IN_VOID_PARAM)
 {
 	struct mCc_symtab_scope *scope = mCc_symtab_new_scope_in(NULL, "");
 	struct mCc_ast_identifier id;
@@ -78,4 +78,40 @@ TEST(SYMTAB_FUNC, LOOKUP_BUILT_IN_FUNC)
     ASSERT_STREQ("msg", found->params->decl[0]->decl_id->id_value);
 
     mCc_symtab_delete_all_scopes();
+}
+
+TEST(SYMTAB_FUNC, LOOKUP_BUILT_IN_VOID_NO_PARAM)
+{
+struct mCc_symtab_scope *scope = mCc_symtab_new_scope_in(NULL, "");
+struct mCc_ast_identifier id;
+id.id_value = (char *) "print_nl";
+
+struct mCc_symtab_entry *found = mCc_symtab_scope_lookup_id(scope, &id);
+ASSERT_NE((void *)NULL, found);
+
+ASSERT_EQ(MCC_SYMTAB_ENTRY_TYPE_FUNC, found->entry_type);
+ASSERT_EQ(MCC_AST_TYPE_VOID, found->primitive_type);
+ASSERT_STREQ(id.id_value, found->identifier->id_value);
+
+ASSERT_EQ((void *)NULL, found->params);
+
+mCc_symtab_delete_all_scopes();
+}
+
+TEST(SYMTAB_FUNC, LOOKUP_BUILT_IN_TYPE_NO_PARAM)
+{
+struct mCc_symtab_scope *scope = mCc_symtab_new_scope_in(NULL, "");
+struct mCc_ast_identifier id;
+id.id_value = (char *) "read_int";
+
+struct mCc_symtab_entry *found = mCc_symtab_scope_lookup_id(scope, &id);
+ASSERT_NE((void *)NULL, found);
+
+ASSERT_EQ(MCC_SYMTAB_ENTRY_TYPE_FUNC, found->entry_type);
+ASSERT_EQ(MCC_AST_TYPE_INT, found->primitive_type);
+ASSERT_STREQ(id.id_value, found->identifier->id_value);
+
+ASSERT_EQ((void *)NULL, found->params);
+
+mCc_symtab_delete_all_scopes();
 }

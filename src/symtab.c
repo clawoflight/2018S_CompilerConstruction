@@ -7,7 +7,6 @@
 #include "mCc/symtab.h"
 #include "mCc/ast_statements.h"
 #include <assert.h>
-#include <stdio.h>
 
 static void mCc_symtab_delete_scope(struct mCc_symtab_scope *scope);
 static void mCc_symtab_delete_entry(struct mCc_symtab_entry *entry);
@@ -47,45 +46,39 @@ static int mCc_symtab_add_scope_to_gc(struct mCc_symtab_scope *scope)
 	return 0;
 }
 
-static inline void mCc_symtab_add_built_in_functions(struct mCc_symtab_scope *scope)
+//TODO: Add in symtab.h and add comments
+static inline void mCc_symtab_add_built_in_function(struct mCc_symtab_scope *scope,
+                                                    char *func_name, char *param_name,
+                                                    enum mCc_ast_type func_type,
+                                                    enum mCc_ast_type param_type)
 {
     assert(scope);
 
-    struct mCc_ast_identifier func_id;
-    struct mCc_ast_identifier param_id;
-    struct mCc_ast_declaration decl;
-    struct mCc_ast_parameters para;
-    struct mCc_ast_function_def *built_in;
+    struct mCc_ast_identifier *func_id = malloc(sizeof(*func_id));
+    struct mCc_ast_identifier *param_id = malloc(sizeof(*param_id));
+    struct mCc_ast_declaration *decl = malloc(sizeof(*decl));
+    struct mCc_ast_parameters *para = malloc(sizeof(*para));
+    struct mCc_ast_function_def *built_in = malloc(sizeof(*built_in));
 
-    func_id.id_value = "print";
-    param_id.id_value = "msg";
-    decl.decl_type = MCC_AST_TYPE_STRING;
-    decl.decl_id = &param_id;
-    para = *mCc_ast_new_parameters(&decl);
+    func_id->id_value = func_name;
 
-    built_in = mCc_ast_new_function_def_void(&func_id, &para, NULL);
+    if (param_name){
+        param_id->id_value = param_name;
+        decl->decl_type = param_type;
+        decl->decl_id = param_id;
+        para = mCc_ast_new_parameters(decl);
+    } else {
+        para = NULL;
+    }
+
+
+
+    if (func_type == MCC_AST_TYPE_VOID)
+        built_in = mCc_ast_new_function_def_void(func_id, para, NULL);
+    else
+        built_in = mCc_ast_new_function_def_type(func_type, func_id, para, NULL);
 
     mCc_symtab_scope_add_func_def(scope, built_in);
-
-
-  //  struct mCc_symtab_entry *found = mCc_symtab_scope_lookup_id(scope, &func_id);
-
-//    assert(found);
-
-  //  printf("\nParam Id: %s\n", found->params->decl[0]->decl_id->id_value);
-  /*  mCc_ast_new_function_def_void();
-    mCc_ast_new_function_def_void();
-    mCc_ast_new_function_def_void();
-
-    mCc_ast_new_function_def_type();
-    mCc_ast_new_function_def_type();
-
-
-    mCc_symtab_scope_add_func_def(scope, );
-    mCc_symtab_scope_add_func_def(scope, );
-    mCc_symtab_scope_add_func_def(scope, );
-    mCc_symtab_scope_add_func_def(scope, );
-    mCc_symtab_scope_add_func_def(scope, ); */
 }
 
 
@@ -111,7 +104,18 @@ mCc_symtab_new_scope(struct mCc_symtab_scope *parent, char *name)
 	new_scope->name = name;
 
     if (!parent){
-        mCc_symtab_add_built_in_functions(new_scope);
+        mCc_symtab_add_built_in_function(new_scope, "print", "msg",
+                                         MCC_AST_TYPE_VOID, MCC_AST_TYPE_STRING);
+        mCc_symtab_add_built_in_function(new_scope, "print_nl", NULL,
+                                         MCC_AST_TYPE_VOID, MCC_AST_TYPE_VOID);
+        mCc_symtab_add_built_in_function(new_scope, "print_int", "x",
+                                         MCC_AST_TYPE_VOID, MCC_AST_TYPE_INT);
+        mCc_symtab_add_built_in_function(new_scope, "print_float", "x",
+                                         MCC_AST_TYPE_VOID, MCC_AST_TYPE_FLOAT);
+        mCc_symtab_add_built_in_function(new_scope, "read_int", NULL,
+                                         MCC_AST_TYPE_INT, MCC_AST_TYPE_VOID);
+        mCc_symtab_add_built_in_function(new_scope, "read_float", NULL,
+                                         MCC_AST_TYPE_FLOAT, MCC_AST_TYPE_VOID);
     }
 
 	if (mCc_symtab_add_scope_to_gc(new_scope)) {
