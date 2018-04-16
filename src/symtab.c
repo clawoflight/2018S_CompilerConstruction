@@ -148,7 +148,7 @@ enum MCC_SYMTAB_SCOPE_LINK_ERROR *mCc_symtab_check_main_properties(struct mCc_sy
     HASH_FIND(hh, scope->hash_table, "main", strlen("main"), entry);
 
     if (entry){
-        if(entry->primitive_type==MCC_AST_TYPE_VOID){
+        if(entry->primitive_type==MCC_AST_TYPE_INT){
             if (!entry->params) {
                 return 0;   /// if all properties are full filled
             }

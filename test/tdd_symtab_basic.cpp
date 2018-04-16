@@ -43,7 +43,7 @@ TEST(SYMTAB_FUNC, INSERT_LOOKUP_FUNC_NAME)
     id.id_value = (char *) "main";
 
     struct mCc_ast_function_def func ;
-    func.func_type = MCC_AST_TYPE_VOID;
+    func.func_type = MCC_AST_TYPE_INT;
 
     func.identifier = &id;
     func.body = NULL;

@@ -171,7 +171,7 @@ mCc_symtab_scope_lookup_id(struct mCc_symtab_scope *scope,
                            struct mCc_ast_identifier *id);
 
 /**
- * check wheter the main is declared in the right way (return type void, no parameter and name main)
+ * check whether the main is declared in the right way (return type int, no parameter and name main)
  * @param scope
  * @return 0 on success or -1 on error
  */
