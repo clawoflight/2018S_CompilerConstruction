@@ -49,11 +49,7 @@ TEST(SYMTAB_FUNC, INSERT_LOOKUP_FUNC_NAME)
     func.body = NULL;
     func.para = NULL;
 
-    struct mCc_ast_declaration decl;
-    decl.decl_type = MCC_AST_TYPE_VOID;
-    decl.decl_id = func.identifier;
-
-    mCc_symtab_scope_add_decl(scope, &decl);
+    mCc_symtab_scope_add_func_def(scope, &func);
 
     struct mCc_symtab_entry *found = mCc_symtab_scope_lookup_id(scope, func.identifier);
     ASSERT_NE((void *)NULL, found);
