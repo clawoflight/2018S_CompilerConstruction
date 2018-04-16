@@ -175,7 +175,7 @@ mCc_symtab_scope_lookup_id(struct mCc_symtab_scope *scope,
  * @param scope
  * @return 0 on success or -1 on error
  */
-enum MCC_SYMTAB_SCOPE_LINK_ERROR *mCc_symtab_check_main_properties(struct mCc_symtab_scope *scope );
+int mCc_symtab_check_main_properties(struct mCc_symtab_scope *scope );
 
 /**
  * @brief Link the identifier from an expression to the corresponding symtab
