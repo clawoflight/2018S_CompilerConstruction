@@ -46,7 +46,15 @@ static int mCc_symtab_add_scope_to_gc(struct mCc_symtab_scope *scope)
 	return 0;
 }
 
-//TODO: Add in symtab.h and add comments
+/**
+ * @brief Adds the build-in function headers into the first scope.
+ *
+ * @param scope The scope where the functions are added to
+ * @param func_name  The name of the built-in function
+ * @param param_name The name of the parameter for the function
+ * @param func_type  The return type of the function
+ * @param param_type  The type of the parameter
+ */
 static inline void mCc_symtab_add_built_in_function(struct mCc_symtab_scope *scope,
                                                     char *func_name, char *param_name,
                                                     enum mCc_ast_type func_type,
