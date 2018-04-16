@@ -33,3 +33,31 @@ TEST(SYMTAB_BASIC, INSERT_LOOKUP_ENTRY)
 
 	mCc_symtab_delete_all_scopes();
 }
+
+TEST(SYMTAB_FUNC, INSERT_LOOKUP_FUNC_NAME)
+{
+    struct mCc_symtab_scope *scope = mCc_symtab_new_scope_in(NULL, "");
+    ASSERT_NE((void*)NULL, scope);
+
+    struct mCc_ast_identifier id;
+    id.id_value = (char *) "main";
+
+    struct mCc_ast_function_def func ;
+    func.func_type = MCC_AST_TYPE_VOID;
+
+    func.identifier = &id;
+    func.body = NULL;
+    func.para = NULL;
+
+    struct mCc_ast_declaration decl;
+    decl.decl_type = MCC_AST_TYPE_VOID;
+    decl.decl_id = func.identifier;
+
+    mCc_symtab_scope_add_decl(scope, &decl);
+
+    struct mCc_symtab_entry *found = mCc_symtab_scope_lookup_id(scope, func.identifier);
+    ASSERT_NE((void *)NULL, found);
+    ASSERT_STREQ(func.identifier->id_value, found->identifier->id_value);
+
+    mCc_symtab_delete_all_scopes();
+}

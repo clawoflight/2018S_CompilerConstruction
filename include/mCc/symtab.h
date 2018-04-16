@@ -151,7 +151,7 @@ enum MCC_SYMTAB_SCOPE_LINK_ERROR {
 	                               ///< function
 	MCC_SYMTAB_SCOPE_LINK_ERR_ARR_WITHOUT_BRACKS,  ///< Use of array like a
 	                                               ///< variable or function
-	MCC_SYMTAB_SCOPE_LINK_ERROR_INVALID_AST_OBJECT ///< Attempt to link an ast
+	MCC_SYMTAB_SCOPE_LINK_ERROR_INVALID_AST_OBJECT, ///< Attempt to link an ast
 	                                               ///< object without ID
 };
 
@@ -169,6 +169,13 @@ enum MCC_SYMTAB_SCOPE_LINK_ERROR {
 struct mCc_symtab_entry *
 mCc_symtab_scope_lookup_id(struct mCc_symtab_scope *scope,
                            struct mCc_ast_identifier *id);
+
+/**
+ * check wheter the main is declared in the right way (return type void, no parameter and name main)
+ * @param scope
+ * @return 0 on success or -1 on error
+ */
+enum MCC_SYMTAB_SCOPE_LINK_ERROR *mCc_symtab_check_main_properties(struct mCc_symtab_scope *scope );
 
 /**
  * @brief Link the identifier from an expression to the corresponding symtab
