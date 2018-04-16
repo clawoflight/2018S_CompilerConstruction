@@ -23,6 +23,16 @@ static unsigned int global_scope_gc_count = 0;
 /// All scopes ever created, to use when printing or freeing
 static struct mCc_symtab_scope **global_scope_gc_arr = NULL;
 
+
+/*********************************** Global array of built-ins and helper for deleting */
+
+/// Number of entries currently in array
+static unsigned int built_in_count = 0;
+
+/// All built_in functions ever created, to use when freeing
+static struct mCc_ast_function_def *built_in_arr[6];
+
+
 /*********************************** File-static helpers */
 
 static int mCc_symtab_add_scope_to_gc(struct mCc_symtab_scope *scope)
@@ -62,24 +72,17 @@ static inline void mCc_symtab_add_built_in_function(struct mCc_symtab_scope *sco
 {
     assert(scope);
 
-    struct mCc_ast_identifier *func_id = malloc(sizeof(*func_id));
-    struct mCc_ast_identifier *param_id = malloc(sizeof(*param_id));
-    struct mCc_ast_declaration *decl = malloc(sizeof(*decl));
-    struct mCc_ast_parameters *para = malloc(sizeof(*para));
-    struct mCc_ast_function_def *built_in = malloc(sizeof(*built_in));
-
-    func_id->id_value = func_name;
+    struct mCc_ast_identifier *func_id = mCc_ast_new_identifier(func_name);
+    struct mCc_ast_identifier *param_id = NULL;
+    struct mCc_ast_declaration *decl = NULL;
+    struct mCc_ast_parameters *para = NULL;
+    struct mCc_ast_function_def *built_in;
 
     if (param_name){
-        param_id->id_value = param_name;
-        decl->decl_type = param_type;
-        decl->decl_id = param_id;
+        param_id = mCc_ast_new_identifier(param_name);
+        decl = mCc_ast_new_declaration(param_type, NULL, param_id);
         para = mCc_ast_new_parameters(decl);
-    } else {
-        para = NULL;
     }
-
-
 
     if (func_type == MCC_AST_TYPE_VOID)
         built_in = mCc_ast_new_function_def_void(func_id, para, NULL);
@@ -87,6 +90,9 @@ static inline void mCc_symtab_add_built_in_function(struct mCc_symtab_scope *sco
         built_in = mCc_ast_new_function_def_type(func_type, func_id, para, NULL);
 
     mCc_symtab_scope_add_func_def(scope, built_in);
+
+    built_in_arr[built_in_count] = built_in;
+    built_in_count++;
 }
 
 
@@ -372,8 +378,19 @@ static void mCc_symtab_delete_entry(struct mCc_symtab_entry *entry)
 	free(entry);
 }
 
+static void mCc_symtab_delete_built_ins(void)
+{
+    printf("\nBuilt-In Count: %d\n", built_in_count);
+
+    for (unsigned int i = 0; i < built_in_count; ++i) {
+         mCc_ast_delete_func_def(built_in_arr[i]);
+    }
+    built_in_count = 0;
+}
+
 void mCc_symtab_delete_all_scopes(void)
 {
+    mCc_symtab_delete_built_ins();
 	for (unsigned int i = 0; i < global_scope_gc_count; ++i) {
 		mCc_symtab_delete_scope(global_scope_gc_arr[i]);
 	}
