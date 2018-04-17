@@ -83,7 +83,28 @@ static void handle_expression(struct mCc_ast_expression *expr, void *data)
 	    mCc_symtab_scope_link_ref_expression(scope, expr);
 
 	switch (retval) {
-		// TODO check for all errors that could happen
+		case MCC_SYMTAB_SCOPE_LINK_ERR_FUN_WITHOUT_CALL:
+			if (snprintf(tmp_result.err_msg, err_len, "Use of a function without a call: '%s'",
+						 expr->type))
+				// TODO error message about snprintf
+				;
+			break;
+		case MCC_SYMTAB_SCOPE_LINK_ERR_ARR_WITHOUT_BRACKS:
+			if (snprintf(tmp_result.err_msg, err_len, "Use of an array without brackets: '%s'",
+						 expr->type))
+				// TODO error message about snprintf
+				;
+			break;
+		case MCC_SYMTAB_SCOPE_LINK_ERR_VAR:
+			if (snprintf(tmp_result.err_msg, err_len, "Use of undeclared variable: '%s'",
+						 expr->type))
+				// TODO error message about snprintf
+				;
+			break;
+		case MCC_SYMTAB_SCOPE_LINK_ERROR_INVALID_AST_OBJECT:
+			strcpy(tmp_result.err_msg,
+				   "Development error! This error should not haave happened here.");
+			break;
 	}
 
 	// If an error happened, set status

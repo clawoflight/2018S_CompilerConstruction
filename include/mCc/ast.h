@@ -350,7 +350,7 @@ void mCc_ast_delete_literal(struct mCc_ast_literal *literal);
  */
 struct mCc_ast_identifier {
 	struct mCc_ast_node node; ///< Common attributes
-
+	//struct mCc_symtab_entry symtab_ref;
 	/**
 	 * The ID string
 	 */
