@@ -1,6 +1,13 @@
 /**
  * @file ast_visit.h
  * @brief Declarations for the AST traversal mechanism.
+ *
+ * NOTE:
+ * To build the symbol table,
+ * define MCC_AST_VISIT_SYMTAB_MODE before including this file,
+ * and set visitor.userdata to an array of struct #mCc_ast_symtab_scope.
+ * It will be used as stack.
+ *
  * @author warhawk
  * @date 2018-03-08
  */
