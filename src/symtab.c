@@ -4,8 +4,8 @@
  * @author bennett
  * @date 2018-04-07
  */
-#include "mCc/symtab.h"
 #include "mCc/ast_statements.h"
+#include "mCc/symtab.h"
 #include <assert.h>
 
 static void mCc_symtab_delete_scope(struct mCc_symtab_scope *scope);
@@ -23,15 +23,14 @@ static unsigned int global_scope_gc_count = 0;
 /// All scopes ever created, to use when printing or freeing
 static struct mCc_symtab_scope **global_scope_gc_arr = NULL;
 
-
-/*********************************** Global array of built-ins and helper for deleting */
+/*********************************** Global array of built-ins and helper for
+ * deleting */
 
 /// Number of entries currently in array
 static unsigned int built_in_count = 0;
 
 /// All built_in functions ever created, to use when freeing
 static struct mCc_ast_function_def *built_in_arr[6];
-
 
 /*********************************** File-static helpers */
 
@@ -65,36 +64,34 @@ static int mCc_symtab_add_scope_to_gc(struct mCc_symtab_scope *scope)
  * @param func_type  The return type of the function
  * @param param_type  The type of the parameter
  */
-static inline void mCc_symtab_add_built_in_function(struct mCc_symtab_scope *scope,
-                                                    char *func_name, char *param_name,
-                                                    enum mCc_ast_type func_type,
-                                                    enum mCc_ast_type param_type)
+static inline void mCc_symtab_add_built_in_function(
+    struct mCc_symtab_scope *scope, char *func_name, char *param_name,
+    enum mCc_ast_type func_type, enum mCc_ast_type param_type)
 {
-    assert(scope);
+	assert(scope);
 
-    struct mCc_ast_identifier *func_id = mCc_ast_new_identifier(func_name);
-    struct mCc_ast_identifier *param_id = NULL;
-    struct mCc_ast_declaration *decl = NULL;
-    struct mCc_ast_parameters *para = NULL;
-    struct mCc_ast_function_def *built_in;
+	struct mCc_ast_identifier *func_id = mCc_ast_new_identifier(func_name);
+	struct mCc_ast_identifier *param_id = NULL;
+	struct mCc_ast_declaration *decl = NULL;
+	struct mCc_ast_parameters *para = NULL;
+	struct mCc_ast_function_def *built_in;
 
-    if (param_name){
-        param_id = mCc_ast_new_identifier(param_name);
-        decl = mCc_ast_new_declaration(param_type, NULL, param_id);
-        para = mCc_ast_new_parameters(decl);
-    }
+	if (param_name) {
+		param_id = mCc_ast_new_identifier(param_name);
+		decl = mCc_ast_new_declaration(param_type, NULL, param_id);
+		para = mCc_ast_new_parameters(decl);
+	}
 
-    if (func_type == MCC_AST_TYPE_VOID)
-        built_in = mCc_ast_new_function_def_void(func_id, para, NULL);
-    else
-        built_in = mCc_ast_new_function_def_type(func_type, func_id, para, NULL);
+	if (func_type == MCC_AST_TYPE_VOID)
+		built_in = mCc_ast_new_function_def_void(func_id, para, NULL);
+	else
+		built_in =
+		    mCc_ast_new_function_def_type(func_type, func_id, para, NULL);
 
-    mCc_symtab_scope_add_func_def(scope, built_in);
+	mCc_symtab_scope_add_func_def(scope, built_in);
 
-    built_in_arr[built_in_count] = built_in;
-    built_in_count++;
+	built_in_arr[built_in_count++] = built_in;
 }
-
 
 /**
  * @brief Symbol table (scope) constructor.
@@ -117,20 +114,20 @@ mCc_symtab_new_scope(struct mCc_symtab_scope *parent, char *name)
 	new_scope->hash_table = NULL; // Important for uthash to function properly
 	new_scope->name = name;
 
-    if (!parent){
-        mCc_symtab_add_built_in_function(new_scope, "print", "msg",
-                                         MCC_AST_TYPE_VOID, MCC_AST_TYPE_STRING);
-        mCc_symtab_add_built_in_function(new_scope, "print_nl", NULL,
-                                         MCC_AST_TYPE_VOID, MCC_AST_TYPE_VOID);
-        mCc_symtab_add_built_in_function(new_scope, "print_int", "x",
-                                         MCC_AST_TYPE_VOID, MCC_AST_TYPE_INT);
-        mCc_symtab_add_built_in_function(new_scope, "print_float", "x",
-                                         MCC_AST_TYPE_VOID, MCC_AST_TYPE_FLOAT);
-        mCc_symtab_add_built_in_function(new_scope, "read_int", NULL,
-                                         MCC_AST_TYPE_INT, MCC_AST_TYPE_VOID);
-        mCc_symtab_add_built_in_function(new_scope, "read_float", NULL,
-                                         MCC_AST_TYPE_FLOAT, MCC_AST_TYPE_VOID);
-    }
+	if (!parent) {
+		mCc_symtab_add_built_in_function(
+		    new_scope, "print", "msg", MCC_AST_TYPE_VOID, MCC_AST_TYPE_STRING);
+		mCc_symtab_add_built_in_function(new_scope, "print_nl", NULL,
+		                                 MCC_AST_TYPE_VOID, MCC_AST_TYPE_VOID);
+		mCc_symtab_add_built_in_function(new_scope, "print_int", "x",
+		                                 MCC_AST_TYPE_VOID, MCC_AST_TYPE_INT);
+		mCc_symtab_add_built_in_function(new_scope, "print_float", "x",
+		                                 MCC_AST_TYPE_VOID, MCC_AST_TYPE_FLOAT);
+		mCc_symtab_add_built_in_function(new_scope, "read_int", NULL,
+		                                 MCC_AST_TYPE_INT, MCC_AST_TYPE_VOID);
+		mCc_symtab_add_built_in_function(new_scope, "read_float", NULL,
+		                                 MCC_AST_TYPE_FLOAT, MCC_AST_TYPE_VOID);
+	}
 
 	if (mCc_symtab_add_scope_to_gc(new_scope)) {
 		mCc_symtab_delete_scope(new_scope);
@@ -208,21 +205,21 @@ mCc_symtab_scope_lookup_id(struct mCc_symtab_scope *scope,
 	return entry;
 }
 
-int mCc_symtab_check_main_properties(struct mCc_symtab_scope *scope )
+int mCc_symtab_check_main_properties(struct mCc_symtab_scope *scope)
 {
-	struct mCc_ast_identifier *id;
-	id->id_value = "main";
+	struct mCc_ast_identifier id;
+	id.id_value = "main";
 
-	struct mCc_symtab_entry *entry = mCc_symtab_scope_lookup_id(scope, id);
+	struct mCc_symtab_entry *entry = mCc_symtab_scope_lookup_id(scope, &id);
 
-    if (entry){
-        if(entry->primitive_type==MCC_AST_TYPE_VOID){
-            if (!entry->params) {
-                return 0;   /// if all properties are full filled
-            }
-        }
-    }
-    return -1;
+	if (entry) {
+		if (entry->primitive_type == MCC_AST_TYPE_VOID) {
+			if (!entry->params) {
+				return 0; /// if all properties are full filled
+			}
+		}
+	}
+	return -1;
 }
 
 /******************************* Public Functions */
@@ -313,18 +310,11 @@ mCc_symtab_scope_link_ref_expression(struct mCc_symtab_scope *self,
 {
 	// Get the ID to link
 	struct mCc_ast_identifier *id;
-	switch(expr->type) {
-		case MCC_AST_EXPRESSION_TYPE_IDENTIFIER:
-			id = expr->identifier;
-			break;
-		case MCC_AST_EXPRESSION_TYPE_ARR_SUBSCR:
-			id = expr->array_id;
-			break;
-		case MCC_AST_EXPRESSION_TYPE_CALL_EXPR:
-			id = expr->f_name;
-			break;
-		default:
-			return MCC_SYMTAB_SCOPE_LINK_ERROR_INVALID_AST_OBJECT;
+	switch (expr->type) {
+	case MCC_AST_EXPRESSION_TYPE_IDENTIFIER: id = expr->identifier; break;
+	case MCC_AST_EXPRESSION_TYPE_ARR_SUBSCR: id = expr->array_id; break;
+	case MCC_AST_EXPRESSION_TYPE_CALL_EXPR: id = expr->f_name; break;
+	default: return MCC_SYMTAB_SCOPE_LINK_ERROR_INVALID_AST_OBJECT;
 	}
 
 	struct mCc_symtab_entry *entry = mCc_symtab_scope_lookup_id(self, id);
@@ -333,24 +323,23 @@ mCc_symtab_scope_link_ref_expression(struct mCc_symtab_scope *self,
 
 	// Basic error checking, though not full type checking
 	switch (entry->entry_type) {
-		case MCC_SYMTAB_ENTRY_TYPE_FUNC:
-			if (expr->type != MCC_AST_EXPRESSION_TYPE_CALL_EXPR)
-				return MCC_SYMTAB_SCOPE_LINK_ERR_FUN_WITHOUT_CALL;
-			break;
-		case MCC_SYMTAB_ENTRY_TYPE_ARR:
-			if (expr->type != MCC_AST_EXPRESSION_TYPE_ARR_SUBSCR)
-				return MCC_SYMTAB_SCOPE_LINK_ERR_ARR_WITHOUT_BRACKS;
-			break;
-		case MCC_SYMTAB_ENTRY_TYPE_VAR:
-			if (expr->type != MCC_AST_EXPRESSION_TYPE_IDENTIFIER)
-				return MCC_SYMTAB_SCOPE_LINK_ERR_VAR;
-			break;
+	case MCC_SYMTAB_ENTRY_TYPE_FUNC:
+		if (expr->type != MCC_AST_EXPRESSION_TYPE_CALL_EXPR)
+			return MCC_SYMTAB_SCOPE_LINK_ERR_FUN_WITHOUT_CALL;
+		break;
+	case MCC_SYMTAB_ENTRY_TYPE_ARR:
+		if (expr->type != MCC_AST_EXPRESSION_TYPE_ARR_SUBSCR)
+			return MCC_SYMTAB_SCOPE_LINK_ERR_ARR_WITHOUT_BRACKS;
+		break;
+	case MCC_SYMTAB_ENTRY_TYPE_VAR:
+		if (expr->type != MCC_AST_EXPRESSION_TYPE_IDENTIFIER)
+			return MCC_SYMTAB_SCOPE_LINK_ERR_VAR;
+		break;
 
-	// TODO: Link in identifier
-	// id->symtab_ref = entry;
-	// return MCC_SYMTAB_SCOPE_LINK_ERR_OK;
+		// TODO: Link in identifier
+		// id->symtab_ref = entry;
+		// return MCC_SYMTAB_SCOPE_LINK_ERR_OK;
 	}
-
 }
 
 enum MCC_SYMTAB_SCOPE_LINK_ERROR
@@ -364,7 +353,8 @@ static void mCc_symtab_delete_scope(struct mCc_symtab_scope *scope)
 {
 	// Free all entries in the hash table
 	struct mCc_symtab_entry *e, *tmp;
-	HASH_ITER(hh, scope->hash_table, e, tmp) {
+	HASH_ITER(hh, scope->hash_table, e, tmp)
+	{
 		HASH_DEL(scope->hash_table, e);
 		mCc_symtab_delete_entry(e);
 	}
@@ -380,17 +370,15 @@ static void mCc_symtab_delete_entry(struct mCc_symtab_entry *entry)
 
 static void mCc_symtab_delete_built_ins(void)
 {
-    printf("\nBuilt-In Count: %d\n", built_in_count);
-
-    for (unsigned int i = 0; i < built_in_count; ++i) {
-         mCc_ast_delete_func_def(built_in_arr[i]);
-    }
-    built_in_count = 0;
+	for (unsigned int i = 0; i < built_in_count; ++i) {
+		mCc_ast_delete_func_def(built_in_arr[i]);
+	}
+	built_in_count = 0;
 }
 
 void mCc_symtab_delete_all_scopes(void)
 {
-    mCc_symtab_delete_built_ins();
+	mCc_symtab_delete_built_ins();
 	for (unsigned int i = 0; i < global_scope_gc_count; ++i) {
 		mCc_symtab_delete_scope(global_scope_gc_arr[i]);
 	}
