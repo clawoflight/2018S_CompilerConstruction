@@ -35,7 +35,8 @@ mCc_src = [ 'src/ast.c',
             'src/ast_print.c',
             'src/ast_visit.c',
             'src/symtab.c',
-	    'src/ast_symtab_link.c',
+	        'src/ast_symtab_link.c',
+	        'src/typecheck.c',
             lgen.process('src/scanner.l'),
             pgen.process('src/parser.y') ]
 
@@ -66,7 +67,8 @@ mCc_uts = [
             'tdd_parser_assgn',
             'tdd_parser_callexpr',
             'tdd_parser_program',
-	    'tdd_symtab_basic',
+	        'tdd_symtab_basic',
+	        'tdd_symtab_typecheck',
 ]
 
 foreach ut : mCc_uts

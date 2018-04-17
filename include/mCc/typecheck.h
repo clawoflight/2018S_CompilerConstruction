@@ -7,8 +7,14 @@
 #ifndef MCC_TYPECHECK_H
 #define MCC_TYPECHECK_H
 
+#include "mCc/ast_symtab_link.h"
+#include "mCc/symtab.h"
 #include "mCc/ast.h"
+#include "mCc/ast_statements.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
  * @brief The status of a typecheck execution.
  */
@@ -26,7 +32,6 @@ struct mCc_typecheck_result {
 	// TODO should mCc_typecheck simply set a string, or do we want to pass more
 	// information to the caller?
 };
-
 /**
  * @brief Typecheck the given program.
  *
@@ -45,11 +50,7 @@ struct mCc_typecheck_result {
  *
  * @return an #mCc_typecheck_result containing status and error.
  */
-struct mCc_typecheck_result mCc_typecheck(mCc_ast_program *program);
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+struct mCc_typecheck_result mCc_typecheck(struct mCc_ast_program *program);
 
 #ifdef __cplusplus
 }
