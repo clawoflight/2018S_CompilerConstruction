@@ -6,6 +6,7 @@
  */
 #include "mCc/ast_visit.h"
 #include "mCc/symtab.h"
+#include "stack.h"
 
 #include <assert.h>
 #include <stdio.h>
@@ -31,10 +32,6 @@
 #define visit_if_post_order(node, callback, visitor) \
 	visit_if((visitor)->order == MCC_AST_VISIT_POST_ORDER, node, callback, \
 	         visitor)
-
-// Hacky stack for symbol table scopes
-#define push(sp, n) (*((sp)++) = (n))
-#define pop(sp) (*--(sp))
 
 void mCc_ast_visit_statement(struct mCc_ast_statement *statement,
                              struct mCc_ast_visitor *visitor)
@@ -89,14 +86,14 @@ void mCc_ast_visit_statement(struct mCc_ast_statement *statement,
 		struct mCc_symtab_scope *new_scope = mCc_symtab_new_scope_in(visitor->userdata, "anon");
 		// TODO: try out if I can move the scope creation to the callback (assuming pre-order). That would fix the double scope for every function issue.
 		// (DO THAT AFTER HAVING RUNNING TESTS!)
-		push(visitor->userdata, new_scope);
+		stack_push(visitor->userdata, new_scope);
 #endif
 		visit_if_pre_order(statement, visitor->statement_compound, visitor);
 		for (unsigned int i = 0; i < statement->compound_stmt_count; ++i)
 			mCc_ast_visit_statement(statement->compound_stmts[i], visitor);
 		visit_if_post_order(statement, visitor->statement_compound, visitor);
 #ifdef MCC_AST_VISIT_SYMTAB_MODE
-		pop(visitor->userdata);
+		stack_pop(visitor->userdata);
 #endif
 		break;
 
@@ -269,7 +266,7 @@ void mCc_ast_visit_function_def(struct mCc_ast_function_def *func,
 
 #ifdef MCC_AST_VISIT_SYMTAB_MODE
 	struct mCc_symtab_scope *new_scope = mCc_symtab_new_scope_in(visitor->userdata, func->identifier->id_value);
-	push(visitor->userdata, new_scope);
+	stack_push(visitor->userdata, new_scope);
 #endif
 	visit_if_pre_order(func, visitor->function_def, visitor);
 	mCc_ast_visit_identifier(func->identifier, visitor);
@@ -281,7 +278,7 @@ void mCc_ast_visit_function_def(struct mCc_ast_function_def *func,
 	}
 	visit_if_post_order(func, visitor->function_def, visitor);
 #ifdef MCC_AST_VISIT_SYMTAB_MODE
-	pop(visitor->userdata);
+	stack_pop(visitor->userdata);
 #endif
 }
 
