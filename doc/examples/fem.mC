@@ -37,7 +37,7 @@ void main()
 	print("Number of iterations: ");
 	iter = read_int();
 
-	if (dt < 0.0 && iter < 0.0) {
+	if (dt < 0.0 && iter < 0) {
 		dt = -dt;
 		iter = -iter;
 		print("IC what you did there");

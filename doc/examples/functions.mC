@@ -17,7 +17,7 @@ void while_function(float f, bool b) {
     int i;
     i = 0;
     while (i < 2) {
-        print(i);
+        print_int(i);
         i = i + 1;
     }
     string str;

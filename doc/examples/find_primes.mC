@@ -31,7 +31,7 @@ void main()
 	n = read_int();
 	print_nl();
 
-	int result;
+	bool result;
 	result = check_primes(n);
 
 	if (result) {
