@@ -209,23 +209,6 @@ enum MCC_SYMTAB_SCOPE_LINK_ERROR
 mCc_symtab_scope_link_ref_assignment(struct mCc_symtab_scope *self,
 									 struct mCc_ast_statement *stmt);
 
-
-/**
- * @brief Link the identifier from an assignment to the corresponding symtab
- * entry.
- *
- * TODO: call #mCc_symtab_scope_lookup_id internally, then set
- * stmt->id->symtab_entry appropriately
- *
- * @param self The current scope, to begin lookup in
- * @param stmt The assignment statement to link
- *
- * @return 0 on success, or an #MCC_SYMTAB_SCOPE_LINK_ERROR
- */
-enum MCC_SYMTAB_SCOPE_LINK_ERROR
-mCc_symtab_scope_link_ref_assignment(struct mCc_symtab_scope *self,
-                                     struct mCc_ast_statement *stmt);
-
 /**
  * @brief Free all scopes, their hash tables and entries.
  *
