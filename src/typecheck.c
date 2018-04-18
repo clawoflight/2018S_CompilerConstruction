@@ -70,34 +70,34 @@ static inline enum mCc_ast_type mCc_check_arr_subscr(struct mCc_ast_expression *
 
 static inline enum mCc_ast_type mCc_check_expression(struct mCc_ast_expression *expr)
 {
-    enum mCc_ast_type type;
+
     switch(expr->type){
         case MCC_AST_EXPRESSION_TYPE_LITERAL:
-            type = convert_literal_type_to_type(expr->literal->type);
+            expr->node.computed_type = convert_literal_type_to_type(expr->literal->type);
             break;
 
         case MCC_AST_EXPRESSION_TYPE_IDENTIFIER:
-            type = expr->type;
+            expr->node.computed_type = expr->identifier->symtab_ref->primitive_type;
             break;
 
         case MCC_AST_EXPRESSION_TYPE_UNARY_OP:
-            type = mCc_check_expression(expr);
+            expr->node.computed_type = mCc_check_expression(expr);
             break;
 
         case MCC_AST_EXPRESSION_TYPE_BINARY_OP:
-            type = mCc_check_binary(expr->unary_expression);
+            expr->node.computed_type = mCc_check_binary(expr->unary_expression);
             break;
 
         case MCC_AST_EXPRESSION_TYPE_PARENTH:
-            type = mCc_check_expression(expr);
+            expr->node.computed_type = mCc_check_expression(expr);
             break;
 
         case MCC_AST_EXPRESSION_TYPE_CALL_EXPR:
-            type = mCc_check_call_expr(expr);
+            expr->node.computed_type = mCc_check_call_expr(expr);
             break;
 
         case MCC_AST_EXPRESSION_TYPE_ARR_SUBSCR:
-            type = mCc_check_arr_subscr(expr);
+            expr->node.computed_type = mCc_check_arr_subscr(expr);
             break;
 
         default:
@@ -105,7 +105,7 @@ static inline enum mCc_ast_type mCc_check_expression(struct mCc_ast_expression *
             //Or should i even be here?
             break;
     }
-    return type;
+    return expr->node.computed_type;
 }
 
 

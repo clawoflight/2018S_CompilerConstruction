@@ -2,25 +2,36 @@
 
 #include "mCc/typecheck.h"
 
-TEST(TYPE_CHECK, ASSIGNMENT)
+TEST(TYPE_CHECK, LITERAL)
 {
-  //  struct mCc_symtab_scope *root = mCc_symtab_new_scope_in(NULL, "");
+    struct mCc_ast_literal *lit = mCc_ast_new_literal_int(3);
+    struct mCc_ast_expression *expr = mCc_ast_new_expression_literal(lit);
 
-   // struct mCc_ast_identifier *id = mCc_ast_new_identifier((char *)"foo");
-  //  struct mCc_ast_identifier *func_id = mCc_ast_new_identifier((char *)"func");
+    ASSERT_EQ(MCC_AST_TYPE_INT, test_type_check(expr));
 
-    enum mCc_ast_unary_op op = MCC_AST_UNARY_OP_NEG;
+    mCc_symtab_delete_all_scopes();
+}
 
-    struct mCc_ast_literal *number = mCc_ast_new_literal_int(3);
-    struct mCc_ast_expression *unary = mCc_ast_new_expression_literal(number);
+TEST(TYPE_CHECK, IDENTIFIER)
+{
+    struct mCc_symtab_scope *scope = mCc_symtab_new_scope_in(NULL, "");
+    ASSERT_NE((void *)NULL, scope);
 
-    //struct mCc_ast_statement *assgn = mCc_ast_new_statement_assgn(id, NULL, rhs);
+    struct mCc_ast_identifier *id = mCc_ast_new_identifier((char *)"foo");
 
-    //struct mCc_ast_function_def *func = mCc_ast_new_function_def_void(func_id, NULL, assgn);
+    struct mCc_ast_declaration *decl = mCc_ast_new_declaration(MCC_AST_TYPE_STRING,
+                                                               NULL, id);
 
-   // struct mCc_ast_program *prog = mCc_ast_new_program(func);
+    mCc_symtab_scope_add_decl(scope, decl);
 
-    ASSERT_EQ(MCC_AST_TYPE_INT, test_type_check(unary));
+    struct mCc_symtab_entry *found =
+        mCc_symtab_scope_lookup_id(scope, decl->decl_id);
+
+    struct mCc_ast_expression *expr = mCc_ast_new_expression_identifier(id);
+
+    expr->identifier->symtab_ref = found;
+
+    ASSERT_EQ(MCC_AST_TYPE_STRING, test_type_check(expr));
 
     mCc_symtab_delete_all_scopes();
 }
