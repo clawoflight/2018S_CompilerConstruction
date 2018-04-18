@@ -363,14 +363,14 @@ mCc_symtab_scope_link_ref_assignment(struct mCc_symtab_scope *self,
     // Basic error checking, though not full type checking
     switch (entry->entry_type) {
         case MCC_SYMTAB_ENTRY_TYPE_FUNC:
-            if (stmt->lhs_assgn->type != MCC_AST_EXPRESSION_TYPE_CALL_EXPR)
-                return MCC_SYMTAB_SCOPE_LINK_ERR_ASSIGN_TO_FUNCTION;
-            // here second if for the FUN_WITHOUT_CALL?
-            break;
+			// if id_assgn is registered as a function, it's illegal to assign to it
+            return MCC_SYMTAB_SCOPE_LINK_ERR_ASSIGN_TO_FUNCTION;
 
         case MCC_SYMTAB_ENTRY_TYPE_ARR:
-            if( stmt->type != MCC_AST_STATEMENT_TYPE_DECL)
+			// Illegal to assign to an array without also giving an index
+            if(!stmt->lhs_assgn)
                 return MCC_SYMTAB_SCOPE_LINK_ERR_ARR_WITHOUT_BRACKS;
+			break;
 
         case MCC_SYMTAB_ENTRY_TYPE_VAR:
             if (stmt->expression->type != MCC_AST_EXPRESSION_TYPE_IDENTIFIER)
