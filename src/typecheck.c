@@ -18,6 +18,9 @@ static struct mCc_ast_symtab_build_result tmp_result = { 0 };
 
 static void no_op() {}
 
+///Forward declaration
+static inline enum mCc_ast_type mCc_check_expression(struct mCc_ast_expression *expr);
+
 static inline enum mCc_ast_type convert_literal_type_to_type(
                                 enum mCc_ast_literal_type lit_type)
 {
@@ -49,17 +52,34 @@ static inline enum mCc_ast_type mCc_check_assign(struct mCc_ast_statement *stmt)
 
 }
 
-static inline enum mCc_ast_type mCc_check_unary(struct mCc_ast_expression *expr)
+static inline enum mCc_ast_type mCc_check_unary(struct mCc_ast_expression *unary)
 {
-    struct mCc_ast_expression *unary = expr;
-    enum mCc_ast_type computed_type = mCc_ast_check_expression(unary->unary_expression);
+    enum mCc_ast_type computed_type = mCc_check_expression(unary->unary_expression);
 
+    switch(unary->unary_op){
+        case MCC_AST_UNARY_OP_NEG:
+            if ((computed_type != MCC_AST_TYPE_INT) &&
+                    (computed_type != MCC_AST_TYPE_FLOAT))
+                return MCC_AST_TYPE_VOID;
+                //TODO better error
+            break;
 
+        case MCC_AST_UNARY_OP_NOT:
+            if (computed_type != MCC_AST_TYPE_BOOL)
+                return MCC_AST_TYPE_VOID;
+                //TODO better error
+            break;
+
+        default:
+            //Should not be here
+            break;
+    }
+        return computed_type;
 }
 
-static inline enum mCc_ast_type mCc_check_binary(struct mCc_ast_expression *expr)
+static inline enum mCc_ast_type mCc_check_binary(struct mCc_ast_expression *binary)
 {
-    struct mCc_ast_expression *binary = expr;
+
 
 }
 
@@ -81,11 +101,11 @@ static inline enum mCc_ast_type mCc_check_expression(struct mCc_ast_expression *
             break;
 
         case MCC_AST_EXPRESSION_TYPE_UNARY_OP:
-            expr->node.computed_type = mCc_check_expression(expr);
+            expr->node.computed_type = mCc_check_unary(expr);
             break;
 
         case MCC_AST_EXPRESSION_TYPE_BINARY_OP:
-            expr->node.computed_type = mCc_check_binary(expr->unary_expression);
+            expr->node.computed_type = mCc_check_binary(expr);
             break;
 
         case MCC_AST_EXPRESSION_TYPE_PARENTH:
@@ -147,7 +167,6 @@ static struct mCc_ast_visitor typecheck_visitor(void)
 
 struct mCc_typecheck_result mCc_typecheck(struct mCc_ast_program *program)
 {
-    mCc_check_assign(program->func_defs[0]->body);
     return;
 }
 
