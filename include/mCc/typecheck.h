@@ -52,6 +52,9 @@ struct mCc_typecheck_result {
  */
 struct mCc_typecheck_result mCc_typecheck(struct mCc_ast_program *program);
 
+enum mCc_ast_type test_type_check(struct mCc_ast_expression *expression);
+
+
 #ifdef __cplusplus
 }
 #endif

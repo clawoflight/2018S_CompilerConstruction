@@ -53,6 +53,7 @@ enum mCc_ast_type {
  */
 struct mCc_ast_node {
 	struct mCc_ast_source_location sloc; ///< Source location of this node.
+    enum mCc_ast_type computed_type; ///< computed type from Type checking
 };
 
 /* Don't move or remove this! It needs to be below #mCc_ast_node because that is

@@ -18,25 +18,94 @@ static struct mCc_ast_symtab_build_result tmp_result = { 0 };
 
 static void no_op() {}
 
-static inline void mCc_check_assign(struct mCc_ast_statement *stmt, void *data)
+static inline enum mCc_ast_type convert_literal_type_to_type(
+                                enum mCc_ast_literal_type lit_type)
 {
-    struct mCc_ast_statement *assgn = stmt;
-    struct mCc_symtab_scope *scope = data;
+    switch (lit_type){
+        case MCC_AST_LITERAL_TYPE_INT:
+            return MCC_AST_TYPE_INT;
+
+        case MCC_AST_LITERAL_TYPE_FLOAT:
+            return MCC_AST_TYPE_FLOAT;
+
+        case MCC_AST_LITERAL_TYPE_BOOL:
+            return MCC_AST_TYPE_BOOL;
+
+        case MCC_AST_LITERAL_TYPE_STRING:
+            return MCC_AST_TYPE_STRING;
+        default:
+            return MCC_AST_TYPE_VOID;
+    }
+}
+
+static inline enum mCc_ast_type mCc_check_call_expr(struct mCc_ast_statement *stmt)
+{
+
 
 }
 
-static inline void mCc_check_unary(struct mCc_ast_expression *expr, void *data)
+static inline enum mCc_ast_type mCc_check_assign(struct mCc_ast_statement *stmt)
+{
+
+}
+
+static inline enum mCc_ast_type mCc_check_unary(struct mCc_ast_expression *expr)
 {
     struct mCc_ast_expression *unary = expr;
-    struct mCc_symtab_scope *scope = data;
+    enum mCc_ast_type computed_type = mCc_ast_check_expression(unary->unary_expression);
+
 
 }
 
-static inline void mCc_check_binary(struct mCc_ast_expression *expr, void *data)
+static inline enum mCc_ast_type mCc_check_binary(struct mCc_ast_expression *expr)
 {
     struct mCc_ast_expression *binary = expr;
-    struct mCc_symtab_scope *scope = data;
 
+}
+
+static inline enum mCc_ast_type mCc_check_arr_subscr(struct mCc_ast_expression *expr)
+{
+
+}
+
+static inline enum mCc_ast_type mCc_check_expression(struct mCc_ast_expression *expr)
+{
+    enum mCc_ast_type type;
+    switch(expr->type){
+        case MCC_AST_EXPRESSION_TYPE_LITERAL:
+            type = convert_literal_type_to_type(expr->literal->type);
+            break;
+
+        case MCC_AST_EXPRESSION_TYPE_IDENTIFIER:
+            type = expr->type;
+            break;
+
+        case MCC_AST_EXPRESSION_TYPE_UNARY_OP:
+            type = mCc_check_expression(expr);
+            break;
+
+        case MCC_AST_EXPRESSION_TYPE_BINARY_OP:
+            type = mCc_check_binary(expr->unary_expression);
+            break;
+
+        case MCC_AST_EXPRESSION_TYPE_PARENTH:
+            type = mCc_check_expression(expr);
+            break;
+
+        case MCC_AST_EXPRESSION_TYPE_CALL_EXPR:
+            type = mCc_check_call_expr(expr);
+            break;
+
+        case MCC_AST_EXPRESSION_TYPE_ARR_SUBSCR:
+            type = mCc_check_arr_subscr(expr);
+            break;
+
+        default:
+            //Go further down --> Break expr further down;
+            //Or should i even be here?
+            break;
+    }
+    return type;
 }
 
 
@@ -58,8 +127,8 @@ static struct mCc_ast_visitor typecheck_visitor(void)
 
             .expression_literal = no_op,
             .expression_identifier = no_op,
-       //     .expression_unary_op = check_unary,
-       //     .expression_binary_op = check_binary,
+            .expression_unary_op = mCc_check_unary,
+            .expression_binary_op = mCc_check_binary,
             .expression_parenth = no_op,
             .expression_call_expr = no_op,
             .expression_arr_subscr = no_op,
@@ -78,7 +147,16 @@ static struct mCc_ast_visitor typecheck_visitor(void)
 
 struct mCc_typecheck_result mCc_typecheck(struct mCc_ast_program *program)
 {
-    mCc_check_assign(program->func_defs[0]->body, NULL);
+    mCc_check_assign(program->func_defs[0]->body);
     return;
+}
+
+/**
+ * Dummy Function for testing
+ *
+ */
+enum mCc_ast_type test_type_check(struct mCc_ast_expression *expression)
+{
+    return mCc_check_expression(expression);
 }
 
