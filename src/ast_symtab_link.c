@@ -37,30 +37,35 @@ static void handle_assign(struct mCc_ast_statement *stmt, void *data)
 	case MCC_SYMTAB_SCOPE_LINK_ERR_OK: return;
 	case MCC_SYMTAB_SCOPE_LINK_ERR_UNDECLARED_ID:
 		if (snprintf(tmp_result.err_msg, err_len, "Use of undeclared id: '%s'",
-		             stmt->id_assgn->id_value))
-			// TODO error message about snprintf
-			;
+		             stmt->id_assgn->id_value)){
+            perror("snprintf");
+            return -1;
+        }
 		break;
 	case MCC_SYMTAB_SCOPE_LINK_ERR_ASSIGN_TO_FUNCTION:
 		if (snprintf(tmp_result.err_msg, err_len,
 		             "Assignment to function name: '%s'",
-		             stmt->id_assgn->id_value))
-			// TODO error message about snprintf
-			;
+		             stmt->id_assgn->id_value)){
+            perror("snprintf");
+            return -1;
+        }
 		break;
 	case MCC_SYMTAB_SCOPE_LINK_ERR_VAR:
 		if (snprintf(tmp_result.err_msg, err_len,
 		             "Use of subscript on variable: '%s'",
-		             stmt->id_assgn->id_value))
-			// TODO error message about snprintf
+		             stmt->id_assgn->id_value)){
+                perror("snprintf");
+                return -1;
+            }
 			;
 		break;
 	case MCC_SYMTAB_SCOPE_LINK_ERR_ARR_WITHOUT_BRACKS:
 		if (snprintf(tmp_result.err_msg, err_len,
 		             "Use of array without subscript: '%s'",
-		             stmt->id_assgn->id_value))
-			// TODO error message about snprintf
-			;
+		             stmt->id_assgn->id_value)){
+            perror("snprintf");
+            return -1;
+        }
 		break;
 	case MCC_SYMTAB_SCOPE_LINK_ERR_FUN_WITHOUT_CALL: /* Fallthrough */
 	case MCC_SYMTAB_SCOPE_LINK_ERROR_INVALID_AST_OBJECT:
@@ -89,21 +94,24 @@ static void handle_expression(struct mCc_ast_expression *expr, void *data)
 	switch (retval) {
 		case MCC_SYMTAB_SCOPE_LINK_ERR_FUN_WITHOUT_CALL:
 			if (snprintf(tmp_result.err_msg, err_len, "Use of a function without a call: '%s'",
-						 expr->type))
-				// TODO error message about snprintf
-				;
+						 expr->type)) {
+                perror("snprintf");
+                return -1;
+            }
 			break;
 		case MCC_SYMTAB_SCOPE_LINK_ERR_ARR_WITHOUT_BRACKS:
 			if (snprintf(tmp_result.err_msg, err_len, "Use of an array without brackets: '%s'",
-						 expr->type))
-				// TODO error message about snprintf
-				;
+						 expr->type)){
+                perror("snprintf");
+                return -1;
+            }
 			break;
 		case MCC_SYMTAB_SCOPE_LINK_ERR_VAR:
 			if (snprintf(tmp_result.err_msg, err_len, "Use of undeclared variable: '%s'",
-						 expr->type))
-				// TODO error message about snprintf
-				;
+						 expr->type)){
+                perror("snprintf");
+                return -1;
+            }
 			break;
 		case MCC_SYMTAB_SCOPE_LINK_ERROR_INVALID_AST_OBJECT:
 			strcpy(tmp_result.err_msg,
@@ -131,8 +139,10 @@ static void handle_declaration(struct mCc_ast_declaration *decl, void *data)
 	switch (retval) {
 	case 1:
 		if (snprintf(tmp_result.err_msg, err_len, "Redeclared id: '%s'",
-		             decl->decl_id->id_value) == -1)
-			// TODO error message about snprintf
+		             decl->decl_id->id_value) == -1){
+            perror("snprintf");
+            return -1;
+        }
 			;
 		break;
 	case -1: strcpy(tmp_result.err_msg, "Memory allocation error"); break;
@@ -157,8 +167,10 @@ static void handle_func_def(struct mCc_ast_function_def *fn, void *data)
 	switch (retval) {
 	case 1:
 		if (snprintf(tmp_result.err_msg, err_len, "Redeclared function '%s'",
-		             fn->identifier->id_value) == -1)
-			// TODO
+		             fn->identifier->id_value) == -1){
+            perror("snprintf");
+            return -1;
+        }
 			;
 		break;
 	case -1: strcpy(tmp_result.err_msg, "Memory allocation error"); break;

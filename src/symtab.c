@@ -323,23 +323,22 @@ mCc_symtab_scope_link_ref_expression(struct mCc_symtab_scope *self,
 
 	// Basic error checking, though not full type checking
 	switch (entry->entry_type) {
-	case MCC_SYMTAB_ENTRY_TYPE_FUNC:
-		if (expr->type != MCC_AST_EXPRESSION_TYPE_CALL_EXPR)
-			return MCC_SYMTAB_SCOPE_LINK_ERR_FUN_WITHOUT_CALL;
-		break;
-	case MCC_SYMTAB_ENTRY_TYPE_ARR:
-		if (expr->type != MCC_AST_EXPRESSION_TYPE_ARR_SUBSCR)
-			return MCC_SYMTAB_SCOPE_LINK_ERR_ARR_WITHOUT_BRACKS;
-		break;
-	case MCC_SYMTAB_ENTRY_TYPE_VAR:
-		if (expr->type != MCC_AST_EXPRESSION_TYPE_IDENTIFIER)
-			return MCC_SYMTAB_SCOPE_LINK_ERR_VAR;
-		break;
-
-		// TODO: Link in identifier
-		// id->symtab_ref = entry;
-		// return MCC_SYMTAB_SCOPE_LINK_ERR_OK;
-	}
+        case MCC_SYMTAB_ENTRY_TYPE_FUNC:
+            if (expr->type != MCC_AST_EXPRESSION_TYPE_CALL_EXPR)
+                return MCC_SYMTAB_SCOPE_LINK_ERR_FUN_WITHOUT_CALL;
+            break;
+        case MCC_SYMTAB_ENTRY_TYPE_ARR:
+            if (expr->type != MCC_AST_EXPRESSION_TYPE_ARR_SUBSCR)
+                return MCC_SYMTAB_SCOPE_LINK_ERR_ARR_WITHOUT_BRACKS;
+            break;
+        case MCC_SYMTAB_ENTRY_TYPE_VAR:
+            if (expr->type != MCC_AST_EXPRESSION_TYPE_IDENTIFIER)
+                return MCC_SYMTAB_SCOPE_LINK_ERR_VAR;
+            break;
+    }
+		// Link in identifier
+    id->symtab_ref = entry;
+    return MCC_SYMTAB_SCOPE_LINK_ERR_OK;
 }
 
 enum MCC_SYMTAB_SCOPE_LINK_ERROR
@@ -357,9 +356,6 @@ mCc_symtab_scope_link_ref_assignment(struct mCc_symtab_scope *self,
 	if (!entry)
 		return MCC_SYMTAB_SCOPE_LINK_ERR_UNDECLARED_ID;
 
-	// MCC_SYMTAB_SCOPE_LINK_ERR_VAR
-	// MCC_SYMTAB_SCOPE_LINK_ERR_FUN_WITHOUT_CALL
-
 	// Basic error checking, though not full type checking
 	switch (entry->entry_type) {
 	case MCC_SYMTAB_ENTRY_TYPE_FUNC:
@@ -373,14 +369,13 @@ mCc_symtab_scope_link_ref_assignment(struct mCc_symtab_scope *self,
 		break;
 
 	case MCC_SYMTAB_ENTRY_TYPE_VAR:
-		if (stmt->expression->type != MCC_AST_EXPRESSION_TYPE_IDENTIFIER)
+		if (!stmt->rhs_assgn)
 			return MCC_SYMTAB_SCOPE_LINK_ERR_VAR;
-		// here second if for UNDECLARED_ID ?
 		break;
 	}
-	// TODO: Link in identifier
-	// id->symtab_ref = entry;
-	// return MCC_SYMTAB_SCOPE_LINK_ERR_OK;
+	//Link in identifier
+	id->symtab_ref = entry;
+	return MCC_SYMTAB_SCOPE_LINK_ERR_OK;
 }
 
 /******************************* Destructors */

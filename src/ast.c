@@ -175,7 +175,7 @@ struct mCc_ast_identifier *mCc_ast_new_identifier(char *value)
 
 	char *str = malloc((strlen(value) + 1) * sizeof(char));
 	strcpy(str, value);
-
+    id->symtab_ref= NULL;
 	id->id_value = str;
 	return id;
 }
