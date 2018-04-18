@@ -145,6 +145,15 @@ struct mCc_tac_stack {
     struct mCc_tac_literal** data;      /// here all the data will be pushed on stack - all calculations
 };
 
+struct mCc_tac_stack* push(mCc_tac_literal);
 
+/**
+ * to pop literals from the stack and push the result onto it again.
+ * @param amount how many lit we want to pop
+ * @return the new stack
+ */
+struct mCc_tac_stack* pop(int amount);
+
+struct mCc_tac_eval
 
 ///In stack with push and pop in pop we have to evaluate the calc and push it onto stack
