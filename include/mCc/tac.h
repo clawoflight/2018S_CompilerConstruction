@@ -13,6 +13,14 @@ Three address code idea.
     tac_stmt[3]= t3 = t2 >= t1;
     tac_stmt [4]= cjump t3 L2;
  */
+typedef array mCc_tac;
+
+enum mCc_tac_type_literal{
+    MCC_TAC_TYPE_LITERAL_INT,
+    MCC_TAC_TYPE_LITERAL_FLOAT,
+    MCC_TAC_TYPE_LITERAL_BOOL,
+    MCC_TAC_TYPE_LITERAL_STRING,
+};
 
 enum mCc_tac_type {
     MCC_TAC_TYPE_FUNC_CALL;
@@ -64,13 +72,13 @@ struct mCc_tac{
          * Data if #type is #MCC_TAC_TYPE_FUNC_CALL
          */
         struct{
-            struct mCc_tac_identifier *func_id;
+            char* fun_name;
         };
         /**
          * Data if #type is #MCC_TAC_TYPE_ASSIGNMENT
          */
         struct{
-            struct mCc_tac_identifier *id_assgn; ///< not sure if necessary
+            char* assgn_name; ///< not sure if necessary
             struct mCc_tac_expression *exp; ///< The lhs of the operation
         };
         /**
@@ -86,6 +94,10 @@ struct mCc_tac{
       */
         struct{
             struct mCc_tac_condition *cond;
+        };
+        ///Lable
+        struct {
+            char* lable_name;
         };
 
     };
@@ -108,14 +120,31 @@ struct mCc_tac_condition{
 
 };
 
-struct mCc_tac_entity{
-    enum mCc_tac_entity_type type;
-    union {
-        struct mCc_tac_literal *literal;
-        struct mCc_tac_identifier *id;
+struct mCc mCc_tac_entity{
+        enum mCc_tac_type_entity type;
+        //identifier
+        union {
+            char* identifier;
+
+            struct mCc_tac_literal * literal;
+        };
+};
+
+struct mCc_tac_literal{
+    enum mCc_tac_type_literal type;    union {
+        /* MCC_AST_LITERAL_TYPE_INT */
+        long i_value;        /* MCC_TAC_LITERAL_TYPE_FLOAT */
+        double f_value;        /* MCC_TAC_LITERAL_TYPE_BOOL */
+        bool b_value;        /* MCC_TAC_LITERAL_TYPE_STRING */
+        char* str_value;
     };
 };
 
-struct mCc_tac_identifier{          /// think about do we need a whole struct for one char*?
-    char* id_name;
+struct mCc_tac_stack {
+    int size;
+    struct mCc_tac_literal** data;      /// here all the data will be pushed on stack - all calculations
 };
+
+
+
+///In stack with push and pop in pop we have to evaluate the calc and push it onto stack
