@@ -27,46 +27,131 @@ TEST(TYPE_CHECK, IDENTIFIER)
     mCc_symtab_delete_all_scopes();
 }
 
-TEST(TYPE_CHECK, UNARY_NEG_FLOAT)
+TEST(TYPE_CHECK_UNARY, UNARY_NEG_FLOAT)
 {
-    const char input[] = "3.1415";
+    const char input[] = "-3.1415";
     auto result = mCc_parser_parse_string(input);
     auto expr = result.expression;
 
-    struct mCc_ast_expression *unary = mCc_ast_new_expression_unary_op(MCC_AST_UNARY_OP_NEG, expr);
-    ASSERT_EQ(MCC_AST_TYPE_FLOAT, test_type_check(unary));
+    ASSERT_EQ(MCC_AST_TYPE_FLOAT, test_type_check(expr));
 
-    mCc_ast_delete_expression(unary);
+    mCc_ast_delete_expression(expr);
 }
 
-TEST(TYPE_CHECK, UNARY_NEG_STRING)
+TEST(TYPE_CHECK_UNARY, UNARY_NEG_STRING)
 {
-    const char input[] = "\"foo\"";
+    const char input[] = "-\"foo\"";
     auto result = mCc_parser_parse_string(input);
     auto expr = result.expression;
 
-    struct mCc_ast_expression *unary = mCc_ast_new_expression_unary_op(MCC_AST_UNARY_OP_NEG, expr);
-    ASSERT_EQ(MCC_AST_TYPE_VOID, test_type_check(unary));
+    ASSERT_EQ(MCC_AST_TYPE_VOID, test_type_check(expr));
+
+    mCc_ast_delete_expression(expr);
 }
 
-TEST(TYPE_CHECK, UNARY_NOT_BOOL)
+TEST(TYPE_CHECK_UNARY, UNARY_NOT_BOOL)
 {
-    const char input[] = "true";
+    const char input[] = "!true";
     auto result = mCc_parser_parse_string(input);
     auto expr = result.expression;
 
-    struct mCc_ast_expression *unary = mCc_ast_new_expression_unary_op(MCC_AST_UNARY_OP_NOT, expr);
-    ASSERT_EQ(MCC_AST_TYPE_BOOL, test_type_check(unary));
+    ASSERT_EQ(MCC_AST_TYPE_BOOL, test_type_check(expr));
 
-    mCc_ast_delete_expression(unary);
+    mCc_ast_delete_expression(expr);
 }
 
-TEST(TYPE_CHECK, UNARY_NOT_INT)
+TEST(TYPE_CHECK_UNARY, UNARY_NOT_INT)
 {
-const char input[] = "3";
-auto result = mCc_parser_parse_string(input);
-auto expr = result.expression;
+    const char input[] = "!3";
+    auto result = mCc_parser_parse_string(input);
+    auto expr = result.expression;
 
-struct mCc_ast_expression *unary = mCc_ast_new_expression_unary_op(MCC_AST_UNARY_OP_NOT, expr);
-ASSERT_EQ(MCC_AST_TYPE_VOID, test_type_check(unary));
+    ASSERT_EQ(MCC_AST_TYPE_VOID, test_type_check(expr));
+    mCc_ast_delete_expression(expr);
 }
+
+TEST(TYPE_CHECK_BINARY, NOT_MATCHING_SIDES)
+{
+    const char input[] = "3-true";
+    auto result = mCc_parser_parse_string(input);
+    auto expr = result.expression;
+
+    ASSERT_EQ(MCC_AST_TYPE_VOID, test_type_check(expr));
+}
+
+
+TEST(TYPE_CHECK_BINARY, BINARY_SUB_INT)
+{
+    const char input[] = "3-2";
+    auto result = mCc_parser_parse_string(input);
+    auto expr = result.expression;
+
+    ASSERT_EQ(MCC_AST_TYPE_INT, test_type_check(expr));
+}
+
+TEST(TYPE_CHECK_BINARY, BINARY_ADD_STRING)
+{
+    const char input[] = "\"foo\"+\"bar\"";
+    auto result = mCc_parser_parse_string(input);
+    auto expr = result.expression;
+
+    ASSERT_EQ(MCC_AST_TYPE_VOID, test_type_check(expr));
+}
+
+TEST(TYPE_CHECK_BINARY, BINARY_LT_FLOAT)
+{
+    const char input[] = "3.14<3.15";
+    auto result = mCc_parser_parse_string(input);
+    auto expr = result.expression;
+
+    ASSERT_EQ(MCC_AST_TYPE_BOOL, test_type_check(expr));
+}
+
+TEST(TYPE_CHECK_BINARY, BINARY_GEQ_BOOL)
+{
+    const char input[] = "true>=false";
+    auto result = mCc_parser_parse_string(input);
+    auto expr = result.expression;
+
+    ASSERT_EQ(MCC_AST_TYPE_VOID, test_type_check(expr));
+}
+
+
+TEST(TYPE_CHECK_BINARY, BINARY_AND_BOOL)
+{
+    const char input[] = "true&&true";
+    auto result = mCc_parser_parse_string(input);
+    auto expr = result.expression;
+
+    ASSERT_EQ(MCC_AST_TYPE_BOOL, test_type_check(expr));
+}
+
+
+TEST(TYPE_CHECK_BINARY, BINARY_OR_INT)
+{
+    const char input[] = "1||2";
+    auto result = mCc_parser_parse_string(input);
+    auto expr = result.expression;
+
+    ASSERT_EQ(MCC_AST_TYPE_VOID, test_type_check(expr));
+}
+
+TEST(TYPE_CHECK_BINARY, BINARY_EQ_STRING)
+{
+    const char input[] = "\"foo\"==\"foo\"";
+    auto result = mCc_parser_parse_string(input);
+    auto expr = result.expression;
+
+    ASSERT_EQ(MCC_AST_TYPE_BOOL, test_type_check(expr));
+}
+
+
+TEST(TYPE_CHECK_BINARY, BINARY_NEQ_BOOL)
+{
+    const char input[] = "true!=false";
+    auto result = mCc_parser_parse_string(input);
+    auto expr = result.expression;
+
+    ASSERT_EQ(MCC_AST_TYPE_BOOL, test_type_check(expr));
+}
+

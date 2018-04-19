@@ -79,7 +79,49 @@ static inline enum mCc_ast_type mCc_check_unary(struct mCc_ast_expression *unary
 
 static inline enum mCc_ast_type mCc_check_binary(struct mCc_ast_expression *binary)
 {
+    enum mCc_ast_type computed_type_left = mCc_check_expression(binary->lhs);
+    enum mCc_ast_type computed_type_right = mCc_check_expression(binary->rhs);
 
+    if (computed_type_left != computed_type_right)
+        return MCC_AST_TYPE_VOID;
+
+    switch(binary->op){
+
+        case MCC_AST_BINARY_OP_ADD:
+        case MCC_AST_BINARY_OP_SUB:
+        case MCC_AST_BINARY_OP_MUL:
+        case MCC_AST_BINARY_OP_DIV:
+            if ((computed_type_left != MCC_AST_TYPE_INT) &&
+                (computed_type_left != MCC_AST_TYPE_FLOAT))
+                return MCC_AST_TYPE_VOID;
+            //TODO better error
+            break;
+
+        case MCC_AST_BINARY_OP_LT:
+        case MCC_AST_BINARY_OP_GT:
+        case MCC_AST_BINARY_OP_LEQ:
+        case MCC_AST_BINARY_OP_GEQ:
+            if (computed_type_left == MCC_AST_TYPE_BOOL)
+                return MCC_AST_TYPE_VOID;
+            //TODO better error
+            return MCC_AST_TYPE_BOOL;
+
+        case MCC_AST_BINARY_OP_AND:
+        case MCC_AST_BINARY_OP_OR:
+            if (computed_type_left != MCC_AST_TYPE_BOOL)
+                return MCC_AST_TYPE_VOID;
+            //TODO better error
+            return MCC_AST_TYPE_BOOL;
+
+        case MCC_AST_BINARY_OP_EQ:
+        case MCC_AST_BINARY_OP_NEQ:
+            return MCC_AST_TYPE_BOOL;
+
+        default:
+            //Should not be here
+            break;
+    }
+    return computed_type_left;
 
 }
 
@@ -121,7 +163,6 @@ static inline enum mCc_ast_type mCc_check_expression(struct mCc_ast_expression *
             break;
 
         default:
-            //Go further down --> Break expr further down;
             //Or should i even be here?
             break;
     }
@@ -172,7 +213,6 @@ struct mCc_typecheck_result mCc_typecheck(struct mCc_ast_program *program)
 
 /**
  * Dummy Function for testing
- *
  */
 enum mCc_ast_type test_type_check(struct mCc_ast_expression *expression)
 {
