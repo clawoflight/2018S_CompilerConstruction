@@ -7,7 +7,7 @@
 #include "mCc/ast_symtab_link.h"
 #include "mCc/symtab.h"
 #include "stack.h"
-
+#include <assert.h>
 #define err_len (4096)
 
 static struct stack_t scope_stack = STACK_INITIALIZER;
@@ -70,7 +70,7 @@ static void handle_assign(struct mCc_ast_statement *stmt, void *data)
 	case MCC_SYMTAB_SCOPE_LINK_ERR_FUN_WITHOUT_CALL: /* Fallthrough */
 	case MCC_SYMTAB_SCOPE_LINK_ERROR_INVALID_AST_OBJECT:
 		strcpy(tmp_result.err_msg,
-		       "Development error! This error should not haave happened here.");
+		       "Development error! This error should not have happened here.");
 		break;
 	}
 
@@ -162,7 +162,7 @@ static void handle_func_def(struct mCc_ast_function_def *fn, void *data)
 		return;            // Return if an error happened
 	struct stack_t *scope_stack = data;
 	struct mCc_symtab_scope *scope = scope_stack->data[scope_stack->top];
-
+    //assert(scope);
 	int retval = mCc_symtab_scope_add_func_def(scope, fn);
 	switch (retval) {
 	case 1:
@@ -228,7 +228,6 @@ mCc_ast_symtab_build(struct mCc_ast_program *program)
 	// To allow unit tests, reset globals
 	stack_reset(&scope_stack);
 	memset(&tmp_result, 0, sizeof(tmp_result));
-
 	struct mCc_symtab_scope *root_scope = mCc_symtab_new_scope_in(NULL, "");
 
 	if (root_scope == NULL) {
@@ -237,6 +236,7 @@ mCc_ast_symtab_build(struct mCc_ast_program *program)
 
 	tmp_result.root_symtab = root_scope;
 	struct mCc_ast_visitor visitor = symtab_visitor();
+
 	mCc_ast_visit_program(program, &visitor);
 	stack_push(&scope_stack, root_scope);
 

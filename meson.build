@@ -69,6 +69,7 @@ mCc_uts = [
             'tdd_parser_program',
 	        'tdd_symtab_basic',
 	        'tdd_symtab_typecheck',
+	       #-- 'tdd_symtab_link',
 ]
 
 foreach ut : mCc_uts

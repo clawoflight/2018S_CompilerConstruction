@@ -369,9 +369,9 @@ mCc_symtab_scope_link_ref_assignment(struct mCc_symtab_scope *self,
 		break;
 
 	case MCC_SYMTAB_ENTRY_TYPE_VAR:
-		if (!stmt->rhs_assgn)
-			return MCC_SYMTAB_SCOPE_LINK_ERR_VAR;
-		break;
+        if (stmt->type != MCC_AST_EXPRESSION_TYPE_IDENTIFIER)
+            return MCC_SYMTAB_SCOPE_LINK_ERR_VAR;
+        break;
 	}
 	//Link in identifier
 	id->symtab_ref = entry;
