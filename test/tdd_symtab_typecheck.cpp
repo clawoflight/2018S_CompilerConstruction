@@ -155,3 +155,11 @@ TEST(TYPE_CHECK_BINARY, BINARY_NEQ_BOOL)
     ASSERT_EQ(MCC_AST_TYPE_BOOL, test_type_check(expr));
 }
 
+TEST(TYPE_CHECK_PARENTH, PARENTH)
+{
+    const char input[] = "(192)";
+    auto result = mCc_parser_parse_string(input);
+    auto expr = result.expression;
+
+    ASSERT_EQ(MCC_AST_TYPE_INT, test_type_check(expr));
+}

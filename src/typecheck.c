@@ -151,7 +151,7 @@ static inline enum mCc_ast_type mCc_check_expression(struct mCc_ast_expression *
             break;
 
         case MCC_AST_EXPRESSION_TYPE_PARENTH:
-            expr->node.computed_type = mCc_check_expression(expr);
+            expr->node.computed_type = mCc_check_expression(expr->expression);
             break;
 
         case MCC_AST_EXPRESSION_TYPE_CALL_EXPR:
