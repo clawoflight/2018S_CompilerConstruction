@@ -6,11 +6,9 @@
  */
 #include "mCc/ast_symtab_link.h"
 #include "mCc/symtab.h"
-#include "stack.h"
 #include <assert.h>
 #define err_len (4096)
 
-static struct stack_t scope_stack = STACK_INITIALIZER;
 static struct mCc_ast_symtab_build_result tmp_result = { 0 };
 
 // Important!
@@ -27,8 +25,7 @@ static void handle_assign(struct mCc_ast_statement *stmt, void *data)
 {
 	if (tmp_result.status)
 		return; // Return if an error happened
-	struct stack_t *scope_stack = data;
-	struct mCc_symtab_scope *scope = scope_stack->data[scope_stack->top];
+	struct mCc_symtab_scope *scope = *(struct mCc_symtab_scope **) data;
 
 	enum MCC_SYMTAB_SCOPE_LINK_ERROR retval =
 	    mCc_symtab_scope_link_ref_assignment(scope, stmt);
@@ -39,6 +36,9 @@ static void handle_assign(struct mCc_ast_statement *stmt, void *data)
 		if (snprintf(tmp_result.err_msg, err_len, "Use of undeclared id: '%s'",
 		             stmt->id_assgn->id_value)){
             perror("snprintf");
+			// TODO(ramona): hier nicht -1 zurück geben, is a void func^^
+			// ... und bitte tmp_result.status und tmp_result.err_msg setzen, so läuft dass err handling hier
+			// (damit die anderen callbacks sich alle abbrechen können, siehe Anfang jeder Funktion)
             return -1;
         }
 		break;
@@ -85,8 +85,7 @@ static void handle_expression(struct mCc_ast_expression *expr, void *data)
 {
 	if (tmp_result.status)
 		return; // Return if an error happened
-	struct stack_t *scope_stack = data;
-	struct mCc_symtab_scope *scope = scope_stack->data[scope_stack->top];
+	struct mCc_symtab_scope *scope = *(struct mCc_symtab_scope **) data;
 
 	enum MCC_SYMTAB_SCOPE_LINK_ERROR retval =
 	    mCc_symtab_scope_link_ref_expression(scope, expr);
@@ -132,8 +131,7 @@ static void handle_declaration(struct mCc_ast_declaration *decl, void *data)
 {
 	if (tmp_result.status)
 		return; // Return if an error happened
-	struct stack_t *scope_stack = data;
-	struct mCc_symtab_scope *scope = scope_stack->data[scope_stack->top];
+	struct mCc_symtab_scope *scope = *(struct mCc_symtab_scope **) data;
 
 	int retval = mCc_symtab_scope_add_decl(scope, decl);
 	switch (retval) {
@@ -160,9 +158,8 @@ static void handle_func_def(struct mCc_ast_function_def *fn, void *data)
 {
 	if (tmp_result.status)
 		return;            // Return if an error happened
-	struct stack_t *scope_stack = data;
-	struct mCc_symtab_scope *scope = scope_stack->data[scope_stack->top];
-    //assert(scope);
+	struct mCc_symtab_scope *scope = *(struct mCc_symtab_scope **) data;
+
 	int retval = mCc_symtab_scope_add_func_def(scope, fn);
 	switch (retval) {
 	case 1:
@@ -186,13 +183,13 @@ static void handle_func_def(struct mCc_ast_function_def *fn, void *data)
 
 /***************************************************** Main things */
 
-static struct mCc_ast_visitor symtab_visitor(void)
+static struct mCc_ast_visitor symtab_visitor(struct mCc_symtab_scope **curr_scope_ptr)
 {
 	return (struct mCc_ast_visitor){ .traversal = MCC_AST_VISIT_DEPTH_FIRST,
 		                             .order = MCC_AST_VISIT_POST_ORDER,
 
 		                             // Important!
-		                             .userdata = &scope_stack,
+		                             .userdata = curr_scope_ptr,
 		                             .statement_if = no_op,
 		                             .statement_ifelse = no_op,
 		                             .statement_while = no_op,
@@ -226,7 +223,6 @@ struct mCc_ast_symtab_build_result
 mCc_ast_symtab_build(struct mCc_ast_program *program)
 {
 	// To allow unit tests, reset globals
-	stack_reset(&scope_stack);
 	memset(&tmp_result, 0, sizeof(tmp_result));
 	struct mCc_symtab_scope *root_scope = mCc_symtab_new_scope_in(NULL, "");
 
@@ -234,11 +230,13 @@ mCc_ast_symtab_build(struct mCc_ast_program *program)
 		// TODO set error msg and status and return
 	}
 
+	// This will be used by the callbacks to store the scope they are currently in
+	struct mCc_symtab_scope *curr_scope_ptr[1] = {root_scope};
+
 	tmp_result.root_symtab = root_scope;
-	struct mCc_ast_visitor visitor = symtab_visitor();
+	struct mCc_ast_visitor visitor = symtab_visitor(curr_scope_ptr);
 
 	mCc_ast_visit_program(program, &visitor);
-	stack_push(&scope_stack, root_scope);
 
 	if (tmp_result.status) {
 		mCc_symtab_delete_all_scopes();

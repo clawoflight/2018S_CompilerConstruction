@@ -86,14 +86,15 @@ void mCc_ast_visit_statement(struct mCc_ast_statement *statement,
 		struct mCc_symtab_scope *new_scope = mCc_symtab_new_scope_in(visitor->userdata, "anon");
 		// TODO: try out if I can move the scope creation to the callback (assuming pre-order). That would fix the double scope for every function issue.
 		// (DO THAT AFTER HAVING RUNNING TESTS!)
-		stack_push(visitor->userdata, new_scope);
+		*visitor->userdata = new_scope;
 #endif
 		visit_if_pre_order(statement, visitor->statement_compound, visitor);
 		for (unsigned int i = 0; i < statement->compound_stmt_count; ++i)
 			mCc_ast_visit_statement(statement->compound_stmts[i], visitor);
 		visit_if_post_order(statement, visitor->statement_compound, visitor);
 #ifdef MCC_AST_VISIT_SYMTAB_MODE
-		stack_pop(visitor->userdata);
+		// After visiting the child scope, set scope back to parent
+		*visitor->userdata = *visitor->userdata->parent;
 #endif
 		break;
 
@@ -265,8 +266,8 @@ void mCc_ast_visit_function_def(struct mCc_ast_function_def *func,
 	assert(visitor);
 
 #ifdef MCC_AST_VISIT_SYMTAB_MODE
-	struct mCc_symtab_scope *new_scope = mCc_symtab_new_scope_in(visitor->userdata, func->identifier->id_value);
-	stack_push(visitor->userdata, new_scope);
+	struct mCc_symtab_scope *new_scope = mCc_symtab_new_scope_in(*visitor->userdata, func->identifier->id_value);
+	*(visitor->userdata) = new_scope;
 #endif
 	visit_if_pre_order(func, visitor->function_def, visitor);
 	mCc_ast_visit_identifier(func->identifier, visitor);
@@ -278,7 +279,7 @@ void mCc_ast_visit_function_def(struct mCc_ast_function_def *func,
 	}
 	visit_if_post_order(func, visitor->function_def, visitor);
 #ifdef MCC_AST_VISIT_SYMTAB_MODE
-	stack_pop(visitor->userdata);
+	*visitor->userdata = *visitor->userdata->parent;
 #endif
 }
 
