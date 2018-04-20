@@ -125,8 +125,15 @@ static inline enum mCc_ast_type mCc_check_binary(struct mCc_ast_expression *bina
 
 }
 
-static inline enum mCc_ast_type mCc_check_arr_subscr(struct mCc_ast_expression *expr)
+static inline enum mCc_ast_type mCc_check_arr_subscr(struct mCc_ast_expression *arr_subscr)
 {
+    enum mCc_ast_type subscript_type = mCc_check_expression(arr_subscr->subscript_expr);
+
+    if (subscript_type != MCC_AST_TYPE_INT)
+        return MCC_AST_TYPE_VOID;
+        //TODO better error
+
+    return arr_subscr->array_id->symtab_ref->primitive_type;
 
 }
 
