@@ -237,7 +237,7 @@ TEST(TYPE_CHECK_ARR_SUBSCR, EXPR_SUBSCR)
     mCc_symtab_delete_all_scopes();
 }
 
-TEST(TYPE_CHECK_CALL_EXPR, VOID)
+TEST(TYPE_CHECK_ARGUMENTS, VOID)
 {
     struct mCc_symtab_scope *scope = mCc_symtab_new_scope_in(NULL, "");
 
@@ -250,7 +250,7 @@ TEST(TYPE_CHECK_CALL_EXPR, VOID)
     assert(found);
     expr->f_name->symtab_ref = found;
 
-    ASSERT_EQ(MCC_AST_TYPE_FLOAT, test_type_check(expr));
+    ASSERT_EQ(MCC_AST_TYPE_VOID, test_type_check(expr));
     mCc_ast_delete_expression(expr);
     mCc_symtab_delete_all_scopes();
 }
@@ -268,7 +268,7 @@ TEST(TYPE_CHECK_ARGUMENTS, MATCHING_PARAMS)
     assert(found);
     expr->f_name->symtab_ref = found;
 
-    ASSERT_EQ(MCC_AST_TYPE_FLOAT, test_type_check(expr));
+    ASSERT_EQ(MCC_AST_TYPE_VOID, test_type_check(expr));
     mCc_ast_delete_expression(expr);
     mCc_symtab_delete_all_scopes();
 }
@@ -305,6 +305,24 @@ TEST(TYPE_CHECK_ARGUMENTS, WRONG_NUMBER_OF_ARGS)
     expr->f_name->symtab_ref = found;
 
     ASSERT_EQ(MCC_AST_TYPE_VOID, test_type_check(expr));
+    mCc_ast_delete_expression(expr);
+    mCc_symtab_delete_all_scopes();
+}
+
+TEST(TYPE_CHECK_CALL_EXPR, RETURN_INT)
+{
+    struct mCc_symtab_scope *scope = mCc_symtab_new_scope_in(NULL, "");
+
+    const char input[] = "read_int()";
+    auto result = mCc_parser_parse_string(input);
+    auto expr = result.expression;
+
+    struct mCc_symtab_entry *found =
+            mCc_symtab_scope_lookup_id(scope, expr->f_name);
+    assert(found);
+    expr->f_name->symtab_ref = found;
+
+    ASSERT_EQ(MCC_AST_TYPE_INT, test_type_check(expr));
     mCc_ast_delete_expression(expr);
     mCc_symtab_delete_all_scopes();
 }

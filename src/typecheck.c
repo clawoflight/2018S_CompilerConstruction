@@ -143,11 +143,10 @@ static inline bool mCc_check_paramaters(struct mCc_ast_arguments *args,
         }
         return true;
     }
-
     return false;
 }
 
-static inline enum mCc_ast_type mCc_check_return(struct mCc_ast_statement *stmt)
+static inline enum mCc_ast_type mCc_check_func_type(struct mCc_ast_statement *stmt)
 {
 
 }
@@ -157,12 +156,18 @@ static inline enum mCc_ast_type mCc_check_call_expr(struct mCc_ast_expression *c
 //TODO TBD
     /**
      * mCc_check_parameters returns true or false, if the signature matches
-     * mCc_check_return returns the type of the called function
+     * mCc_check_func_type returns the type of the called function
+     *
+     * The function type check is missing, this means check return
+     * of the function itself, this is just for the call expr,
+     * which in the end has to call the check for the correct return type
+     * later on. This check can be done by extending the if with a call to
+     * mCc_check_return or a similar name
      *
      */
     if (mCc_check_paramaters(call->arguments, call->f_name->symtab_ref->params))
-        return MCC_AST_TYPE_FLOAT; //TODO nur zum testn in der zwischenzeit
-    return MCC_AST_TYPE_VOID;
+        return call->f_name->symtab_ref->primitive_type;
+    return MCC_AST_TYPE_VOID; //TODO better "Error", since fkt can be void
 }
 
 
