@@ -41,12 +41,6 @@ static inline enum mCc_ast_type convert_literal_type_to_type(
     }
 }
 
-static inline enum mCc_ast_type mCc_check_call_expr(struct mCc_ast_statement *stmt)
-{
-
-
-}
-
 static inline enum mCc_ast_type mCc_check_assign(struct mCc_ast_statement *stmt)
 {
 
@@ -134,8 +128,45 @@ static inline enum mCc_ast_type mCc_check_arr_subscr(struct mCc_ast_expression *
         //TODO better error
 
     return arr_subscr->array_id->symtab_ref->primitive_type;
+}
+
+static inline bool mCc_check_paramaters(struct mCc_ast_arguments *args,
+                                        struct mCc_ast_parameters *params)
+{
+    if ((!params || params->decl_count == 0) && (!args || args->expression_count == 0))
+        return true;
+
+    if (params->decl_count == args->expression_count){
+        for (int i = 0; i < params->decl_count; ++i){
+            if(params->decl[i]->decl_type != mCc_check_expression(args->expressions[i]))
+                return false;
+        }
+        return true;
+    }
+
+    return false;
+}
+
+static inline enum mCc_ast_type mCc_check_return(struct mCc_ast_statement *stmt)
+{
 
 }
+
+static inline enum mCc_ast_type mCc_check_call_expr(struct mCc_ast_expression *call)
+{
+//TODO TBD
+    /**
+     * mCc_check_parameters returns true or false, if the signature matches
+     * mCc_check_return returns the type of the called function
+     *
+     */
+    if (mCc_check_paramaters(call->arguments, call->f_name->symtab_ref->params))
+        return MCC_AST_TYPE_FLOAT; //TODO nur zum testn in der zwischenzeit
+    return MCC_AST_TYPE_VOID;
+}
+
+
+
 
 static inline enum mCc_ast_type mCc_check_expression(struct mCc_ast_expression *expr)
 {
@@ -161,12 +192,12 @@ static inline enum mCc_ast_type mCc_check_expression(struct mCc_ast_expression *
             expr->node.computed_type = mCc_check_expression(expr->expression);
             break;
 
-        case MCC_AST_EXPRESSION_TYPE_CALL_EXPR:
-            expr->node.computed_type = mCc_check_call_expr(expr);
-            break;
-
         case MCC_AST_EXPRESSION_TYPE_ARR_SUBSCR:
             expr->node.computed_type = mCc_check_arr_subscr(expr);
+            break;
+
+        case MCC_AST_EXPRESSION_TYPE_CALL_EXPR:
+            expr->node.computed_type = mCc_check_call_expr(expr);
             break;
 
         default:
