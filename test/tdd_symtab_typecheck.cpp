@@ -326,3 +326,33 @@ TEST(TYPE_CHECK_CALL_EXPR, RETURN_INT)
     mCc_ast_delete_expression(expr);
     mCc_symtab_delete_all_scopes();
 }
+
+TEST(TYPE_CHECK_IFELSE, DANGLING_IF)
+{
+    const char input[] = "if(true){int a;}";
+    auto result = mCc_parser_parse_string(input);
+    auto stmt = result.statement;
+
+    ASSERT_EQ(MCC_AST_STATEMENT_TYPE_IF, stmt->type);
+    ASSERT_TRUE(test_type_check_stmt(stmt));
+}
+
+TEST(TYPE_CHECK_IFELSE, IF_ELSE)
+{
+    const char input[] = "if(true){int a;}else{int b;}";
+    auto result = mCc_parser_parse_string(input);
+    auto stmt = result.statement;
+
+    ASSERT_EQ(MCC_AST_STATEMENT_TYPE_IFELSE, stmt->type);
+    ASSERT_TRUE(test_type_check_stmt(stmt));
+}
+
+TEST(TYPE_CHECK_IFELSE, NO_BOOL_COND)
+{
+const char input[] = "if(3){int a;}";
+auto result = mCc_parser_parse_string(input);
+auto stmt = result.statement;
+
+ASSERT_EQ(MCC_AST_STATEMENT_TYPE_IF, stmt->type);
+ASSERT_FALSE(test_type_check_stmt(stmt));
+}

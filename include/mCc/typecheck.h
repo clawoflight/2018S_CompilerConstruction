@@ -52,7 +52,11 @@ struct mCc_typecheck_result {
  */
 struct mCc_typecheck_result mCc_typecheck(struct mCc_ast_program *program);
 
+/**
+ * Dummy func for testing
+ */
 enum mCc_ast_type test_type_check(struct mCc_ast_expression *expression);
+bool test_type_check_stmt(struct mCc_ast_statement *stmt);
 
 
 #ifdef __cplusplus
