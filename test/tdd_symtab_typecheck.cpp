@@ -335,6 +335,8 @@ TEST(TYPE_CHECK_IFELSE, DANGLING_IF)
 
     ASSERT_EQ(MCC_AST_STATEMENT_TYPE_IF, stmt->type);
     ASSERT_TRUE(test_type_check_stmt(stmt));
+
+    mCc_ast_delete_statement(stmt);
 }
 
 TEST(TYPE_CHECK_IFELSE, IF_ELSE)
@@ -345,14 +347,151 @@ TEST(TYPE_CHECK_IFELSE, IF_ELSE)
 
     ASSERT_EQ(MCC_AST_STATEMENT_TYPE_IFELSE, stmt->type);
     ASSERT_TRUE(test_type_check_stmt(stmt));
+
+    mCc_ast_delete_statement(stmt);
 }
 
 TEST(TYPE_CHECK_IFELSE, NO_BOOL_COND)
 {
-const char input[] = "if(3){int a;}";
-auto result = mCc_parser_parse_string(input);
-auto stmt = result.statement;
+    const char input[] = "if(3){int a;}";
+    auto result = mCc_parser_parse_string(input);
+    auto stmt = result.statement;
 
-ASSERT_EQ(MCC_AST_STATEMENT_TYPE_IF, stmt->type);
-ASSERT_FALSE(test_type_check_stmt(stmt));
+    ASSERT_EQ(MCC_AST_STATEMENT_TYPE_IF, stmt->type);
+    ASSERT_FALSE(test_type_check_stmt(stmt));
+
+    mCc_ast_delete_statement(stmt);
+}
+
+TEST(TYPE_CHECK_WHILE, WHILE_SUCCESS)
+{
+    const char input[] = "while(false){int a;}";
+    auto result = mCc_parser_parse_string(input);
+    auto stmt = result.statement;
+
+    ASSERT_EQ(MCC_AST_STATEMENT_TYPE_WHILE, stmt->type);
+    ASSERT_TRUE(test_type_check_stmt(stmt));
+
+    mCc_ast_delete_statement(stmt);
+}
+
+TEST(TYPE_CHECK_WHILE, WHILE_NO_BOOL)
+{
+    const char input[] = "while(4){int a;}";
+    auto result = mCc_parser_parse_string(input);
+    auto stmt = result.statement;
+
+    ASSERT_EQ(MCC_AST_STATEMENT_TYPE_WHILE, stmt->type);
+    ASSERT_FALSE(test_type_check_stmt(stmt));
+
+    mCc_ast_delete_statement(stmt);
+}
+
+TEST(TYPE_CHECK_WHILE, WHILE_WRONG_BODY)
+{
+    const char input[] = "while(true){true<3;}";
+    auto result = mCc_parser_parse_string(input);
+    auto stmt = result.statement;
+
+    ASSERT_EQ(MCC_AST_STATEMENT_TYPE_WHILE, stmt->type);
+    ASSERT_FALSE(test_type_check_stmt(stmt));
+
+    mCc_ast_delete_statement(stmt);
+}
+
+TEST(TYPE_CHECK_ASSGN, ASSGN_SUCCESS)
+{
+    struct mCc_symtab_scope *scope = mCc_symtab_new_scope_in(NULL, "");
+    struct mCc_ast_identifier *id = mCc_ast_new_identifier((char *)"foo");
+    struct mCc_ast_declaration *decl = mCc_ast_new_declaration(MCC_AST_TYPE_INT,
+                                                               NULL, id);
+    mCc_symtab_scope_add_decl(scope, decl);
+    struct mCc_symtab_entry *found =
+            mCc_symtab_scope_lookup_id(scope, decl->decl_id);
+
+
+    const char input[] = "foo=3;";
+    auto result = mCc_parser_parse_string(input);
+    auto stmt = result.statement;
+
+    stmt->id_assgn->symtab_ref = found;
+
+    ASSERT_EQ(MCC_AST_STATEMENT_TYPE_ASSGN, stmt->type);
+    ASSERT_TRUE(test_type_check_stmt(stmt));
+
+    mCc_ast_delete_statement(stmt);
+    mCc_symtab_delete_all_scopes();
+}
+
+TEST(TYPE_CHECK_ASSGN, ASSGN_FAILURE)
+{
+    struct mCc_symtab_scope *scope = mCc_symtab_new_scope_in(NULL, "");
+    struct mCc_ast_identifier *id = mCc_ast_new_identifier((char *)"foo");
+    struct mCc_ast_declaration *decl = mCc_ast_new_declaration(MCC_AST_TYPE_INT,
+                                                               NULL, id);
+    mCc_symtab_scope_add_decl(scope, decl);
+    struct mCc_symtab_entry *found =
+            mCc_symtab_scope_lookup_id(scope, decl->decl_id);
+
+
+    const char input[] = "foo=3.14;";
+    auto result = mCc_parser_parse_string(input);
+    auto stmt = result.statement;
+
+    stmt->id_assgn->symtab_ref = found;
+
+    ASSERT_EQ(MCC_AST_STATEMENT_TYPE_ASSGN, stmt->type);
+    ASSERT_FALSE(test_type_check_stmt(stmt));
+
+    mCc_ast_delete_statement(stmt);
+    mCc_symtab_delete_all_scopes();
+}
+
+TEST(TYPE_CHECK_EXPR, EXPR_SUCCESS)
+{
+    const char input[] = "3.14;";
+    auto result = mCc_parser_parse_string(input);
+    auto stmt = result.statement;
+
+    ASSERT_EQ(MCC_AST_STATEMENT_TYPE_EXPR, stmt->type);
+    ASSERT_TRUE(test_type_check_stmt(stmt));
+
+    mCc_ast_delete_statement(stmt);
+}
+
+TEST(TYPE_CHECK_CMPND, EMPTY)
+{
+    const char input[] = "{}";
+    auto result = mCc_parser_parse_string(input);
+    auto stmt = result.statement;
+
+    ASSERT_EQ(MCC_AST_STATEMENT_TYPE_CMPND, stmt->type);
+    ASSERT_TRUE(test_type_check_stmt(stmt));
+
+    mCc_ast_delete_statement(stmt);
+}
+
+TEST(TYPE_CHECK_CMPND, SINGLE)
+{
+    const char input[] = "{2<3;}";
+    auto result = mCc_parser_parse_string(input);
+    auto stmt = result.statement;
+
+    ASSERT_EQ(MCC_AST_STATEMENT_TYPE_CMPND, stmt->type);
+    ASSERT_TRUE(test_type_check_stmt(stmt));
+
+    mCc_ast_delete_statement(stmt);
+}
+
+
+TEST(TYPE_CHECK_CMPND, MULTIPLE)
+{
+    const char input[] = "{if(true){int c;}int a; int b;}";
+    auto result = mCc_parser_parse_string(input);
+    auto stmt = result.statement;
+
+    ASSERT_EQ(MCC_AST_STATEMENT_TYPE_CMPND, stmt->type);
+    ASSERT_TRUE(test_type_check_stmt(stmt));
+
+    mCc_ast_delete_statement(stmt);
 }
