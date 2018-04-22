@@ -24,20 +24,23 @@ enum mCc_tac_type_literal{
 
 enum mCc_tac_type {
     MCC_TAC_TYPE_FUNC_CALL;
-    MCC_TAC_TYPE_FUNC_BEGIN;
-    MCC_TAC_TYPE_FUNC_END;
     MCC_TAC_TYPE_RETURN;
     MCC_TAC_TYPE_ASSIGNMENT;
-    MCC_TAC_TYPE_EXPRESSION;
     MCC_TAC_TYPE_CONDITION;
     MCC_TAC_TYPE_LABLE;
 };
 
 enum mCc_tac_expression_type {
-    MCC_TAC_EXP_TYPE_BINARY_OP_ADD;
-    MCC_TAC_EXP_TYPE_BINARY_OP_SUB;
-    MCC_TAC_EXP_TYPE_BINARY_OP_MUL;
-    MCC_TAC_EXP_TYPE_BINARY_OP_DIV;
+    MCC_TAC_EXP_TYPE_BINARY_OP_ADD,
+    MCC_TAC_EXP_TYPE_BINARY_OP_SUB,
+    MCC_TAC_EXP_TYPE_BINARY_OP_MUL,
+    MCC_TAC_EXP_TYPE_BINARY_OP_DIV,
+
+    MCC_TAC_EXPR_BINARY_OP_FLOAT_ADD,
+    MCC_TAC_EXPR_BINARY_OP__FLOAT_SUB,
+    MCC_TAC_EXPR_BINARY_OP_FLOAT_MUL,
+    MCC_TAC_EXPR_BINARY_OP_FLOAT_DIV,
+
     MCC_TAC_EXP_TYPE_BINARY_OP_LT,  ///< Less than
     MCC_TAC_EXP_TYPE_BINARY_OP_GT,  ///< Greater than
     MCC_TAC_EXP_TYPE_BINARY_OP_LEQ, ///< Less or equal
@@ -46,8 +49,6 @@ enum mCc_tac_expression_type {
     MCC_TAC_EXP_TYPE_BINARY_OP_OR,  ///< OR
     MCC_TAC_EXP_TYPE_BINARY_OP_EQ,  ///< Equal
     MCC_TAC_EXP_TYPE_BINARY_OP_NEQ  ///< Not equal
-    MCC_TAC_EXP_TYPE_UNARY_OP_NEG, ///< Numerical negation       ///should we differ between extra unary type
-    MCC_TAC_EXP_TYPE_UNARY_OP_NOT, ///< Logical negation
 };
 
 enum mCc_tac_condition_type{
@@ -56,57 +57,63 @@ enum mCc_tac_condition_type{
     MCC_TAC_COND_TYPE_IF_ELSE;
 };
 
+enum mCc_tac_type_expression_unary {
+    MCC_TAC_EXPR_UNARY_NEG,
+    MCC_TAC_EXPR_UNARY_NOT,
+};
+
 enum mCc_tac_entity_type{
     MCC_TAC_ENTITY_TYPE_LITERAL;
     MCC_TAC_ENTITY_TYPE_IDENTIFIER;
 };
-/**
- *
-**/
+
+enum mCc_tac_type_assignment{
+    MCC_TAC_TYPE_ASSIGN_ADDRESS,
+    MCC_TAC_TYPE_ASSIGN_POINTER,
+    MCC_TAC_TYPE_ASSIGN_FUNCTION_CALL,
+    MCC_TAC_TYPE_ASSIGN_EXPRESSION,
+    MCC_TAC_TYPE_ASSIGN_ARRAY,
+
+};
+
 struct mCc_tac{
     enum mCc_tac_type type;
 
     union {
+        /**
+         * MCC_TAC_TYPE_ASSIGNMENT**/
+        struct mCc_tac_assignment *assignment;
 
         /**
-         * Data if #type is #MCC_TAC_TYPE_FUNC_CALL
+         * MCC_TAC_TYPE_LABEL
+         * MCC_TAC_TYPE_RETURN
+         * MCC_TAC_TYPE_PARAM_SETUP
+         * MCC_TAC_TYPE_FUNCTION_CALL
          */
-        struct{
-            char* fun_name;
-        };
-        /**
-         * Data if #type is #MCC_TAC_TYPE_ASSIGNMENT
-         */
-        struct{
-            char* assgn_name; ///< not sure if necessary
-            struct mCc_tac_expression *exp; ///< The lhs of the operation
-        };
-        /**
-       * Data if #type is #MCC_TAC_TYPE_RETURN
-       */
-        struct{
-            union {                 /// two types of return with value or nit
-                char* return_val;
-            };
-        };
-        /**
-      * Data if #type is #MCC_TAC_TYPE_CONDITION
-      */
-        struct{
-            struct mCc_tac_condition *cond;
-        };
-        ///Lable
-        struct {
-            char* lable_name;
-        };
+        char* name;
 
+        /**
+         * MCC_TAC_TYPE_CONDITION**/
+        struct mCc_tac_condition *condition;
     };
 };
 
 struct mCc_tac_expression{
     enum mCc_tac_expression_type type;
-    struct mCc_tac_entity *lhf;
-    struct mCc_tac_entity *rhs;
+    union {
+
+        //Binary expressions
+        struct {
+            enum mCc_tac_type_expression_binary binary_type;
+            struct mCc_tac_entity *lhs;
+            struct mCc_tac_entity *rhs;
+        };
+        //Unary Expression
+        struct {
+            enum mCc_tac_type_expression_unary unary_type;
+            struct mCc_tac_entity *unary;
+        };
+    };
 };
 
 /**
@@ -116,7 +123,7 @@ Here we have the  condition  struct for both while and if, else
  **/
 struct mCc_tac_condition{
     enum mCc_tac_condition_type type;
-    struct mCc_tac_expression *cond_stmt;
+    struct mCc_tac_expression *cond_expr;
 
 };
 
@@ -125,35 +132,63 @@ struct mCc mCc_tac_entity{
         //identifier
         union {
             char* identifier;
-
             struct mCc_tac_literal * literal;
         };
 };
 
 struct mCc_tac_literal{
-    enum mCc_tac_type_literal type;    union {
+    enum mCc_tac_type_literal type;
+    union {
         /* MCC_AST_LITERAL_TYPE_INT */
-        long i_value;        /* MCC_TAC_LITERAL_TYPE_FLOAT */
-        double f_value;        /* MCC_TAC_LITERAL_TYPE_BOOL */
-        bool b_value;        /* MCC_TAC_LITERAL_TYPE_STRING */
+        long i_value;
+        /* MCC_TAC_LITERAL_TYPE_FLOAT */
+        double f_value;
+        /* MCC_TAC_LITERAL_TYPE_BOOL */
+        bool b_value;
+        /* MCC_TAC_LITERAL_TYPE_STRING */
         char* str_value;
     };
 };
 
-struct mCc_tac_stack {
+struct mCc_tac_assignment {
+    enum mCc_tac_type_assignment type;
+    char* assign_name;
+    union {
+
+        union {
+            /**
+             * MCC_TAC_TYPE_ASSIGN_POINTER
+             * MCC_TAC_TYPE_ASSIGN_ADDRESS
+             * MCC_TAC_TYPE_ASSIGN_ARRAY
+             * MCC_TAC_TYPE_ASSIGN_FUNCTION_CALL
+            */
+            char* rhs;
+
+            /**
+             * * MCC_TAC_TYPE_ASSIGN_EXPRESSION
+             */
+            struct mCc_tac_expression *assignment_expr;
+
+        };
+    };
+
+};
+
+
+struct mCc_tac_stack{
     int size;
     struct mCc_tac_literal** data;      /// here all the data will be pushed on stack - all calculations
 };
+/**
+ * @param literal: the literal which needs to be added to the stack
+ * @return: stack
+ */
+struct mCc_tac_stack* push (struct mCc_tac_stack stack, enum mCc_tac_type_literal literal);
 
-struct mCc_tac_stack* push(mCc_tac_literal);
 
 /**
- * to pop literals from the stack and push the result onto it again.
- * @param amount how many lit we want to pop
- * @return the new stack
+ * @param amount: how many items should be popped fromt he stack
+ * @return: stack
  */
-struct mCc_tac_stack* pop(int amount);
+struct mCc_tac_stack* pop (struct mCc_tac_stack stack, int amount);
 
-struct mCc_tac_eval
-
-///In stack with push and pop in pop we have to evaluate the calc and push it onto stack
