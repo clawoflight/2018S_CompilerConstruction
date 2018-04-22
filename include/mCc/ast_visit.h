@@ -13,7 +13,7 @@
  */
 #ifndef MCC_AST_VISIT_H
 #define MCC_AST_VISIT_H
-
+#define MCC_AST_VISIT_SYMTAB_MODE
 #include "mCc/ast.h"
 
 #ifdef __cplusplus

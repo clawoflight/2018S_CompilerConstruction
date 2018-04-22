@@ -7,6 +7,8 @@
 #include "mCc/ast_statements.h"
 #include "mCc/symtab.h"
 #include <assert.h>
+#include <stdio.h>
+#include <string.h>
 
 static void mCc_symtab_delete_scope(struct mCc_symtab_scope *scope);
 static void mCc_symtab_delete_entry(struct mCc_symtab_entry *entry);
@@ -227,7 +229,8 @@ int mCc_symtab_check_main_properties(struct mCc_symtab_scope *scope)
 struct mCc_symtab_scope *mCc_symtab_new_scope_in(struct mCc_symtab_scope *self,
                                                  const char *childscope_name)
 {
-	assert(childscope_name);
+    assert(childscope_name);
+
 
 	// create the scope name by concatenating it to the parent scope's name
 	char *name;
@@ -235,15 +238,15 @@ struct mCc_symtab_scope *mCc_symtab_new_scope_in(struct mCc_symtab_scope *self,
 		name = malloc(strlen(childscope_name) + 1);
 		strcpy(name, childscope_name);
 	} else {
+        printf("\nself %s, child %s\n", self->name, childscope_name);
 		name = malloc(strlen(self->name) + strlen(childscope_name) +
-		              2); // _ + null byte
+                                           2); // _ + null byte
 		if (!name)
 			return NULL;
 		strcpy(name, self->name);
 		strcat(name, "_");
 		strcat(name, childscope_name);
 	}
-
 	// create scope
 	return mCc_symtab_new_scope(self, name);
 }
@@ -268,12 +271,13 @@ int mCc_symtab_scope_add_decl(struct mCc_symtab_scope *self,
 	// Check whether the ID was declared in the same scope
 	struct mCc_symtab_entry *tmp = NULL;
 	HASH_FIND(hh, self->hash_table, decl->decl_id->id_value,
-	          strlen(decl->decl_id->id_value), tmp);
+	         strlen(decl->decl_id->id_value), tmp);
+
 	if (tmp) {
 		mCc_symtab_delete_entry(entry);
 		return 1;
 	}
-
+    //TODO free tmp ?
 	mCc_symtab_scope_add_entry(self, entry);
 
 	return 0;
@@ -348,8 +352,15 @@ mCc_symtab_scope_link_ref_assignment(struct mCc_symtab_scope *self,
 	// Get the ID to link
 	struct mCc_ast_identifier *id;
 	switch (stmt->type) {
-	case MCC_AST_STATEMENT_TYPE_ASSGN: id = stmt->id_assgn; break;
-	default: return MCC_SYMTAB_SCOPE_LINK_ERROR_INVALID_AST_OBJECT;
+		case MCC_AST_STATEMENT_TYPE_ASSGN:
+			printf("=======");
+			id = stmt->id_assgn;
+			printf("\nID: %s\n", id->id_value);
+			printf("\nScope: %s\n", self->name);
+			printf("\nScope number: %s\n", global_scope_gc_arr[1]->name);
+				break;
+		default:
+			return MCC_SYMTAB_SCOPE_LINK_ERROR_INVALID_AST_OBJECT;
 	}
 
 	struct mCc_symtab_entry *entry = mCc_symtab_scope_lookup_id(self, id);
@@ -368,13 +379,15 @@ mCc_symtab_scope_link_ref_assignment(struct mCc_symtab_scope *self,
 			return MCC_SYMTAB_SCOPE_LINK_ERR_ARR_WITHOUT_BRACKS;
 		break;
 
-	case MCC_SYMTAB_ENTRY_TYPE_VAR:
-        if (stmt->type != MCC_AST_EXPRESSION_TYPE_IDENTIFIER)
-            return MCC_SYMTAB_SCOPE_LINK_ERR_VAR;
+	case MCC_SYMTAB_ENTRY_TYPE_VAR: //This is not working TODO think about if this check is necessary
+        //if (stmt->type != MCC_AST_EXPRESSION_TYPE_IDENTIFIER)
+         //   return MCC_SYMTAB_SCOPE_LINK_ERR_VAR;
         break;
 	}
 	//Link in identifier
 	id->symtab_ref = entry;
+    stmt->id_assgn = id;
+
 	return MCC_SYMTAB_SCOPE_LINK_ERR_OK;
 }
 
@@ -420,4 +433,12 @@ void mCc_symtab_delete_all_scopes(void)
 
 	global_scope_gc_count = 0;
 	global_scope_gc_alloc_size = 0;
+}
+
+/**
+ * This is a dummy function which is needed in order to get the global array in the test cases
+ * @return
+ */
+struct mCc_symtab_scope** mCc_symtab_get_global_array(){
+	return global_scope_gc_arr;
 }

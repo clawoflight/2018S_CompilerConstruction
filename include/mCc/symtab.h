@@ -224,3 +224,5 @@ void mCc_symtab_delete_all_scopes(void);
 #endif
 
 #endif // MCC_ST_H
+
+struct mCc_symtab_scope** mCc_symtab_get_global_array();
