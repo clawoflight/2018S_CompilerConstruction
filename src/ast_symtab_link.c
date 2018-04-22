@@ -25,12 +25,10 @@ static void handle_assign(struct mCc_ast_statement *stmt, void *data)
 {
 	if (tmp_result.status)
 		return; // Return if an error happened
-    printf("ASSIGNEMENT\n");
 	struct mCc_symtab_scope *scope = (struct mCc_symtab_scope *)data;
 
 	enum MCC_SYMTAB_SCOPE_LINK_ERROR retval =
 	    mCc_symtab_scope_link_ref_assignment(scope, stmt);
-    printf("RETVAL ASS: %d ", retval);
 	switch (retval) {
 	case MCC_SYMTAB_SCOPE_LINK_ERR_OK: return;
 	case MCC_SYMTAB_SCOPE_LINK_ERR_UNDECLARED_ID:
@@ -160,11 +158,9 @@ static void handle_expression(struct mCc_ast_expression *expr, void *data)
 
 static void handle_declaration(struct mCc_ast_declaration *decl, void *data)
 {
-	printf("VIELLEICHT HIER");
 	if (tmp_result.status)
 		return; // Return if an error happened
 	struct mCc_symtab_scope *scope = (struct mCc_symtab_scope *) data;
-    printf("\nSCOPE DECL %s\n",scope->name);
 	int retval = mCc_symtab_scope_add_decl(scope, decl);
 	switch (retval) {
 	case 1:
@@ -180,7 +176,7 @@ static void handle_declaration(struct mCc_ast_declaration *decl, void *data)
 	case -1: strcpy(tmp_result.err_msg, "Memory allocation error"); break;
 	default: break;
 	}
-	// If an error happened, set status
+	// If an error happened, set status //TODO check why this makes errors when uncommanting
 	/*if (tmp_result.err_msg[0]) {
 		tmp_result.err_loc = decl->node.sloc;
 		tmp_result.status = 1;

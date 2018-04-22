@@ -270,7 +270,6 @@ void mCc_ast_visit_function_def(struct mCc_ast_function_def *func,
 	assert(visitor);
 
 #ifdef MCC_AST_VISIT_SYMTAB_MODE
-	printf("HIER");
 	struct mCc_symtab_scope *new_scope = mCc_symtab_new_scope_in(visitor->userdata, func->identifier->id_value);
 	new_scope->parent= visitor->userdata;
 	visitor->userdata = new_scope;
