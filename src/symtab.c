@@ -277,7 +277,6 @@ int mCc_symtab_scope_add_decl(struct mCc_symtab_scope *self,
 		mCc_symtab_delete_entry(entry);
 		return 1;
 	}
-    //TODO free tmp ?
 	mCc_symtab_scope_add_entry(self, entry);
 
 	return 0;
@@ -379,9 +378,9 @@ mCc_symtab_scope_link_ref_assignment(struct mCc_symtab_scope *self,
 			return MCC_SYMTAB_SCOPE_LINK_ERR_ARR_WITHOUT_BRACKS;
 		break;
 
-	case MCC_SYMTAB_ENTRY_TYPE_VAR: //This is not working TODO think about if this check is necessary
-        //if (stmt->type != MCC_AST_EXPRESSION_TYPE_IDENTIFIER)
-         //   return MCC_SYMTAB_SCOPE_LINK_ERR_VAR;
+	case MCC_SYMTAB_ENTRY_TYPE_VAR: //The if(stmt->type) is not working b=1 will be matched here too TODO think about if this check is necessary
+        if (stmt->lhs_assgn)
+            return MCC_SYMTAB_SCOPE_LINK_ERR_VAR;
         break;
 	}
 	//Link in identifier
@@ -433,12 +432,4 @@ void mCc_symtab_delete_all_scopes(void)
 
 	global_scope_gc_count = 0;
 	global_scope_gc_alloc_size = 0;
-}
-
-/**
- * This is a dummy function which is needed in order to get the global array in the test cases
- * @return
- */
-struct mCc_symtab_scope** mCc_symtab_get_global_array(){
-	return global_scope_gc_arr;
 }
