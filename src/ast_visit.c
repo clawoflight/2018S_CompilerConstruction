@@ -81,23 +81,27 @@ void mCc_ast_visit_statement(struct mCc_ast_statement *statement,
 		visit_if_post_order(statement, visitor->statement_return_void, visitor);
 		break;
 
-	case MCC_AST_STATEMENT_TYPE_CMPND:; // an empty statement is needed after the declaration
-#ifdef MCC_AST_VISIT_SYMTAB_MODE
-		struct mCc_symtab_scope *new_scope = mCc_symtab_new_scope_in(visitor->userdata, "anon");
-		// TODO: try out if I can move the scope creation to the callback (assuming pre-order). That would fix the double scope for every function issue.
-		// (DO THAT AFTER HAVING RUNNING TESTS!)
-		new_scope->parent= visitor->userdata;
-		visitor->userdata = new_scope;
-#endif
+	case MCC_AST_STATEMENT_TYPE_CMPND:
+		// Only execute when linking symbol table
+		// TODO: try out if I can move the scope creation to the callback
+		// (assuming pre-order). That would fix the double scope for every
+		// function issue. (DO THAT AFTER HAVING RUNNING TESTS!)
+		if (visitor->mode == MCC_AST_VISIT_MODE_SYMTAB_REF) {
+			struct mCc_symtab_scope *new_scope =
+			    mCc_symtab_new_scope_in(visitor->userdata, "anon");
+			visitor->userdata = new_scope;
+		}
+
 		visit_if_pre_order(statement, visitor->statement_compound, visitor);
 		for (unsigned int i = 0; i < statement->compound_stmt_count; ++i)
 			mCc_ast_visit_statement(statement->compound_stmts[i], visitor);
 		visit_if_post_order(statement, visitor->statement_compound, visitor);
-#ifdef MCC_AST_VISIT_SYMTAB_MODE
-		// After visiting the child scope, set scope back to parent
-		struct mCc_symtab_scope* tmp =visitor->userdata;
-		visitor->userdata = tmp->parent;
-#endif
+
+		// Only execute when linking symbol table
+		if (visitor->mode == MCC_AST_VISIT_MODE_SYMTAB_REF) {
+			struct mCc_symtab_scope *tmp = visitor->userdata;
+			visitor->userdata = tmp->parent;
+		}
 		break;
 
 	case MCC_AST_STATEMENT_TYPE_ASSGN:
@@ -260,7 +264,7 @@ void mCc_ast_visit_declaration(struct mCc_ast_declaration *decl,
 		mCc_ast_visit_literal(decl->decl_array_size, visitor);
 	}
 	mCc_ast_visit_identifier(decl->decl_id, visitor);
-    visit_if_post_order(decl, visitor->declaration, visitor);
+	visit_if_post_order(decl, visitor->declaration, visitor);
 }
 
 void mCc_ast_visit_function_def(struct mCc_ast_function_def *func,
@@ -269,11 +273,13 @@ void mCc_ast_visit_function_def(struct mCc_ast_function_def *func,
 	assert(func);
 	assert(visitor);
 
-#ifdef MCC_AST_VISIT_SYMTAB_MODE
-	struct mCc_symtab_scope *new_scope = mCc_symtab_new_scope_in(visitor->userdata, func->identifier->id_value);
-	new_scope->parent= visitor->userdata;
-	visitor->userdata = new_scope;
-#endif
+	// Only execute when linking symbol table
+	if (visitor->mode == MCC_AST_VISIT_MODE_SYMTAB_REF) {
+		struct mCc_symtab_scope *new_scope = mCc_symtab_new_scope_in(
+		    visitor->userdata, func->identifier->id_value);
+		visitor->userdata = new_scope;
+	}
+
 	visit_if_pre_order(func, visitor->function_def, visitor);
 	mCc_ast_visit_identifier(func->identifier, visitor);
 	if (func->body) {
@@ -283,10 +289,12 @@ void mCc_ast_visit_function_def(struct mCc_ast_function_def *func,
 		mCc_ast_visit_parameter(func->para, visitor);
 	}
 	visit_if_post_order(func, visitor->function_def, visitor);
-#ifdef MCC_AST_VISIT_SYMTAB_MODE
-    struct mCc_symtab_scope *tmp=visitor->userdata;
-	visitor->userdata = tmp->parent;
-#endif
+
+	// Only execute when linking symbol table
+	if (visitor->mode == MCC_AST_VISIT_MODE_SYMTAB_REF) {
+		struct mCc_symtab_scope *tmp = visitor->userdata;
+		visitor->userdata = tmp->parent;
+	}
 }
 
 void mCc_ast_visit_program(struct mCc_ast_program *prog,
@@ -296,7 +304,7 @@ void mCc_ast_visit_program(struct mCc_ast_program *prog,
 	assert(visitor);
 
 	visit_if_pre_order(prog, visitor->program, visitor);
-    for (unsigned int i = 0; i < prog->func_def_count; ++i)
+	for (unsigned int i = 0; i < prog->func_def_count; ++i)
 		mCc_ast_visit_function_def(prog->func_defs[i], visitor);
 	visit_if_post_order(prog, visitor->program, visitor);
 }

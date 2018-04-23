@@ -30,6 +30,11 @@ enum mCc_ast_visit_order {
 	MCC_AST_VISIT_POST_ORDER,
 };
 
+enum mCc_ast_visit_mode {
+	MCC_AST_VISIT_MODE_NORMAL,
+	MCC_AST_VISIT_MODE_SYMTAB_REF
+};
+
 /* Callbacks */
 typedef void (*mCc_ast_visit_expression_cb)(struct mCc_ast_expression *,
                                             void *);
@@ -49,6 +54,7 @@ typedef void (*mCc_ast_visit_program_cb)(struct mCc_ast_program *, void *);
 struct mCc_ast_visitor {
 	enum mCc_ast_visit_traversal traversal;
 	enum mCc_ast_visit_order order;
+	enum mCc_ast_visit_mode mode;
 
 	void *userdata;
 

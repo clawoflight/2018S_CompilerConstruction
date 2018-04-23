@@ -216,7 +216,8 @@ static void handle_func_def(struct mCc_ast_function_def *fn, void *data)
 static struct mCc_ast_visitor symtab_visitor(struct mCc_symtab_scope *curr_scope_ptr)
 {
 	return (struct mCc_ast_visitor){ .traversal = MCC_AST_VISIT_DEPTH_FIRST,
-		                             .order = MCC_AST_VISIT_POST_ORDER,
+		                             .order = MCC_AST_VISIT_PRE_ORDER,
+									 .mode = MCC_AST_VISIT_MODE_SYMTAB_REF,
 
 		                             // Important!
 		                             .userdata = curr_scope_ptr,
