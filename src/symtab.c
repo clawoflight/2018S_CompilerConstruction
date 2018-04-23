@@ -200,7 +200,7 @@ mCc_symtab_scope_lookup_id(struct mCc_symtab_scope *scope,
 {
 	struct mCc_symtab_entry *entry = NULL;
 	HASH_FIND(hh, scope->hash_table, id->id_value, strlen(id->id_value), entry);
-
+	printf("SEARCH for: %s in Scope %s\n",id->id_value, scope->name);
 	// Recursively lookup until top scope
 	if (!entry && scope->parent)
 		return mCc_symtab_scope_lookup_id(scope->parent, id);
@@ -379,8 +379,8 @@ mCc_symtab_scope_link_ref_assignment(struct mCc_symtab_scope *self,
 		break;
 
 	case MCC_SYMTAB_ENTRY_TYPE_VAR: //The if(stmt->type) is not working b=1 will be matched here too TODO think about if this check is necessary
-        if (stmt->lhs_assgn)
-            return MCC_SYMTAB_SCOPE_LINK_ERR_VAR;
+       // if (stmt->lhs_assgn)
+         //   return MCC_SYMTAB_SCOPE_LINK_ERR_VAR;
         break;
 	}
 	//Link in identifier

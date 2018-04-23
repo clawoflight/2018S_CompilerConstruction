@@ -86,13 +86,13 @@ void mCc_ast_visit_statement(struct mCc_ast_statement *statement,
 		// TODO: try out if I can move the scope creation to the callback
 		// (assuming pre-order). That would fix the double scope for every
 		// function issue. (DO THAT AFTER HAVING RUNNING TESTS!)
-		if (visitor->mode == MCC_AST_VISIT_MODE_SYMTAB_REF) {
+        if (visitor->mode == MCC_AST_VISIT_MODE_SYMTAB_REF) {
 			struct mCc_symtab_scope *new_scope =
 			    mCc_symtab_new_scope_in(visitor->userdata, "anon");
 			visitor->userdata = new_scope;
 		}
-
 		visit_if_pre_order(statement, visitor->statement_compound, visitor);
+
 		for (unsigned int i = 0; i < statement->compound_stmt_count; ++i)
 			mCc_ast_visit_statement(statement->compound_stmts[i], visitor);
 		visit_if_post_order(statement, visitor->statement_compound, visitor);
@@ -231,8 +231,7 @@ void mCc_ast_visit_arguments(struct mCc_ast_arguments *arguments,
 	if (arguments) {
 
 		visit_if_pre_order(arguments, visitor->arguments, visitor);
-
-		for (unsigned int i = 0; i < arguments->expression_count; ++i)
+        for (unsigned int i = 0; i < arguments->expression_count; ++i)
 			mCc_ast_visit_expression(arguments->expressions[i], visitor);
 		visit_if_post_order(arguments, visitor->arguments, visitor);
 	}
