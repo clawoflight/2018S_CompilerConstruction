@@ -3,7 +3,7 @@
 #include "mCc/symtab.h"
 #include "mCc/parser.h"
 #include "mCc/ast_symtab_link.h"
-/*
+
 TEST(TDD_PARSER_SYMTABLINK, TEST)
 {
 
@@ -39,7 +39,7 @@ TEST(TDD_PARSER_SYMTABLINK, TEST_ARR)
     mCc_ast_delete_program(prog);
     mCc_symtab_delete_all_scopes();
 }
-*/
+
 TEST(TDD_PARSER_SYMTABLINK, TEST_FUNC)
 {
 

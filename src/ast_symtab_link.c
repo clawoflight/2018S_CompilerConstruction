@@ -29,7 +29,6 @@ static void handle_assign(struct mCc_ast_statement *stmt, void *data)
 
 	enum MCC_SYMTAB_SCOPE_LINK_ERROR retval =
 	    mCc_symtab_scope_link_ref_assignment(scope, stmt);
-	printf("RETVAL %d",retval);
 	switch (retval) {
 	case MCC_SYMTAB_SCOPE_LINK_ERR_OK: return;
 	case MCC_SYMTAB_SCOPE_LINK_ERR_UNDECLARED_ID:
@@ -82,7 +81,6 @@ static void handle_expression(struct mCc_ast_expression *expr, void *data)
 
 	enum MCC_SYMTAB_SCOPE_LINK_ERROR retval =
 	    mCc_symtab_scope_link_ref_expression(scope, expr);
-    printf("\nRETVAL: %d\n",retval);
 
 	switch (retval) {
 	case MCC_SYMTAB_SCOPE_LINK_ERR_OK: return;
