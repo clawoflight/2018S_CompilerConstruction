@@ -7,7 +7,6 @@
 #include "mCc/ast_symtab_link.h"
 #include "mCc/symtab.h"
 #include <assert.h>
-#define err_len (4096)
 
 static struct mCc_ast_symtab_build_result tmp_result = { 0 };
 

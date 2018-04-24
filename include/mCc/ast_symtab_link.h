@@ -15,9 +15,10 @@
 extern "C" {
 #endif
 
+#define err_len (4096)
 struct mCc_ast_symtab_build_result {
 	int status;
-	char *err_msg;
+	char err_msg[err_len];
 	struct mCc_ast_source_location err_loc;
 	struct mCc_symtab_scope *root_symtab;
 };
