@@ -285,7 +285,6 @@ int mCc_symtab_scope_add_decl(struct mCc_symtab_scope *self,
 int mCc_symtab_scope_add_func_def(struct mCc_symtab_scope *self,
                                   struct mCc_ast_function_def *func_def)
 {
-
 	enum mCc_symtab_entry_type entry_type = MCC_SYMTAB_ENTRY_TYPE_FUNC;
 	struct mCc_symtab_entry *entry = mCc_symtab_new_entry(
 	    self, entry_type, func_def->node.sloc, func_def->identifier,

@@ -258,7 +258,7 @@ void mCc_ast_visit_declaration(struct mCc_ast_declaration *decl,
 	assert(decl);
 	assert(visitor);
 
-	visit_if_pre_order(decl, visitor->declaration, visitor);
+    visit_if_pre_order(decl, visitor->declaration, visitor);
 	if (decl->decl_array_size) {
 		mCc_ast_visit_literal(decl->decl_array_size, visitor);
 	}
@@ -281,11 +281,11 @@ void mCc_ast_visit_function_def(struct mCc_ast_function_def *func,
 
 	visit_if_pre_order(func, visitor->function_def, visitor);
 	mCc_ast_visit_identifier(func->identifier, visitor);
+	if (func->para) {										// the order matters
+		mCc_ast_visit_parameter(func->para, visitor);
+	}
 	if (func->body) {
 		mCc_ast_visit_statement(func->body, visitor);
-	}
-	if (func->para) {
-		mCc_ast_visit_parameter(func->para, visitor);
 	}
 	visit_if_post_order(func, visitor->function_def, visitor);
 
