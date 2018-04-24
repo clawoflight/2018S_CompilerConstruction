@@ -31,30 +31,30 @@ static void handle_assign(struct mCc_ast_statement *stmt, void *data)
 	switch (retval) {
 	case MCC_SYMTAB_SCOPE_LINK_ERR_OK: return;
 	case MCC_SYMTAB_SCOPE_LINK_ERR_UNDECLARED_ID:
-		if (snprintf(tmp_result.err_msg, err_len, "Use of undeclared id: '%s'",
-		             stmt->id_assgn->id_value)) {
+		if ((snprintf(tmp_result.err_msg, err_len, "Use of undeclared id: '%s'",
+		             stmt->id_assgn->id_value) == -1)) {
             tmp_result.err_msg="Use of undeclared id";
 
 		}
 		break;
 	case MCC_SYMTAB_SCOPE_LINK_ERR_ASSIGN_TO_FUNCTION:
-		if (snprintf(tmp_result.err_msg, err_len,
+		if ((snprintf(tmp_result.err_msg, err_len,
 		             "Assignment to function name: '%s'",
-		             stmt->id_assgn->id_value)) {
+		             stmt->id_assgn->id_value)) == -1) {
             tmp_result.err_msg="Assignment to function name";
         }
 		break;
 	case MCC_SYMTAB_SCOPE_LINK_ERR_VAR:
-		if (snprintf(tmp_result.err_msg, err_len,
+		if ((snprintf(tmp_result.err_msg, err_len,
 		             "Use of subscript on variable: '%s'",
-		             stmt->id_assgn->id_value)) {
+		             stmt->id_assgn->id_value) == -1)) {
             tmp_result.err_msg="Use of subscript on variable";
 		}
 		break;
 	case MCC_SYMTAB_SCOPE_LINK_ERR_ARR_WITHOUT_BRACKS:
-		if (snprintf(tmp_result.err_msg, err_len,
+		if ((snprintf(tmp_result.err_msg, err_len,
 		             "Use of array without subscript: '%s'",
-		             stmt->id_assgn->id_value)) {
+		             stmt->id_assgn->id_value) == -1)) {
             tmp_result.err_msg="Use of array without subscript";
 		}
 		break;
@@ -84,16 +84,16 @@ static void handle_expression(struct mCc_ast_expression *expr, void *data)
 	switch (retval) {
 	case MCC_SYMTAB_SCOPE_LINK_ERR_OK: return;
 	case MCC_SYMTAB_SCOPE_LINK_ERR_UNDECLARED_ID:
-		if (snprintf(tmp_result.err_msg, err_len, "Use of undeclared id: '%s'",
-		             expr->identifier->id_value)) {
+		if ((snprintf(tmp_result.err_msg, err_len, "Use of undeclared id: '%s'",
+		             expr->identifier->id_value) == -1)) {
             tmp_result.err_msg="Snprintf error";
 
         }
 		break;
 	case MCC_SYMTAB_SCOPE_LINK_ERR_ASSIGN_TO_FUNCTION:
-		if (snprintf(tmp_result.err_msg, err_len,
+		if ((snprintf(tmp_result.err_msg, err_len,
 		             "Assignment to function name: '%s'",
-		             expr->identifier->id_value)) {
+		             expr->identifier->id_value) == -1)) {
             tmp_result.err_msg="Snprintf error";
 		}
 		break;
@@ -104,14 +104,14 @@ static void handle_expression(struct mCc_ast_expression *expr, void *data)
 		}
 		break;
 	case MCC_SYMTAB_SCOPE_LINK_ERR_ARR_WITHOUT_BRACKS:
-		if (snprintf(tmp_result.err_msg, err_len,
-		             "Use of an array without brackets: '%d'", expr->type)) {
+		if ((snprintf(tmp_result.err_msg, err_len,
+		             "Use of an array without brackets: '%d'", expr->type) == -1)) {
             tmp_result.err_msg="Snprintf error";
 		}
 		break;
 	case MCC_SYMTAB_SCOPE_LINK_ERR_VAR:
-		if (snprintf(tmp_result.err_msg, err_len,
-		             "Use of undeclared variable: '%d'", expr->type)) {
+		if ((snprintf(tmp_result.err_msg, err_len,
+		             "Use of undeclared variable: '%d'", expr->type) == -1)) {
             tmp_result.err_msg="Snprintf error";
 		}
 		break;
