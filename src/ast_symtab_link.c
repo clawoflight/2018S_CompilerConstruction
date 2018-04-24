@@ -33,7 +33,7 @@ static void handle_assign(struct mCc_ast_statement *stmt, void *data)
 	case MCC_SYMTAB_SCOPE_LINK_ERR_UNDECLARED_ID:
 		if ((snprintf(tmp_result.err_msg, err_len, "Use of undeclared id: '%s'",
 		             stmt->id_assgn->id_value) == -1)) {
-            tmp_result.err_msg="Use of undeclared id";
+            strcpy(tmp_result.err_msg,"Use of undeclared id");
 
 		}
 		break;
@@ -41,21 +41,21 @@ static void handle_assign(struct mCc_ast_statement *stmt, void *data)
 		if ((snprintf(tmp_result.err_msg, err_len,
 		             "Assignment to function name: '%s'",
 		             stmt->id_assgn->id_value)) == -1) {
-            tmp_result.err_msg="Assignment to function name";
+            strcpy(tmp_result.err_msg,"Assignment to function name");
         }
 		break;
 	case MCC_SYMTAB_SCOPE_LINK_ERR_VAR:
 		if ((snprintf(tmp_result.err_msg, err_len,
 		             "Use of subscript on variable: '%s'",
 		             stmt->id_assgn->id_value) == -1)) {
-            tmp_result.err_msg="Use of subscript on variable";
+            strcpy(tmp_result.err_msg,"Use of subscript on variable");
 		}
 		break;
 	case MCC_SYMTAB_SCOPE_LINK_ERR_ARR_WITHOUT_BRACKS:
 		if ((snprintf(tmp_result.err_msg, err_len,
 		             "Use of array without subscript: '%s'",
 		             stmt->id_assgn->id_value) == -1)) {
-            tmp_result.err_msg="Use of array without subscript";
+            strcpy(tmp_result.err_msg,"Use of array without subscript");
 		}
 		break;
 	case MCC_SYMTAB_SCOPE_LINK_ERR_FUN_WITHOUT_CALL:  /* Fallthrough */
@@ -86,7 +86,7 @@ static void handle_expression(struct mCc_ast_expression *expr, void *data)
 	case MCC_SYMTAB_SCOPE_LINK_ERR_UNDECLARED_ID:
 		if ((snprintf(tmp_result.err_msg, err_len, "Use of undeclared id: '%s'",
 		             expr->identifier->id_value) == -1)) {
-            tmp_result.err_msg="Snprintf error";
+            strcpy(tmp_result.err_msg,"Snprintf error");
 
         }
 		break;
@@ -94,25 +94,25 @@ static void handle_expression(struct mCc_ast_expression *expr, void *data)
 		if ((snprintf(tmp_result.err_msg, err_len,
 		             "Assignment to function name: '%s'",
 		             expr->identifier->id_value) == -1)) {
-            tmp_result.err_msg="Snprintf error";
+            strcpy(tmp_result.err_msg,"Snprintf error");
 		}
 		break;
 	case MCC_SYMTAB_SCOPE_LINK_ERR_FUN_WITHOUT_CALL:
 		if (snprintf(tmp_result.err_msg, err_len,
 		             "Use of a function without a call: '%d'", expr->type)) {
-            tmp_result.err_msg="Snprintf error";
+			strcpy(tmp_result.err_msg,"Snprintf error");
 		}
 		break;
 	case MCC_SYMTAB_SCOPE_LINK_ERR_ARR_WITHOUT_BRACKS:
 		if ((snprintf(tmp_result.err_msg, err_len,
 		             "Use of an array without brackets: '%d'", expr->type) == -1)) {
-            tmp_result.err_msg="Snprintf error";
+            strcpy(tmp_result.err_msg,"Snprintf error");
 		}
 		break;
 	case MCC_SYMTAB_SCOPE_LINK_ERR_VAR:
 		if ((snprintf(tmp_result.err_msg, err_len,
 		             "Use of undeclared variable: '%d'", expr->type) == -1)) {
-            tmp_result.err_msg="Snprintf error";
+            strcpy(tmp_result.err_msg,"Snprintf error");
 		}
 		break;
 	case MCC_SYMTAB_SCOPE_LINK_ERROR_INVALID_AST_OBJECT:
@@ -140,7 +140,7 @@ static void handle_declaration(struct mCc_ast_declaration *decl, void *data)
 	case 1:
 		if (snprintf(tmp_result.err_msg, err_len, "Redeclared id: '%s'",
 		             decl->decl_id->id_value) == -1) {
-            tmp_result.err_msg="Redeclared id";
+			strcpy(tmp_result.err_msg,"Redeclared id");
 
         };
 		break;
@@ -149,10 +149,10 @@ static void handle_declaration(struct mCc_ast_declaration *decl, void *data)
 	}
 	// If an error happened, set status //TODO check why this makes errors when
 	// uncommanting
-	/*if (tmp_result.err_msg[0]) {
+	if (tmp_result.err_msg[0]) {
 	    tmp_result.err_loc = decl->node.sloc;
 	    tmp_result.status = 1;
-	}*/
+	}
 }
 
 static void handle_func_def(struct mCc_ast_function_def *fn, void *data)
@@ -166,7 +166,7 @@ static void handle_func_def(struct mCc_ast_function_def *fn, void *data)
 	case 1:
 		if (snprintf(tmp_result.err_msg, err_len, "Redeclared function '%s'",
 		             fn->identifier->id_value) == -1) {
-            tmp_result.err_msg="Redeclared function";
+			strcpy(tmp_result.err_msg,"Redeclared function");
 		};
 		break;
 	case -1: strcpy(tmp_result.err_msg, "Memory allocation error"); break;
@@ -174,10 +174,10 @@ static void handle_func_def(struct mCc_ast_function_def *fn, void *data)
 	}
 	// If an error happened, set status     //TODO check why this makes errors
 	// when uncommanting
-	/*if (tmp_result.err_msg[0]) {
+	if (tmp_result.err_msg[0]) {
 	    tmp_result.err_loc = fn->node.sloc;
 	    tmp_result.status = 1;
-	}*/
+	}
 }
 
 /***************************************************** Main things */
