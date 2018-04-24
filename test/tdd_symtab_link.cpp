@@ -62,7 +62,7 @@ TEST(TDD_PARSER_SYMTABLINK, TEST_FUNC)
     mCc_symtab_delete_all_scopes();
 }
 
-TEST(TDD_PARSER_SYMTABLINK, TEST_FUNC)
+TEST(TDD_PARSER_SYMTABLINK, TEST_FUNC_PARA)
 {
 
 const char str[] = "void f(int b){ b=2; return;  }  void main(){ int b; b=2; f(b); return;  }";
