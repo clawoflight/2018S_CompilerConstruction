@@ -1,12 +1,10 @@
 /*
 Three address code idea.
- Structure the whole TAC with a stack. Push the identifiers and the values and if op found pull calc the result save them in
- temp variables and push them on stack. The temp variables all need an unique name -- make this with a count and increase it
+ Structure the whole TAC with a stack. Push the tac statements and if op found pop an amount of stmt from the stack
+ Tmp and Lables have to have a unique id which is increasing
 
- Then a struct for TAC which includes assgn, operator, label, goto, cond_jump arr_index, call func, return
- Enum for types of TAC: add, sub, equally, ad or,
+ Then a struct for TAC which includes
 
- Additional array for saving the TAC statements. The array is an array* tac_statement so it can take struct types.
     tac_stmt[0]=label L1
     tac_stmt[1]= t1= num;
     tac_stmt[2]= t2 = x;
@@ -177,17 +175,17 @@ struct mCc_tac_assignment {
 
 struct mCc_tac_stack{
     int size;
-    struct mCc_tac_literal** data;      /// here all the data will be pushed on stack - all calculations
+    struct mCc_tac** tac_stmt;      /// here all the data will be pushed on stack - all statements
 };
 /**
- * @param literal: the literal which needs to be added to the stack
+ * @param tac_stmt the tac_stmt which has to be pushed onto the stack
  * @return: stack
  */
-struct mCc_tac_stack* push (struct mCc_tac_stack stack, enum mCc_tac_type_literal literal);
+struct mCc_tac_stack* push (struct mCc_tac_stack stack, struct mCc_tac tac_stmt);
 
 
 /**
- * @param amount: how many items should be popped fromt he stack
+ * @param amount: how many stmt should be popped from the stack
  * @return: stack
  */
 struct mCc_tac_stack* pop (struct mCc_tac_stack stack, int amount);
