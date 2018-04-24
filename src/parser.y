@@ -91,10 +91,11 @@ void mCc_parser_error();
 %start toplevel
 
 /* PRECEDENCE RULES (INCREASING) */
+%left OR
+%left AND
+%left LESS_EQ LESS GREATER_EQ GREATER EQUALS NOT_EQUALS
 %left PLUS MINUS
 %left ASTER SLASH
-%left AND OR
-%left LESS_EQ LESS GREATER_EQ GREATER EQUALS NOT_EQUALS
 
 /* These rules make ELSE bind to the innermost IF like in the spec. */
 %precedence "then"
