@@ -28,8 +28,6 @@ static void handle_assign(struct mCc_ast_statement *stmt, void *data)
 
 	enum MCC_SYMTAB_SCOPE_LINK_ERROR retval =
 	    mCc_symtab_scope_link_ref_assignment(scope, stmt);
-	printf("RETVAL ASS: %d \n",retval);
-    printf("SCOPE name: %s \n",scope->name);
 	switch (retval) {
 	case MCC_SYMTAB_SCOPE_LINK_ERR_OK: return;
 	case MCC_SYMTAB_SCOPE_LINK_ERR_UNDECLARED_ID:
@@ -82,8 +80,7 @@ static void handle_expression(struct mCc_ast_expression *expr, void *data)
 
 	enum MCC_SYMTAB_SCOPE_LINK_ERROR retval =
 	    mCc_symtab_scope_link_ref_expression(scope, expr);
-	printf("RETVAL EXPR: %d \n",retval);
-    printf("SCOPE name: %s \n",scope->name);
+
 	switch (retval) {
 	case MCC_SYMTAB_SCOPE_LINK_ERR_OK: return;
 	case MCC_SYMTAB_SCOPE_LINK_ERR_UNDECLARED_ID:
@@ -139,7 +136,6 @@ static void handle_declaration(struct mCc_ast_declaration *decl, void *data)
 		return; // Return if an error happened
 	struct mCc_symtab_scope *scope = (struct mCc_symtab_scope *)data;
 	int retval = mCc_symtab_scope_add_decl(scope, decl);
-	printf("RETVAL DECL: %d \n",retval);
 	switch (retval) {
 	case 1:
 		if (snprintf(tmp_result.err_msg, err_len, "Redeclared id: '%s'",
@@ -164,7 +160,6 @@ static void handle_func_def(struct mCc_ast_function_def *fn, void *data)
 		return; // Return if an error happened
 	struct mCc_symtab_scope *scope = *(struct mCc_symtab_scope **)data;
 	int retval = mCc_symtab_scope_add_func_def(scope, fn);
-	printf("RETVAL FUNC_DEF: %d \n",retval);
 	switch (retval) {
 	case 1:
 		if (snprintf(tmp_result.err_msg, err_len, "Redeclared function '%s'",

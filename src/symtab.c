@@ -200,7 +200,7 @@ mCc_symtab_scope_lookup_id(struct mCc_symtab_scope *scope,
 {
 	struct mCc_symtab_entry *entry = NULL;
 	HASH_FIND(hh, scope->hash_table, id->id_value, strlen(id->id_value), entry);
-	printf("SEARCH for: %s in Scope %s\n",id->id_value, scope->name);
+
 	// Recursively lookup until top scope
 	if (!entry && scope->parent)
 		return mCc_symtab_scope_lookup_id(scope->parent, id);
@@ -238,7 +238,6 @@ struct mCc_symtab_scope *mCc_symtab_new_scope_in(struct mCc_symtab_scope *self,
 		name = malloc(strlen(childscope_name) + 1);
 		strcpy(name, childscope_name);
 	} else {
-        printf("\nself %s, child %s\n", self->name, childscope_name);
 		name = malloc(strlen(self->name) + strlen(childscope_name) +
                                            2); // _ + null byte
 		if (!name)
