@@ -12,9 +12,8 @@
 # Issues / Errors
 
 ## Integration test: 
-* Unkown error by commands
-* issue when the functions are declared under the main function
 * Remove array without brackets error bec. we want to pass arrays to a function
+* integration with symtab 
 
 # Assignment 2 
 
