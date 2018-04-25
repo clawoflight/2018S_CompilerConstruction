@@ -80,7 +80,6 @@ static void handle_expression(struct mCc_ast_expression *expr, void *data)
 
 	enum MCC_SYMTAB_SCOPE_LINK_ERROR retval =
 	    mCc_symtab_scope_link_ref_expression(scope, expr);
-
 	switch (retval) {
 	case MCC_SYMTAB_SCOPE_LINK_ERR_OK: return;
 	case MCC_SYMTAB_SCOPE_LINK_ERR_UNDECLARED_ID:

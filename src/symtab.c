@@ -350,11 +350,7 @@ mCc_symtab_scope_link_ref_assignment(struct mCc_symtab_scope *self,
 	struct mCc_ast_identifier *id;
 	switch (stmt->type) {
 		case MCC_AST_STATEMENT_TYPE_ASSGN:
-			printf("=======");
 			id = stmt->id_assgn;
-			printf("\nID: %s\n", id->id_value);
-			printf("\nScope: %s\n", self->name);
-			printf("\nScope number: %s\n", global_scope_gc_arr[1]->name);
 				break;
 		default:
 			return MCC_SYMTAB_SCOPE_LINK_ERROR_INVALID_AST_OBJECT;
