@@ -38,6 +38,13 @@ int main(int argc, char *argv[])
 		struct mCc_parser_result result = mCc_parser_parse_file(in);
 		fclose(in);
 		if (result.status != MCC_PARSER_STATUS_OK) {
+			fprintf(stderr, "Error: %d:%d - %d:%d at \e[4m%s\e[24m: %s\n",
+			        result.err_loc.start_line, result.err_loc.start_col,
+			        result.err_loc.end_line, result.err_loc.end_col,
+			        result.err_text, result.err_msg);
+			free((void *)result.err_msg);
+			free((void *)result.err_text);
+
 			return EXIT_FAILURE;
 		}
 		prog = result.program;
