@@ -109,7 +109,7 @@ TEST(TDD_PARSER_SYMTABLINK, TEST_FUNC_PARA2)
 TEST(TDD_PARSER_SYMTABLINK, TEST_FUNC_WITH_ARR_DECL)
 {
 
-    const char str[] = "int main(){ int[2] t; t[0]=2; return; }";
+    const char str[] = "int main(){ int[2] t; t[0]=2; int x ; x= t[0]; return; }";
     auto result = mCc_parser_parse_string(str);
 
     ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);
@@ -119,6 +119,7 @@ TEST(TDD_PARSER_SYMTABLINK, TEST_FUNC_WITH_ARR_DECL)
     mCc_ast_identifier *id= mCc_ast_new_identifier((char*)"t");
 
     ASSERT_STREQ(id->id_value,prog->func_defs[0]->body->compound_stmts[1]->id_assgn->symtab_ref->identifier->id_value);
+    ASSERT_STREQ(id->id_value,prog->func_defs[0]->body->compound_stmts[3]->rhs_assgn->array_id->symtab_ref->identifier->id_value);
     mCc_ast_delete_program(prog);
     mCc_symtab_delete_all_scopes();
 }
