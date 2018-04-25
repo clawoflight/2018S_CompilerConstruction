@@ -9,14 +9,12 @@
 
 * Update integration script: https://github.com/W4RH4WK/mCc/commit/d4d9fef8fc4e1e4f1d393b032dc2f26a4d6c70eb
 
+# Issues / Errors
 
-
-
-
-
-
-
-
+## Integration test: 
+* Unkown error by commands
+* issue when the functions are declared under the main function
+* Remove array without brackets error bec. we want to pass arrays to a function
 
 # Assignment 2 
 
