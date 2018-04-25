@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "mCc/ast.h"
+#include "mCc/ast_symtab_link.h"
 #include "mCc/parser.h"
 
 void print_usage(const char *prg)
@@ -42,9 +43,17 @@ int main(int argc, char *argv[])
 		prog = result.program;
 	}
 
+	struct mCc_ast_symtab_build_result link_result = mCc_ast_symtab_build(prog);
+	if (link_result.status) {
+		fprintf(stderr, "Error in %s at %d:%d-%d:%d: %s\n", argv[1],
+		        link_result.err_loc.start_line, link_result.err_loc.start_col,
+		        link_result.err_loc.end_line, link_result.err_loc.end_col,
+		        link_result.err_msg);
+		mCc_ast_delete_program(prog);
+		return EXIT_FAILURE;
+	}
 
 	/*    TODO
-	 * - build symbol table
 	 * - run semantic checks
 	 * - create three-address code
 	 * - do some optimisations
