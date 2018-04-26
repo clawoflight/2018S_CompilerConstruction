@@ -1,12 +1,19 @@
 /**
  * @file ast_visit.h
  * @brief Declarations for the AST traversal mechanism.
+ *
+ * NOTE:
+ * To build the symbol table,
+ * define MCC_AST_VISIT_SYMTAB_MODE before including this file,
+ * and set visitor.userdata to an array of struct #mCc_ast_symtab_scope.
+ * It will be used as stack.
+ *
  * @author warhawk
  * @date 2018-03-08
  */
 #ifndef MCC_AST_VISIT_H
 #define MCC_AST_VISIT_H
-
+#define MCC_AST_VISIT_SYMTAB_MODE
 #include "mCc/ast.h"
 
 #ifdef __cplusplus
@@ -21,6 +28,11 @@ enum mCc_ast_visit_traversal {
 enum mCc_ast_visit_order {
 	MCC_AST_VISIT_PRE_ORDER,
 	MCC_AST_VISIT_POST_ORDER,
+};
+
+enum mCc_ast_visit_mode {
+	MCC_AST_VISIT_MODE_NORMAL,
+	MCC_AST_VISIT_MODE_SYMTAB_REF
 };
 
 /* Callbacks */
@@ -42,6 +54,7 @@ typedef void (*mCc_ast_visit_program_cb)(struct mCc_ast_program *, void *);
 struct mCc_ast_visitor {
 	enum mCc_ast_visit_traversal traversal;
 	enum mCc_ast_visit_order order;
+	enum mCc_ast_visit_mode mode;
 
 	void *userdata;
 

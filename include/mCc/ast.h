@@ -22,6 +22,7 @@ struct mCc_ast_literal;
 struct mCc_ast_statement;
 struct mCc_ast_identifier;
 struct mCc_ast_arguments;
+struct mCc_symtab_entry;
 
 /* ---------------------------------------------------------------- AST Node */
 
@@ -38,11 +39,12 @@ struct mCc_ast_source_location {
 /**
  * The available primitive types
  */
-enum mCc_ast_declaration_type {
-	MCC_AST_TYPE_BOOL,  ///< Boolean
-	MCC_AST_TYPE_INT,   ///< Integer
-	MCC_AST_TYPE_FLOAT, ///< Floating-point number
-	MCC_AST_TYPE_STRING ///< String
+enum mCc_ast_type {
+	MCC_AST_TYPE_BOOL,   ///< Boolean
+	MCC_AST_TYPE_INT,    ///< Integer
+	MCC_AST_TYPE_FLOAT,  ///< Floating-point number
+	MCC_AST_TYPE_STRING, ///< String
+	MCC_AST_TYPE_VOID    ///< No type, but cleaner here
 };
 
 /* Data contained by every AST node. */
@@ -51,6 +53,7 @@ enum mCc_ast_declaration_type {
  */
 struct mCc_ast_node {
 	struct mCc_ast_source_location sloc; ///< Source location of this node.
+    enum mCc_ast_type computed_type; ///< computed type from Type checking
 };
 
 /* Don't move or remove this! It needs to be below #mCc_ast_node because that is
@@ -349,7 +352,7 @@ void mCc_ast_delete_literal(struct mCc_ast_literal *literal);
  */
 struct mCc_ast_identifier {
 	struct mCc_ast_node node; ///< Common attributes
-
+	struct mCc_symtab_entry *symtab_ref;
 	/**
 	 * The ID string
 	 */

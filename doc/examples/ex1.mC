@@ -16,7 +16,7 @@ bool checkPrim(int n){
     int p;
     p=0;
     while(i<=n){
-        if((num - (num/i)*i)==0){
+        if((n - (n/i)*i)==0){
             p=p+1;
         }
         i=i+1;
@@ -38,6 +38,7 @@ void main(){
     print_nl();
 
     checkEvenOdd(n,false);
+    int prim;
     prim=checkPrim(n);
     print_nl();
     print("Primenumber ?");

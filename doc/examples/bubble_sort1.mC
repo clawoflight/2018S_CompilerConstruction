@@ -5,7 +5,7 @@
 void main() {
     /* First we declare a descendingly sorted array */
     int size;
-    size = 512;				
+    size = 512;
     int[512] to_be_sorted;
     int i;
     i = size;

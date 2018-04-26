@@ -397,21 +397,14 @@ static void print_dot_function_def(struct mCc_ast_function_def *func,
 	assert(data);
 
 	FILE *out = data;
-	if (func->type) {
-		switch (func->func_type) {
-		case MCC_AST_TYPE_BOOL:
-			print_dot_node(out, func, "bool function");
-			break;
-		case MCC_AST_TYPE_INT: print_dot_node(out, func, "int function"); break;
-		case MCC_AST_TYPE_FLOAT:
-			print_dot_node(out, func, "float function");
-			break;
-		case MCC_AST_TYPE_STRING:
-			print_dot_node(out, func, "string function");
-			break;
-		}
-	} else {
-		print_dot_node(out, func, "void function");
+	switch (func->func_type) {
+	case MCC_AST_TYPE_BOOL: print_dot_node(out, func, "bool function"); break;
+	case MCC_AST_TYPE_INT: print_dot_node(out, func, "int function"); break;
+	case MCC_AST_TYPE_FLOAT: print_dot_node(out, func, "float function"); break;
+	case MCC_AST_TYPE_STRING:
+		print_dot_node(out, func, "string function");
+		break;
+	case MCC_AST_TYPE_VOID: print_dot_node(out, func, "void function"); break;
 	}
 	print_dot_edge(out, func, func->identifier, "id");
 	if (func->body) {

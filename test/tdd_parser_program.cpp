@@ -40,7 +40,7 @@ TEST(TDD_PARSER_PROGRAM, PROGRAM_VOID)
 	auto prog = result.program;
 
 	// root -> function
-	ASSERT_EQ(MCC_AST_FUNCTION_DEF_VOID, prog->func_defs[0]->type);
+	ASSERT_EQ(MCC_AST_TYPE_VOID, prog->func_defs[0]->func_type);
 	ASSERT_EQ(0, strcmp(prog->func_defs[0]->identifier->id_value, "f"));
 
 	mCc_ast_delete_program(prog);
@@ -71,7 +71,7 @@ TEST(TDD_PARSER_PROGRAM, PROGRAM_REALLOC)
 	auto prog = result.program;
 
 	// root -> function
-	ASSERT_EQ(MCC_AST_FUNCTION_DEF_VOID, prog->func_defs[0]->type);
+	ASSERT_EQ(MCC_AST_TYPE_VOID, prog->func_defs[0]->func_type);
 	ASSERT_EQ(0, strcmp(prog->func_defs[0]->identifier->id_value, "f"));
 
 	mCc_ast_delete_program(prog);
@@ -86,7 +86,6 @@ TEST(TDD_PARSER_PROGRAM, FUNC_INT)
 	auto prog = result.program;
 
 	// root -> function
-	ASSERT_EQ(MCC_AST_FUNCTION_DEF_TYPE, prog->func_defs[0]->type);
 	ASSERT_EQ(MCC_AST_TYPE_INT, prog->func_defs[0]->func_type);
 	ASSERT_EQ(0, strcmp(prog->func_defs[0]->identifier->id_value, "f"));
 
@@ -102,7 +101,7 @@ TEST(TDD_PARSER_PROGRAM, FUNC_VOID)
 	auto prog = result.program;
 
 	// root -> function
-	ASSERT_EQ(MCC_AST_FUNCTION_DEF_VOID, prog->func_defs[0]->type);
+	ASSERT_EQ(MCC_AST_TYPE_VOID, prog->func_defs[0]->func_type);
 	ASSERT_EQ(0, strcmp(prog->func_defs[0]->identifier->id_value, "f"));
 
 	mCc_ast_delete_program(prog);
@@ -117,7 +116,7 @@ TEST(TDD_PARSER_PROGRAM, FUNC_NO_BODY)
 	auto prog = result.program;
 
 	// root -> function
-	ASSERT_EQ(MCC_AST_FUNCTION_DEF_VOID, prog->func_defs[0]->type);
+	ASSERT_EQ(MCC_AST_TYPE_VOID, prog->func_defs[0]->func_type);
 	ASSERT_EQ(0, strcmp(prog->func_defs[0]->identifier->id_value, "f"));
 	ASSERT_EQ(NULL, prog->func_defs[0]->body);
 	mCc_ast_delete_program(prog);

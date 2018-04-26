@@ -3,8 +3,8 @@
 
 void main() {
     /* First we declare some arrays */
-    float[5] first_array;
-    bool[5] processed;	
+    int[5] first_array;
+    bool[5] processed;
 
     processed[0] = false;
     processed[4] = false;
@@ -13,7 +13,7 @@ void main() {
     print_bool_array(processed);
 }
 
-void run_calculation(float[5] first_array, bool[5] processed) {
+void run_calculation(int[5] first_array, bool[5] processed) {
     int i;
     i = 1;
 
