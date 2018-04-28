@@ -80,8 +80,8 @@ struct mCc_tac_quad_literal {
 		float fval;
 		bool bval;
 		char *strval;
-	}
-}
+	};
+};
 
 /**
  * A single TAC-stmt, stored as quad.
