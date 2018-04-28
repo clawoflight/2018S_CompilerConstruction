@@ -495,3 +495,25 @@ TEST(TYPE_CHECK_CMPND, MULTIPLE)
 
     mCc_ast_delete_statement(stmt);
 }
+
+TEST(TYPE_CHECK_RETURN, RETURN_VOID)
+{
+    const char input[] = "void main() {int a; int b; return;}";
+    auto result = mCc_parser_parse_string(input);
+    auto prog = result.program;
+
+    ASSERT_TRUE(test_type_check_program(prog));
+
+    mCc_ast_delete_program(prog);
+}
+
+TEST(TYPE_CHECK_RETURN, RETURN_INT)
+{
+    const char input[] = "int f(){int d; d=2; return d;} void main() { int a; int b; b=1; return;}";
+    auto result = mCc_parser_parse_string(input);
+    auto prog = result.program;
+
+    ASSERT_TRUE(test_type_check_program(prog));
+
+    mCc_ast_delete_program(prog);
+}
