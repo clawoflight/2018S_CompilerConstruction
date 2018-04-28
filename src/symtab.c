@@ -277,7 +277,7 @@ int mCc_symtab_scope_add_decl(struct mCc_symtab_scope *self,
 		return 1;
 	}
 	mCc_symtab_scope_add_entry(self, entry);
-
+	decl->node.scope=self;
 	return 0;
 }
 
@@ -301,7 +301,7 @@ int mCc_symtab_scope_add_func_def(struct mCc_symtab_scope *self,
 	}
 
 	mCc_symtab_scope_add_entry(self, entry);
-
+	func_def->node.scope=self;
 	return 0;
 }
 
