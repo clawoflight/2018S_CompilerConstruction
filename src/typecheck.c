@@ -7,16 +7,7 @@
 
 #include "mCc/typecheck.h"
 #include <stdio.h>
-
-static struct mCc_symtab_scope stack[4096];
-#define err_len (4096)
-static struct mCc_ast_symtab_build_result tmp_result = { 0 };
-
-// Important!
-#define MCC_AST_VISIT_SYMTAB_MODE
 #include "mCc/ast_visit.h"
-
-static void no_op() {}
 
 ///Forward declaration
 static inline enum mCc_ast_type mCc_check_expression(struct mCc_ast_expression *expr);
@@ -136,7 +127,7 @@ static inline bool mCc_check_paramaters(struct mCc_ast_arguments *args,
         return true;
 
     if (params->decl_count == args->expression_count){
-        for (int i = 0; i < params->decl_count; ++i){
+        for (unsigned int i = 0; i < params->decl_count; ++i){
             if(params->decl[i]->decl_type != mCc_check_expression(args->expressions[i]))
                 return false;
         }
@@ -151,7 +142,7 @@ static inline enum mCc_ast_type mCc_check_func_type(struct mCc_ast_function_def 
      * For now checks for only one return
      */
     enum mCc_ast_type func_type = func->identifier->symtab_ref->primitive_type;
-
+    return func_type;
 }
 
 static inline enum mCc_ast_type mCc_check_call_expr(struct mCc_ast_expression *call)
@@ -210,6 +201,7 @@ static inline enum mCc_ast_type mCc_check_expression(struct mCc_ast_expression *
             //Or should i even be here?
             break;
     }
+    printf("Type %d\n",expr->node.computed_type);
     return expr->node.computed_type;
 }
 
@@ -238,6 +230,7 @@ static inline bool mCc_check_ret(struct mCc_ast_statement *stmt)
      * I have to think this through.
      * I'll write this last
      */
+return false;
 }
 
 static inline bool mCc_check_while(struct mCc_ast_statement *stmt)
@@ -267,13 +260,44 @@ static inline bool mCc_check_assign(struct mCc_ast_statement *stmt)
 static inline bool mCc_check_cmpnd(struct mCc_ast_statement *stmt)
 {
     bool all_correct = true;
-    for (int i=0; i < stmt->compound_stmt_count; ++i){
+    for (unsigned int i=0; i < stmt->compound_stmt_count; ++i){
         if (!mCc_check_statement(stmt->compound_stmts[i])){
             all_correct = false;
             break;
         }
     }
     return all_correct;
+}
+
+static inline bool mCc_check_function(struct mCc_ast_function_def *func)
+{
+    enum mCc_ast_type func_type = func->func_type;
+  //  printf("Func Type: %d\n", func_type);
+    enum mCc_ast_type ret_type;
+    struct mCc_ast_statement *curr_stmt;
+
+    bool all_ret = true;
+
+    for (unsigned int i=0; i < func->body->compound_stmt_count; i++){
+
+        curr_stmt = func->body->compound_stmts[i];
+
+        if(curr_stmt->type == MCC_AST_STATEMENT_TYPE_RET) {
+            ret_type = mCc_check_expression(curr_stmt->ret_val);
+            ret_type=MCC_AST_TYPE_INT;
+            if (ret_type != func_type) {
+                printf("curr_stmt->type %d",curr_stmt->type);
+                all_ret = false;
+            }
+        } else if (curr_stmt->type == MCC_AST_STATEMENT_TYPE_RET_VOID) {
+            ret_type = MCC_AST_TYPE_VOID;
+            if (ret_type != func_type) {
+                printf("curr_stmt->type %d",curr_stmt->type);
+                all_ret = false;
+            }
+        }
+    }
+    return all_ret;
 }
 
 static inline bool mCc_check_statement(struct mCc_ast_statement *stmt)
@@ -314,45 +338,8 @@ static inline bool mCc_check_statement(struct mCc_ast_statement *stmt)
             //Should not be here
             break;
     }
+    return false; ///< Should never be here
 }
-
-//TODO Brauchen wir diesen visitor überhaupt?
-
-static struct mCc_ast_visitor typecheck_visitor(void)
-{
-    return (struct mCc_ast_visitor){ .traversal = MCC_AST_VISIT_DEPTH_FIRST,
-            .order = MCC_AST_VISIT_PRE_ORDER,
-
-            .statement_if = no_op,
-            .statement_ifelse = no_op,
-            .statement_while = no_op,
-            .statement_return = no_op,
-            .statement_return_void = no_op,
-            .statement_compound = no_op,
-            .statement_assgn = mCc_check_assign,
-            .statement_decl = no_op,
-
-            .declaration = no_op,
-
-            .expression_literal = mCc_check_expression,
-            .expression_identifier = mCc_check_expression,
-            .expression_unary_op = mCc_check_unary,
-            .expression_binary_op = mCc_check_binary,
-            .expression_parenth = mCc_check_expression,
-            .expression_call_expr = mCc_check_call_expr,
-            .expression_arr_subscr = mCc_check_arr_subscr,
-
-            .identifier = no_op,
-            .arguments = no_op,
-            .parameter = no_op,
-            .function_def = no_op,
-
-            .literal_int = no_op,
-            .literal_float = no_op,
-            .literal_string = no_op,
-            .literal_bool = no_op };
-}
-
 
 struct mCc_typecheck_result mCc_typecheck(struct mCc_ast_program *program)
 {
@@ -370,4 +357,17 @@ enum mCc_ast_type test_type_check(struct mCc_ast_expression *expression)
 bool test_type_check_stmt(struct mCc_ast_statement *stmt)
 {
     return mCc_check_statement(stmt);
+}
+
+bool test_type_check_program(struct mCc_ast_program *prog)
+{
+    bool all_correct = true;
+
+    for (unsigned int i = 0; i < prog->func_def_count; i++){
+        curr_func = prog->func_defs[i];
+        all_correct = mCc_check_function(curr_func);
+        if (!all_correct)
+            break;
+    }
+    return all_correct;
 }

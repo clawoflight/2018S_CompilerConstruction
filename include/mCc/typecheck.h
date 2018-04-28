@@ -57,7 +57,11 @@ struct mCc_typecheck_result mCc_typecheck(struct mCc_ast_program *program);
  */
 enum mCc_ast_type test_type_check(struct mCc_ast_expression *expression);
 bool test_type_check_stmt(struct mCc_ast_statement *stmt);
+bool test_type_check_program(struct mCc_ast_program *prog);
 
+
+///Global Var to save the current func we're in
+static struct mCc_ast_function_def *curr_func;
 
 #ifdef __cplusplus
 }
