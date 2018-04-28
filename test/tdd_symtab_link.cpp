@@ -128,6 +128,29 @@ mCc_ast_delete_program(prog);
 mCc_symtab_delete_all_scopes();
 }
 
+TEST(TDD_PARSER_SYMTABLINK, TEST_FUNC_RETURN2){
+
+const char str[] = "int f(){ int b; b=2; return b+2;  }  void main(){ int b; b=2; int r; r=f(b); return;  }";
+auto result = mCc_parser_parse_string(str);
+
+ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);
+auto prog = result.program;
+
+mCc_ast_symtab_build(prog);
+mCc_ast_identifier *idb= mCc_ast_new_identifier((char*)"b");
+mCc_ast_identifier *idr= mCc_ast_new_identifier((char*)"r");
+mCc_ast_identifier *idf= mCc_ast_new_identifier((char*)"f");
+
+ASSERT_STREQ(idb->id_value,prog->func_defs[1]->body->compound_stmts[1]->id_assgn->symtab_ref->identifier->id_value);
+ASSERT_STREQ(idb->id_value,prog->func_defs[0]->body->compound_stmts[2]->ret_val->lhs->identifier->symtab_ref->identifier->id_value);
+ASSERT_STREQ(idr->id_value,prog->func_defs[1]->body->compound_stmts[3]->id_assgn->symtab_ref->identifier->id_value);
+ASSERT_STREQ(idf->id_value,prog->func_defs[1]->body->compound_stmts[3]->rhs_assgn->f_name->symtab_ref->identifier->id_value);
+
+mCc_ast_delete_program(prog);
+mCc_symtab_delete_all_scopes();
+}
+
+
 
 TEST(TDD_PARSER_SYMTABLINK, TEST_FUNC_WITH_ARR_DECL)
 {
