@@ -201,7 +201,6 @@ static inline enum mCc_ast_type mCc_check_expression(struct mCc_ast_expression *
             //Or should i even be here?
             break;
     }
-    printf("Type %d\n",expr->node.computed_type);
     return expr->node.computed_type;
 }
 
@@ -272,7 +271,6 @@ static inline bool mCc_check_cmpnd(struct mCc_ast_statement *stmt)
 static inline bool mCc_check_function(struct mCc_ast_function_def *func)
 {
     enum mCc_ast_type func_type = func->func_type;
-  //  printf("Func Type: %d\n", func_type);
     enum mCc_ast_type ret_type;
     struct mCc_ast_statement *curr_stmt;
 
@@ -283,17 +281,16 @@ static inline bool mCc_check_function(struct mCc_ast_function_def *func)
         curr_stmt = func->body->compound_stmts[i];
 
         if(curr_stmt->type == MCC_AST_STATEMENT_TYPE_RET) {
-            ret_type = mCc_check_expression(curr_stmt->ret_val);
-            ret_type=MCC_AST_TYPE_INT;
+             ret_type = mCc_check_expression(curr_stmt->ret_val);
             if (ret_type != func_type) {
-                printf("curr_stmt->type %d",curr_stmt->type);
                 all_ret = false;
+                break;
             }
         } else if (curr_stmt->type == MCC_AST_STATEMENT_TYPE_RET_VOID) {
             ret_type = MCC_AST_TYPE_VOID;
             if (ret_type != func_type) {
-                printf("curr_stmt->type %d",curr_stmt->type);
-                all_ret = false;
+               all_ret = false;
+                break;
             }
         }
     }
@@ -310,7 +307,6 @@ static inline bool mCc_check_statement(struct mCc_ast_statement *stmt)
 
         case MCC_AST_STATEMENT_TYPE_RET:
             return mCc_check_ret(stmt); //TODO TBD
-
 
         case MCC_AST_STATEMENT_TYPE_RET_VOID:
             return mCc_check_ret(stmt); //TODO TBD
