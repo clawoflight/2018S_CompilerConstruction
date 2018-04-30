@@ -6,12 +6,44 @@
  */
 #include "tac_builder.h"
 
-static inline struct mCc_tac_quad *mCc_tac_from_expression_id(struct mCc_ast_expression* expr)
+static struct mCc_tac_program *mCc_tac_from_expression_binary(struct mCc_ast_expression *expr)
 {
+	// rec. create mCc_tac_program for both operands
+	// create quad [binary_op, result_of_prog_1, result_of_prog_2]
 
+	// create new program with memory for both programs + 1 quad
+	// copy all into new program
+	// (destroy rec. programs without destroying their quads)
 }
 
-static inline struct mCc_tac_program *mCc_tac_from_if(struct mCc_ast_statement *stmt)
+static struct mCc_tac_program *mCc_tac_from_expression_unary(struct mCc_ast_expression *expr)
+{
+	// rec. create mCc_tac_program for operand
+	// create quad [unary_op, result_of_prog]
+
+	// create new program with memory for program + 1 quad
+	// copy all into new program
+	// (destroy rec. program without destroying it's quads)
+}
+
+static struct mCc_tac_program *mCc_tac_from_expression_arr_subscr(struct mCc_ast_expression *expr)
+{
+	// rec. create mCc_tac_program for array index
+	// create quad [load, result_of_prog]
+}
+
+static struct mCc_tac_program *mCc_tac_from_expression_call(struct mCc_ast_expression *expr)
+{
+	// rec. create mCc_tac_program for all arguments
+	// create quad [param, result_of_prog] for each prog (important: in reverse order!)
+	// create quad [jump, label_of_func]
+
+	// create new program with memory for arguments + param quads + jump quad
+	// copy all into new program (keep in mind params must be in reverse order)
+	// (destroy rec. programs without destroying their quads)
+}
+
+static struct mCc_tac_program *mCc_tac_from_if(struct mCc_ast_statement *stmt)
 {
 	// create quad label 1
 	// create quad label 2
@@ -29,4 +61,5 @@ static inline struct mCc_tac_program *mCc_tac_from_if(struct mCc_ast_statement *
 	// copy label 1 into new program
 	// copy else-branch into new program
 	// copy label 2 into new program
+	// (destroy rec. programs without destroying their quads)
 }

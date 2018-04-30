@@ -42,6 +42,7 @@ enum mCc_tac_quad_unary_op {
 /// Type of a TAC-stmt
 enum mCc_tac_quad_type {
 	MCC_TAC_QUAD_ASSIGN,
+	MCC_TAC_QUAD_ASSIGN_LIT,
 	MCC_TAC_QUAD_OP_UNARY,
 	MCC_TAC_QUAD_OP_BINARY,
 	MCC_TAC_QUAD_JUMP,
@@ -53,14 +54,6 @@ enum mCc_tac_quad_type {
 	MCC_TAC_QUAD_STORE,
 	MCC_TAC_QUAD_ADDR_OF,  ///< TODO neceessary?
 	MCC_TAC_QUAD_PTR_DEREF ///< TODO necessary?
-};
-
-/// Result of a TAC-stmt
-struct mCc_tac_quad_result {
-	union {
-		mCc_tac_label label;
-		struct mCc_symtab_ref *ref;
-	};
 };
 
 enum mCc_tac_quad_literal_type {
@@ -122,6 +115,9 @@ struct mCc_tac_program {
 struct mCc_tac_quad *mCc_tac_quad_new_assign(struct mCc_symtab_ref *arg1,
                                              struct mCc_symtab_ref *result);
 
+struct mCc_tac_quad *mCc_tac_quad_new_assign_lit(struct mCc_ast_literal *arg1,
+                                                 struct mCc_symtab_ref *result);
+
 struct mCc_tac_quad *mCc_tac_quad_new_op_unary(enum mCc_tac_quad_unary_op,
                                                struct mCc_symtab_ref *arg1,
                                                struct mCc_symtab_ref *result);
@@ -154,8 +150,8 @@ struct mCc_tac_quad *mCc_tac_quad_new_store(struct mCc_symtab_ref *index,
 /**
  * @brief Print a quad.
  *
- * @param self The quad to print
- * @param out The file to which to print
+ * @param self
+ * @param out
  */
 void mCc_tac_quad_print(struct mCc_tac_quad *self, FILE *out);
 
