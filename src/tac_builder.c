@@ -54,7 +54,7 @@ static struct mCc_tac_program *mCc_tac_from_statement_if(struct mCc_ast_statemen
 	// create quad [jump, label 2]
 	// rec. create mCc_tac_program for else-branch
 
-	// create new program with memory for the three programs + 4 quads (jumpfalse, 2 labels)
+	// create new program with memory for the three programs + 4 quads (jumpfalse, jump, 2 labels)
 	// copy condition into new program
 	// copy jumpfalse into new program
 	// copy then-branch into new program
@@ -67,6 +67,20 @@ static struct mCc_tac_program *mCc_tac_from_statement_if(struct mCc_ast_statemen
 
 static struct mCc_tac_program *mCc_tac_from_statement_while(struct mCc_ast_statement *stmt)
 {
+	// create quad label 1
+	// create quad label 2
+	// rec. create mCc_tac_program for condition
+	// create quad [jumpfalse, condition_var, label 2]
+	// rec. create mCc_tac_program for loop body
+	// create quad [jump, label 1]
+
+	// create new program with memory for the program + 4 quads (jumpfalse, jump, 2 labels)
+	// copy label 1 into new program
+	// copy condition into new program
+	// copy jumpfalse into new program
+	// copy body into new program
+	// copy label 2 into new program
+	// (destroy rec. program without destroying its quads)
 }
 
 static struct mCc_tac_program *mCc_tac_from_statement_return(struct mCc_ast_statement *stmt)
