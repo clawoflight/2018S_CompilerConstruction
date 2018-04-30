@@ -142,7 +142,7 @@ TEST(TDD_PARSER_SYMTABLINK, TEST_FUNC_RETURN2){
     mCc_ast_identifier *idf= mCc_ast_new_identifier((char*)"f");
 
     ASSERT_STREQ(idb->id_value,prog->func_defs[1]->body->compound_stmts[1]->id_assgn->symtab_ref->identifier->id_value);
-    ASSERT_STREQ(idb->id_value,prog->func_defs[0]->body->compound_stmts[2]->ret_val->identifier->symtab_ref->identifier->id_value);
+    ASSERT_STREQ(idb->id_value,prog->func_defs[0]->body->compound_stmts[2]->ret_val->lhs->identifier->symtab_ref->identifier->id_value);
     ASSERT_STREQ(idr->id_value,prog->func_defs[1]->body->compound_stmts[3]->id_assgn->symtab_ref->identifier->id_value);
     ASSERT_STREQ(idf->id_value,prog->func_defs[1]->body->compound_stmts[3]->rhs_assgn->f_name->symtab_ref->identifier->id_value);
 
