@@ -43,7 +43,8 @@ static struct mCc_tac_program *mCc_tac_from_expression_call(struct mCc_ast_expre
 	// (destroy rec. programs without destroying their quads)
 }
 
-static struct mCc_tac_program *mCc_tac_from_if(struct mCc_ast_statement *stmt)
+// TODO think about if without else - which label to remove
+static struct mCc_tac_program *mCc_tac_from_statement_if(struct mCc_ast_statement *stmt)
 {
 	// create quad label 1
 	// create quad label 2
@@ -62,4 +63,14 @@ static struct mCc_tac_program *mCc_tac_from_if(struct mCc_ast_statement *stmt)
 	// copy else-branch into new program
 	// copy label 2 into new program
 	// (destroy rec. programs without destroying their quads)
+}
+
+static struct mCc_tac_program *mCc_tac_from_statement_while(struct mCc_ast_statement *stmt)
+{
+}
+
+static struct mCc_tac_program *mCc_tac_from_statement_return(struct mCc_ast_statement *stmt)
+{
+	// create mCc_tac_program for return expression
+	// TODO will probably need a quad for return?
 }
