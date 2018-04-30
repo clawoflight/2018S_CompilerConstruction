@@ -17,6 +17,8 @@ TEST(TDD_PARSER_SYMTABLINK, TEST)
     mCc_ast_identifier *id= mCc_ast_new_identifier((char*)"b");
 
     ASSERT_EQ(0,strcmp(id->id_value,prog->func_defs[0]->body->compound_stmts[1]->id_assgn->symtab_ref->identifier->id_value));
+
+    mCc_ast_delete_identifier(id);
     mCc_ast_delete_program(prog);
     mCc_symtab_delete_all_scopes();
 }
@@ -36,6 +38,8 @@ TEST(TDD_PARSER_SYMTABLINK, TEST_ARR)
     ASSERT_STREQ(id->id_value,prog->func_defs[0]->body->compound_stmts[1]->id_assgn->symtab_ref->identifier->id_value);
     ASSERT_STREQ(id->id_value,prog->func_defs[0]->body->compound_stmts[2]->id_assgn->symtab_ref->identifier->id_value);
     ASSERT_EQ(MCC_SYMTAB_ENTRY_TYPE_ARR,prog->func_defs[0]->body->compound_stmts[2]->id_assgn->symtab_ref->entry_type);
+
+    mCc_ast_delete_identifier(id);
     mCc_ast_delete_program(prog);
     mCc_symtab_delete_all_scopes();
 }
@@ -58,6 +62,10 @@ TEST(TDD_PARSER_SYMTABLINK, TEST_FUNC)
     ASSERT_STREQ(idb->id_value,prog->func_defs[1]->body->compound_stmts[1]->id_assgn->symtab_ref->identifier->id_value);
     ASSERT_STREQ(idf->id_value,prog->func_defs[1]->body->compound_stmts[2]->expression->f_name->symtab_ref->identifier->id_value);
 
+    mCc_ast_delete_identifier(ida);
+    mCc_ast_delete_identifier(idb);
+    mCc_ast_delete_identifier(idf);
+
     mCc_ast_delete_program(prog);
     mCc_symtab_delete_all_scopes();
 }
@@ -78,6 +86,9 @@ TEST(TDD_PARSER_SYMTABLINK, TEST_FUNC_PARA)
     ASSERT_STREQ(idb->id_value,prog->func_defs[1]->body->compound_stmts[1]->id_assgn->symtab_ref->identifier->id_value);
     ASSERT_STREQ(idb->id_value,prog->func_defs[0]->body->compound_stmts[0]->id_assgn->symtab_ref->identifier->id_value);
     ASSERT_STREQ(idf->id_value,prog->func_defs[1]->body->compound_stmts[2]->expression->f_name->symtab_ref->identifier->id_value);
+
+    mCc_ast_delete_identifier(idb);
+    mCc_ast_delete_identifier(idf);
 
     mCc_ast_delete_program(prog);
     mCc_symtab_delete_all_scopes();
@@ -102,6 +113,10 @@ TEST(TDD_PARSER_SYMTABLINK, TEST_FUNC_PARA2)
     ASSERT_STREQ(idr->id_value,prog->func_defs[1]->body->compound_stmts[3]->id_assgn->symtab_ref->identifier->id_value);
     ASSERT_STREQ(idf->id_value,prog->func_defs[1]->body->compound_stmts[3]->rhs_assgn->f_name->symtab_ref->identifier->id_value);
 
+    mCc_ast_delete_identifier(idb);
+    mCc_ast_delete_identifier(idr);
+    mCc_ast_delete_identifier(idf);
+
     mCc_ast_delete_program(prog);
     mCc_symtab_delete_all_scopes();
 }
@@ -123,6 +138,10 @@ TEST(TDD_PARSER_SYMTABLINK, TEST_FUNC_RETURN)
     ASSERT_STREQ(idb->id_value,prog->func_defs[0]->body->compound_stmts[2]->ret_val->identifier->symtab_ref->identifier->id_value);
     ASSERT_STREQ(idr->id_value,prog->func_defs[1]->body->compound_stmts[3]->id_assgn->symtab_ref->identifier->id_value);
     ASSERT_STREQ(idf->id_value,prog->func_defs[1]->body->compound_stmts[3]->rhs_assgn->f_name->symtab_ref->identifier->id_value);
+
+    mCc_ast_delete_identifier(idb);
+    mCc_ast_delete_identifier(idr);
+    mCc_ast_delete_identifier(idf);
 
     mCc_ast_delete_program(prog);
     mCc_symtab_delete_all_scopes();
@@ -146,6 +165,10 @@ TEST(TDD_PARSER_SYMTABLINK, TEST_FUNC_RETURN2){
     ASSERT_STREQ(idr->id_value,prog->func_defs[1]->body->compound_stmts[3]->id_assgn->symtab_ref->identifier->id_value);
     ASSERT_STREQ(idf->id_value,prog->func_defs[1]->body->compound_stmts[3]->rhs_assgn->f_name->symtab_ref->identifier->id_value);
 
+    mCc_ast_delete_identifier(idb);
+    mCc_ast_delete_identifier(idr);
+    mCc_ast_delete_identifier(idf);
+
     mCc_ast_delete_program(prog);
     mCc_symtab_delete_all_scopes();
 }
@@ -166,6 +189,9 @@ TEST(TDD_PARSER_SYMTABLINK, TEST_FUNC_WITH_ARR_DECL)
 
     ASSERT_STREQ(id->id_value,prog->func_defs[0]->body->compound_stmts[1]->id_assgn->symtab_ref->identifier->id_value);
     ASSERT_STREQ(id->id_value,prog->func_defs[0]->body->compound_stmts[3]->rhs_assgn->array_id->symtab_ref->identifier->id_value);
+
+    mCc_ast_delete_identifier(id);
+
     mCc_ast_delete_program(prog);
     mCc_symtab_delete_all_scopes();
 }
