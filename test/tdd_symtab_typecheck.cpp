@@ -519,11 +519,10 @@ TEST(TYPE_CHECK_RETURN, RETURN_INT)
     mCc_ast_symtab_build(prog);
     ASSERT_TRUE(test_type_check_program(prog));
 
-
     mCc_ast_delete_program(prog);
     mCc_symtab_delete_all_scopes();
-
 }
+
 
 TEST(TYPE_CHECK_RETURN, RETURN_WRONG_TYPE)
 {
@@ -556,8 +555,48 @@ TEST(TYPE_CHECK_RETURN, RETURN_IF)
     const char input[] = "void main() {if(2<3){return;} return;}";
     auto result = mCc_parser_parse_string(input);
     auto prog = result.program;
-mCc_ast_symtab_build(prog);
+
+    mCc_ast_symtab_build(prog);
     ASSERT_TRUE(test_type_check_program(prog));
+
+    mCc_ast_delete_program(prog);
+    mCc_symtab_delete_all_scopes();
+}
+
+TEST(TYPE_CHECK_RETURN, RETURN_DOUBLE_IF)
+{
+    const char input[] = "void main() {if(2<3){return;} return;}";
+    auto result = mCc_parser_parse_string(input);
+    auto prog = result.program;
+
+    mCc_ast_symtab_build(prog);
+    ASSERT_TRUE(test_type_check_program(prog));
+
+    mCc_ast_delete_program(prog);
+    mCc_symtab_delete_all_scopes();
+}
+
+TEST(TYPE_CHECK_RETURN, RETURN_IF_ELSE)
+{
+    const char input[] = "void main() {if(2<3){return;} else {return;}}";
+    auto result = mCc_parser_parse_string(input);
+    auto prog = result.program;
+
+    mCc_ast_symtab_build(prog);
+    ASSERT_TRUE(test_type_check_program(prog));
+
+    mCc_ast_delete_program(prog);
+    mCc_symtab_delete_all_scopes();
+}
+
+TEST(TYPE_CHECK_RETURN, RETURN_IF_ELIF)
+{
+    const char input[] = "void main() {if(2<3){return;} else if(2<23) {return;}}";
+    auto result = mCc_parser_parse_string(input);
+    auto prog = result.program;
+
+    mCc_ast_symtab_build(prog);
+    ASSERT_FALSE(test_type_check_program(prog));
 
     mCc_ast_delete_program(prog);
     mCc_symtab_delete_all_scopes();

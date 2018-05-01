@@ -227,7 +227,9 @@ static inline bool mCc_check_if(struct mCc_ast_statement *stmt)
 
 static inline bool mCc_check_ret(struct mCc_ast_statement *stmt)
 {
+    printf("\nTest\n");
     enum mCc_ast_type ret_type = mCc_check_expression(stmt->ret_val);
+
     if (ret_type != curr_func->func_type)
         return false;
     return true;
@@ -302,7 +304,7 @@ static inline bool mCc_check_cmpnd_return(struct mCc_ast_statement *stmt)
             if_path_return = mCc_check_if_return(curr_stmt);
 
         } else if (curr_stmt->type == MCC_AST_STATEMENT_TYPE_IFELSE){
-            stmt->compound_stmts[i]->node.outside_if = false;
+           // stmt->compound_stmts[i]->node.outside_if = false;
             if_path_return = mCc_check_if_else_return(curr_stmt);
         } else if(curr_stmt->type == MCC_AST_STATEMENT_TYPE_RET){
             all_ret = mCc_check_ret(curr_stmt);
@@ -333,17 +335,30 @@ static inline bool mCc_check_if_return(struct mCc_ast_statement *stmt)
     if (inner_stmt->type == MCC_AST_STATEMENT_TYPE_RET_VOID)
         ret = mCc_check_ret_void(inner_stmt);
 
-    return true;
+    return ret;
 }
 
 static inline bool mCc_check_if_else_return(struct mCc_ast_statement *stmt)
 {
-    stmt->node.outside_if = false;
-    struct mCc_ast_statement *inner_stmt = stmt->if_stmt;
+    bool if_branch = false;
+    bool else_branch = false;
+    printf("OUTSIDE IF: %d\n", stmt->else_stmt->node.outside_if);
 
-    return true;
+    struct mCc_ast_statement *if_stmt = stmt->if_stmt;
+    struct mCc_ast_statement *else_stmt = stmt->else_stmt;
 
-   // if (inner_stmt-> == MCC_AST_STATEMENT)
+    if_branch = mCc_check_if_return(if_stmt);
+
+    if (else_stmt->type == MCC_AST_STATEMENT_TYPE_CMPND)
+        else_branch = mCc_check_cmpnd_return(else_stmt);
+
+    if (else_stmt->type == MCC_AST_STATEMENT_TYPE_RET)
+        else_branch = mCc_check_ret(else_stmt);
+
+    if (else_stmt->type == MCC_AST_STATEMENT_TYPE_RET_VOID)
+        else_branch = mCc_check_ret_void(else_stmt);
+
+    return (if_branch && else_branch);
 }
 
 
@@ -429,8 +444,8 @@ bool test_type_check_stmt(struct mCc_ast_statement *stmt)
 bool test_type_check_program(struct mCc_ast_program *prog)
 {
     bool all_correct = true;
-
     for (unsigned int i = 0; i < prog->func_def_count; i++){
+      //  printf("\nTest\n");
         curr_func = prog->func_defs[i];
         all_correct = mCc_check_function(curr_func);
         if (!all_correct)
