@@ -47,13 +47,11 @@ static inline enum mCc_ast_type mCc_check_unary(struct mCc_ast_expression *unary
             if ((computed_type != MCC_AST_TYPE_INT) &&
                     (computed_type != MCC_AST_TYPE_FLOAT))
                 return MCC_AST_TYPE_VOID;
-                //TODO better error
             break;
 
         case MCC_AST_UNARY_OP_NOT:
             if (computed_type != MCC_AST_TYPE_BOOL)
                 return MCC_AST_TYPE_VOID;
-                //TODO better error
             break;
 
         default:
@@ -80,7 +78,6 @@ static inline enum mCc_ast_type mCc_check_binary(struct mCc_ast_expression *bina
             if ((computed_type_left != MCC_AST_TYPE_INT) &&
                 (computed_type_left != MCC_AST_TYPE_FLOAT))
                 return MCC_AST_TYPE_VOID;
-            //TODO better error
             break;
 
         case MCC_AST_BINARY_OP_LT:
@@ -89,14 +86,12 @@ static inline enum mCc_ast_type mCc_check_binary(struct mCc_ast_expression *bina
         case MCC_AST_BINARY_OP_GEQ:
             if (computed_type_left == MCC_AST_TYPE_BOOL)
                 return MCC_AST_TYPE_VOID;
-            //TODO better error
             return MCC_AST_TYPE_BOOL;
 
         case MCC_AST_BINARY_OP_AND:
         case MCC_AST_BINARY_OP_OR:
             if (computed_type_left != MCC_AST_TYPE_BOOL)
                 return MCC_AST_TYPE_VOID;
-            //TODO better error
             return MCC_AST_TYPE_BOOL;
 
         case MCC_AST_BINARY_OP_EQ:
@@ -117,7 +112,6 @@ static inline enum mCc_ast_type mCc_check_arr_subscr(struct mCc_ast_expression *
 
     if (subscript_type != MCC_AST_TYPE_INT)
         return MCC_AST_TYPE_VOID;
-        //TODO better error
 
     return arr_subscr->array_id->symtab_ref->primitive_type;
 }
@@ -149,21 +143,9 @@ static inline enum mCc_ast_type mCc_check_func_type(struct mCc_ast_function_def 
 
 static inline enum mCc_ast_type mCc_check_call_expr(struct mCc_ast_expression *call)
 {
-//TODO TBD
-    /**
-     * mCc_check_parameters returns true or false, if the signature matches
-     * mCc_check_func_type returns the type of the called function
-     *
-     * The function type check is missing, this means check return
-     * of the function itself, this is just for the call expr,
-     * which in the end has to call the check for the correct return type
-     * later on. This check can be done by extending the if with a call to
-     * mCc_check_return or a similar name
-     *
-     */
     if (mCc_check_paramaters(call->arguments, call->f_name->symtab_ref->params))
         return call->f_name->symtab_ref->primitive_type;
-    return MCC_AST_TYPE_VOID; //TODO better "Error", since fkt can be void
+    return MCC_AST_TYPE_VOID;
 }
 
 
@@ -211,7 +193,7 @@ static inline enum mCc_ast_type mCc_check_expression(struct mCc_ast_expression *
 static inline bool mCc_check_if(struct mCc_ast_statement *stmt)
 {
     if (mCc_check_expression(stmt->if_cond) != MCC_AST_TYPE_BOOL)
-        return false; //TODO Better Error
+        return false;
 
     bool if_type = mCc_check_statement(stmt->if_stmt);
     bool else_type = true;
@@ -227,7 +209,6 @@ static inline bool mCc_check_if(struct mCc_ast_statement *stmt)
 
 static inline bool mCc_check_ret(struct mCc_ast_statement *stmt)
 {
-    printf("\nTest\n");
     enum mCc_ast_type ret_type = mCc_check_expression(stmt->ret_val);
 
     if (ret_type != curr_func->func_type)
@@ -300,20 +281,16 @@ static inline bool mCc_check_cmpnd_return(struct mCc_ast_statement *stmt)
 
         if (curr_stmt->type == MCC_AST_STATEMENT_TYPE_IF){
             curr_stmt->node.outside_if = false;
-       //     //printf("HIER\n\n");
             if_path_return = mCc_check_if_return(curr_stmt);
 
         } else if (curr_stmt->type == MCC_AST_STATEMENT_TYPE_IFELSE){
-           // stmt->compound_stmts[i]->node.outside_if = false;
             if_path_return = mCc_check_if_else_return(curr_stmt);
         } else if(curr_stmt->type == MCC_AST_STATEMENT_TYPE_RET){
             all_ret = mCc_check_ret(curr_stmt);
         } else if (curr_stmt->type == MCC_AST_STATEMENT_TYPE_RET_VOID){
-        //    //printf("RET VOID\n\n");
             all_ret = mCc_check_ret_void(curr_stmt);
         }
 
-     //   //printf("Outside: %d\n", curr_stmt->node.outside_if);
     }
 
     return (all_ret && if_path_return);
@@ -342,7 +319,6 @@ static inline bool mCc_check_if_else_return(struct mCc_ast_statement *stmt)
 {
     bool if_branch = false;
     bool else_branch = false;
-    printf("OUTSIDE IF: %d\n", stmt->else_stmt->node.outside_if);
 
     struct mCc_ast_statement *if_stmt = stmt->if_stmt;
     struct mCc_ast_statement *else_stmt = stmt->else_stmt;
@@ -372,19 +348,16 @@ static inline bool mCc_check_function(struct mCc_ast_function_def *func)
     for (unsigned int i=0; i < func->body->compound_stmt_count; i++){
 
         if (func->body->compound_stmts[i]->node.outside_if == true){
-          //  //printf("CHECK\n");
             general_ret = true;
         }
     }
 
-    printf("\n\nBool Check: %d %d %d\n\n", check_func_for_return, check_func, general_ret);
 
     return (check_func_for_return && check_func && general_ret);
 }
 
 static inline bool mCc_check_statement(struct mCc_ast_statement *stmt)
 {
-    //printf("TYPE: %d\n",stmt->type);
     switch(stmt->type){
         case MCC_AST_STATEMENT_TYPE_IF:
         case MCC_AST_STATEMENT_TYPE_IFELSE:
@@ -402,8 +375,6 @@ static inline bool mCc_check_statement(struct mCc_ast_statement *stmt)
 
         case MCC_AST_STATEMENT_TYPE_DECL:
             return true;
-            //break; //TODO: braucht das überhaupt einen check?
-                   //TODO: Ich glaube nicht
 
         case MCC_AST_STATEMENT_TYPE_ASSGN:
             return mCc_check_assign(stmt);
@@ -445,7 +416,6 @@ bool test_type_check_program(struct mCc_ast_program *prog)
 {
     bool all_correct = true;
     for (unsigned int i = 0; i < prog->func_def_count; i++){
-      //  printf("\nTest\n");
         curr_func = prog->func_defs[i];
         all_correct = mCc_check_function(curr_func);
         if (!all_correct)

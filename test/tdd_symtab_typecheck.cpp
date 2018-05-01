@@ -512,7 +512,7 @@ TEST(TYPE_CHECK_RETURN, RETURN_VOID)
 
 TEST(TYPE_CHECK_RETURN, RETURN_INT)
 {
-    const char input[] = "int f(){int d; d=2+2; return d;} void main() { int a; int b; b=1; return;}";
+    const char input[] = "int f(){int d; d=2+2; return d;} void main() { int a; int b; b=f(); return;}";
     auto result = mCc_parser_parse_string(input);
     auto prog = result.program;
 
