@@ -502,19 +502,63 @@ TEST(TYPE_CHECK_RETURN, RETURN_VOID)
     auto result = mCc_parser_parse_string(input);
     auto prog = result.program;
 
+    mCc_ast_symtab_build(prog);
     ASSERT_TRUE(test_type_check_program(prog));
 
+
     mCc_ast_delete_program(prog);
+    mCc_symtab_delete_all_scopes();
 }
 
 TEST(TYPE_CHECK_RETURN, RETURN_INT)
 {
-    const char input[] = "int f(){int d; d=2; return d+2;} void main() { int a; int b; b=1; return;}";
+    const char input[] = "int f(){int d; d=2+2; return d;} void main() { int a; int b; b=1; return;}";
     auto result = mCc_parser_parse_string(input);
     auto prog = result.program;
 
     mCc_ast_symtab_build(prog);
     ASSERT_TRUE(test_type_check_program(prog));
 
+
     mCc_ast_delete_program(prog);
+    mCc_symtab_delete_all_scopes();
+
+}
+
+TEST(TYPE_CHECK_RETURN, RETURN_WRONG_TYPE)
+{
+    const char input[] = "int f(){int d; d=2; return true;} void main() { int a; int b; b=1; return;}";
+    auto result = mCc_parser_parse_string(input);
+    auto prog = result.program;
+
+    mCc_ast_symtab_build(prog);
+    ASSERT_FALSE(test_type_check_program(prog));
+
+    mCc_ast_delete_program(prog);
+    mCc_symtab_delete_all_scopes();
+}
+
+TEST(TYPE_CHECK_RETURN, RETURN_IF_WRONG)
+{
+    const char input[] = "void main() {if(2>3){return;}}";
+    auto result = mCc_parser_parse_string(input);
+    auto prog = result.program;
+
+    mCc_ast_symtab_build(prog);
+    ASSERT_FALSE(test_type_check_program(prog));
+
+    mCc_ast_delete_program(prog);
+    mCc_symtab_delete_all_scopes();
+}
+
+TEST(TYPE_CHECK_RETURN, RETURN_IF)
+{
+    const char input[] = "void main() {if(2<3){return;} return;}";
+    auto result = mCc_parser_parse_string(input);
+    auto prog = result.program;
+mCc_ast_symtab_build(prog);
+    ASSERT_TRUE(test_type_check_program(prog));
+
+    mCc_ast_delete_program(prog);
+    mCc_symtab_delete_all_scopes();
 }

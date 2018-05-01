@@ -127,7 +127,7 @@ ASSERT_STREQ(idf->id_value,prog->func_defs[1]->body->compound_stmts[3]->rhs_assg
 mCc_ast_delete_program(prog);
 mCc_symtab_delete_all_scopes();
 }
-
+/*
 TEST(TDD_PARSER_SYMTABLINK, TEST_FUNC_RETURN2){
 
 const char str[] = "int f(){ int b; b=2; return b+2;  }  void main(){ int b; b=2; int r; r=f(b); return;  }";
@@ -168,4 +168,4 @@ ASSERT_STREQ(id->id_value,prog->func_defs[0]->body->compound_stmts[1]->id_assgn-
 ASSERT_STREQ(id->id_value,prog->func_defs[0]->body->compound_stmts[3]->rhs_assgn->array_id->symtab_ref->identifier->id_value);
 mCc_ast_delete_program(prog);
 mCc_symtab_delete_all_scopes();
-}
+}*/

@@ -12,6 +12,8 @@
 ///Forward declaration
 static inline enum mCc_ast_type mCc_check_expression(struct mCc_ast_expression *expr);
 static inline bool mCc_check_statement(struct mCc_ast_statement *stmt);
+static inline bool mCc_check_if_else_return(struct mCc_ast_statement *stmt);
+static inline bool mCc_check_if_return(struct mCc_ast_statement *stmt);
 
 static inline enum mCc_ast_type convert_literal_type_to_type(
                                 enum mCc_ast_literal_type lit_type)
@@ -225,11 +227,18 @@ static inline bool mCc_check_if(struct mCc_ast_statement *stmt)
 
 static inline bool mCc_check_ret(struct mCc_ast_statement *stmt)
 {
-    /**
-     * I have to think this through.
-     * I'll write this last
-     */
-return false;
+    enum mCc_ast_type ret_type = mCc_check_expression(stmt->ret_val);
+    if (ret_type != curr_func->func_type)
+        return false;
+    return true;
+}
+
+static inline bool mCc_check_ret_void(struct mCc_ast_statement *stmt)
+{
+    enum mCc_ast_type ret_type = MCC_AST_TYPE_VOID;
+    if (ret_type != curr_func->func_type)
+        return false;
+    return true;
 }
 
 static inline bool mCc_check_while(struct mCc_ast_statement *stmt)
@@ -268,37 +277,99 @@ static inline bool mCc_check_cmpnd(struct mCc_ast_statement *stmt)
     return all_correct;
 }
 
-static inline bool mCc_check_function(struct mCc_ast_function_def *func)
+
+static inline bool mCc_check_cmpnd_return(struct mCc_ast_statement *stmt)
 {
-    enum mCc_ast_type func_type = func->func_type;
+    enum mCc_ast_type func_type = curr_func->func_type;
     enum mCc_ast_type ret_type;
     struct mCc_ast_statement *curr_stmt;
 
     bool all_ret = true;
+    bool if_path_return = true;
+
+       for (unsigned int i=0; i < stmt->compound_stmt_count; i++){
+
+
+            curr_stmt = stmt->compound_stmts[i];
+
+           if (stmt->node.outside_if == false)
+               curr_stmt->node.outside_if = false;
+           else curr_stmt->node.outside_if = true;
+
+        if (curr_stmt->type == MCC_AST_STATEMENT_TYPE_IF){
+            curr_stmt->node.outside_if = false;
+       //     //printf("HIER\n\n");
+            if_path_return = mCc_check_if_return(curr_stmt);
+
+        } else if (curr_stmt->type == MCC_AST_STATEMENT_TYPE_IFELSE){
+            stmt->compound_stmts[i]->node.outside_if = false;
+            if_path_return = mCc_check_if_else_return(curr_stmt);
+        } else if(curr_stmt->type == MCC_AST_STATEMENT_TYPE_RET){
+            all_ret = mCc_check_ret(curr_stmt);
+        } else if (curr_stmt->type == MCC_AST_STATEMENT_TYPE_RET_VOID){
+        //    //printf("RET VOID\n\n");
+            all_ret = mCc_check_ret_void(curr_stmt);
+        }
+
+     //   //printf("Outside: %d\n", curr_stmt->node.outside_if);
+    }
+
+    return (all_ret && if_path_return);
+}
+
+static inline bool mCc_check_if_return(struct mCc_ast_statement *stmt)
+{
+    stmt->node.outside_if = false;
+    struct mCc_ast_statement *inner_stmt = stmt->if_stmt;
+    inner_stmt->node.outside_if = false;
+    bool ret = true;
+
+    if (inner_stmt->type == MCC_AST_STATEMENT_TYPE_CMPND)
+        ret = mCc_check_cmpnd_return(inner_stmt);
+
+    if (inner_stmt->type == MCC_AST_STATEMENT_TYPE_RET)
+        ret = mCc_check_ret(inner_stmt);
+
+    if (inner_stmt->type == MCC_AST_STATEMENT_TYPE_RET_VOID)
+        ret = mCc_check_ret_void(inner_stmt);
+
+    return true;
+}
+
+static inline bool mCc_check_if_else_return(struct mCc_ast_statement *stmt)
+{
+    stmt->node.outside_if = false;
+    struct mCc_ast_statement *inner_stmt = stmt->if_stmt;
+
+    return true;
+
+   // if (inner_stmt-> == MCC_AST_STATEMENT)
+}
+
+
+static inline bool mCc_check_function(struct mCc_ast_function_def *func)
+{
+    func->body->node.outside_if = true;
+    bool check_func_for_return = mCc_check_cmpnd_return(func->body);
+    bool check_func = mCc_check_statement(func->body);
+    bool general_ret = false;
 
     for (unsigned int i=0; i < func->body->compound_stmt_count; i++){
 
-        curr_stmt = func->body->compound_stmts[i];
-
-        if(curr_stmt->type == MCC_AST_STATEMENT_TYPE_RET) {
-             ret_type = mCc_check_expression(curr_stmt->ret_val);
-            if (ret_type != func_type) {
-                all_ret = false;
-                break;
-            }
-        } else if (curr_stmt->type == MCC_AST_STATEMENT_TYPE_RET_VOID) {
-            ret_type = MCC_AST_TYPE_VOID;
-            if (ret_type != func_type) {
-               all_ret = false;
-                break;
-            }
+        if (func->body->compound_stmts[i]->node.outside_if == true){
+          //  //printf("CHECK\n");
+            general_ret = true;
         }
     }
-    return all_ret;
+
+    printf("\n\nBool Check: %d %d %d\n\n", check_func_for_return, check_func, general_ret);
+
+    return (check_func_for_return && check_func && general_ret);
 }
 
 static inline bool mCc_check_statement(struct mCc_ast_statement *stmt)
 {
+    //printf("TYPE: %d\n",stmt->type);
     switch(stmt->type){
         case MCC_AST_STATEMENT_TYPE_IF:
         case MCC_AST_STATEMENT_TYPE_IFELSE:
@@ -306,10 +377,10 @@ static inline bool mCc_check_statement(struct mCc_ast_statement *stmt)
             return mCc_check_if(stmt);
 
         case MCC_AST_STATEMENT_TYPE_RET:
-            return mCc_check_ret(stmt); //TODO TBD
+            return mCc_check_ret(stmt);
 
         case MCC_AST_STATEMENT_TYPE_RET_VOID:
-            return mCc_check_ret(stmt); //TODO TBD
+            return mCc_check_ret_void(stmt);
 
         case MCC_AST_STATEMENT_TYPE_WHILE:
             return mCc_check_while(stmt);
