@@ -11,6 +11,9 @@
 
 typedef int mCc_tac_label;
 
+/// Size by which to increase compound_stmts when reallocing
+const int quad_alloc_block_size = 10;
+
 /// Binary Operators
 enum mCc_tac_quad_binary_op {
 	MCC_TAC_EXP_TYPE_BINARY_OP_ADD,
@@ -75,7 +78,10 @@ struct mCc_tac_quad_literal {
 		char *strval;
 	};
 };
-
+/// this struct is the used as the type of the quad entries
+struct mCc_tac_quad_entry{
+    int number;
+};
 /**
  * A single TAC-stmt, stored as quad.
  */
@@ -87,13 +93,13 @@ struct mCc_tac_quad {
         enum mCc_tac_quad_binary_op bin_op;
         enum mCc_tac_quad_unary_op un_op;
     };
-	struct mCc_symtab_ref *arg1;
-	struct mCc_symtab_ref *arg2;
+	struct mCc_tac_quad_entry *arg1;
+	struct mCc_tac_quad_entry *arg2;
 
 	/// The result can be a reference or a label
 	union {
 		mCc_tac_label label;
-		struct mCc_symtab_ref *ref;
+		struct mCc_tac_quad_entry *ref;
 	} result;
 };
 
@@ -115,20 +121,20 @@ struct mCc_tac_program {
 
 /********************************** Quad Functions */
 
-struct mCc_tac_quad *mCc_tac_quad_new_assign(struct mCc_symtab_ref *arg1,
-                                             struct mCc_symtab_ref *result);
+struct mCc_tac_quad *mCc_tac_quad_new_assign(struct mCc_tac_quad_entry *arg1,
+                                             struct mCc_tac_quad_entry *result);
 
 struct mCc_tac_quad *mCc_tac_quad_new_assign_lit(struct mCc_ast_literal *arg1,
-                                                 struct mCc_symtab_ref *result);
+                                                 struct mCc_tac_quad_entry *result);
 
 struct mCc_tac_quad *mCc_tac_quad_new_op_unary(enum mCc_tac_quad_unary_op,
-                                               struct mCc_symtab_ref *arg1,
-                                               struct mCc_symtab_ref *result);
+                                               struct mCc_tac_quad_entry *arg1,
+                                               struct mCc_tac_quad_entry *result);
 
 struct mCc_tac_quad *mCc_tac_quad_new_op_binary(enum mCc_tac_quad_binary_op,
-                                                struct mCc_symtab_ref *arg1,
-                                                struct mCc_symtab_ref *arg2,
-                                                struct mCc_symtab_ref *result);
+                                                struct mCc_tac_quad_entry *arg1,
+                                                struct mCc_tac_quad_entry *arg2,
+                                                struct mCc_tac_quad_entry *result);
 
 /**
  * @return  new quadruple in the style: MCC_TAC_QUAD_JUMP - - label
@@ -139,14 +145,14 @@ struct mCc_tac_quad *mCc_tac_quad_new_jump(mCc_tac_label label);
  * New quadruple in the style MCC_TAC_QUAD_JUMPFALSE condition Label -
  */
 struct mCc_tac_quad *
-mCc_tac_quad_new_jumpfalse(struct mCc_symtab_ref *condition,
+mCc_tac_quad_new_jumpfalse(struct mCc_tac_quad_entry *condition,
                            mCc_tac_label label);
 
 struct mCc_tac_quad *mCc_tac_quad_new_label(mCc_tac_label label);
 /**
  * New quadruple in the style MCC_TAC_QUAD_PARAM value - -
  */
-struct mCc_tac_quad *mCc_tac_quad_new_param(struct mCc_symtab_ref *value);
+struct mCc_tac_quad *mCc_tac_quad_new_param(struct mCc_tac_quad_entry *value);
 
 /**
  * new "goto" quadruple MCC_TAC_QUAD_CALL Label - -
@@ -156,17 +162,17 @@ struct mCc_tac_quad *mCc_tac_quad_new_call(mCc_tac_label label);
  * Loading a value from an array and saving it
  * @return a quadruple in the style MCC_TAC_QUAD_LOAD array index result
  */
-struct mCc_tac_quad *mCc_tac_quad_new_load(struct mCc_symtab_ref *array,
-                                           struct mCc_symtab_ref *index,
-                                           struct mCc_symtab_ref *result);
+struct mCc_tac_quad *mCc_tac_quad_new_load(struct mCc_tac_quad_entry *array,
+                                           struct mCc_tac_quad_entry *index,
+                                           struct mCc_tac_quad_entry *result);
 
 /**
  * Storing an value in an index of an array
  * @return a quadruple in the style MCC_TAC_QUAD_STORE value index array
  */
-struct mCc_tac_quad *mCc_tac_quad_new_store(struct mCc_symtab_ref *index,
-                                            struct mCc_symtab_ref *value,
-                                            struct mCc_symtab_ref *array);
+struct mCc_tac_quad *mCc_tac_quad_new_store(struct mCc_tac_quad_entry *index,
+                                            struct mCc_tac_quad_entry *value,
+                                            struct mCc_tac_quad_entry *array);
 
 /**
  * @brief Print a quad.
