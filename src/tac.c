@@ -336,25 +336,57 @@ struct mCc_tac_program *mCc_tac_program_new(int quad_alloc_size){
     }
     program->quad_alloc_size=quad_alloc_size;
     program->quad_count=0;
-  //  program->quads=NULL;                        // allocate memory if specified
+    program->quads=NULL;                        // TODO allocate memory if specified
 
     return program;
 }
 int mCc_tac_program_add_quad(struct mCc_tac_program *self,
                              struct mCc_tac_quad *quad){
+    assert(self);
+    assert(quad);
 
+    if (self->quad_count < self->quad_alloc_size) {
+        self->quads[self->quad_count++] = quad;
+        return 0;
+    }
+    // Allocate additional memory if necessary
+    struct mCc_tac_quad **tmp;
+    self->quad_count += quad_alloc_size;
+    if ((tmp = realloc(self->quads, self->quad_alloc_size *
+                                             sizeof(self))) == NULL) {
+        mCc_ast_delete_quad(self);
+        return 1;
+    }
+
+    self->quads = tmp;
+    self->quads[self->quad_count++] = quad;
+    return 0;
 }
 
 int mCc_tac_program_add_program(struct mCc_tac_program *self,
                                 struct mCc_tac_program *other_prog){
+    assert(self);
+    assert(other_prog);
 
+   //TODO move the pointers from the other program to the end of self
 }
 
 void mCc_tac_program_print(struct mCc_tac_program *self, FILE *out){
+    assert(self);
+    assert(out);
 
+    for (int i =0; i < quad_count; i++){
+        mCc_tac_quad_print(self->quads[i],out);
+    }
+    return ;
 }
 
 void mCc_tac_program_delete(struct mCc_tac_program *self,
                             bool delete_quads_too){
-
+    if(delete_quads_too){
+        for(int i =0;i < self-> quad_count;i++){
+            mCc_tac_quad_delete(self->quads[i]);
+        }
+    }
+    free(self);
 }
