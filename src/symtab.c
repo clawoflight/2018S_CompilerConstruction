@@ -385,49 +385,6 @@ mCc_symtab_scope_link_ref_assignment(struct mCc_symtab_scope *self,
 	return MCC_SYMTAB_SCOPE_LINK_ERR_OK;
 }
 
-enum MCC_SYMTAB_SCOPE_LINK_ERROR
-mCc_symtab_scope_link_ref_return(struct mCc_symtab_scope *self,
-                                 struct mCc_ast_statement *stmt)
-{
-	if (stmt->type != MCC_AST_STATEMENT_TYPE_RET)
-		return MCC_SYMTAB_SCOPE_LINK_ERROR_INVALID_AST_OBJECT;
-
-	// Get the ID to link
-	struct mCc_ast_identifier *id;
-	switch (stmt->ret_val->type) {
-	case MCC_AST_EXPRESSION_TYPE_IDENTIFIER:
-		id = stmt->ret_val->identifier;
-		break;
-	case MCC_AST_EXPRESSION_TYPE_ARR_SUBSCR:
-		id = stmt->ret_val->array_id;
-		break;
-	default: return MCC_SYMTAB_SCOPE_LINK_ERROR_INVALID_AST_OBJECT;
-	}
-
-	struct mCc_symtab_entry *entry = mCc_symtab_scope_lookup_id(self, id);
-	if (!entry)
-		return MCC_SYMTAB_SCOPE_LINK_ERR_UNDECLARED_ID;
-
-	// Basic error checking, though not full type checking
-	switch (entry->entry_type) {
-	case MCC_SYMTAB_ENTRY_TYPE_FUNC:
-		// Function calls are not handled bec. this function returns above
-		return MCC_SYMTAB_SCOPE_LINK_ERR_FUN_WITHOUT_CALL;
-
-	case MCC_SYMTAB_ENTRY_TYPE_ARR:
-		// Illegal to assign to an array without also giving an index
-		if (stmt->ret_val->type != MCC_AST_EXPRESSION_TYPE_ARR_SUBSCR)
-			return MCC_SYMTAB_SCOPE_LINK_ERR_ARR_WITHOUT_BRACKS;
-		break;
-	case MCC_SYMTAB_ENTRY_TYPE_VAR: break;
-	}
-	// Link in identifier
-	id->symtab_ref = entry;
-	stmt->ret_val->identifier = id;
-
-	return MCC_SYMTAB_SCOPE_LINK_ERR_OK;
-}
-
 /******************************* Destructors */
 static void mCc_symtab_delete_scope(struct mCc_symtab_scope *scope)
 {
