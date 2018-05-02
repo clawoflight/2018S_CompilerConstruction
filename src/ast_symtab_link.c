@@ -233,7 +233,7 @@ symtab_visitor(struct mCc_symtab_scope *curr_scope_ptr)
 		                             .statement_if = no_op,
 		                             .statement_ifelse = no_op,
 		                             .statement_while = no_op,
-		                             .statement_return = handle_return,
+		                             .statement_return = no_op,
 		                             .statement_return_void = no_op,
 		                             .statement_compound = no_op,
 		                             .statement_assgn = handle_assign,

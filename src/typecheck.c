@@ -281,7 +281,7 @@ static inline bool mCc_check_cmpnd_return(struct mCc_ast_statement *stmt)
 
         if (curr_stmt->type == MCC_AST_STATEMENT_TYPE_IF){
             curr_stmt->node.outside_if = false;
-            if_path_return = mCc_check_if_return(curr_stmt);
+            if_path_return = mCc_check_if_return(curr_stmt->if_stmt);
 
         } else if (curr_stmt->type == MCC_AST_STATEMENT_TYPE_IFELSE){
             if_path_return = mCc_check_if_else_return(curr_stmt);
@@ -299,7 +299,7 @@ static inline bool mCc_check_cmpnd_return(struct mCc_ast_statement *stmt)
 static inline bool mCc_check_if_return(struct mCc_ast_statement *stmt)
 {
     stmt->node.outside_if = false;
-    struct mCc_ast_statement *inner_stmt = stmt->if_stmt;
+    struct mCc_ast_statement *inner_stmt = stmt;
     inner_stmt->node.outside_if = false;
     bool ret = true;
 
