@@ -71,50 +71,50 @@ static void handle_assign(struct mCc_ast_statement *stmt, void *data)
 	}
 }
 
-static void handle_return(struct mCc_ast_statement *stmt, void *data)
-{
-    if (tmp_result.status)
-        return; // Return if an error happened
-    struct mCc_symtab_scope *scope = (struct mCc_symtab_scope *)data;
-
-    enum MCC_SYMTAB_SCOPE_LINK_ERROR retval =
-            mCc_symtab_scope_link_ref_return(scope, stmt);
-    switch (retval) {
-        case MCC_SYMTAB_SCOPE_LINK_ERR_OK: return;
-        case MCC_SYMTAB_SCOPE_LINK_ERR_UNDECLARED_ID:
-            if ((snprintf(tmp_result.err_msg, err_len, "Use of undeclared id: '%s'",
-                          stmt->id_assgn->id_value) == -1)) {
-                strcpy(tmp_result.err_msg, "Use of undeclared id");
-            }
-            break;
-        case MCC_SYMTAB_SCOPE_LINK_ERR_ASSIGN_TO_FUNCTION: //Fallthrough
-        case MCC_SYMTAB_SCOPE_LINK_ERR_VAR:
-            if ((snprintf(tmp_result.err_msg, err_len,
-                          "Use of subscript on variable: '%s'",
-                          stmt->id_assgn->id_value) == -1)) {
-                strcpy(tmp_result.err_msg, "Use of subscript on variable");
-            }
-            break;
-        case MCC_SYMTAB_SCOPE_LINK_ERR_ARR_WITHOUT_BRACKS:
-            if ((snprintf(tmp_result.err_msg, err_len,
-                          "Use of array without subscript: '%s'",
-                          stmt->id_assgn->id_value) == -1)) {
-                strcpy(tmp_result.err_msg, "Use of array without subscript");
-            }
-            break;
-        case MCC_SYMTAB_SCOPE_LINK_ERR_FUN_WITHOUT_CALL: /* Fallthrough */
-        case MCC_SYMTAB_SCOPE_LINK_ERROR_INVALID_AST_OBJECT:
-            strcpy(tmp_result.err_msg,
-                   "Development error! This error should not have happened here.");
-            break;
-    }
-
-    // If an error happened, set status
-    if (tmp_result.err_msg[0]) {
-        tmp_result.err_loc = stmt->node.sloc;
-        tmp_result.status = 1;
-    }
-}
+/* static void handle_return(struct mCc_ast_statement *stmt, void *data) */
+/* { */
+/*     if (tmp_result.status) */
+/*         return; // Return if an error happened */
+/*     struct mCc_symtab_scope *scope = (struct mCc_symtab_scope *)data; */
+/*  */
+/*     enum MCC_SYMTAB_SCOPE_LINK_ERROR retval = */
+/*             mCc_symtab_scope_link_ref_return(scope, stmt); */
+/*     switch (retval) { */
+/*         case MCC_SYMTAB_SCOPE_LINK_ERR_OK: return; */
+/*         case MCC_SYMTAB_SCOPE_LINK_ERR_UNDECLARED_ID: */
+/*             if ((snprintf(tmp_result.err_msg, err_len, "Use of undeclared id: '%s'", */
+/*                           stmt->id_assgn->id_value) == -1)) { */
+/*                 strcpy(tmp_result.err_msg, "Use of undeclared id"); */
+/*             } */
+/*             break; */
+/*         case MCC_SYMTAB_SCOPE_LINK_ERR_ASSIGN_TO_FUNCTION: //Fallthrough */
+/*         case MCC_SYMTAB_SCOPE_LINK_ERR_VAR: */
+/*             if ((snprintf(tmp_result.err_msg, err_len, */
+/*                           "Use of subscript on variable: '%s'", */
+/*                           stmt->id_assgn->id_value) == -1)) { */
+/*                 strcpy(tmp_result.err_msg, "Use of subscript on variable"); */
+/*             } */
+/*             break; */
+/*         case MCC_SYMTAB_SCOPE_LINK_ERR_ARR_WITHOUT_BRACKS: */
+/*             if ((snprintf(tmp_result.err_msg, err_len, */
+/*                           "Use of array without subscript: '%s'", */
+/*                           stmt->id_assgn->id_value) == -1)) { */
+/*                 strcpy(tmp_result.err_msg, "Use of array without subscript"); */
+/*             } */
+/*             break; */
+/*         case MCC_SYMTAB_SCOPE_LINK_ERR_FUN_WITHOUT_CALL: #<{(| Fallthrough |)}># */
+/*         case MCC_SYMTAB_SCOPE_LINK_ERROR_INVALID_AST_OBJECT: */
+/*             strcpy(tmp_result.err_msg, */
+/*                    "Development error! This error should not have happened here."); */
+/*             break; */
+/*     } */
+/*  */
+/*     // If an error happened, set status */
+/*     if (tmp_result.err_msg[0]) { */
+/*         tmp_result.err_loc = stmt->node.sloc; */
+/*         tmp_result.status = 1; */
+/*     } */
+/* } */
 
 static void handle_expression(struct mCc_ast_expression *expr, void *data)
 {
@@ -233,7 +233,7 @@ symtab_visitor(struct mCc_symtab_scope *curr_scope_ptr)
 		                             .statement_if = no_op,
 		                             .statement_ifelse = no_op,
 		                             .statement_while = no_op,
-		                             .statement_return = handle_return,
+		                             .statement_return = no_op,
 		                             .statement_return_void = no_op,
 		                             .statement_compound = no_op,
 		                             .statement_assgn = handle_assign,
@@ -275,7 +275,6 @@ mCc_ast_symtab_build(struct mCc_ast_program *program)
 
 	// Before visiting, enter all functions into the symbol table because they
 	// can be used before their declaration
-	// TODO: check if this works!
 	for (unsigned int i = 0; i < program->func_def_count; ++i) {
 		int retval =
 		    mCc_symtab_scope_add_func_def(root_scope, program->func_defs[i]);
