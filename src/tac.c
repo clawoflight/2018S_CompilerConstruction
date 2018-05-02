@@ -58,7 +58,7 @@ struct mCc_tac_quad *mCc_tac_quad_new_op_unary(enum mCc_tac_quad_unary_op,
     return quad;
 }
 
-struct mCc_tac_quad *mCc_tac_quad_new_op_binary(enum mCc_tac_quad_binary_op,
+struct mCc_tac_quad *mCc_tac_quad_new_op_binary(enum mCc_tac_quad_binary_op op,
                                                 struct mCc_symtab_ref *arg1,
                                                 struct mCc_symtab_ref *arg2,
                                                 struct mCc_symtab_ref *result){
@@ -73,6 +73,7 @@ struct mCc_tac_quad *mCc_tac_quad_new_op_binary(enum mCc_tac_quad_binary_op,
     }
     //TODO add mCc_tac_quad_binary_op op ? In a quadruple we can only add mCc_tac_quad_type not mCc_tac_quad_binary_op?
     quad->type=MCC_TAC_QUAD_OP_BINARY;
+    quad->bin_op=op;
     quad->arg1=arg1;
     quad->arg2=arg2;
     quad->result.ref=result;
@@ -214,9 +215,10 @@ void mCc_tac_quad_print(struct mCc_tac_quad *self, FILE *out){
             printf("%s = %s\n",self->result.ref->identifier->id_value,self->literal);
             break;
         case MCC_TAC_QUAD_OP_UNARY:
-            printf("%s = %s\n",self->result.ref->identifier->id_value,self->arg1->identifier->id_value);
+            printf_tac_unary_op(self, out);
             break;
-        case MCC_TAC_QUAD_OP_BINARY:                        //TODO how are we saving the bin_operators in a tac_quad
+        case MCC_TAC_QUAD_OP_BINARY:
+            print_tac_bin_op(self,out);
             break;
         case MCC_TAC_QUAD_JUMP:
             printf("jump %s\n",self->result.label);
@@ -231,7 +233,7 @@ void mCc_tac_quad_print(struct mCc_tac_quad *self, FILE *out){
             printf("param %s\n", self->arg1->identifier->id_value);
             break;
         case MCC_TAC_QUAD_CALL:
-            printf("goto %s\n",self->arg1->identifier->id_value);
+            printf("call %s\n",self->arg1->identifier->id_value);
             break;
         case MCC_TAC_QUAD_LOAD:
             printf("%s = %s[%s]\n",self->result.ref->identifier->id_value,self->arg1->identifier->id_value,
@@ -243,7 +245,83 @@ void mCc_tac_quad_print(struct mCc_tac_quad *self, FILE *out){
             break;
     }
     //fclose(out);
+    return;
 }
+
+void print_tac_bin_op(struct mCc_tac_quad *self, FILE *out){
+    switch (self->bin_op) {
+        case MCC_TAC_EXP_TYPE_BINARY_OP_ADD:
+            printf("%s = %s + %s", self->result.ref->identifier->id_value, self->arg1->identifier->id_value,
+                   self->arg2->identifier->id_value);
+            break;
+        case MCC_TAC_EXP_TYPE_BINARY_OP_SUB:
+            printf("%s = %s - %s", self->result.ref->identifier->id_value, self->arg1->identifier->id_value,
+                   self->arg2->identifier->id_value);
+            break;
+        case MCC_TAC_EXP_TYPE_BINARY_OP_MUL:
+            printf("%s = %s * %s", self->result.ref->identifier->id_value, self->arg1->identifier->id_value,
+                   self->arg2->identifier->id_value);
+            break;
+        case MCC_TAC_EXP_TYPE_BINARY_OP_DIV:
+            printf("%s = %s / %s", self->result.ref->identifier->id_value, self->arg1->identifier->id_value,
+                   self->arg2->identifier->id_value);
+            break;
+        case MCC_TAC_EXP_TYPE_BINARY_OP_LT:
+            printf("%s = %s < %s", self->result.ref->identifier->id_value, self->arg1->identifier->id_value,
+            break;
+        case MCC_TAC_EXP_TYPE_BINARY_OP_GT:
+            printf("%s = %s > %s", self->result.ref->identifier->id_value, self->arg1->identifier->id_value,
+            break;
+        case MCC_TAC_EXP_TYPE_BINARY_OP_LEQ:
+            printf("%s = %s <= %s", self->result.ref->identifier->id_value, self->arg1->identifier->id_value,
+            break;
+        case MCC_TAC_EXP_TYPE_BINARY_OP_GEQ:
+            printf("%s = %s >= %s", self->result.ref->identifier->id_value, self->arg1->identifier->id_value,
+            break;
+        case MCC_TAC_EXP_TYPE_BINARY_OP_AND:
+            printf("%s = %s && %s", self->result.ref->identifier->id_value, self->arg1->identifier->id_value,
+            break;
+        case MCC_TAC_EXP_TYPE_BINARY_OP_OR:
+            printf("%s = %s || %s", self->result.ref->identifier->id_value, self->arg1->identifier->id_value,
+            break;
+        case MCC_TAC_EXP_TYPE_BINARY_OP_EQ:
+            printf("%s = %s == %s", self->result.ref->identifier->id_value, self->arg1->identifier->id_value,
+            break;
+        case MCC_TAC_EXP_TYPE_BINARY_OP_NEQ:
+            printf("%s = %s != %s", self->result.ref->identifier->id_value, self->arg1->identifier->id_value,
+            break;
+        case MCC_TAC_EXPR_BINARY_OP_FLOAT_ADD:
+            printf("%s = %s + %s", self->result.ref->identifier->id_value, self->arg1->identifier->id_value,
+                   self->arg2->identifier->id_value);
+            break;
+        case MCC_TAC_EXP_TYPE_BINARY_OP_FLOAT_SUB:
+            printf("%s = %s - %s", self->result.ref->identifier->id_value, self->arg1->identifier->id_value,
+                   self->arg2->identifier->id_value);
+            break;
+        case MCC_TAC_EXP_TYPE_BINARY_OP_FLOAT_MUL:
+            printf("%s = %s * %s", self->result.ref->identifier->id_value, self->arg1->identifier->id_value,
+                   self->arg2->identifier->id_value);
+            break;
+        case MCC_TAC_EXP_TYPE_BINARY_OP_FLOAT_DIV:
+            printf("%s = %s / %s", self->result.ref->identifier->id_value, self->arg1->identifier->id_value,
+                   self->arg2->identifier->id_value);
+            break;
+    }
+    return;
+}
+
+void print_tac_unary_op(struct mCc_tac_quad *self, FILE *out) {
+    switch (self->bin_op) {
+        case MCC_TAC_EXPR_UNARY_NEG:
+            printf("%s = -%s", self->result.ref->identifier->id_value, self->arg1->identifier->id_value);
+            break;
+        case MCC_TAC_EXPR_UNARY_NOT:
+            printf("%s = !%s", self->result.ref->identifier->id_value, self->arg1->identifier->id_value);
+            break;
+    }
+    return;
+}
+
 
 void mCc_tac_quad_delete(struct mCc_tac_quad *self){
 

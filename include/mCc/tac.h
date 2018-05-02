@@ -82,8 +82,11 @@ struct mCc_tac_quad_literal {
 struct mCc_tac_quad {
 	enum mCc_tac_quad_type type;
 	char *comment; ///< Comment to add when printing :)
-
-	struct mCc_tac_quad_literal literal; ///< Only for literals
+    union {
+        struct mCc_tac_quad_literal literal; ///< Only for literals
+        enum mCc_tac_quad_binary_op bin_op;
+        enum mCc_tac_quad_unary_op un_op;
+    };
 	struct mCc_symtab_ref *arg1;
 	struct mCc_symtab_ref *arg2;
 
@@ -128,7 +131,7 @@ struct mCc_tac_quad *mCc_tac_quad_new_op_binary(enum mCc_tac_quad_binary_op,
                                                 struct mCc_symtab_ref *result);
 
 /**
- * @return  new quadruple in the style: MCC_TAC_QUAD_PARAM value - -
+ * @return  new quadruple in the style: MCC_TAC_QUAD_JUMP - - label
  */
 struct mCc_tac_quad *mCc_tac_quad_new_jump(mCc_tac_label label);
 
