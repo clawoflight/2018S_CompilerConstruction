@@ -552,7 +552,7 @@ TEST(TYPE_CHECK_RETURN, RETURN_IF_WRONG)
     auto prog = result.program;
 
     mCc_ast_symtab_build(prog);
-    ASSERT_FALSE(test_type_check_program(prog).stmt_type);
+    ASSERT_TRUE(test_type_check_program(prog).stmt_type);
 
     mCc_ast_delete_program(prog);
     mCc_symtab_delete_all_scopes();
@@ -637,6 +637,46 @@ TEST(TYPE_CHECK_ERROR_MSG, BINARY_MISMATCH)
     ASSERT_FALSE(check_result.stmt_type);
     ASSERT_STREQ("Type error at: 1:14, Expected type is Integer but given was Bool",
     check_result.err_msg);
+
+    mCc_ast_delete_program(prog);
+    mCc_symtab_delete_all_scopes();
+}
+
+TEST(TYPE_CHECK_RETURN, VOID_NO_RETURN)
+{
+    const char input[] = "void main() {int a;}";
+    auto result = mCc_parser_parse_string(input);
+    auto prog = result.program;
+
+    mCc_ast_symtab_build(prog);
+    ASSERT_TRUE(test_type_check_program(prog).stmt_type);
+
+    mCc_ast_delete_program(prog);
+    mCc_symtab_delete_all_scopes();
+}
+
+TEST(TYPE_CHECK_RETURN, VOID_EMPTY_BODY)
+{
+    const char input[] = "void main() {}";
+    auto result = mCc_parser_parse_string(input);
+    auto prog = result.program;
+
+    mCc_ast_symtab_build(prog);
+    ASSERT_TRUE(test_type_check_program(prog).stmt_type);
+
+    mCc_ast_delete_program(prog);
+    mCc_symtab_delete_all_scopes();
+}
+
+
+TEST(TYPE_CHECK_RETURN, TYPE_EMPTY_BODY)
+{
+    const char input[] = "int f(){}  void main() {int a; return;}";
+    auto result = mCc_parser_parse_string(input);
+    auto prog = result.program;
+
+    mCc_ast_symtab_build(prog);
+    ASSERT_FALSE(test_type_check_program(prog).stmt_type);
 
     mCc_ast_delete_program(prog);
     mCc_symtab_delete_all_scopes();

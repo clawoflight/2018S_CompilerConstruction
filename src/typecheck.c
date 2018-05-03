@@ -75,9 +75,7 @@ static inline void set_not_matching_types_error(char *expected_as_string,
                 break;
         }
         snprintf(typecheck_result.err_msg, err_len,
-                 "Type error at: %d:%d, Expected type is %s but given was %s",
-                 typecheck_result.err_loc.start_line,
-                 typecheck_result.err_loc.start_col,
+                 "Expected type is %s but given was %s",
                  expected_as_string, given);
 
         typecheck_result.status = MCC_TYPECHECK_STATUS_ERROR;
@@ -233,7 +231,7 @@ static inline bool mCc_check_paramaters(struct mCc_ast_arguments *args,
         return true;
     }
     snprintf(typecheck_result.err_msg, err_len,
-             "Error at: %d:%d, Mismatch number of arguments",
+             "Mismatch number of arguments",
              sloc.start_line, sloc.start_col);
     return false;
 }
@@ -495,6 +493,11 @@ static inline bool mCc_check_function(struct mCc_ast_function_def *func)
     if (typecheck_result.status == MCC_TYPECHECK_STATUS_ERROR)
         return false;
 
+    if ((func->func_type == MCC_AST_TYPE_VOID) && !func->body)
+        return true;
+    else if ((func->func_type != MCC_AST_TYPE_VOID) && !func->body)
+        return false;
+
     func->body->node.outside_if = true;
     bool check_func_for_return = mCc_check_cmpnd_return(func->body);
     bool check_func = mCc_check_statement(func->body);
@@ -509,8 +512,12 @@ static inline bool mCc_check_function(struct mCc_ast_function_def *func)
 
     if (!general_ret){
         snprintf(typecheck_result.err_msg, err_len,
-                 "Error at: %d:%d, Function may not reach a return",
+                 "Function may not reach a return",
                  func->node.sloc.start_line, func->node.sloc.start_col);
+    }
+
+    if (func->func_type == MCC_AST_TYPE_VOID){
+        return (check_func_for_return && check_func);
     }
 
     return (check_func_for_return && check_func && general_ret);
