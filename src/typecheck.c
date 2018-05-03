@@ -30,6 +30,7 @@ static inline void set_not_matching_types_error(
 	if (typecheck_result.status == MCC_TYPECHECK_STATUS_OK) {
 		typecheck_result.err_loc = sloc;
 
+		#pragma GCC diagnostic ignored "-Wsign-compare"
 		if (expected_as_type != -1) {
 			switch (expected_as_type) {
 			case MCC_AST_TYPE_BOOL: expected_as_string = "Bool"; break;

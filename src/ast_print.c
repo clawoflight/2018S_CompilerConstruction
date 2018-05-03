@@ -371,6 +371,7 @@ static void print_dot_declaration(struct mCc_ast_declaration *decl, void *data)
 	assert(data);
 
 	FILE *out = data;
+	#pragma GCC diagnostic ignored "-Wswitch"
 	switch (decl->decl_type) {
 	case MCC_AST_TYPE_BOOL:
 		print_dot_node(out, decl, "declaration bool");

@@ -172,6 +172,7 @@ static struct mCc_symtab_entry *mCc_symtab_new_entry(
 
 	switch (entry_type) {
 	case MCC_SYMTAB_ENTRY_TYPE_ARR:
+		#pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
 		new_entry->arr_size = (unsigned int)optarg;
 		break;
 	case MCC_SYMTAB_ENTRY_TYPE_FUNC: new_entry->params = optarg; break;
