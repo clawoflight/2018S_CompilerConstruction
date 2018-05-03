@@ -4,11 +4,13 @@
  * @author bennett
  * @date 2018-04-07
  */
-#include "mCc/ast_statements.h"
-#include "mCc/symtab.h"
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
+
+#include "mCc/ast_statements.h"
+#include "mCc/symtab.h"
+#include "mCc/ast.h"
 
 static void mCc_symtab_delete_scope(struct mCc_symtab_scope *scope);
 static void mCc_symtab_delete_entry(struct mCc_symtab_entry *entry);
@@ -229,8 +231,7 @@ int mCc_symtab_check_main_properties(struct mCc_symtab_scope *scope)
 struct mCc_symtab_scope *mCc_symtab_new_scope_in(struct mCc_symtab_scope *self,
                                                  const char *childscope_name)
 {
-    assert(childscope_name);
-
+	assert(childscope_name);
 
 	// create the scope name by concatenating it to the parent scope's name
 	char *name;
@@ -239,7 +240,7 @@ struct mCc_symtab_scope *mCc_symtab_new_scope_in(struct mCc_symtab_scope *self,
 		strcpy(name, childscope_name);
 	} else {
 		name = malloc(strlen(self->name) + strlen(childscope_name) +
-                                           2); // _ + null byte
+		              2); // _ + null byte
 		if (!name)
 			return NULL;
 		strcpy(name, self->name);
@@ -270,7 +271,7 @@ int mCc_symtab_scope_add_decl(struct mCc_symtab_scope *self,
 	// Check whether the ID was declared in the same scope
 	struct mCc_symtab_entry *tmp = NULL;
 	HASH_FIND(hh, self->hash_table, decl->decl_id->id_value,
-	         strlen(decl->decl_id->id_value), tmp);
+	          strlen(decl->decl_id->id_value), tmp);
 
 	if (tmp) {
 		mCc_symtab_delete_entry(entry);
@@ -324,22 +325,23 @@ mCc_symtab_scope_link_ref_expression(struct mCc_symtab_scope *self,
 
 	// Basic error checking, though not full type checking
 	switch (entry->entry_type) {
-        case MCC_SYMTAB_ENTRY_TYPE_FUNC:
-            if (expr->type != MCC_AST_EXPRESSION_TYPE_CALL_EXPR)
-                return MCC_SYMTAB_SCOPE_LINK_ERR_FUN_WITHOUT_CALL;
-            break;
-        case MCC_SYMTAB_ENTRY_TYPE_ARR:
-            if (expr->type != MCC_AST_EXPRESSION_TYPE_ARR_SUBSCR)
-                return MCC_SYMTAB_SCOPE_LINK_ERR_ARR_WITHOUT_BRACKS;
-            break;
-        case MCC_SYMTAB_ENTRY_TYPE_VAR:
-            if (expr->type != MCC_AST_EXPRESSION_TYPE_IDENTIFIER)
-                return MCC_SYMTAB_SCOPE_LINK_ERR_VAR;
-            break;
-    }
-		// Link in identifier
-    id->symtab_ref = entry;
-    return MCC_SYMTAB_SCOPE_LINK_ERR_OK;
+	case MCC_SYMTAB_ENTRY_TYPE_FUNC:
+		if (expr->type != MCC_AST_EXPRESSION_TYPE_CALL_EXPR)
+			return MCC_SYMTAB_SCOPE_LINK_ERR_FUN_WITHOUT_CALL;
+		break;
+	case MCC_SYMTAB_ENTRY_TYPE_ARR:
+		// Prevents passing arrays as function argument
+		/* if (expr->type != MCC_AST_EXPRESSION_TYPE_ARR_SUBSCR) */
+		/* 	return MCC_SYMTAB_SCOPE_LINK_ERR_ARR_WITHOUT_BRACKS; */
+		break;
+	case MCC_SYMTAB_ENTRY_TYPE_VAR:
+		if (expr->type != MCC_AST_EXPRESSION_TYPE_IDENTIFIER)
+			return MCC_SYMTAB_SCOPE_LINK_ERR_VAR;
+		break;
+	}
+	// Link in identifier
+	id->symtab_ref = entry;
+	return MCC_SYMTAB_SCOPE_LINK_ERR_OK;
 }
 
 enum MCC_SYMTAB_SCOPE_LINK_ERROR
@@ -349,11 +351,8 @@ mCc_symtab_scope_link_ref_assignment(struct mCc_symtab_scope *self,
 	// Get the ID to link
 	struct mCc_ast_identifier *id;
 	switch (stmt->type) {
-		case MCC_AST_STATEMENT_TYPE_ASSGN:
-			id = stmt->id_assgn;
-				break;
-		default:
-			return MCC_SYMTAB_SCOPE_LINK_ERROR_INVALID_AST_OBJECT;
+	case MCC_AST_STATEMENT_TYPE_ASSGN: id = stmt->id_assgn; break;
+	default: return MCC_SYMTAB_SCOPE_LINK_ERROR_INVALID_AST_OBJECT;
 	}
 
 	struct mCc_symtab_entry *entry = mCc_symtab_scope_lookup_id(self, id);
@@ -372,15 +371,15 @@ mCc_symtab_scope_link_ref_assignment(struct mCc_symtab_scope *self,
 			return MCC_SYMTAB_SCOPE_LINK_ERR_ARR_WITHOUT_BRACKS;
 		break;
 
-	case MCC_SYMTAB_ENTRY_TYPE_VAR: //The if(stmt->type) is not working b=1 will be matched here too TODO think about if this check is necessary
-       // if (stmt->lhs_assgn)
-         //   return MCC_SYMTAB_SCOPE_LINK_ERR_VAR;
-        break;
+	case MCC_SYMTAB_ENTRY_TYPE_VAR: // The if(stmt->type) is not working b=1
+	                                // will be matched here too TODO think about
+	                                // if this check is necessary
+	                                // if (stmt->lhs_assgn)
+	                                //   return MCC_SYMTAB_SCOPE_LINK_ERR_VAR;
+		break;
 	}
-	//Link in identifier
+	// Link in identifier
 	id->symtab_ref = entry;
-    stmt->id_assgn = id;
-
 	return MCC_SYMTAB_SCOPE_LINK_ERR_OK;
 }
 
