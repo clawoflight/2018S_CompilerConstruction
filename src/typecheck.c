@@ -75,7 +75,7 @@ static inline void set_not_matching_types_error(char *expected_as_string,
                 break;
         }
         snprintf(typecheck_result.err_msg, err_len,
-                 "Expected type is %s but given was %s",
+                 "Expected type %s, but found %s",
                  expected_as_string, given);
 
         typecheck_result.status = MCC_TYPECHECK_STATUS_ERROR;
