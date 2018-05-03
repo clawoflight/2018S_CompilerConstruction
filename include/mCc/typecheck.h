@@ -64,9 +64,6 @@ bool test_type_check_stmt(struct mCc_ast_statement *stmt);
 struct mCc_typecheck_result test_type_check_program(struct mCc_ast_program *prog);
 
 
-///Global Var to save the current func we're in
-static struct mCc_ast_function_def *curr_func;
-
 #ifdef __cplusplus
 }
 #endif

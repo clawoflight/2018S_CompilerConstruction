@@ -9,6 +9,9 @@
 #include <stdio.h>
 #include "mCc/ast_visit.h"
 
+///Global Var to save the current func we're in
+static struct mCc_ast_function_def *curr_func;
+
 static struct mCc_typecheck_result typecheck_result = { MCC_TYPECHECK_STATUS_OK };
 
 ///Forward declarations
