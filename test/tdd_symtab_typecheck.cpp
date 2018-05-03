@@ -619,7 +619,7 @@ TEST(TYPE_CHECK_ERROR_MSG, UNARY)
     mCc_ast_symtab_build(prog);
     auto check_result = test_type_check_program(prog);
     ASSERT_FALSE(check_result.stmt_type);
-    ASSERT_STREQ("Type error at: 1:14, Expected type is Integer or Float but given was Bool",
+    ASSERT_STREQ("Expected type is Integer or Float but given was Bool",
                 check_result.err_msg);
 
     mCc_ast_delete_program(prog);
@@ -635,7 +635,7 @@ TEST(TYPE_CHECK_ERROR_MSG, BINARY_MISMATCH)
     mCc_ast_symtab_build(prog);
     auto check_result = test_type_check_program(prog);
     ASSERT_FALSE(check_result.stmt_type);
-    ASSERT_STREQ("Type error at: 1:14, Expected type is Integer but given was Bool",
+    ASSERT_STREQ("Expected type is Integer but given was Bool",
     check_result.err_msg);
 
     mCc_ast_delete_program(prog);
