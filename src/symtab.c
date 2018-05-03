@@ -380,8 +380,6 @@ mCc_symtab_scope_link_ref_assignment(struct mCc_symtab_scope *self,
 	}
 	// Link in identifier
 	id->symtab_ref = entry;
-	stmt->id_assgn = id;
-
 	return MCC_SYMTAB_SCOPE_LINK_ERR_OK;
 }
 
