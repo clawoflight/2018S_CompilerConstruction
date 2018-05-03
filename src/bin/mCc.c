@@ -5,6 +5,7 @@
 #include "mCc/ast.h"
 #include "mCc/ast_symtab_link.h"
 #include "mCc/parser.h"
+#include "mCc/typecheck.h"
 
 void print_usage(const char *prg)
 {
@@ -61,8 +62,17 @@ int main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 
+	struct mCc_typecheck_result check_result = mCc_typecheck(prog);
+	if (check_result.status) {
+		fprintf(stderr, "Error in %s at %d:%d - %d:%d: %s\n", argv[1],
+		        check_result.err_loc.start_line, check_result.err_loc.start_col,
+		        check_result.err_loc.end_line, check_result.err_loc.end_col,
+		        check_result.err_msg);
+		mCc_ast_delete_program(prog);
+		return EXIT_FAILURE;
+	}
+
 	/*    TODO
-	 * - run semantic checks
 	 * - create three-address code
 	 * - do some optimisations
 	 * - output assembly code
