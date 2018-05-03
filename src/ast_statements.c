@@ -97,7 +97,7 @@ mCc_ast_new_statement_compound(struct mCc_ast_statement *substatement)
 	stmt->type = MCC_AST_STATEMENT_TYPE_CMPND;
 	stmt->compound_stmt_count = 0;
 	stmt->compound_stmts = NULL;
-	stmt->node.outside_if = false;
+	stmt->node.outside_if = true;
 
 	if (substatement &&
 	    (stmt->compound_stmts =

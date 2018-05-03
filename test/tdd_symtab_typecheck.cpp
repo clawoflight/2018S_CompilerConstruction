@@ -619,7 +619,7 @@ TEST(TYPE_CHECK_ERROR_MSG, UNARY)
     mCc_ast_symtab_build(prog);
     auto check_result = test_type_check_program(prog);
     ASSERT_FALSE(check_result.stmt_type);
-    ASSERT_STREQ("Expected type is Integer or Float but given was Bool",
+    ASSERT_STREQ("Expected type Integer or Float, but found Bool",
                 check_result.err_msg);
 
     mCc_ast_delete_program(prog);
@@ -635,7 +635,7 @@ TEST(TYPE_CHECK_ERROR_MSG, BINARY_MISMATCH)
     mCc_ast_symtab_build(prog);
     auto check_result = test_type_check_program(prog);
     ASSERT_FALSE(check_result.stmt_type);
-    ASSERT_STREQ("Expected type is Integer but given was Bool",
+    ASSERT_STREQ("Expected type Integer, but found Bool",
     check_result.err_msg);
 
     mCc_ast_delete_program(prog);
@@ -672,6 +672,19 @@ TEST(TYPE_CHECK_RETURN, VOID_EMPTY_BODY)
 TEST(TYPE_CHECK_RETURN, TYPE_EMPTY_BODY)
 {
     const char input[] = "int f(){}  void main() {int a; return;}";
+    auto result = mCc_parser_parse_string(input);
+    auto prog = result.program;
+
+    mCc_ast_symtab_build(prog);
+    ASSERT_FALSE(test_type_check_program(prog).stmt_type);
+
+    mCc_ast_delete_program(prog);
+    mCc_symtab_delete_all_scopes();
+}
+
+TEST(TYPE_CHECK_RETURN, TYPE_IF_NO_CMPND)
+{
+    const char input[] = "int foo(int a){if(a == 0) return 1;}  void main() {int a; return;}";
     auto result = mCc_parser_parse_string(input);
     auto prog = result.program;
 
