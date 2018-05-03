@@ -409,8 +409,6 @@ static inline bool mCc_check_cmpnd_return(struct mCc_ast_statement *stmt)
     if (typecheck_result.status == MCC_TYPECHECK_STATUS_ERROR)
         return false;
 
-    enum mCc_ast_type func_type = curr_func->func_type;
-    enum mCc_ast_type ret_type;
     struct mCc_ast_statement *curr_stmt;
 
     bool all_ret = true;
