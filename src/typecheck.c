@@ -7,20 +7,84 @@
 
 #include "mCc/typecheck.h"
 #include <stdio.h>
-
-static struct mCc_symtab_scope stack[4096];
-#define err_len (4096)
-static struct mCc_ast_symtab_build_result tmp_result = { 0 };
-
-// Important!
-#define MCC_AST_VISIT_SYMTAB_MODE
 #include "mCc/ast_visit.h"
 
-static void no_op() {}
+///Global Var to save the current func we're in
+static struct mCc_ast_function_def *curr_func;
 
-///Forward declaration
+static struct mCc_typecheck_result typecheck_result = { MCC_TYPECHECK_STATUS_OK };
+
+///Forward declarations
 static inline enum mCc_ast_type mCc_check_expression(struct mCc_ast_expression *expr);
 static inline bool mCc_check_statement(struct mCc_ast_statement *stmt);
+static inline bool mCc_check_if_else_return(struct mCc_ast_statement *stmt);
+static inline bool mCc_check_if_return(struct mCc_ast_statement *stmt);
+
+static inline void set_not_matching_types_error(char *expected_as_string,
+                                                enum mCc_ast_type expected_as_type,
+                                                enum mCc_ast_type given_type,
+                                                struct mCc_ast_source_location sloc)
+{
+    if (typecheck_result.status == MCC_TYPECHECK_STATUS_OK) {
+        typecheck_result.err_loc = sloc;
+
+        if(expected_as_type != -1){
+            switch(expected_as_type){
+                case MCC_AST_TYPE_BOOL:
+                    expected_as_string = "Bool";
+                    break;
+                case MCC_AST_TYPE_INT:
+                    expected_as_string = "Integer";
+                    break;
+                case MCC_AST_TYPE_FLOAT:
+                    expected_as_string = "Float";
+                    break;
+                case MCC_AST_TYPE_STRING:
+                    expected_as_string = "String";
+                    break;
+                case MCC_AST_TYPE_VOID:
+                    expected_as_string = "Void";
+                    break;
+                default:
+                    expected_as_string = "UNDEFINED";
+                    break;
+            }
+        }
+
+
+        char *given;
+
+        switch(given_type){
+            case MCC_AST_TYPE_BOOL:
+                given = "Bool";
+                break;
+            case MCC_AST_TYPE_INT:
+                given = "Integer";
+                break;
+            case MCC_AST_TYPE_FLOAT:
+                given = "Float";
+                break;
+            case MCC_AST_TYPE_STRING:
+                given = "String";
+                break;
+            case MCC_AST_TYPE_VOID:
+                given = "Void";
+                break;
+            default:
+                given = "UNDEFINED";
+                break;
+        }
+        snprintf(typecheck_result.err_msg, err_len,
+                 "Type error at: %d:%d, Expected type is %s but given was %s",
+                 typecheck_result.err_loc.start_line,
+                 typecheck_result.err_loc.start_col,
+                 expected_as_string, given);
+
+        typecheck_result.status = MCC_TYPECHECK_STATUS_ERROR;
+    }
+    return;
+}
+
 
 static inline enum mCc_ast_type convert_literal_type_to_type(
                                 enum mCc_ast_literal_type lit_type)
@@ -47,20 +111,25 @@ static inline enum mCc_ast_type convert_literal_type_to_type(
 
 static inline enum mCc_ast_type mCc_check_unary(struct mCc_ast_expression *unary)
 {
+    if (typecheck_result.status == MCC_TYPECHECK_STATUS_ERROR)
+        return MCC_AST_TYPE_VOID;
+
     enum mCc_ast_type computed_type = mCc_check_expression(unary->unary_expression);
 
     switch(unary->unary_op){
         case MCC_AST_UNARY_OP_NEG:
             if ((computed_type != MCC_AST_TYPE_INT) &&
-                    (computed_type != MCC_AST_TYPE_FLOAT))
+                    (computed_type != MCC_AST_TYPE_FLOAT)) {
+                set_not_matching_types_error("Integer or Float", -1, computed_type, unary->node.sloc);
                 return MCC_AST_TYPE_VOID;
-                //TODO better error
+            }
             break;
 
         case MCC_AST_UNARY_OP_NOT:
-            if (computed_type != MCC_AST_TYPE_BOOL)
+            if (computed_type != MCC_AST_TYPE_BOOL){
+                set_not_matching_types_error("Bool", -1, computed_type, unary->node.sloc);
                 return MCC_AST_TYPE_VOID;
-                //TODO better error
+            }
             break;
 
         default:
@@ -72,11 +141,18 @@ static inline enum mCc_ast_type mCc_check_unary(struct mCc_ast_expression *unary
 
 static inline enum mCc_ast_type mCc_check_binary(struct mCc_ast_expression *binary)
 {
+    if (typecheck_result.status == MCC_TYPECHECK_STATUS_ERROR)
+        return MCC_AST_TYPE_VOID;
+
     enum mCc_ast_type computed_type_left = mCc_check_expression(binary->lhs);
     enum mCc_ast_type computed_type_right = mCc_check_expression(binary->rhs);
 
-    if (computed_type_left != computed_type_right)
+    if (computed_type_left != computed_type_right){
+
+        set_not_matching_types_error(NULL, computed_type_left, computed_type_right, binary->node.sloc);
+
         return MCC_AST_TYPE_VOID;
+    }
 
     switch(binary->op){
 
@@ -85,25 +161,28 @@ static inline enum mCc_ast_type mCc_check_binary(struct mCc_ast_expression *bina
         case MCC_AST_BINARY_OP_MUL:
         case MCC_AST_BINARY_OP_DIV:
             if ((computed_type_left != MCC_AST_TYPE_INT) &&
-                (computed_type_left != MCC_AST_TYPE_FLOAT))
+                (computed_type_left != MCC_AST_TYPE_FLOAT)){
+                set_not_matching_types_error("Integer or Float", -1, computed_type_left, binary->node.sloc);
                 return MCC_AST_TYPE_VOID;
-            //TODO better error
+            }
             break;
 
         case MCC_AST_BINARY_OP_LT:
         case MCC_AST_BINARY_OP_GT:
         case MCC_AST_BINARY_OP_LEQ:
         case MCC_AST_BINARY_OP_GEQ:
-            if (computed_type_left == MCC_AST_TYPE_BOOL)
+            if (computed_type_left == MCC_AST_TYPE_BOOL){
+                set_not_matching_types_error("Integer, Float or String", -1, computed_type_left, binary->node.sloc);
                 return MCC_AST_TYPE_VOID;
-            //TODO better error
+            }
             return MCC_AST_TYPE_BOOL;
 
         case MCC_AST_BINARY_OP_AND:
         case MCC_AST_BINARY_OP_OR:
-            if (computed_type_left != MCC_AST_TYPE_BOOL)
+            if (computed_type_left != MCC_AST_TYPE_BOOL){
+                set_not_matching_types_error("Bool",computed_type_left, -1, binary->node.sloc);
                 return MCC_AST_TYPE_VOID;
-            //TODO better error
+            }
             return MCC_AST_TYPE_BOOL;
 
         case MCC_AST_BINARY_OP_EQ:
@@ -120,62 +199,70 @@ static inline enum mCc_ast_type mCc_check_binary(struct mCc_ast_expression *bina
 
 static inline enum mCc_ast_type mCc_check_arr_subscr(struct mCc_ast_expression *arr_subscr)
 {
+    if (typecheck_result.status == MCC_TYPECHECK_STATUS_ERROR)
+        return MCC_AST_TYPE_VOID;
+
     enum mCc_ast_type subscript_type = mCc_check_expression(arr_subscr->subscript_expr);
 
-    if (subscript_type != MCC_AST_TYPE_INT)
+    if (subscript_type != MCC_AST_TYPE_INT){
+        set_not_matching_types_error("Integer", -1, subscript_type, arr_subscr->subscript_expr->node.sloc);
         return MCC_AST_TYPE_VOID;
-        //TODO better error
+    }
 
     return arr_subscr->array_id->symtab_ref->primitive_type;
 }
 
 static inline bool mCc_check_paramaters(struct mCc_ast_arguments *args,
-                                        struct mCc_ast_parameters *params)
+                                        struct mCc_ast_parameters *params,
+                                        struct mCc_ast_source_location sloc)
 {
+    if (typecheck_result.status == MCC_TYPECHECK_STATUS_ERROR)
+        return MCC_AST_TYPE_VOID;
+
     if ((!params || params->decl_count == 0) && (!args || args->expression_count == 0))
         return true;
 
     if (params->decl_count == args->expression_count){
-        for (int i = 0; i < params->decl_count; ++i){
-            if(params->decl[i]->decl_type != mCc_check_expression(args->expressions[i]))
+        for (unsigned int i = 0; i < params->decl_count; ++i) {
+            enum mCc_ast_type computed_type = mCc_check_expression(args->expressions[i]);
+            if (params->decl[i]->decl_type != computed_type){
+                set_not_matching_types_error(NULL, params->decl[i]->decl_type, computed_type, sloc);
                 return false;
+            }
         }
         return true;
     }
+    snprintf(typecheck_result.err_msg, err_len,
+             "Error at: %d:%d, Mismatch number of arguments",
+             sloc.start_line, sloc.start_col);
     return false;
 }
 
 static inline enum mCc_ast_type mCc_check_func_type(struct mCc_ast_function_def *func)
 {
-    /**
-     * For now checks for only one return
-     */
-    enum mCc_ast_type func_type = func->identifier->symtab_ref->primitive_type;
+    if (typecheck_result.status == MCC_TYPECHECK_STATUS_ERROR)
+        return MCC_AST_TYPE_VOID;
 
+    enum mCc_ast_type func_type = func->identifier->symtab_ref->primitive_type;
+    return func_type;
 }
 
 static inline enum mCc_ast_type mCc_check_call_expr(struct mCc_ast_expression *call)
 {
-//TODO TBD
-    /**
-     * mCc_check_parameters returns true or false, if the signature matches
-     * mCc_check_func_type returns the type of the called function
-     *
-     * The function type check is missing, this means check return
-     * of the function itself, this is just for the call expr,
-     * which in the end has to call the check for the correct return type
-     * later on. This check can be done by extending the if with a call to
-     * mCc_check_return or a similar name
-     *
-     */
-    if (mCc_check_paramaters(call->arguments, call->f_name->symtab_ref->params))
+    if (typecheck_result.status == MCC_TYPECHECK_STATUS_ERROR)
+        return MCC_AST_TYPE_VOID;
+
+    if (mCc_check_paramaters(call->arguments, call->f_name->symtab_ref->params, call->node.sloc))
         return call->f_name->symtab_ref->primitive_type;
-    return MCC_AST_TYPE_VOID; //TODO better "Error", since fkt can be void
+    return MCC_AST_TYPE_VOID;
 }
 
 
 static inline enum mCc_ast_type mCc_check_expression(struct mCc_ast_expression *expr)
 {
+
+    if (typecheck_result.status == MCC_TYPECHECK_STATUS_ERROR)
+        return MCC_AST_TYPE_VOID;
 
     switch(expr->type){
         case MCC_AST_EXPRESSION_TYPE_LITERAL:
@@ -207,9 +294,10 @@ static inline enum mCc_ast_type mCc_check_expression(struct mCc_ast_expression *
             break;
 
         default:
-            //Or should i even be here?
+            //Should i even be here?
             break;
     }
+    typecheck_result.type = expr->node.computed_type;
     return expr->node.computed_type;
 }
 
@@ -217,8 +305,14 @@ static inline enum mCc_ast_type mCc_check_expression(struct mCc_ast_expression *
 
 static inline bool mCc_check_if(struct mCc_ast_statement *stmt)
 {
-    if (mCc_check_expression(stmt->if_cond) != MCC_AST_TYPE_BOOL)
-        return false; //TODO Better Error
+    if (typecheck_result.status == MCC_TYPECHECK_STATUS_ERROR)
+        return false;
+
+    enum mCc_ast_type computed_type = mCc_check_expression(stmt->if_cond);
+    if (computed_type != MCC_AST_TYPE_BOOL){
+        set_not_matching_types_error("Bool", -1, computed_type, stmt->node.sloc);
+        return false;
+    }
 
     bool if_type = mCc_check_statement(stmt->if_stmt);
     bool else_type = true;
@@ -234,16 +328,41 @@ static inline bool mCc_check_if(struct mCc_ast_statement *stmt)
 
 static inline bool mCc_check_ret(struct mCc_ast_statement *stmt)
 {
-    /**
-     * I have to think this through.
-     * I'll write this last
-     */
+    if (typecheck_result.status == MCC_TYPECHECK_STATUS_ERROR)
+        return false;
+
+    enum mCc_ast_type ret_type = mCc_check_expression(stmt->ret_val);
+
+    if (ret_type != curr_func->func_type){
+        set_not_matching_types_error(NULL, ret_type, curr_func->func_type, stmt->node.sloc);
+        return false;
+    }
+    return true;
+}
+
+static inline bool mCc_check_ret_void(struct mCc_ast_statement *stmt)
+{
+    if (typecheck_result.status == MCC_TYPECHECK_STATUS_ERROR)
+        return false;
+
+    enum mCc_ast_type ret_type = MCC_AST_TYPE_VOID;
+    if (ret_type != curr_func->func_type){
+        set_not_matching_types_error(NULL, ret_type, curr_func->func_type, stmt->node.sloc);
+        return false;
+    }
+    return true;
 }
 
 static inline bool mCc_check_while(struct mCc_ast_statement *stmt)
 {
-    if (mCc_check_expression(stmt->while_cond) != MCC_AST_TYPE_BOOL)
+    if (typecheck_result.status == MCC_TYPECHECK_STATUS_ERROR)
         return false;
+
+    enum mCc_ast_type computed_type = mCc_check_expression(stmt->while_cond);
+    if (computed_type != MCC_AST_TYPE_BOOL){
+        set_not_matching_types_error("Bool", -1, computed_type, stmt->node.sloc);
+        return false;
+    }
 
     bool while_type = mCc_check_statement(stmt->while_stmt);
     return while_type;
@@ -251,23 +370,34 @@ static inline bool mCc_check_while(struct mCc_ast_statement *stmt)
 
 static inline bool mCc_check_assign(struct mCc_ast_statement *stmt)
 {
+    if (typecheck_result.status == MCC_TYPECHECK_STATUS_ERROR)
+        return false;
+
     enum mCc_ast_type id_type = stmt->id_assgn->symtab_ref->primitive_type;
     enum mCc_ast_type rhs_type = mCc_check_expression(stmt->rhs_assgn);
 
-    if (id_type != rhs_type)
+    if (id_type != rhs_type){
+        set_not_matching_types_error(NULL, id_type, rhs_type, stmt->node.sloc);
         return false;
+    }
 
-    if (stmt->lhs_assgn)
-        if (mCc_check_expression(stmt->lhs_assgn) != MCC_AST_TYPE_INT)
+    if (stmt->lhs_assgn){
+        enum mCc_ast_type lhs_type = mCc_check_expression(stmt->lhs_assgn);
+        if (lhs_type != MCC_AST_TYPE_INT){
+            set_not_matching_types_error("Integer", -1, lhs_type, stmt->node.sloc);
             return false;
-
+        }
+    }
     return true;
 }
 
 static inline bool mCc_check_cmpnd(struct mCc_ast_statement *stmt)
 {
+    if (typecheck_result.status == MCC_TYPECHECK_STATUS_ERROR)
+        return false;
+
     bool all_correct = true;
-    for (int i=0; i < stmt->compound_stmt_count; ++i){
+    for (unsigned int i=0; i < stmt->compound_stmt_count; ++i){
         if (!mCc_check_statement(stmt->compound_stmts[i])){
             all_correct = false;
             break;
@@ -276,8 +406,121 @@ static inline bool mCc_check_cmpnd(struct mCc_ast_statement *stmt)
     return all_correct;
 }
 
+
+static inline bool mCc_check_cmpnd_return(struct mCc_ast_statement *stmt)
+{
+    if (typecheck_result.status == MCC_TYPECHECK_STATUS_ERROR)
+        return false;
+
+    struct mCc_ast_statement *curr_stmt;
+
+    bool all_ret = true;
+    bool if_path_return = true;
+
+       for (unsigned int i=0; i < stmt->compound_stmt_count; i++){
+
+            curr_stmt = stmt->compound_stmts[i];
+
+           if (stmt->node.outside_if == false)
+               curr_stmt->node.outside_if = false;
+           else curr_stmt->node.outside_if = true;
+
+        if (curr_stmt->type == MCC_AST_STATEMENT_TYPE_IF){
+            curr_stmt->node.outside_if = false;
+            if_path_return = mCc_check_if_return(curr_stmt->if_stmt);
+
+        } else if (curr_stmt->type == MCC_AST_STATEMENT_TYPE_IFELSE){
+            if_path_return = mCc_check_if_else_return(curr_stmt);
+        } else if(curr_stmt->type == MCC_AST_STATEMENT_TYPE_RET){
+            all_ret = mCc_check_ret(curr_stmt);
+        } else if (curr_stmt->type == MCC_AST_STATEMENT_TYPE_RET_VOID){
+            all_ret = mCc_check_ret_void(curr_stmt);
+        }
+
+    }
+
+    return (all_ret && if_path_return);
+}
+
+static inline bool mCc_check_if_return(struct mCc_ast_statement *stmt)
+{
+    if (typecheck_result.status == MCC_TYPECHECK_STATUS_ERROR)
+        return false;
+
+    stmt->node.outside_if = false;
+    struct mCc_ast_statement *inner_stmt = stmt;
+    inner_stmt->node.outside_if = false;
+    bool ret = true;
+
+    if (inner_stmt->type == MCC_AST_STATEMENT_TYPE_CMPND)
+        ret = mCc_check_cmpnd_return(inner_stmt);
+
+    if (inner_stmt->type == MCC_AST_STATEMENT_TYPE_RET)
+        ret = mCc_check_ret(inner_stmt);
+
+    if (inner_stmt->type == MCC_AST_STATEMENT_TYPE_RET_VOID)
+        ret = mCc_check_ret_void(inner_stmt);
+
+    return ret;
+}
+
+static inline bool mCc_check_if_else_return(struct mCc_ast_statement *stmt)
+{
+    if (typecheck_result.status == MCC_TYPECHECK_STATUS_ERROR)
+        return false;
+
+    bool if_branch = false;
+    bool else_branch = false;
+
+    struct mCc_ast_statement *if_stmt = stmt->if_stmt;
+    struct mCc_ast_statement *else_stmt = stmt->else_stmt;
+
+    if_branch = mCc_check_if_return(if_stmt);
+
+    if (else_stmt->type == MCC_AST_STATEMENT_TYPE_CMPND)
+        else_branch = mCc_check_cmpnd_return(else_stmt);
+
+    if (else_stmt->type == MCC_AST_STATEMENT_TYPE_RET)
+        else_branch = mCc_check_ret(else_stmt);
+
+    if (else_stmt->type == MCC_AST_STATEMENT_TYPE_RET_VOID)
+        else_branch = mCc_check_ret_void(else_stmt);
+
+    return (if_branch && else_branch);
+}
+
+
+static inline bool mCc_check_function(struct mCc_ast_function_def *func)
+{
+    if (typecheck_result.status == MCC_TYPECHECK_STATUS_ERROR)
+        return false;
+
+    func->body->node.outside_if = true;
+    bool check_func_for_return = mCc_check_cmpnd_return(func->body);
+    bool check_func = mCc_check_statement(func->body);
+    bool general_ret = false;
+
+    for (unsigned int i=0; i < func->body->compound_stmt_count; i++){
+
+        if (func->body->compound_stmts[i]->node.outside_if == true){
+            general_ret = true;
+        }
+    }
+
+    if (!general_ret){
+        snprintf(typecheck_result.err_msg, err_len,
+                 "Error at: %d:%d, Function may not reach a return",
+                 func->node.sloc.start_line, func->node.sloc.start_col);
+    }
+
+    return (check_func_for_return && check_func && general_ret);
+}
+
 static inline bool mCc_check_statement(struct mCc_ast_statement *stmt)
 {
+    if (typecheck_result.status == MCC_TYPECHECK_STATUS_ERROR)
+        return false;
+
     switch(stmt->type){
         case MCC_AST_STATEMENT_TYPE_IF:
         case MCC_AST_STATEMENT_TYPE_IFELSE:
@@ -285,19 +528,16 @@ static inline bool mCc_check_statement(struct mCc_ast_statement *stmt)
             return mCc_check_if(stmt);
 
         case MCC_AST_STATEMENT_TYPE_RET:
-            return mCc_check_ret(stmt); //TODO TBD
-
+            return mCc_check_ret(stmt);
 
         case MCC_AST_STATEMENT_TYPE_RET_VOID:
-            return mCc_check_ret(stmt); //TODO TBD
+            return mCc_check_ret_void(stmt);
 
         case MCC_AST_STATEMENT_TYPE_WHILE:
             return mCc_check_while(stmt);
 
         case MCC_AST_STATEMENT_TYPE_DECL:
             return true;
-            //break; //TODO: braucht das überhaupt einen check?
-                   //TODO: Ich glaube nicht
 
         case MCC_AST_STATEMENT_TYPE_ASSGN:
             return mCc_check_assign(stmt);
@@ -314,60 +554,54 @@ static inline bool mCc_check_statement(struct mCc_ast_statement *stmt)
             //Should not be here
             break;
     }
+    return false; ///< Should never be here
 }
-
-//TODO Brauchen wir diesen visitor überhaupt?
-
-static struct mCc_ast_visitor typecheck_visitor(void)
-{
-    return (struct mCc_ast_visitor){ .traversal = MCC_AST_VISIT_DEPTH_FIRST,
-            .order = MCC_AST_VISIT_PRE_ORDER,
-
-            .statement_if = no_op,
-            .statement_ifelse = no_op,
-            .statement_while = no_op,
-            .statement_return = no_op,
-            .statement_return_void = no_op,
-            .statement_compound = no_op,
-            .statement_assgn = mCc_check_assign,
-            .statement_decl = no_op,
-
-            .declaration = no_op,
-
-            .expression_literal = mCc_check_expression,
-            .expression_identifier = mCc_check_expression,
-            .expression_unary_op = mCc_check_unary,
-            .expression_binary_op = mCc_check_binary,
-            .expression_parenth = mCc_check_expression,
-            .expression_call_expr = mCc_check_call_expr,
-            .expression_arr_subscr = mCc_check_arr_subscr,
-
-            .identifier = no_op,
-            .arguments = no_op,
-            .parameter = no_op,
-            .function_def = no_op,
-
-            .literal_int = no_op,
-            .literal_float = no_op,
-            .literal_string = no_op,
-            .literal_bool = no_op };
-}
-
 
 struct mCc_typecheck_result mCc_typecheck(struct mCc_ast_program *program)
 {
-    return;
+    bool all_correct = true;
+    for (unsigned int i = 0; i < program->func_def_count; i++){
+        curr_func = program->func_defs[i];
+        all_correct = mCc_check_function(curr_func);
+        if (!all_correct)
+            break;
+    }
+
+    typecheck_result.stmt_type = all_correct;
+    return typecheck_result;
 }
 
 /**
  * Dummy Functions for testing
  */
-enum mCc_ast_type test_type_check(struct mCc_ast_expression *expression)
+struct mCc_typecheck_result test_type_check(struct mCc_ast_expression *expression)
 {
-    return mCc_check_expression(expression);
+    typecheck_result.type = mCc_check_expression(expression);
+    typecheck_result.status = MCC_TYPECHECK_STATUS_OK;
+    return typecheck_result;
 }
 
 bool test_type_check_stmt(struct mCc_ast_statement *stmt)
 {
+    typecheck_result.status = MCC_TYPECHECK_STATUS_OK;
     return mCc_check_statement(stmt);
+}
+
+struct mCc_typecheck_result test_type_check_program(struct mCc_ast_program *prog)
+{
+    bool all_correct = true;
+    for (unsigned int i = 0; i < prog->func_def_count; i++){
+        curr_func = prog->func_defs[i];
+        all_correct = mCc_check_function(curr_func);
+        if (!all_correct)
+            break;
+    }
+    /**
+     * Set to status ok for unit tests
+     * Else in the real program we can let the status be error and distinguish there
+     */
+
+    typecheck_result.status = MCC_TYPECHECK_STATUS_OK;
+    typecheck_result.stmt_type = all_correct;
+    return typecheck_result;
 }

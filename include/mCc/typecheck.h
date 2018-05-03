@@ -20,18 +20,22 @@ extern "C" {
  */
 enum mCc_typecheck_status {
 	MCC_TYPECHECK_STATUS_OK, ///< No error
-	                         // TODO not sure what else we need here.
+	MCC_TYPECHECK_STATUS_ERROR
 };
 
 /**
  * @brief Contains all information pertaining to the type checking error.
  */
+#define err_len (4096)
 struct mCc_typecheck_result {
 	enum mCc_typecheck_status status;
-	char *err_msg;
-	// TODO should mCc_typecheck simply set a string, or do we want to pass more
-	// information to the caller?
+    enum mCc_ast_type type;
+	char err_msg[err_len];
+	struct mCc_ast_source_location err_loc;
+    bool stmt_type;
 };
+
+
 /**
  * @brief Typecheck the given program.
  *
@@ -55,8 +59,9 @@ struct mCc_typecheck_result mCc_typecheck(struct mCc_ast_program *program);
 /**
  * Dummy func for testing
  */
-enum mCc_ast_type test_type_check(struct mCc_ast_expression *expression);
+struct mCc_typecheck_result test_type_check(struct mCc_ast_expression *expression);
 bool test_type_check_stmt(struct mCc_ast_statement *stmt);
+struct mCc_typecheck_result test_type_check_program(struct mCc_ast_program *prog);
 
 
 #ifdef __cplusplus

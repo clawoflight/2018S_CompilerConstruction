@@ -8,22 +8,26 @@ TEST(TYPE_CHECK, LITERAL)
     struct mCc_ast_literal *lit = mCc_ast_new_literal_int(3);
     struct mCc_ast_expression *expr = mCc_ast_new_expression_literal(lit);
 
-    ASSERT_EQ(MCC_AST_TYPE_INT, test_type_check(expr));
+    ASSERT_EQ(MCC_AST_TYPE_INT, test_type_check(expr).type);
+    mCc_ast_delete_expression(expr);
 }
 
 TEST(TYPE_CHECK, IDENTIFIER)
 {
     struct mCc_symtab_scope *scope = mCc_symtab_new_scope_in(NULL, "");
+    struct mCc_ast_identifier *decl_id = mCc_ast_new_identifier((char *)"foo");
     struct mCc_ast_identifier *id = mCc_ast_new_identifier((char *)"foo");
     struct mCc_ast_declaration *decl = mCc_ast_new_declaration(MCC_AST_TYPE_STRING,
-                                                               NULL, id);
+                                                               NULL, decl_id);
     mCc_symtab_scope_add_decl(scope, decl);
     struct mCc_symtab_entry *found =
         mCc_symtab_scope_lookup_id(scope, decl->decl_id);
     struct mCc_ast_expression *expr = mCc_ast_new_expression_identifier(id);
     expr->identifier->symtab_ref = found;
-    ASSERT_EQ(MCC_AST_TYPE_STRING, test_type_check(expr));
+    ASSERT_EQ(MCC_AST_TYPE_STRING, test_type_check(expr).type);
 
+    mCc_ast_delete_declaration(decl);
+    mCc_ast_delete_expression(expr);
     mCc_symtab_delete_all_scopes();
 }
 
@@ -33,7 +37,7 @@ TEST(TYPE_CHECK_UNARY, UNARY_NEG_FLOAT)
     auto result = mCc_parser_parse_string(input);
     auto expr = result.expression;
 
-    ASSERT_EQ(MCC_AST_TYPE_FLOAT, test_type_check(expr));
+    ASSERT_EQ(MCC_AST_TYPE_FLOAT, test_type_check(expr).type);
 
     mCc_ast_delete_expression(expr);
 }
@@ -44,8 +48,7 @@ TEST(TYPE_CHECK_UNARY, UNARY_NEG_STRING)
     auto result = mCc_parser_parse_string(input);
     auto expr = result.expression;
 
-    ASSERT_EQ(MCC_AST_TYPE_VOID, test_type_check(expr));
-
+    ASSERT_EQ(MCC_AST_TYPE_VOID, test_type_check(expr).type);
     mCc_ast_delete_expression(expr);
 }
 
@@ -53,9 +56,11 @@ TEST(TYPE_CHECK_UNARY, UNARY_NOT_BOOL)
 {
     const char input[] = "!true";
     auto result = mCc_parser_parse_string(input);
+    ASSERT_EQ(MCC_PARSER_STATUS_OK, result.status);
+
     auto expr = result.expression;
 
-    ASSERT_EQ(MCC_AST_TYPE_BOOL, test_type_check(expr));
+    ASSERT_EQ(MCC_AST_TYPE_BOOL, test_type_check(expr).type);
 
     mCc_ast_delete_expression(expr);
 }
@@ -66,7 +71,7 @@ TEST(TYPE_CHECK_UNARY, UNARY_NOT_INT)
     auto result = mCc_parser_parse_string(input);
     auto expr = result.expression;
 
-    ASSERT_EQ(MCC_AST_TYPE_VOID, test_type_check(expr));
+    ASSERT_EQ(MCC_AST_TYPE_VOID, test_type_check(expr).type);
     mCc_ast_delete_expression(expr);
 }
 
@@ -76,10 +81,9 @@ TEST(TYPE_CHECK_BINARY, NOT_MATCHING_SIDES)
     auto result = mCc_parser_parse_string(input);
     auto expr = result.expression;
 
-    ASSERT_EQ(MCC_AST_TYPE_VOID, test_type_check(expr));
+    ASSERT_EQ(MCC_AST_TYPE_VOID, test_type_check(expr).type);
     mCc_ast_delete_expression(expr);
 }
-
 
 TEST(TYPE_CHECK_BINARY, BINARY_SUB_INT)
 {
@@ -87,7 +91,7 @@ TEST(TYPE_CHECK_BINARY, BINARY_SUB_INT)
     auto result = mCc_parser_parse_string(input);
     auto expr = result.expression;
 
-    ASSERT_EQ(MCC_AST_TYPE_INT, test_type_check(expr));
+    ASSERT_EQ(MCC_AST_TYPE_INT, test_type_check(expr).type);
     mCc_ast_delete_expression(expr);
 }
 
@@ -97,7 +101,7 @@ TEST(TYPE_CHECK_BINARY, BINARY_ADD_STRING)
     auto result = mCc_parser_parse_string(input);
     auto expr = result.expression;
 
-    ASSERT_EQ(MCC_AST_TYPE_VOID, test_type_check(expr));
+    ASSERT_EQ(MCC_AST_TYPE_VOID, test_type_check(expr).type);
     mCc_ast_delete_expression(expr);
 }
 
@@ -107,7 +111,7 @@ TEST(TYPE_CHECK_BINARY, BINARY_LT_FLOAT)
     auto result = mCc_parser_parse_string(input);
     auto expr = result.expression;
 
-    ASSERT_EQ(MCC_AST_TYPE_BOOL, test_type_check(expr));
+    ASSERT_EQ(MCC_AST_TYPE_BOOL, test_type_check(expr).type);
     mCc_ast_delete_expression(expr);
 }
 
@@ -117,7 +121,7 @@ TEST(TYPE_CHECK_BINARY, BINARY_GEQ_BOOL)
     auto result = mCc_parser_parse_string(input);
     auto expr = result.expression;
 
-    ASSERT_EQ(MCC_AST_TYPE_VOID, test_type_check(expr));
+    ASSERT_EQ(MCC_AST_TYPE_VOID, test_type_check(expr).type);
     mCc_ast_delete_expression(expr);
 }
 
@@ -128,7 +132,7 @@ TEST(TYPE_CHECK_BINARY, BINARY_AND_BOOL)
     auto result = mCc_parser_parse_string(input);
     auto expr = result.expression;
 
-    ASSERT_EQ(MCC_AST_TYPE_BOOL, test_type_check(expr));
+    ASSERT_EQ(MCC_AST_TYPE_BOOL, test_type_check(expr).type);
     mCc_ast_delete_expression(expr);
 }
 
@@ -139,7 +143,7 @@ TEST(TYPE_CHECK_BINARY, BINARY_OR_INT)
     auto result = mCc_parser_parse_string(input);
     auto expr = result.expression;
 
-    ASSERT_EQ(MCC_AST_TYPE_VOID, test_type_check(expr));
+    ASSERT_EQ(MCC_AST_TYPE_VOID, test_type_check(expr).type);
     mCc_ast_delete_expression(expr);
 }
 
@@ -149,7 +153,7 @@ TEST(TYPE_CHECK_BINARY, BINARY_EQ_STRING)
     auto result = mCc_parser_parse_string(input);
     auto expr = result.expression;
 
-    ASSERT_EQ(MCC_AST_TYPE_BOOL, test_type_check(expr));
+    ASSERT_EQ(MCC_AST_TYPE_BOOL, test_type_check(expr).type);
     mCc_ast_delete_expression(expr);
 }
 
@@ -160,7 +164,7 @@ TEST(TYPE_CHECK_BINARY, BINARY_NEQ_BOOL)
     auto result = mCc_parser_parse_string(input);
     auto expr = result.expression;
 
-    ASSERT_EQ(MCC_AST_TYPE_BOOL, test_type_check(expr));
+    ASSERT_EQ(MCC_AST_TYPE_BOOL, test_type_check(expr).type);
     mCc_ast_delete_expression(expr);
 }
 
@@ -170,7 +174,7 @@ TEST(TYPE_CHECK_PARENTH, PARENTH)
     auto result = mCc_parser_parse_string(input);
     auto expr = result.expression;
 
-    ASSERT_EQ(MCC_AST_TYPE_INT, test_type_check(expr));
+    ASSERT_EQ(MCC_AST_TYPE_INT, test_type_check(expr).type);
     mCc_ast_delete_expression(expr);
 }
 
@@ -190,7 +194,8 @@ TEST(TYPE_CHECK_ARR_SUBSCR, INT_SUBSCR)
 
     expr->identifier->symtab_ref = found;
 
-    ASSERT_EQ(MCC_AST_TYPE_STRING, test_type_check(expr));
+    ASSERT_EQ(MCC_AST_TYPE_STRING, test_type_check(expr).type);
+    mCc_ast_delete_declaration(decl);
     mCc_ast_delete_expression(expr);
     mCc_symtab_delete_all_scopes();
 }
@@ -211,7 +216,8 @@ TEST(TYPE_CHECK_ARR_SUBSCR, NO_INT_SUBSCR)
 
     expr->identifier->symtab_ref = found;
 
-    ASSERT_EQ(MCC_AST_TYPE_VOID, test_type_check(expr));
+    ASSERT_EQ(MCC_AST_TYPE_VOID, test_type_check(expr).type);
+    mCc_ast_delete_declaration(decl);
     mCc_ast_delete_expression(expr);
     mCc_symtab_delete_all_scopes();
 }
@@ -232,7 +238,8 @@ TEST(TYPE_CHECK_ARR_SUBSCR, EXPR_SUBSCR)
 
     expr->identifier->symtab_ref = found;
 
-    ASSERT_EQ(MCC_AST_TYPE_STRING, test_type_check(expr));
+    ASSERT_EQ(MCC_AST_TYPE_STRING, test_type_check(expr).type);
+    mCc_ast_delete_declaration(decl);
     mCc_ast_delete_expression(expr);
     mCc_symtab_delete_all_scopes();
 }
@@ -250,7 +257,7 @@ TEST(TYPE_CHECK_ARGUMENTS, VOID)
     assert(found);
     expr->f_name->symtab_ref = found;
 
-    ASSERT_EQ(MCC_AST_TYPE_VOID, test_type_check(expr));
+    ASSERT_EQ(MCC_AST_TYPE_VOID, test_type_check(expr).type);
     mCc_ast_delete_expression(expr);
     mCc_symtab_delete_all_scopes();
 }
@@ -268,7 +275,7 @@ TEST(TYPE_CHECK_ARGUMENTS, MATCHING_PARAMS)
     assert(found);
     expr->f_name->symtab_ref = found;
 
-    ASSERT_EQ(MCC_AST_TYPE_VOID, test_type_check(expr));
+    ASSERT_EQ(MCC_AST_TYPE_VOID, test_type_check(expr).type);
     mCc_ast_delete_expression(expr);
     mCc_symtab_delete_all_scopes();
 }
@@ -286,7 +293,7 @@ TEST(TYPE_CHECK_ARGUMENTS, NOT_MATCHING_PARAMS)
     assert(found);
     expr->f_name->symtab_ref = found;
 
-    ASSERT_EQ(MCC_AST_TYPE_VOID, test_type_check(expr));
+    ASSERT_EQ(MCC_AST_TYPE_VOID, test_type_check(expr).type);
     mCc_ast_delete_expression(expr);
     mCc_symtab_delete_all_scopes();
 }
@@ -304,7 +311,7 @@ TEST(TYPE_CHECK_ARGUMENTS, WRONG_NUMBER_OF_ARGS)
     assert(found);
     expr->f_name->symtab_ref = found;
 
-    ASSERT_EQ(MCC_AST_TYPE_VOID, test_type_check(expr));
+    ASSERT_EQ(MCC_AST_TYPE_VOID, test_type_check(expr).type);
     mCc_ast_delete_expression(expr);
     mCc_symtab_delete_all_scopes();
 }
@@ -322,7 +329,7 @@ TEST(TYPE_CHECK_CALL_EXPR, RETURN_INT)
     assert(found);
     expr->f_name->symtab_ref = found;
 
-    ASSERT_EQ(MCC_AST_TYPE_INT, test_type_check(expr));
+    ASSERT_EQ(MCC_AST_TYPE_INT, test_type_check(expr).type);
     mCc_ast_delete_expression(expr);
     mCc_symtab_delete_all_scopes();
 }
@@ -419,6 +426,7 @@ TEST(TYPE_CHECK_ASSGN, ASSGN_SUCCESS)
     ASSERT_EQ(MCC_AST_STATEMENT_TYPE_ASSGN, stmt->type);
     ASSERT_TRUE(test_type_check_stmt(stmt));
 
+    mCc_ast_delete_declaration(decl);
     mCc_ast_delete_statement(stmt);
     mCc_symtab_delete_all_scopes();
 }
@@ -443,6 +451,7 @@ TEST(TYPE_CHECK_ASSGN, ASSGN_FAILURE)
     ASSERT_EQ(MCC_AST_STATEMENT_TYPE_ASSGN, stmt->type);
     ASSERT_FALSE(test_type_check_stmt(stmt));
 
+    mCc_ast_delete_declaration(decl);
     mCc_ast_delete_statement(stmt);
     mCc_symtab_delete_all_scopes();
 }
@@ -494,4 +503,141 @@ TEST(TYPE_CHECK_CMPND, MULTIPLE)
     ASSERT_TRUE(test_type_check_stmt(stmt));
 
     mCc_ast_delete_statement(stmt);
+}
+
+TEST(TYPE_CHECK_RETURN, RETURN_VOID)
+{
+    const char input[] = "void main() {int a; int b; return;}";
+    auto result = mCc_parser_parse_string(input);
+    auto prog = result.program;
+
+    mCc_ast_symtab_build(prog);
+    ASSERT_TRUE(test_type_check_program(prog).stmt_type);
+
+    mCc_ast_delete_program(prog);
+    mCc_symtab_delete_all_scopes();
+}
+
+TEST(TYPE_CHECK_RETURN, RETURN_INT)
+{
+    const char input[] = "int f(){int d; d=2+2; return d;} void main() { int a; int b; b=f(); return;}";
+    auto result = mCc_parser_parse_string(input);
+    auto prog = result.program;
+
+    mCc_ast_symtab_build(prog);
+    ASSERT_TRUE(test_type_check_program(prog).stmt_type);
+
+    mCc_ast_delete_program(prog);
+    mCc_symtab_delete_all_scopes();
+}
+
+
+TEST(TYPE_CHECK_RETURN, RETURN_WRONG_TYPE)
+{
+    const char input[] = "int f(){int d; d=2; return true;} void main() { int a; int b; b=1; return;}";
+    auto result = mCc_parser_parse_string(input);
+    auto prog = result.program;
+
+    mCc_ast_symtab_build(prog);
+    ASSERT_FALSE(test_type_check_program(prog).stmt_type);
+
+    mCc_ast_delete_program(prog);
+    mCc_symtab_delete_all_scopes();
+}
+
+TEST(TYPE_CHECK_RETURN, RETURN_IF_WRONG)
+{
+    const char input[] = "void main() {if(2>3){return;}}";
+    auto result = mCc_parser_parse_string(input);
+    auto prog = result.program;
+
+    mCc_ast_symtab_build(prog);
+    ASSERT_FALSE(test_type_check_program(prog).stmt_type);
+
+    mCc_ast_delete_program(prog);
+    mCc_symtab_delete_all_scopes();
+}
+
+TEST(TYPE_CHECK_RETURN, RETURN_IF)
+{
+    const char input[] = "void main() {if(2<3){return;} return;}";
+    auto result = mCc_parser_parse_string(input);
+    auto prog = result.program;
+
+    mCc_ast_symtab_build(prog);
+    ASSERT_TRUE(test_type_check_program(prog).stmt_type);
+
+    mCc_ast_delete_program(prog);
+    mCc_symtab_delete_all_scopes();
+}
+
+TEST(TYPE_CHECK_RETURN, RETURN_DOUBLE_IF)
+{
+    const char input[] = "void main() {if(2<3){return;} return;}";
+    auto result = mCc_parser_parse_string(input);
+    auto prog = result.program;
+
+    mCc_ast_symtab_build(prog);
+    ASSERT_TRUE(test_type_check_program(prog).stmt_type);
+
+    mCc_ast_delete_program(prog);
+    mCc_symtab_delete_all_scopes();
+}
+
+TEST(TYPE_CHECK_RETURN, RETURN_IF_ELSE)
+{
+    const char input[] = "void main() {if(2<3){return;} else {return;}}";
+    auto result = mCc_parser_parse_string(input);
+    auto prog = result.program;
+
+    mCc_ast_symtab_build(prog);
+    ASSERT_TRUE(test_type_check_program(prog).stmt_type);
+
+    mCc_ast_delete_program(prog);
+    mCc_symtab_delete_all_scopes();
+}
+
+TEST(TYPE_CHECK_RETURN, RETURN_IF_ELIF)
+{
+    const char input[] = "void main() {if(2<3){return;} else if(2<23) {return;}}";
+    auto result = mCc_parser_parse_string(input);
+    auto prog = result.program;
+
+    mCc_ast_symtab_build(prog);
+    ASSERT_FALSE(test_type_check_program(prog).stmt_type);
+
+    mCc_ast_delete_program(prog);
+    mCc_symtab_delete_all_scopes();
+}
+
+TEST(TYPE_CHECK_ERROR_MSG, UNARY)
+{
+    const char input[] = "void main() {-true; return;}";
+    auto result = mCc_parser_parse_string(input);
+    auto prog = result.program;
+
+    mCc_ast_symtab_build(prog);
+    auto check_result = test_type_check_program(prog);
+    ASSERT_FALSE(check_result.stmt_type);
+    ASSERT_STREQ("Type error at: 1:14, Expected type is Integer or Float but given was Bool",
+                check_result.err_msg);
+
+    mCc_ast_delete_program(prog);
+    mCc_symtab_delete_all_scopes();
+}
+
+TEST(TYPE_CHECK_ERROR_MSG, BINARY_MISMATCH)
+{
+    const char input[] = "void main() {2+true; return;}";
+    auto result = mCc_parser_parse_string(input);
+    auto prog = result.program;
+
+    mCc_ast_symtab_build(prog);
+    auto check_result = test_type_check_program(prog);
+    ASSERT_FALSE(check_result.stmt_type);
+    ASSERT_STREQ("Type error at: 1:14, Expected type is Integer but given was Bool",
+    check_result.err_msg);
+
+    mCc_ast_delete_program(prog);
+    mCc_symtab_delete_all_scopes();
 }
