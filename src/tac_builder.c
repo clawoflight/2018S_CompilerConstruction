@@ -73,46 +73,50 @@ mCc_tac_from_expression_arr_subscr(struct mCc_ast_expression *expr)
 	// create quad [load, result_of_prog]
 }
 
-static struct mCc_tac_program *
-mCc_tac_from_expression_call(struct mCc_ast_expression *expr)
+static int
+mCc_tac_from_expression_call(struct mCc_tac_program *prog, struct mCc_ast_expression *expr)
 {
-	// rec. create mCc_tac_program for all arguments
-	// create quad [param, result_of_prog] for each prog (important: in reverse
-	// order!) create quad [jump, label_of_func]
+	// Compute all params in reverse order and push them
+	// TODO: I fear that we will need to first compute all params, then push them.
+	// That would make this far more annoying - use variable-length array to store results maybe?
+	for (unsigned int i = expr->arguments->expression_count-1; i >= 0; --i) {
+		struct mCc_tac_quad_result *param_temporary = mCc_tac_from_expression(prog, expr->arguments->expressions[i]);
+		struct mCc_tac_quad *param = mCc_tac_quad_new_param(param_temporary);
+		mCc_tac_program_add_quad(param);
+	}
 
-	// create new program with memory for arguments + param quads + jump quad
-	// copy all into new program (keep in mind params must be in reverse order)
-	// (destroy rec. programs without destroying their quads)
+	struct mCc_tac_label *label_fun = TODO_get_label_for_function(expr->f_name);
+	struct mCc_tac_quad *jump_to_fun = mCc_tac_quad_new_jump(label_fun);
+	mCc_tac_program_add_quad(jump_to_fun);
 }
 
 // TODO think about if without else - which label to remove
-static struct mCc_tac_program *
-mCc_tac_from_statement_if(struct mCc_ast_statement *stmt)
+static int
+mCc_tac_from_statement_if(struct mCc_tac_program *prog, struct mCc_ast_statement *stmt)
 {
-	// create quad label 1
-	// create quad label 2
-	// rec. create mCc_tac_program for condition
-	// create quad [jumpfalse, condition_var, label 1]
-	// rec. create mCc_tac_program for then-branch
-	// if no else-branch do not create a label 2 nor a jump 2
-	// create quad [jump, label 2]
-	// rec. create mCc_tac_program for else-branch
+	// TODO error handling everywhere
+	struct mCc_tac_label *label_else = TODO_get_new_label();
+	struct mCc_tac_label *label_after_if = TODO_get_new_label();
 
-	// create new program with memory for the three programs + 4 quads
-	// (jumpfalse, jump, 2 labels) copy condition into new program copy
-	// jumpfalse into new program copy then-branch into new program copy jump
-	// into new program copy label 1 into new program copy else-branch into new
-	// program copy label 2 into new program (destroy rec. programs without
-	// destroying their quads)
+	struct mCc_tac_quad_result *cond = mCc_tac_from_expression(prog, stmt->if_cond);
+	struct mCc_tac_quad *jump_to_else = mCc_tac_quad_new_jumpfalse(cond, label_else);
+	mCc_tac_program_add_quad(prog, jump_to_else);
+	mCc_tac_from_stmt(prog, stmt->if_stmt);
+
+	struct mCc_tac_quad *jump_after_if = mCc_tac_quad_new_jump(label_after_if);
+	mCc_tac_program_add_quad(jump_after_if);
+
+	mCc_tac_from_stmt(prog, stmt->else_stmt);
+	mCc_tac_program_add_quad(label_after_if);
 }
 
-static struct mCc_tac_program *
+static int
 mCc_tac_from_statement_while(struct mCc_tac_program *prog,
                              struct mCc_ast_statement *stmt)
 {
 	// TODO error handling everywhere
-	struct mCc_tac_quad *label_cond = TODO_get_new_label();
-	struct mCc_tac_quad *label_after_while = TODO_get_new_label();
+	struct mCc_tac_label *label_cond = TODO_get_new_label();
+	struct mCc_tac_label *label_after_while = TODO_get_new_label();
 
 	mCc_tac_program_add_quad(prog, label_cond);
 	struct mCC_tac_quad_result *cond =
