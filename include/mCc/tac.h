@@ -4,7 +4,9 @@
  * @author bennett
  * @date 2018-04-27
  */
-#include "symtab.h"
+
+#include <assert.h>
+#include <stdio.h>
 #include <stdbool.h>
 
 /******************************** Data Structures */
@@ -21,10 +23,10 @@ enum mCc_tac_quad_binary_op {
 	MCC_TAC_EXP_TYPE_BINARY_OP_MUL,
 	MCC_TAC_EXP_TYPE_BINARY_OP_DIV,
 
-	MCC_TAC_EXPR_BINARY_OP_FLOAT_ADD,
-	MCC_TAC_EXPR_BINARY_OP_FLOAT_SUB,
-	MCC_TAC_EXPR_BINARY_OP_FLOAT_MUL,
-	MCC_TAC_EXPR_BINARY_OP_FLOAT_DIV,
+	MCC_TAC_EXP_BINARY_OP_FLOAT_ADD,
+	MCC_TAC_EXP_BINARY_OP_FLOAT_SUB,
+	MCC_TAC_EXP_BINARY_OP_FLOAT_MUL,
+	MCC_TAC_EXP_BINARY_OP_FLOAT_DIV,
 
 	MCC_TAC_EXP_TYPE_BINARY_OP_LT,
 	MCC_TAC_EXP_TYPE_BINARY_OP_GT,
@@ -89,7 +91,7 @@ struct mCc_tac_quad {
 	enum mCc_tac_quad_type type;
 	char *comment; ///< Comment to add when printing :)
     union {
-        struct mCc_tac_quad_literal literal; ///< Only for literals
+        struct mCc_tac_quad_literal *literal; ///< Only for literals
         enum mCc_tac_quad_binary_op bin_op;
         enum mCc_tac_quad_unary_op un_op;
     };
@@ -124,14 +126,14 @@ struct mCc_tac_program {
 struct mCc_tac_quad *mCc_tac_quad_new_assign(struct mCc_tac_quad_entry *arg1,
                                              struct mCc_tac_quad_entry *result);
 
-struct mCc_tac_quad *mCc_tac_quad_new_assign_lit(struct mCc_ast_literal *arg1,
+struct mCc_tac_quad *mCc_tac_quad_new_assign_lit(struct mCc_tac_quad_literal *arg1,
                                                  struct mCc_tac_quad_entry *result);
 
-struct mCc_tac_quad *mCc_tac_quad_new_op_unary(enum mCc_tac_quad_unary_op,
+struct mCc_tac_quad *mCc_tac_quad_new_op_unary(enum mCc_tac_quad_unary_op op,
                                                struct mCc_tac_quad_entry *arg1,
                                                struct mCc_tac_quad_entry *result);
 
-struct mCc_tac_quad *mCc_tac_quad_new_op_binary(enum mCc_tac_quad_binary_op,
+struct mCc_tac_quad *mCc_tac_quad_new_op_binary(enum mCc_tac_quad_binary_op op,
                                                 struct mCc_tac_quad_entry *arg1,
                                                 struct mCc_tac_quad_entry *arg2,
                                                 struct mCc_tac_quad_entry *result);

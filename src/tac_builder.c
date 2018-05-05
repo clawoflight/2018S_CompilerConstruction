@@ -4,7 +4,7 @@
  * @author bennett
  * @date 2018-04-27
  */
-#include "tac_builder.h"
+//#include "tac_builder.h"
 
 static struct mCc_tac_program *mCc_tac_from_expression_binary(struct mCc_ast_expression *expr)
 {
@@ -51,6 +51,7 @@ static struct mCc_tac_program *mCc_tac_from_statement_if(struct mCc_ast_statemen
 	// rec. create mCc_tac_program for condition
 	// create quad [jumpfalse, condition_var, label 1]
 	// rec. create mCc_tac_program for then-branch
+    // if no else-branch do not create a label 2 nor a jump 2
 	// create quad [jump, label 2]
 	// rec. create mCc_tac_program for else-branch
 

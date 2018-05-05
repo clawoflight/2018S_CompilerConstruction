@@ -34,6 +34,8 @@ mCc_src = [ 'src/ast.c',
             'src/ast_statements.c',
             'src/ast_print.c',
             'src/ast_visit.c',
+            'src/tac.c',
+            'src/tac_builder.c',
             lgen.process('src/scanner.l'),
             pgen.process('src/parser.y') ]
 
@@ -63,7 +65,7 @@ mCc_uts = [
             'identifier',
             'tdd_parser_assgn',
             'tdd_parser_callexpr',
-            'tdd_parser_program',
+            'tdd_parser_program'
 ]
 
 foreach ut : mCc_uts
