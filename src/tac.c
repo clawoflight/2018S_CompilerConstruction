@@ -413,11 +413,12 @@ int mCc_tac_program_add_program(struct mCc_tac_program *self,
 
     for (int i=0;i<other_prog->quad_count; i++){
         if(mCc_tac_program_add_quad(self,other_prog[i])!=0){
-            mCc_tac_mCc_tac_program_delete(other_prog);
-            mCc_tac_mCc_tac_program_delete(self);
+            mCc_tac_mCc_tac_program_delete(other_prog,true);
+            mCc_tac_mCc_tac_program_delete(self,true);
             return 1;
         }
     }
+    mCc_tac_program_delete(other_prog, false);
 
     return 0;
 }
@@ -434,7 +435,7 @@ void mCc_tac_program_print(struct mCc_tac_program *self, FILE *out){
 void mCc_tac_program_delete(struct mCc_tac_program *self,
                             bool delete_quads_too){
     if(delete_quads_too){
-        for(int i =0;i < self-> quad_count;i++){
+        for(int i =0;i < self->quad_count;i++){
             mCc_tac_quad_delete(self->quads[i]);
         }
     }
