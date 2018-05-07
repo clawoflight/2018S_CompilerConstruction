@@ -4,6 +4,12 @@
  * @author bennett
  * @date 2018-04-27
  */
+#ifndef MCC_TAC_H
+#define MCC_TAC_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include <assert.h>
 #include <stdio.h>
@@ -66,7 +72,7 @@ enum mCc_tac_quad_literal_type {
 	MCC_TAC_QUAD_LIT_INT,
 	MCC_TAC_QUAD_LIT_FLOAT,
 	MCC_TAC_QUAD_LIT_BOOL,
-	/// TODO maybe it would be better to store literals in the text segment?
+	/// TODO maybe it would be better to store literals in the data segment?
 	MCC_TAC_QUAD_LIT_STR
 };
 
@@ -241,3 +247,8 @@ void mCc_tac_program_print(struct mCc_tac_program *self, FILE *out);
  */
 void mCc_tac_program_delete(struct mCc_tac_program *self,
                             bool delete_quads_too);
+
+#ifdef __cplusplus
+}
+#endif
+#endif //MCC_TAC_H
