@@ -64,6 +64,8 @@ enum mCc_tac_quad_type {
 	MCC_TAC_QUAD_CALL,
 	MCC_TAC_QUAD_LOAD,
 	MCC_TAC_QUAD_STORE,
+	MCC_TAC_QUAD_RETURN,
+	MCC_TAC_QUAD_RETURN_VOID,
 	//MCC_TAC_QUAD_ADDR_OF,  ///< TODO neceessary?
 	//MCC_TAC_QUAD_PTR_DEREF ///< TODO necessary?
 };

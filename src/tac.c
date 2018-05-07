@@ -199,6 +199,27 @@ struct mCc_tac_quad *mCc_tac_quad_new_store(struct mCc_tac_quad_entry *index,
 
 }
 
+struct mCc_tac_quad *mCc_tac_quad_new_return(struct mCc_tac_quad_entry *ret_value,
+                                            struct mCc_tac_quad_entry *result){
+    assert(result);
+
+    struct mCc_tac_quad *quad = malloc(sizeof(*quad));
+
+    if (!quad) {
+        return NULL;
+    }
+    if(ret_value) {
+        quad->type = MCC_TAC_QUAD_RETURN;
+        quad->arg1 = value;
+    }else{
+        quad->type = MCC_TAC_QUAD_RETURN_VOID;
+        }
+    quad->result.ref=result;
+
+    return quad;
+
+}
+
 void print_tac_bin_op(struct mCc_tac_quad *self, FILE *out){
     switch (self->bin_op) {
         case MCC_TAC_OP_BINARY_ADD:
@@ -373,6 +394,14 @@ void mCc_tac_quad_print(struct mCc_tac_quad *self, FILE *out){
                    self->arg1->number);
             fprintf(out,"t%d[t%d] = t%d\n",self->result.ref->number, self->arg2->number,
                    self->arg1->number);
+            break;
+        case MCC_TAC_QUAD_RETURN:
+            printf("return t%d\n", self->arg1->number);
+            fprintf(out,"return t%d\n", self->arg1->number);
+            break;
+        case MCC_TAC_QUAD_RETURN_VOID:
+            printf("return \n");
+            fprintf(out,"return \n");
             break;
     }
     return;
