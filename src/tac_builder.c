@@ -98,7 +98,7 @@ mCc_tac_from_expression_call(struct mCc_tac_program *prog,
 		mCc_tac_program_add_quad(prog, param);
 	}
 
-	struct mCc_tac_label *label_fun = TODO_get_label_for_function(expr->f_name);
+	struct mCc_tac_label label_fun = TODO_get_label_for_function(expr->f_name);
 	struct mCc_tac_quad *jump_to_fun = mCc_tac_quad_new_jump(label_fun);
 	mCc_tac_program_add_quad(prog, jump_to_fun);
 }
@@ -109,8 +109,8 @@ mCc_tac_from_statement_if(struct mCc_tac_program *prog,
                           struct mCc_ast_statement *stmt)
 {
 	// TODO error handling everywhere
-	struct mCc_tac_label *label_else = TODO_get_new_label();
-	struct mCc_tac_label *label_after_if = TODO_get_new_label();
+	struct mCc_tac_label label_else = TODO_get_new_label();
+	struct mCc_tac_label label_after_if = TODO_get_new_label();
 
 	struct mCc_tac_quad_entry *cond =
 	    mCc_tac_from_expression(prog, stmt->if_cond);
@@ -131,10 +131,12 @@ static int mCc_tac_from_statement_while(struct mCc_tac_program *prog,
                                         struct mCc_ast_statement *stmt)
 {
 	// TODO error handling everywhere
-	struct mCc_tac_label *label_cond = TODO_get_new_label();
-	struct mCc_tac_label *label_after_while = TODO_get_new_label();
+	struct mCc_tac_label label_cond = TODO_get_new_label();
+	struct mCc_tac_label label_after_while = TODO_get_new_label();
+	struct mCc_tac_quad *label_cond_quad = mCc_tac_quad_new_label(label_cond);
+	struct mCc_tac_quad *label_after_while_quad = mCc_tac_quad_new_label(label_after_while);
 
-	mCc_tac_program_add_quad(prog, label_cond);
+	mCc_tac_program_add_quad(prog, label_cond_quad);
 	struct mCc_tac_quad_entry *cond =
 	    mCc_tac_from_expression(prog, stmt->while_cond);
 	struct mCc_tac_quad *jump_after_while =
@@ -144,7 +146,7 @@ static int mCc_tac_from_statement_while(struct mCc_tac_program *prog,
 	mCc_tac_from_statement(prog, stmt->while_stmt);
 	struct mCc_tac_quad *jump_to_cond = mCc_tac_quad_new_jump(label_cond);
 	mCc_tac_program_add_quad(prog, jump_to_cond);
-	mCc_tac_program_add_quad(prog, label_after_while);
+	mCc_tac_program_add_quad(prog, label_after_while_quad);
 }
 
 static int mCc_tac_from_statement_return(struct mCc_tac_program *prog,
@@ -156,7 +158,7 @@ static int mCc_tac_from_statement_return(struct mCc_tac_program *prog,
 
 static int mCc_tac_from_function_def(struct mCc_tac_program *prog, struct mCc_ast_function_def *fun_def)
 {
-	struct mCc_tac_label *label_fun = TODO_get_label_from_fun_name(fun_def->identifier);
+	struct mCc_tac_label label_fun = TODO_get_label_from_fun_name(fun_def->identifier);
 
 	struct mCc_tac_quad *label_fun_quad = mCc_tac_quad_new_label(label_fun);
 	mCc_tac_program_add_quad(prog, label_fun_quad);

@@ -115,7 +115,7 @@ struct mCc_tac_quad {
 
 	/// The result can be a reference or a label
 	union {
-		struct mCc_tac_label *label;
+		struct mCc_tac_label label;
 		struct mCc_tac_quad_entry *ref;
 	} result;
 };
@@ -156,16 +156,16 @@ struct mCc_tac_quad *mCc_tac_quad_new_op_binary(enum mCc_tac_quad_binary_op op,
 /**
  * @return  new quadruple in the style: MCC_TAC_QUAD_JUMP - - label
  */
-struct mCc_tac_quad *mCc_tac_quad_new_jump(struct mCc_tac_label *label);
+struct mCc_tac_quad *mCc_tac_quad_new_jump(struct mCc_tac_label label);
 
 /**
  * New quadruple in the style MCC_TAC_QUAD_JUMPFALSE condition Label -
  */
 struct mCc_tac_quad *
 mCc_tac_quad_new_jumpfalse(struct mCc_tac_quad_entry *condition,
-                           struct mCc_tac_label *label);
+                           struct mCc_tac_label label);
 
-struct mCc_tac_quad *mCc_tac_quad_new_label(struct mCc_tac_label *label);
+struct mCc_tac_quad *mCc_tac_quad_new_label(struct mCc_tac_label label);
 /**
  * New quadruple in the style MCC_TAC_QUAD_PARAM value - -
  */
@@ -174,7 +174,7 @@ struct mCc_tac_quad *mCc_tac_quad_new_param(struct mCc_tac_quad_entry *value);
 /**
  * new "goto" quadruple MCC_TAC_QUAD_CALL Label - -
  */
-struct mCc_tac_quad *mCc_tac_quad_new_call(struct mCc_tac_label *label);
+struct mCc_tac_quad *mCc_tac_quad_new_call(struct mCc_tac_label label);
 /**
  * Loading a value from an array and saving it
  * @return a quadruple in the style MCC_TAC_QUAD_LOAD array index result
