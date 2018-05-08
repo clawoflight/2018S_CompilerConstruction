@@ -18,8 +18,6 @@ extern "C" {
 
 /******************************** Data Structures */
 
-typedef int mCc_tac_label;
-
 /// Size by which to increase compound_stmts when reallocing
 const int quad_alloc_block_size = 10;
 
@@ -90,9 +88,17 @@ struct mCc_tac_quad_literal {
 	};
 };
 /// this struct is the used as the type of the quad entries
-struct mCc_tac_quad_entry{
+struct mCc_tac_quad_entry {
     int number;
 };
+
+#define MCC_TAC_LABEL_LEN (4096)
+/// Label with two alternative options
+struct mCc_tac_label {
+	char str[MCC_TAC_LABEL_LEN]; /// For function labels
+	int num; /// For anonymous labels
+};
+
 /**
  * A single TAC-stmt, stored as quad.
  */
@@ -109,7 +115,7 @@ struct mCc_tac_quad {
 
 	/// The result can be a reference or a label
 	union {
-		mCc_tac_label label;
+		struct mCc_tac_label *label;
 		struct mCc_tac_quad_entry *ref;
 	} result;
 };
@@ -150,16 +156,16 @@ struct mCc_tac_quad *mCc_tac_quad_new_op_binary(enum mCc_tac_quad_binary_op op,
 /**
  * @return  new quadruple in the style: MCC_TAC_QUAD_JUMP - - label
  */
-struct mCc_tac_quad *mCc_tac_quad_new_jump(mCc_tac_label label);
+struct mCc_tac_quad *mCc_tac_quad_new_jump(struct mCc_tac_label *label);
 
 /**
  * New quadruple in the style MCC_TAC_QUAD_JUMPFALSE condition Label -
  */
 struct mCc_tac_quad *
 mCc_tac_quad_new_jumpfalse(struct mCc_tac_quad_entry *condition,
-                           mCc_tac_label label);
+                           struct mCc_tac_label *label);
 
-struct mCc_tac_quad *mCc_tac_quad_new_label(mCc_tac_label label);
+struct mCc_tac_quad *mCc_tac_quad_new_label(struct mCc_tac_label *label);
 /**
  * New quadruple in the style MCC_TAC_QUAD_PARAM value - -
  */
@@ -168,7 +174,7 @@ struct mCc_tac_quad *mCc_tac_quad_new_param(struct mCc_tac_quad_entry *value);
 /**
  * new "goto" quadruple MCC_TAC_QUAD_CALL Label - -
  */
-struct mCc_tac_quad *mCc_tac_quad_new_call(mCc_tac_label label);
+struct mCc_tac_quad *mCc_tac_quad_new_call(struct mCc_tac_label *label);
 /**
  * Loading a value from an array and saving it
  * @return a quadruple in the style MCC_TAC_QUAD_LOAD array index result

@@ -92,7 +92,7 @@ mCc_tac_from_expression_call(struct mCc_tac_program *prog,
 	// them. That would make this far more annoying - use variable-length array
 	// to store results maybe?
 	for (unsigned int i = expr->arguments->expression_count - 1; i >= 0; --i) {
-		struct mCc_tac_quad_result *param_temporary =
+		struct mCc_tac_quad_entry *param_temporary =
 		    mCc_tac_from_expression(prog, expr->arguments->expressions[i]);
 		struct mCc_tac_quad *param = mCc_tac_quad_new_param(param_temporary);
 		mCc_tac_program_add_quad(prog, param);
@@ -123,7 +123,8 @@ mCc_tac_from_statement_if(struct mCc_tac_program *prog,
 	mCc_tac_program_add_quad(prog, jump_after_if);
 
 	mCc_tac_from_stmt(prog, stmt->else_stmt);
-	mCc_tac_program_add_quad(prog, label_after_if);
+	struct mCc_tac_quad *label_after_if_quad = mCc_Tac_quad_new_label(label_after_if);
+	mCc_tac_program_add_quad(prog, label_after_if_quad);
 }
 
 static int mCc_tac_from_statement_while(struct mCc_tac_program *prog,
@@ -134,7 +135,7 @@ static int mCc_tac_from_statement_while(struct mCc_tac_program *prog,
 	struct mCc_tac_label *label_after_while = TODO_get_new_label();
 
 	mCc_tac_program_add_quad(prog, label_cond);
-	struct mCC_tac_quad_result *cond =
+	struct mCc_tac_quad_entry *cond =
 	    mCc_tac_from_expression(prog, stmt->while_cond);
 	struct mCc_tac_quad *jump_after_while =
 	    mCc_tac_quad_new_jumpfalse(cond, label_after_while);
@@ -151,4 +152,16 @@ static int mCc_tac_from_statement_return(struct mCc_tac_program *prog,
 {
 	// create mCc_tac_program for return expression
 	// TODO will probably need a quad for return?
+}
+
+static int mCc_tac_from_function_def(struct mCc_tac_program *prog, struct mCc_ast_function_def *fun_def)
+{
+	struct mCc_tac_label *label_fun = TODO_get_label_from_fun_name(fun_def->identifier);
+
+	struct mCc_tac_quad *label_fun_quad = mCc_tac_quad_new_label(label_fun);
+	mCc_tac_program_add_quad(prog, label_fun_quad);
+	// TODO error checking
+
+	mCc_tac_from_statement(prog, fun_def->body);
+	// TODO error checking
 }
