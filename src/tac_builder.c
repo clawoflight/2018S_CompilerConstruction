@@ -43,7 +43,7 @@ mCc_tac_from_expression_binary(struct mCc_tac_program *prog,
 	case MCC_AST_BINARY_OP_NEQ: op = MCC_TAC_OP_BINARY_NEQ; break;
 	}
 
-	struct mCc_tac_entry *new_result = TODO_get_new_temporary();
+	struct mCc_tac_quad_entry *new_result = TODO_get_new_temporary();
 
 	struct mCc_tac_quad *binary_op =
 	    mCc_tac_quad_new_op_binary(op, result1, result2, new_result);
@@ -62,7 +62,7 @@ mCc_tac_from_expression_unary(struct mCc_tac_program *prog,
 	case MCC_AST_UNARY_OP_NOT: op = MCC_TAC_OP_UNARY_NOT; break;
 	}
 
-	struct mCc_tac_entry *result =
+	struct mCc_tac_quad_entry *result =
 	    mCc_tac_from_expression(prog, expr->unary_expression);
 
 	result = mCc_tac_quad_new_op_unary(op, result, result);
@@ -75,11 +75,11 @@ mCc_tac_from_expression_arr_subscr(struct mCc_tac_program *prog,struct mCc_ast_e
 {
 	// rec. create mCc_tac_program for array index
 	// create quad [load, result_of_prog]
-	struct mCc_tac_entry *result = TODO_get_new_tmp();
+	struct mCc_tac_quad_entry *result = TODO_get_new_tmp();
 	//struct mCC_tac_entry *result1 =	TODO_get_lable_from_identifier(expr->array_id);// TODO Think about adding label or entry
 	struct mCC_tac_entry *result2 = mCc_tac_from_expression(prog, expr->subscript_expr);//array subscript
-	array_subr = mCc_tac_quad_new_load(result1,result2,result);
-	mCc_tac_program_add_quad(prog, array_subr);
+	struct mCc_tac_quad *array_subscr = mCc_tac_quad_new_load(result, result2, result);
+	mCc_tac_program_add_quad(prog, array_subscr);
 
 }
 
