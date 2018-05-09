@@ -19,19 +19,19 @@ mCc_tac_from_expression_binary(struct mCc_tac_program *prog,
 	enum mCc_tac_quad_binary_op op;
 	switch (expr->op) {
 	case MCC_AST_BINARY_OP_ADD:
-		op = expr->node.type == FLOAT ? MCC_TAC_OP_BINARY_FLOAT_ADD
+		op = expr->node.computed_type == MCC_AST_TYPE_FLOAT ? MCC_TAC_OP_BINARY_FLOAT_ADD
 		                              : MCC_TAC_OP_BINARY_ADD;
 		break;
 	case MCC_AST_BINARY_OP_SUB:
-		op = expr->node.type == FLOAT ? MCC_TAC_OP_BINARY_FLOAT_SUB
+		op = expr->node.computed_type == MCC_AST_TYPE_FLOAT ? MCC_TAC_OP_BINARY_FLOAT_SUB
 		                              : MCC_TAC_OP_BINARY_SUB;
 		break;
-	case MCC_AST_BINARY_OP_MULT:
-		op = expr->node.type == FLOAT ? MCC_TAC_OP_BINARY_FLOAT_MUL
+	case MCC_AST_BINARY_OP_MUL:
+		op = expr->node.computed_type == MCC_AST_TYPE_FLOAT ? MCC_TAC_OP_BINARY_FLOAT_MUL
 		                              : MCC_TAC_OP_BINARY_MUL;
 		break;
 	case MCC_AST_BINARY_OP_DIV:
-		op = expr->node.type == FLOAT ? MCC_TAC_OP_BINARY_FLOAT_DIV
+		op = expr->node.computed_type == MCC_AST_TYPE_FLOAT ? MCC_TAC_OP_BINARY_FLOAT_DIV
 		                              : MCC_TAC_OP_BINARY_DIV;
 	case MCC_AST_BINARY_OP_LT: op = MCC_TAC_OP_BINARY_LT; break;
 	case MCC_AST_BINARY_OP_GT: op = MCC_TAC_OP_BINARY_GT; break;
@@ -76,7 +76,7 @@ mCc_tac_from_expression_arr_subscr(struct mCc_tac_program *prog,struct mCc_ast_e
 	// rec. create mCc_tac_program for array index
 	// create quad [load, result_of_prog]
 	struct mCc_tac_quad_entry *result = TODO_get_new_tmp();
-	struct mCC_tac_entry *result1 =	TODO_get_lable_from_arr_name(expr->array_id);
+	//struct mCC_tac_entry *result1 =	TODO_get_lable_from_identifier(expr->array_id);// TODO Think about adding label or entry
 	struct mCC_tac_entry *result2 = mCc_tac_from_expression(prog, expr->subscript_expr);//array subscript
 	struct mCc_tac_quad *array_subscr = mCc_tac_quad_new_load(result, result2, result);
 	mCc_tac_program_add_quad(prog, array_subscr);
