@@ -14,6 +14,7 @@ struct mCc_tac_quad_entry *mCc_tac_create_new_entry()
     struct mCc_tac_quad_entry *entry = malloc(sizeof(entry));
 
     entry->number = current_tmp;
+    current_tmp++;
     return entry;
 }
 
@@ -24,7 +25,28 @@ struct mCc_tac_quad_entry *mCc_tac_create_new_string()
     struct mCc_tac_quad_entry *entry = malloc(sizeof(entry));
 
     entry->number = current_tmp;
+    current_tmp++;
     return entry;
+}
+
+struct mCc_tac_label *mCc_tac_get_new_label()
+{
+    static int current_lab = 0;
+
+    struct mCc_tac_label *label = malloc(sizeof(label));
+
+    label->num = current_lab;
+    current_lab++;
+    return label;
+}
+
+struct mCc_tac_label *get_label_from_fun_name(struct mCc_ast_identifier f_name)
+{
+
+    struct mCc_tac_label *label = malloc(sizeof(label));
+    strcpy(label->str,f_name->id_value);
+
+    return label;
 }
 
 struct mCc_tac_quad *mCc_tac_quad_new_assign(struct mCc_tac_quad_entry *arg1,
@@ -326,16 +348,16 @@ void print_tac_unary_op(struct mCc_tac_quad *self, FILE *out) {
 void print_tac_literal(struct mCc_tac_quad *self, FILE *out) {
     switch (self->literal->type) {
         case MCC_TAC_QUAD_LIT_INT:
-            fprintf(out, "t%d = t%d\n",self->result.ref->number,self->literal->ival);
+            fprintf(out, "t%d = %d\n",self->result.ref->number,self->literal->ival);
             break;
         case MCC_TAC_QUAD_LIT_FLOAT:
-            fprintf(out, "t%d = t%f\n",self->result.ref->number,self->literal->fval);
+            fprintf(out, "t%d = %f\n",self->result.ref->number,self->literal->fval);
             break;
         case MCC_TAC_QUAD_LIT_BOOL:
             fprintf(out, "t%d = %s\n",self->result.ref->number,self->literal->ival ? "true" : "false");
             break;
         case MCC_TAC_QUAD_LIT_STR:
-            fprintf(out, "t%d = t%s\n",self->result.ref->number,self->literal->strval);
+            fprintf(out, "t%d = %s\n",self->result.ref->number,self->literal->strval);
             break;
     }
     return;
