@@ -223,82 +223,58 @@ struct mCc_tac_quad *mCc_tac_quad_new_return(struct mCc_tac_quad_entry *ret_valu
 void print_tac_bin_op(struct mCc_tac_quad *self, FILE *out){
     switch (self->bin_op) {
         case MCC_TAC_OP_BINARY_ADD:
-            printf("t%d = t%d + t%d", self->result.ref->number, self->arg1->number,
-                   self->arg2->number);
             fprintf(out,"t%d = t%d + t%d", self->result.ref->number, self->arg1->number,
                     self->arg2->number);
             break;
         case MCC_TAC_OP_BINARY_SUB:
-            printf("t%d = t%d - t%d", self->result.ref->number, self->arg1->number,
-                   self->arg2->number);
             fprintf(out,"t%d = t%d - t%d", self->result.ref->number, self->arg1->number,
                     self->arg2->number);
             break;
         case MCC_TAC_OP_BINARY_MUL:
-            printf("t%d = t%d * t%d", self->result.ref->number, self->arg1->number,
-                   self->arg2->number);
             fprintf(out,"t%d = t%d * t%d", self->result.ref->number, self->arg1->number,
                     self->arg2->number);
             break;
         case MCC_TAC_OP_BINARY_DIV:
-            printf("t%d = t%d / t%d", self->result.ref->number, self->arg1->number,
-                   self->arg2->number);
             fprintf(out,"%d = t%d / t%d", self->result.ref->number, self->arg1->number,
                     self->arg2->number);
             break;
         case MCC_TAC_OP_BINARY_LT:
-            printf("t%d = t%d < t%d", self->result.ref->number, self->arg1->number,self->arg2->number);
             fprintf(out,"t%d = t%d < t%d", self->result.ref->number, self->arg1->number,self->arg2->number);
             break;
         case MCC_TAC_OP_BINARY_GT:
-            printf("t%d = t%d > t%d", self->result.ref->number, self->arg1->number,self->arg2->number);
             fprintf(out,"t%d = t%d > t%d", self->result.ref->number, self->arg1->number,self->arg2->number);
             break;
         case MCC_TAC_OP_BINARY_LEQ:
-            printf("t%d = t%d <= t%d", self->result.ref->number, self->arg1->number,self->arg2->number);
             fprintf(out,"t%d = t%d <= t%d", self->result.ref->number, self->arg1->number,self->arg2->number);
             break;
         case MCC_TAC_OP_BINARY_GEQ:
-            printf("t%d = t%d >= t%d", self->result.ref->number, self->arg1->number,self->arg2->number);
             fprintf(out,"t%d = t%d >= t%d", self->result.ref->number, self->arg1->number,self->arg2->number);
             break;
         case MCC_TAC_OP_BINARY_AND:
-            printf("t%d = t%d && t%d", self->result.ref->number, self->arg1->number,self->arg2->number);
             fprintf(out,"t%d = t%d && t%d", self->result.ref->number, self->arg1->number,self->arg2->number);
             break;
         case MCC_TAC_OP_BINARY_OR:
-            printf("t%d = t%d || t%d", self->result.ref->number, self->arg1->number,self->arg2->number);
             fprintf(out,"t%d = t%d || t%d", self->result.ref->number, self->arg1->number,self->arg2->number);
             break;
         case MCC_TAC_OP_BINARY_EQ:
-            printf("t%d = t%d == t%d", self->result.ref->number, self->arg1->number,self->arg2->number);
             fprintf(out,"t%d = t%d == t%d", self->result.ref->number, self->arg1->number,self->arg2->number);
             break;
         case MCC_TAC_OP_BINARY_NEQ:
-            printf("t%d = t%d != t%d", self->result.ref->number, self->arg1->number,self->arg2->number);
             fprintf(out,"t%d = t%d != t%d", self->result.ref->number, self->arg1->number,self->arg2->number);
             break;
         case MCC_TAC_OP_BINARY_FLOAT_ADD:
-            printf("t%d = t%d + t%d", self->result.ref->number, self->arg1->number,
-                   self->arg2->number);
             fprintf(out,"t%d = t%d + t%d", self->result.ref->number, self->arg1->number,
                     self->arg2->number);
             break;
         case MCC_TAC_OP_BINARY_FLOAT_SUB:
-            printf("t%d = t%d - t%d", self->result.ref->number, self->arg1->number,
-                   self->arg2->number);
             fprintf(out,"t%d = t%d - t%d", self->result.ref->number, self->arg1->number,
                     self->arg2->number);
             break;
         case MCC_TAC_OP_BINARY_FLOAT_MUL:
-            printf("t%d = t%d * t%d", self->result.ref->number, self->arg1->number,
-                   self->arg2->number);
             fprintf(out,"t%d = t%d * t%d", self->result.ref->number, self->arg1->number,
                     self->arg2->number);
             break;
         case MCC_TAC_OP_BINARY_FLOAT_DIV:
-            printf("t%d = t%d / t%d", self->result.ref->number, self->arg1->number,
-                   self->arg2->number);
             fprintf(out,"t%d = t%d / t%d", self->result.ref->number, self->arg1->number,
                     self->arg2->number);
             break;
@@ -309,11 +285,9 @@ void print_tac_bin_op(struct mCc_tac_quad *self, FILE *out){
 void print_tac_unary_op(struct mCc_tac_quad *self, FILE *out) {
     switch (self->un_op) {
         case MCC_TAC_OP_UNARY_NEG:
-            printf("t%d = -t%d", self->result.ref->number, self->arg1->number);
             fprintf(out,"t%d = -t%d", self->result.ref->number, self->arg1->number);
             break;
         case MCC_TAC_OP_UNARY_NOT:
-            printf("t%d = !t%d", self->result.ref->number, self->arg1->number);
             fprintf(out,"t%d = !t%d", self->result.ref->number, self->arg1->number);
             break;
     }
@@ -323,19 +297,15 @@ void print_tac_unary_op(struct mCc_tac_quad *self, FILE *out) {
 void print_tac_literal(struct mCc_tac_quad *self, FILE *out) {
     switch (self->literal->type) {
         case MCC_TAC_QUAD_LIT_INT:
-            printf("t%d = t%d\n",self->result.ref->number,self->literal->ival);
             fprintf(out, "t%d = t%d\n",self->result.ref->number,self->literal->ival);
             break;
         case MCC_TAC_QUAD_LIT_FLOAT:
-            printf("t%d = t%f\n",self->result.ref->number,self->literal->fval);
             fprintf(out, "t%d = t%f\n",self->result.ref->number,self->literal->fval);
             break;
         case MCC_TAC_QUAD_LIT_BOOL:
-            printf("t%d = %s\n",self->result.ref->number,self->literal->ival ? "true" : "false");
             fprintf(out, "t%d = %s\n",self->result.ref->number,self->literal->ival ? "true" : "false");
             break;
         case MCC_TAC_QUAD_LIT_STR:
-            printf("t%d = t%s\n",self->result.ref->number,self->literal->strval);
             fprintf(out, "t%d = t%s\n",self->result.ref->number,self->literal->strval);
             break;
     }
@@ -351,7 +321,6 @@ void mCc_tac_quad_print(struct mCc_tac_quad *self, FILE *out){
 
     switch (self->type) {
         case MCC_TAC_QUAD_ASSIGN:
-            printf("t%d = t%d\n",self->result.ref->number,self->arg1->number);
             fprintf(out, "t%d = t%d\n",self->result.ref->number,self->arg1->number);
             break;
         case MCC_TAC_QUAD_ASSIGN_LIT:
@@ -364,43 +333,32 @@ void mCc_tac_quad_print(struct mCc_tac_quad *self, FILE *out){
             print_tac_bin_op(self,out);
             break;
         case MCC_TAC_QUAD_JUMP:
-            printf("jump L%d\n",self->result.label);
             fprintf(out, "jump L%d\n",self->result.label);
             break;
         case MCC_TAC_QUAD_JUMPFALSE:
-            printf("jumpfalse t%d L%d\n",self->arg1->number, self->result.label);
             fprintf(out, "jumpfalse t%d L%d\n",self->arg1->number, self->result.label);
             break;
         case MCC_TAC_QUAD_LABEL:
-            printf("Label L%d\n",self->result.label);
             fprintf(out,"Label L%d\n",self->result.label);
             break;
         case MCC_TAC_QUAD_PARAM:
-            printf("param t%d\n", self->arg1->number);
             fprintf(out,"param t%d\n", self->arg1->number);
             break;
         case MCC_TAC_QUAD_CALL:
-            printf("call t%d\n",self->arg1->number);
             fprintf(out,"call t%d\n",self->arg1->number);
             break;
         case MCC_TAC_QUAD_LOAD:
-            printf("t%d = t%d[t%d]\n",self->result.ref->number,self->arg1->number,
-                   self->arg2->number);
             fprintf(out,"t%d = t%d[t%d]\n",self->result.ref->number,self->arg1->number,
                    self->arg2->number);
             break;
         case MCC_TAC_QUAD_STORE:
-            printf("t%d[t%d] = t%d\n",self->result.ref->number, self->arg2->number,
-                   self->arg1->number);
             fprintf(out,"t%d[t%d] = t%d\n",self->result.ref->number, self->arg2->number,
                    self->arg1->number);
             break;
         case MCC_TAC_QUAD_RETURN:
-            printf("return t%d\n", self->arg1->number);
             fprintf(out,"return t%d\n", self->arg1->number);
             break;
         case MCC_TAC_QUAD_RETURN_VOID:
-            printf("return \n");
             fprintf(out,"return \n");
             break;
     }
