@@ -76,7 +76,7 @@ mCc_tac_from_expression_arr_subscr(struct mCc_tac_program *prog,struct mCc_ast_e
 	// rec. create mCc_tac_program for array index
 	// create quad [load, result_of_prog]
 	struct mCc_tac_quad_entry *result = TODO_get_new_tmp();
-	//struct mCC_tac_entry *result1 =	TODO_get_lable_from_identifier(expr->array_id);// TODO Think about adding label or entry
+	struct mCC_tac_entry *result1 =	TODO_get_lable_from_arr_name(expr->array_id);
 	struct mCC_tac_entry *result2 = mCc_tac_from_expression(prog, expr->subscript_expr);//array subscript
 	struct mCc_tac_quad *array_subscr = mCc_tac_quad_new_load(result, result2, result);
 	mCc_tac_program_add_quad(prog, array_subscr);
