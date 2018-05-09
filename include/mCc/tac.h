@@ -88,8 +88,10 @@ struct mCc_tac_quad_literal {
 	};
 };
 /// this struct is the used as the type of the quad entries
+#define MCC_TAC_STRING_LEN (4096)
 struct mCc_tac_quad_entry {
     int number;
+    char str_value[MCC_TAC_STRING_LEN_LEN]; /// (Optional)For Strings
 };
 
 #define MCC_TAC_LABEL_LEN (4096)
@@ -137,6 +139,9 @@ struct mCc_tac_program {
 };
 
 /********************************** Quad Functions */
+
+struct mCc_tac_quad_entry *mCc_tac_create_new_entry();
+struct mCc_tac_quad_entry *mCc_tac_create_new_string();
 
 struct mCc_tac_quad *mCc_tac_quad_new_assign(struct mCc_tac_quad_entry *arg1,
                                              struct mCc_tac_quad_entry *result);

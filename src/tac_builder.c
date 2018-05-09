@@ -7,6 +7,18 @@
 #include "mCc/tac.h"
 #include "mCc/tac_builder.h"
 
+static void mCc_tac_entry_from_declaration(struct mCc_ast_declaration *decl)
+{
+
+    if (decl->decl_type == MCC_AST_TYPE_STRING){
+        struct mCc_tac_quad_entry *entry = mCc_tac_create_new_entry();
+        decl->decl_id->symtab_ref->tac_tmp = entry;
+    }
+    else {
+        struct mCc_tac_quad_entry *entry = mCc_tac_create_new_string();
+    }
+}
+
 static struct mCc_tac_quad_entry *
 mCc_tac_from_expression_binary(struct mCc_tac_program *prog,
                                struct mCc_ast_expression *expr)

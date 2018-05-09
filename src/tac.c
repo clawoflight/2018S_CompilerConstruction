@@ -7,6 +7,26 @@
  */
 #include "mCc/tac.h"
 
+struct mCc_tac_quad_entry *mCc_tac_create_new_entry()
+{
+    static int current_tmp = 0;
+
+    struct mCc_tac_quad_entry *entry = malloc(sizeof(entry));
+
+    entry->number = current_tmp;
+    return entry;
+}
+
+struct mCc_tac_quad_entry *mCc_tac_create_new_string()
+{
+    static int current_tmp = 0;
+
+    struct mCc_tac_quad_entry *entry = malloc(sizeof(entry));
+
+    entry->number = current_tmp;
+    return entry;
+}
+
 struct mCc_tac_quad *mCc_tac_quad_new_assign(struct mCc_tac_quad_entry *arg1,
                                              struct mCc_tac_quad_entry *result){
     assert(arg1);
