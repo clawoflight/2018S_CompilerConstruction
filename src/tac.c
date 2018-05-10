@@ -494,7 +494,7 @@ int mCc_tac_program_add_program(struct mCc_tac_program *self,
 	self->quad_count = other_prog->quad_count;
 	self->quad_alloc_size = other_prog->quad_alloc_size;
 
-	for (int i = 0; i < other_prog->quad_count; i++) {
+	for (unsigned int i = 0; i < other_prog->quad_count; i++) {
 		if (mCc_tac_program_add_quad(self, other_prog->quads[i]) != 0) {
 			mCc_tac_program_delete(other_prog, true);
 			mCc_tac_program_delete(self, true);
@@ -510,7 +510,7 @@ void mCc_tac_program_print(struct mCc_tac_program *self, FILE *out)
 {
 	assert(self);
 	assert(out);
-	for (int i = 0; i < self->quad_count; i++) {
+	for (unsigned int i = 0; i < self->quad_count; i++) {
 		mCc_tac_quad_print(self->quads[i], out);
 	}
 	return;
@@ -519,7 +519,7 @@ void mCc_tac_program_print(struct mCc_tac_program *self, FILE *out)
 void mCc_tac_program_delete(struct mCc_tac_program *self, bool delete_quads_too)
 {
 	if (delete_quads_too) {
-		for (int i = 0; i < self->quad_count; i++) {
+		for (unsigned int i = 0; i < self->quad_count; i++) {
 			mCc_tac_quad_delete(self->quads[i]);
 		}
 	}
