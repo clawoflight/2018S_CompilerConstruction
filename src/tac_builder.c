@@ -7,6 +7,8 @@
 #include "mCc/tac.h"
 #include "mCc/tac_builder.h"
 #include "mCc/ast.h"
+#include "mCc/symtab.h"
+#include <string.h>
 
 /*********************************** Global array of strings */
 
@@ -30,7 +32,7 @@ struct mCc_tac_quad_literal* mCc_get_quad_literal(struct mCc_ast_literal *litera
 static void mCc_tac_string_from_assgn(struct mCc_tac_quad_entry *entry,
                                       struct mCc_tac_quad_literal *lit)
 {
-    entry->str_value = lit->strval;
+    strcpy(entry->str_value, lit->strval);
 
     if (global_string_count < global_string_alloc_size) {
         global_string_arr[global_string_count++] = entry;
@@ -39,8 +41,8 @@ static void mCc_tac_string_from_assgn(struct mCc_tac_quad_entry *entry,
 
     struct mCc_tac_quad_entry **tmp;
     global_string_alloc_size += global_string_block_size;
-    if ((tmp = realloc(global_scope_gc_arr,
-                  global_scope_gc_alloc_size * sizeof(*tmp))) == NULL)
+    if ((tmp = realloc(global_string_arr,
+                  global_string_alloc_size * sizeof(*tmp))) == NULL)
         return;
 
     global_string_arr = tmp;
@@ -49,10 +51,12 @@ static void mCc_tac_string_from_assgn(struct mCc_tac_quad_entry *entry,
 
 static void mCc_tac_entry_from_declaration(struct mCc_ast_declaration *decl)
 {
+	struct mCc_tac_quad_entry *entry = malloc(sizeof(entry));
+
     if (decl->decl_type != MCC_AST_TYPE_STRING)
-        struct mCc_tac_quad_entry *entry = mCc_tac_create_new_entry();
+        entry = mCc_tac_create_new_entry();
     else
-        struct mCc_tac_quad_entry *entry = mCc_tac_create_new_string();
+        entry = mCc_tac_create_new_string();
 
     decl->decl_id->symtab_ref->tac_tmp = entry;
 }
