@@ -9,13 +9,15 @@
 
 void print_usage(const char *prg)
 {
-	printf("usage: %s <FILE>\n\n", prg);
+	printf("usage: %s [--help] <FILE> [--print-tac <FILE>]\n\n", prg);
 	printf("  <FILE>        Input filepath or - for stdin\n");
+	printf("  --print-tac   Print the three-address code to the given path");
+	printf("  --help        Print this message");
 }
 
 int main(int argc, char *argv[])
 {
-	if (argc < 2) {
+	if (argc < 2 || strcmp("--help", argv[1])) {
 		print_usage(argv[0]);
 		return EXIT_FAILURE;
 	}
@@ -29,6 +31,20 @@ int main(int argc, char *argv[])
 		if (!in) {
 			perror("fopen");
 			return EXIT_FAILURE;
+		}
+	}
+
+	/* tac output TODO: move to getopt later if needed */
+	FILE *tac_out;
+	if (argc > 3 && strcmp("--print-tac", argv[3]) == 0) {
+		if (strcmp("-", argv[4]) == 0) {
+			tac_out = stdout;
+		} else {
+			tac_out = fopen(argv[4], "r");
+			if (!tac_out) {
+				perror("fopen");
+				return EXIT_FAILURE;
+			}
 		}
 	}
 
@@ -78,6 +94,10 @@ int main(int argc, char *argv[])
 	 * - output assembly code
 	 * - invoke backend compiler
 	 */
+
+	// TODO print TAC to #tac_out
+	if (tac_out != stdout)
+		fclose(tac_out);
 
 	/* cleanup */
 	mCc_ast_delete_program(prog);
