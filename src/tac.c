@@ -6,6 +6,8 @@
  *
  */
 #include "mCc/tac.h"
+#include "mCc/ast.h"
+#include <string.h>
 
 struct mCc_tac_quad_entry *mCc_tac_create_new_entry()
 {
@@ -40,31 +42,30 @@ struct mCc_tac_label *mCc_tac_get_new_label()
 	return label;
 }
 
-struct mCc_tac_quad_literal get_quad_literal(struct mCc_ast_literal *literal)
-{
-	struct mCc_tac_quad_literal lit_quad;
-	switch (literal->type) {
-	case MCC_AST_LITERAL_TYPE_INT:
-		lit_quad->type = MCC_TAC_QUAD_LIT_INT;
-		lit_quad->ival = literal->i_value;
-		break;
-	case MCC_AST_LITERAL_TYPE_FLOAT:
-		lit_quad->type = MCC_TAC_QUAD_LIT_FLOAT;
-		lit_quad->fval = literal->f_value;
-		break;
-	case MCC_AST_LITERAL_TYPE_BOOL:
-		lit_quad->type = MCC_TAC_QUAD_LIT_BOOL;
-		lit_quad->bval = literal->b_value;
-		break;
-	case MCC_AST_LITERAL_TYPE_STRING:
-		lit_quad->type = MCC_TAC_QUAD_LIT_STRING;
-		lit_quad->strval = literal->s_value;
-		break;
-	}
-	return lit_quad;
+struct mCc_tac_quad_literal* get_quad_literal(struct mCc_ast_literal *literal){
+    struct mCc_tac_quad_literal *lit_quad;
+    switch (literal->type){
+        case MCC_AST_LITERAL_TYPE_INT:
+            lit_quad->type=MCC_TAC_QUAD_LIT_INT;
+            lit_quad->ival=literal->i_value;
+            break;
+        case MCC_AST_LITERAL_TYPE_FLOAT:
+            lit_quad->type=MCC_TAC_QUAD_LIT_FLOAT;
+            lit_quad->fval=literal->f_value;
+            break;
+        case MCC_AST_LITERAL_TYPE_BOOL:
+            lit_quad->type=MCC_TAC_QUAD_LIT_BOOL;
+            lit_quad->bval=literal->b_value;
+            break;
+        case MCC_AST_LITERAL_TYPE_STRING:
+            lit_quad->type=MCC_TAC_QUAD_LIT_STR;
+            lit_quad->strval=literal->s_value;
+            break;
+    }
+    return lit_quad;
 }
 
-struct mCc_tac_label *get_label_from_fun_name(struct mCc_ast_identifier f_name)
+struct mCc_tac_label *get_label_from_fun_name(struct mCc_ast_identifier *f_name)
 {
 
 	struct mCc_tac_label *label = malloc(sizeof(label));
@@ -153,8 +154,7 @@ struct mCc_tac_quad *mCc_tac_quad_new_op_binary(
 	return quad;
 }
 
-struct mCc_tac_quad *mCc_tac_quad_new_jump(struct mCc_tac_label label)
-{
+struct mCc_tac_quad *mCc_tac_quad_new_jump(struct mCc_tac_label label){
 
 	struct mCc_tac_quad *quad = malloc(sizeof(*quad));
 
@@ -171,8 +171,8 @@ struct mCc_tac_quad *
 mCc_tac_quad_new_jumpfalse(struct mCc_tac_quad_entry *condition,
                            struct mCc_tac_label label)
 {
-	assert(condition);
-	struct mCc_tac_quad *quad = malloc(sizeof(*quad));
+    assert(condition);
+    struct mCc_tac_quad *quad = malloc(sizeof(*quad));
 
 	if (!quad) {
 		return NULL;
@@ -223,9 +223,10 @@ struct mCc_tac_quad *mCc_tac_quad_new_call(struct mCc_tac_label label)
 		return NULL;
 	}
 
-	quad->type = MCC_TAC_QUAD_CALL;
-	quad->result.label = label;
-	return quad;
+    quad->type=MCC_TAC_QUAD_CALL;
+    quad->result.label=label;
+    return quad;
+
 }
 
 struct mCc_tac_quad *mCc_tac_quad_new_load(struct mCc_tac_quad_entry *array,
@@ -279,21 +280,21 @@ mCc_tac_quad_new_return(struct mCc_tac_quad_entry *ret_value,
 
 	struct mCc_tac_quad *quad = malloc(sizeof(*quad));
 
-	if (!quad) {
-		return NULL;
-	}
-	if (ret_value) {
-		quad->type = MCC_TAC_QUAD_RETURN;
-		quad->arg1 = ret_value;
-	} else {
-		quad->type = MCC_TAC_QUAD_RETURN_VOID;
-	}
-	quad->result.ref = result;
+    if (!quad) {
+        return NULL;
+    }
+    if(ret_value) {
+        quad->type = MCC_TAC_QUAD_RETURN;
+        quad->arg1 = ret_value;
+    } else {
+        quad->type = MCC_TAC_QUAD_RETURN_VOID;
+    }
+    quad->result.ref = result;
 
 	return quad;
 }
 
-static inline void mCc_tac_print_label(struct mCc_tac_label* label, FILE *out)
+static inline void mCc_tac_print_label(struct mCc_tac_label label, FILE *out)
 {
 	if (label.str) {
 		fputs(label.str, out);

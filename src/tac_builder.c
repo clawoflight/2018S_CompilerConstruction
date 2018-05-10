@@ -6,6 +6,7 @@
  */
 #include "mCc/tac.h"
 #include "mCc/tac_builder.h"
+#include "mCc/ast.h"
 
 static void mCc_tac_entry_from_declaration(struct mCc_ast_declaration *decl)
 {
