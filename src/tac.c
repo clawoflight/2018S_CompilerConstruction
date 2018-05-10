@@ -40,6 +40,29 @@ struct mCc_tac_label *mCc_tac_get_new_label()
     return label;
 }
 
+struct mCc_tac_quad_literal get_quad_literal(struct mCc_ast_literal *literal){
+    struct mCc_tac_quad_literal lit_quad;
+    switch (literal->type){
+        case MCC_AST_LITERAL_TYPE_INT:
+            lit_quad->type=MCC_TAC_QUAD_LIT_INT;
+            lit_quad->ival=literal->i_value;
+            break;
+        case MCC_AST_LITERAL_TYPE_FLOAT:
+            lit_quad->type=MCC_TAC_QUAD_LIT_FLOAT;
+            lit_quad->fval=literal->f_value;
+            break;
+        case MCC_AST_LITERAL_TYPE_BOOL:
+            lit_quad->type=MCC_TAC_QUAD_LIT_BOOL;
+            lit_quad->bval=literal->b_value;
+            break;
+        case MCC_AST_LITERAL_TYPE_STRING:
+            lit_quad->type=MCC_TAC_QUAD_LIT_STRING;
+            lit_quad->strval=literal->s_value;
+            break;
+    }
+    return lit_quad;
+}
+
 struct mCc_tac_label *get_label_from_fun_name(struct mCc_ast_identifier f_name)
 {
 

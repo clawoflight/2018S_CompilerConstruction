@@ -19,6 +19,12 @@ static void mCc_tac_entry_from_declaration(struct mCc_ast_declaration *decl)
     }
 }
 
+static mCc_tac_quad_entry get_var_from_id(struct mCc_ast_program *prog,
+                                          struct mCc_ast_identifier *id){
+    //TODO Error if tmp was not found
+    return id->symtab_ref->tac_tmp;
+}
+
 static void mCc_tac_from_stmt(struct mCc_ast_program *prog,
 						struct mCc_ast_statement *stmt){
 
@@ -48,7 +54,8 @@ static void mCc_tac_from_stmt(struct mCc_ast_program *prog,
 			mCc_tac_from_expression(prog,stmt->expression);
 			break;
 		case MCC_AST_STATEMENT_TYPE_CMPND:
-			//TODO
+            //TODO implement
+			mCc_tac_from_stmt(prog,stmt->compound_stmts);
 			break;
 	}
 	return entry;
@@ -63,7 +70,7 @@ static struct mCc_tac_quad_entry *
 	switch (exp->type){
 		case MCC_AST_EXPRESSION_TYPE_LITERAL:
 			entry=mCc_tac_create_new_entry();
-			struct mCc_tac_quad_literal lit=TODO_get_quad_literal(exp->literal);
+			struct mCc_tac_quad_literal lit=get_quad_literal(exp->literal);
 			struct mCc_tac_quad lit_quad=mCc_tac_quad_new_assign_lit(lit,entry);
 			mCc_tac_program_add_quad(prog, lit_quad);
 			break;
@@ -159,7 +166,7 @@ mCc_tac_from_expression_arr_subscr(struct mCc_tac_program *prog,struct mCc_ast_e
 	// rec. create mCc_tac_program for array index
 	// create quad [load, result_of_prog]
 	struct mCc_tac_quad_entry *result = mCc_tac_creat_new_entry();
-	struct mCC_tac_entry *result1 =	TODO_get_var_from_id(expr->array_id);
+	struct mCC_tac_entry *result1 =	get_var_from_id(expr->array_id);
 	struct mCC_tac_entry *result2 = mCc_tac_from_expression(prog, expr->subscript_expr);//array subscript
 	struct mCc_tac_quad *array_subscr = mCc_tac_quad_new_load(result, result2, result);
 	mCc_tac_program_add_quad(prog, array_subscr);
@@ -231,7 +238,7 @@ static struct mCc_tac_quad_entry mCc_tac_entry_from_assg(struct mCc_tac_program 
 						struct mCc_ast_statement *stmt){
 
 	struct mCc_tac_quad new_quad;
-	struct mCC_tac_entry *result=TODO_get_var_from_id(stmt->id_assgn);
+	struct mCC_tac_entry *result=get_var_from_id(stmt->id_assgn);
 
 	struct mCc_tac_quad_entry *result_lhs =
 				mCc_tac_from_expression(prog, stmt->lhs_assgn);
@@ -239,7 +246,7 @@ static struct mCc_tac_quad_entry mCc_tac_entry_from_assg(struct mCc_tac_program 
 			mCc_tac_from_expression(prog, stmt->rhs_assgn);
 
 	if (stmt->rhs_assgn->type==MCC_AST_EXPRESSION_TYPE_LITERAL){
-		struct mCc_tac_quad_literal lit_result=mCC_tac_(stmt->rhs_assgn);
+		struct mCc_tac_quad_literal lit_result=get_quad_literal(stmt->rhs_assgn);
 		new_quad =mCc_tac_quad_new_assign_lit(lit_result,result);
 	} else if(stmt->lhs_assgn){
 		new_quad = mCc_tac_quad_new_store(result_lhs,result_rhs,result);
