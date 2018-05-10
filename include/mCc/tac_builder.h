@@ -20,7 +20,7 @@ extern "C" {
  *
  * @return A TAC program, or NULL on error
  */
-struct mCc_tac_program *mCc_tac_build(struct mCc_ast_program *prog);
+struct mCc_tac_program *mCc_tac_build(struct mCc_tac_program *prog);
 
 #ifdef __cplusplus
 }

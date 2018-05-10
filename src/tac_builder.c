@@ -385,7 +385,7 @@ mCc_tac_from_expression(struct mCc_tac_program *prog,
 
 }
 
-struct mCc_tac_program *mCc_tac_build(struct mCc_ast_program *prog)
+struct mCc_tac_program *mCc_tac_build(struct mCc_tac_program *prog)
 {
 	// TODO
 }
