@@ -6,6 +6,7 @@
 #include "mCc/ast_symtab_link.h"
 #include "mCc/parser.h"
 #include "mCc/typecheck.h"
+#include "mCc/tac_builder.h"
 
 void print_usage(const char *prg)
 {
@@ -35,7 +36,7 @@ int main(int argc, char *argv[])
 	}
 
 	/* tac output TODO: move to getopt later if needed */
-	FILE *tac_out;
+	FILE *tac_out = NULL;
 	if (argc > 3 && strcmp("--print-tac", argv[3]) == 0) {
 		if (strcmp("-", argv[4]) == 0) {
 			tac_out = stdout;
@@ -68,25 +69,36 @@ int main(int argc, char *argv[])
 		prog = result.program;
 	}
 
+	/* build symbol table */
 	struct mCc_ast_symtab_build_result link_result = mCc_ast_symtab_build(prog);
 	if (link_result.status) {
 		fprintf(stderr, "Error in %s at %d:%d - %d:%d: %s\n", argv[1],
 		        link_result.err_loc.start_line, link_result.err_loc.start_col,
 		        link_result.err_loc.end_line, link_result.err_loc.end_col,
 		        link_result.err_msg);
+		mCc_symtab_delete_all_scopes();
 		mCc_ast_delete_program(prog);
 		return EXIT_FAILURE;
 	}
 
+	/* type checking */
 	struct mCc_typecheck_result check_result = mCc_typecheck(prog);
 	if (check_result.status) {
 		fprintf(stderr, "Error in %s at %d:%d - %d:%d: %s\n", argv[1],
 		        check_result.err_loc.start_line, check_result.err_loc.start_col,
 		        check_result.err_loc.end_line, check_result.err_loc.end_col,
 		        check_result.err_msg);
+		mCc_symtab_delete_all_scopes();
 		mCc_ast_delete_program(prog);
 		return EXIT_FAILURE;
 	}
+
+	/* three-addess code generation */
+	// TODO struct mCc_tac_program *prog = mCc_tac_build_program(prog);
+	// TODO mCc_tac_program_print(tac, tac_out);
+
+	if (tac_out && tac_out != stdout)
+		fclose(tac_out);
 
 	/*    TODO
 	 * - create three-address code
@@ -95,11 +107,9 @@ int main(int argc, char *argv[])
 	 * - invoke backend compiler
 	 */
 
-	// TODO print TAC to #tac_out
-	if (tac_out != stdout)
-		fclose(tac_out);
-
 	/* cleanup */
+	// TODO mCc_tac_program_delete(tac, true);
+	mCc_symtab_delete_all_scopes();
 	mCc_ast_delete_program(prog);
 
 	return EXIT_SUCCESS;
