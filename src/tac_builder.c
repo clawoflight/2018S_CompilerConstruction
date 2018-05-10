@@ -380,3 +380,8 @@ mCc_tac_from_expression(struct mCc_ast_program *prog,
     return entry;
 
 }
+
+struct mCc_tac_program *mCc_tac_build(struct mCc_ast_program *prog)
+{
+	// TODO
+}

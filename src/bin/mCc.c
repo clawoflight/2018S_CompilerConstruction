@@ -5,8 +5,8 @@
 #include "mCc/ast.h"
 #include "mCc/ast_symtab_link.h"
 #include "mCc/parser.h"
-#include "mCc/typecheck.h"
 #include "mCc/tac_builder.h"
+#include "mCc/typecheck.h"
 
 void print_usage(const char *prg)
 {
@@ -94,8 +94,8 @@ int main(int argc, char *argv[])
 	}
 
 	/* three-addess code generation */
-	// TODO struct mCc_tac_program *prog = mCc_tac_build_program(prog);
-	// TODO mCc_tac_program_print(tac, tac_out);
+	struct mCc_tac_program *tac = mCc_tac_build(prog);
+	mCc_tac_program_print(tac, tac_out);
 
 	if (tac_out && tac_out != stdout)
 		fclose(tac_out);
@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
 	 */
 
 	/* cleanup */
-	// TODO mCc_tac_program_delete(tac, true);
+	mCc_tac_program_delete(tac, true);
 	mCc_symtab_delete_all_scopes();
 	mCc_ast_delete_program(prog);
 
