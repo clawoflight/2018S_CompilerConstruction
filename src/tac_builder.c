@@ -143,11 +143,11 @@ mCc_tac_from_expression_arr_subscr(struct mCc_tac_program *prog,struct mCc_ast_e
 	return result;
 }
 
-struct mCc_tac_label *mCc_get_label_from_fun_name(struct mCc_ast_identifier *f_name)
+struct mCc_tac_label mCc_get_label_from_fun_name(struct mCc_ast_identifier *f_name)
 {
 
-    struct mCc_tac_label *label = malloc(sizeof(label));
-    strcpy(label->str, f_name->id_value);
+    struct mCc_tac_label label;
+    strcpy(label.str, f_name->id_value);
 
     return label;
 }

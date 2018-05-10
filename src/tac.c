@@ -33,13 +33,13 @@ struct mCc_tac_quad_entry *mCc_tac_create_new_string()
     return entry;
 }
 
-struct mCc_tac_label *mCc_tac_get_new_label()
+struct mCc_tac_label mCc_tac_get_new_label()
 {
 	static int current_lab = 0;
 
-	struct mCc_tac_label *label = malloc(sizeof(label));
+	struct mCc_tac_label label;
 
-	label->num = current_lab;
+	label.num = current_lab;
 	current_lab++;
 	return label;
 }
