@@ -8,16 +8,47 @@
 #include "mCc/tac_builder.h"
 #include "mCc/ast.h"
 
+/*********************************** Global array of strings */
+
+/// Block size by which to increase array when reallocating
+static const unsigned int global_string_block_size = 10;
+/// Number of entries for which memory was allocated
+static unsigned int global_string_alloc_size = 0;
+/// Number of entries currently in array
+static unsigned int global_string_count = 0;
+
+/// All strings ever created, to use when printing or freeing
+static struct mCc_tac_quad_entry **global_string_arr = NULL;
+
+
+static void mCc_tac_string_from_assgn(struct mCc_tac_quad_entry *entry,
+                                      struct mCc_tac_quad_literal *lit)
+{
+    entry->str_value = lit->strval;
+
+    if (global_string_count < global_string_alloc_size) {
+        global_string_arr[global_string_count++] = entry;
+        return;
+    }
+
+    struct mCc_tac_quad_entry **tmp;
+    global_string_alloc_size += global_string_block_size;
+    if ((tmp = realloc(global_scope_gc_arr,
+                  global_scope_gc_alloc_size * sizeof(*tmp))) == NULL)
+        return;
+
+    global_string_arr = tmp;
+    global_string_arr[global_string_count++] = entry;
+}
+
 static void mCc_tac_entry_from_declaration(struct mCc_ast_declaration *decl)
 {
-
-    if (decl->decl_type != MCC_AST_TYPE_STRING){
+    if (decl->decl_type != MCC_AST_TYPE_STRING)
         struct mCc_tac_quad_entry *entry = mCc_tac_create_new_entry();
-        decl->decl_id->symtab_ref->tac_tmp = entry;
-    }
-    else {
+    else
         struct mCc_tac_quad_entry *entry = mCc_tac_create_new_string();
-    }
+
+    decl->decl_id->symtab_ref->tac_tmp = entry;
 }
 
 static mCc_tac_quad_entry get_var_from_id(struct mCc_ast_program *prog,
@@ -250,6 +281,8 @@ static struct mCc_tac_quad_entry mCc_tac_entry_from_assg(struct mCc_tac_program 
 	if (stmt->rhs_assgn->type==MCC_AST_EXPRESSION_TYPE_LITERAL){
 		struct mCc_tac_quad_literal lit_result=get_quad_literal(stmt->rhs_assgn);
 		new_quad =mCc_tac_quad_new_assign_lit(lit_result,result);
+        if (stmt->rhs_assgn->type == MCC_AST_TYPE_STRING)
+            mCc_string_from_assgn(result, lit_result);
 	} else if(stmt->lhs_assgn){
 		new_quad = mCc_tac_quad_new_store(result_lhs,result_rhs,result);
 	} else {

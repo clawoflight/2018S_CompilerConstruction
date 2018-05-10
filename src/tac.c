@@ -11,24 +11,26 @@
 
 struct mCc_tac_quad_entry *mCc_tac_create_new_entry()
 {
-	static int current_tmp = 0;
+    static int current_var = 0;
 
 	struct mCc_tac_quad_entry *entry = malloc(sizeof(entry));
 
-	entry->number = current_tmp;
-	current_tmp++;
-	return entry;
+    entry->number = current_var;
+    current_var++;
+
+    return entry;
 }
 
 struct mCc_tac_quad_entry *mCc_tac_create_new_string()
 {
-	static int current_tmp = 0;
+    static int current_string = 0;
 
-	struct mCc_tac_quad_entry *entry = malloc(sizeof(entry));
+    struct mCc_tac_quad_entry *entry = malloc(sizeof(entry));
 
-	entry->number = current_tmp;
-	current_tmp++;
-	return entry;
+    entry->number = current_string;
+    current_string++;
+
+    return entry;
 }
 
 struct mCc_tac_label *mCc_tac_get_new_label()
