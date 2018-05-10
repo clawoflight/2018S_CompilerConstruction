@@ -22,9 +22,9 @@ static unsigned int global_string_count = 0;
 /// All strings ever created, to use when printing or freeing
 static struct mCc_tac_quad_entry **global_string_arr = NULL;
 static struct mCc_tac_quad_entry *
-mCc_tac_from_expression(struct mCc_ast_program *prog,
+mCc_tac_from_expression(struct mCc_tac_program *prog,
                         struct mCc_ast_expression *exp);
-static void mCc_tac_from_stmt(struct mCc_ast_program *prog,
+static void mCc_tac_from_stmt(struct mCc_tac_program *prog,
                               struct mCc_ast_statement *stmt);
 struct mCc_tac_quad_literal* mCc_get_quad_literal(struct mCc_ast_literal *literal);
 
@@ -61,7 +61,7 @@ static void mCc_tac_entry_from_declaration(struct mCc_ast_declaration *decl)
     decl->decl_id->symtab_ref->tac_tmp = entry;
 }
 
-static struct mCc_tac_quad_entry* mCc_get_var_from_id(struct mCc_ast_program *prog,
+static struct mCc_tac_quad_entry* mCc_get_var_from_id(struct mCc_tac_program *prog,
                                           struct mCc_ast_identifier *id){
     //TODO Error if tmp was not found
     return id->symtab_ref->tac_tmp;
@@ -308,7 +308,7 @@ struct mCc_tac_quad_literal* mCc_get_quad_literal(struct mCc_ast_literal *litera
 }
 
 
-static void mCc_tac_from_stmt(struct mCc_ast_program *prog,
+static void mCc_tac_from_stmt(struct mCc_tac_program *prog,
                               struct mCc_ast_statement *stmt){
 
     switch (stmt->type){
@@ -346,7 +346,7 @@ static void mCc_tac_from_stmt(struct mCc_ast_program *prog,
 }
 
 static struct mCc_tac_quad_entry *
-mCc_tac_from_expression(struct mCc_ast_program *prog,
+mCc_tac_from_expression(struct mCc_tac_program *prog,
                         struct mCc_ast_expression *exp){
 
     struct mCc_tac_quad_entry *entry;
@@ -362,7 +362,7 @@ mCc_tac_from_expression(struct mCc_ast_program *prog,
             entry=exp->identifier->symtab_ref->tac_tmp;
             break;
         case MCC_AST_EXPRESSION_TYPE_UNARY_OP:
-            entry=mCc_tac_from_expression(prog,exp->unary_expression);
+            entry=mCc_tac_from_expression_unary(prog,exp->unary_expression);
             break;
         case MCC_AST_EXPRESSION_TYPE_BINARY_OP:
             entry=mCc_tac_from_expression_binary(prog,exp);
