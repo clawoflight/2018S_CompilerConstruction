@@ -142,6 +142,7 @@ struct mCc_tac_program {
 
 struct mCc_tac_quad_entry *mCc_tac_create_new_entry();
 struct mCc_tac_quad_entry *mCc_tac_create_new_string();
+struct mCc_tac_label mCc_tac_get_new_label();
 
 struct mCc_tac_quad *mCc_tac_quad_new_assign(struct mCc_tac_quad_entry *arg1,
                                              struct mCc_tac_quad_entry *result);

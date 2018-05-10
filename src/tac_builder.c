@@ -61,8 +61,7 @@ static void mCc_tac_entry_from_declaration(struct mCc_ast_declaration *decl)
     decl->decl_id->symtab_ref->tac_tmp = entry;
 }
 
-static struct mCc_tac_quad_entry* mCc_get_var_from_id(struct mCc_tac_program *prog,
-                                          struct mCc_ast_identifier *id){
+static struct mCc_tac_quad_entry *mCc_get_var_from_id(struct mCc_ast_identifier *id){
     //TODO Error if tmp was not found
     return id->symtab_ref->tac_tmp;
 }
@@ -110,6 +109,8 @@ mCc_tac_from_expression_binary(struct mCc_tac_program *prog,
 	// TODO error checking
 	mCc_tac_program_add_quad(prog, binary_op);
 	// TODO error checking
+
+	return new_result;
 }
 
 static struct mCc_tac_quad_entry *
@@ -125,9 +126,10 @@ mCc_tac_from_expression_unary(struct mCc_tac_program *prog,
 	struct mCc_tac_quad_entry *result =
 	    mCc_tac_from_expression(prog, expr->unary_expression);
 
-	result = mCc_tac_quad_new_op_unary(op, result, result);
-	mCc_tac_program_add_quad(prog, result);
+	struct mCc_tac_quad *result_quad = mCc_tac_quad_new_op_unary(op, result, result);
+	mCc_tac_program_add_quad(prog, result_quad);
 	// TODO error checking
+    return result;
 }
 
 static struct mCc_tac_quad_entry *
@@ -135,10 +137,10 @@ mCc_tac_from_expression_arr_subscr(struct mCc_tac_program *prog,struct mCc_ast_e
 {
 	// rec. create mCc_tac_program for array index
 	// create quad [load, result_of_prog]
-	struct mCc_tac_quad_entry *result = mCc_tac_creat_new_entry();
-	struct mCc_tac_quad_entry *result1 =	mCc_get_var_from_id(prog,expr->array_id);
-	struct mCC_tac_entry *result2 = mCc_tac_from_expression(prog, expr->subscript_expr);//array subscript
-	struct mCc_tac_quad *array_subscr = mCc_tac_quad_new_load(result, result2, result);
+	struct mCc_tac_quad_entry *result = mCc_tac_create_new_entry();
+	struct mCc_tac_quad_entry *result1 = mCc_get_var_from_id(expr->array_id);
+	struct mCc_tac_quad_entry *result2 = mCc_tac_from_expression(prog, expr->subscript_expr);//array subscript
+	struct mCc_tac_quad *array_subscr = mCc_tac_quad_new_load(result1, result2, result);
 	mCc_tac_program_add_quad(prog, array_subscr);
 	return result;
 }
@@ -186,8 +188,10 @@ mCc_tac_from_statement_if(struct mCc_tac_program *prog,
 	struct mCc_tac_quad *jump_after_if = mCc_tac_quad_new_jump(label_after_if);
 	mCc_tac_program_add_quad(prog, jump_after_if);
 
-	struct mCc_tac_quad *label_after_if_quad = mCc_Tac_quad_new_label(label_after_if);
+	struct mCc_tac_quad *label_after_if_quad = mCc_tac_quad_new_label(label_after_if);
 	mCc_tac_program_add_quad(prog, label_after_if_quad);
+
+    return cond;
 }
 
 static struct mCc_tac_quad_entry *
@@ -211,6 +215,8 @@ mCc_tac_from_statement_if_else(struct mCc_tac_program *prog,
 	mCc_tac_from_stmt(prog, stmt->else_stmt);
 	struct mCc_tac_quad *label_after_if_quad = mCc_Tac_quad_new_label(label_after_if);
 	mCc_tac_program_add_quad(prog, label_after_if_quad);
+
+    return cond;
 }
 
 static struct mCC_tac_entry* mCc_tac_entry_from_assg(struct mCc_tac_program *prog,
@@ -228,7 +234,7 @@ static struct mCC_tac_entry* mCc_tac_entry_from_assg(struct mCc_tac_program *pro
 		struct mCc_tac_quad_literal *lit_result=mCc_get_quad_literal(stmt->rhs_assgn);
 		new_quad =mCc_tac_quad_new_assign_lit(lit_result,result);
         if (stmt->rhs_assgn->type == MCC_AST_TYPE_STRING)
-            mCc_string_from_assgn(result, lit_result);
+            mCc_tac_string_from_assgn(result, lit_result);
 	} else if(stmt->lhs_assgn){
 		new_quad = mCc_tac_quad_new_store(result_lhs,result_rhs,result);
 	} else {
