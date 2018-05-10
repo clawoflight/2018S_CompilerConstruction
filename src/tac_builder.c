@@ -19,6 +19,12 @@ static unsigned int global_string_count = 0;
 
 /// All strings ever created, to use when printing or freeing
 static struct mCc_tac_quad_entry **global_string_arr = NULL;
+static struct mCc_tac_quad_entry *
+mCc_tac_from_expression(struct mCc_ast_program *prog,
+                        struct mCc_ast_expression *exp);
+static void mCc_tac_from_stmt(struct mCc_ast_program *prog,
+                              struct mCc_ast_statement *stmt);
+struct mCc_tac_quad_literal* mCc_get_quad_literal(struct mCc_ast_literal *literal);
 
 
 static void mCc_tac_string_from_assgn(struct mCc_tac_quad_entry *entry,
@@ -51,83 +57,10 @@ static void mCc_tac_entry_from_declaration(struct mCc_ast_declaration *decl)
     decl->decl_id->symtab_ref->tac_tmp = entry;
 }
 
-static mCc_tac_quad_entry get_var_from_id(struct mCc_ast_program *prog,
+static struct mCc_tac_quad_entry* mCc_get_var_from_id(struct mCc_ast_program *prog,
                                           struct mCc_ast_identifier *id){
     //TODO Error if tmp was not found
     return id->symtab_ref->tac_tmp;
-}
-
-static void mCc_tac_from_stmt(struct mCc_ast_program *prog,
-						struct mCc_ast_statement *stmt){
-
-	switch (stmt->type){
-		case MCC_AST_STATEMENT_TYPE_IF:
-			mCc_tac_from_statement_if(prog,stmt);
-			break;
-		case MCC_AST_STATEMENT_TYPE_IFELSE:
-			mCc_tac_from_statement_if_else(prog,stmt);
-			break;
-		case MCC_AST_STATEMENT_TYPE_RET:
-			mCc_tac_from_statement_return(prog,stmt);
-			break;
-		case MCC_AST_STATEMENT_TYPE_RET_VOID:
-			mCc_tac_from_statement_return(prog,stmt);
-			break;
-		case MCC_AST_STATEMENT_TYPE_WHILE:
-			mCc_tac_from_statement_while;
-			break;
-		case MCC_AST_STATEMENT_TYPE_DECL:
-			mCc_tac_entry_from_declaration(prog,stmt->declaration);
-			break;
-		case MCC_AST_STATEMENT_TYPE_ASSGN:
-			mCc_tac_entry_from_assg(prog,stmt);
-			break;
-		case MCC_AST_STATEMENT_TYPE_EXPR:
-			mCc_tac_from_expression(prog,stmt->expression);
-			break;
-		case MCC_AST_STATEMENT_TYPE_CMPND:
-            for(int i=0;i<(stmt->compound_stmt_count);i++) {
-				mCc_tac_from_stmt(prog, stmt->compound_stmts[i]);
-			}
-			break;
-	}
-	return entry;
-}
-
-static struct mCc_tac_quad_entry *
-		mCc_tac_from_expression(struct mCc_ast_program *prog,
-								struct mCc_ast_expression *exp){
-
-	struct mCc_tac_quad_entry *entry;
-
-	switch (exp->type){
-		case MCC_AST_EXPRESSION_TYPE_LITERAL:
-			entry=mCc_tac_create_new_entry();
-			struct mCc_tac_quad_literal lit=get_quad_literal(exp->literal);
-			struct mCc_tac_quad lit_quad=mCc_tac_quad_new_assign_lit(lit,entry);
-			mCc_tac_program_add_quad(prog, lit_quad);
-			break;
-		case MCC_AST_EXPRESSION_TYPE_IDENTIFIER:
-			entry=exp->identifier->symtab_ref->tac_tmp;
-			break;
-		case MCC_AST_EXPRESSION_TYPE_UNARY_OP:
-			entry=mCc_tac_from_expression(prog,exp->unary_exp);
-			break;
-		case MCC_AST_EXPRESSION_TYPE_BINARY_OP:
-			entry=mCc_tac_from_expression_binary(prog,exp);
-			break;
-		case MCC_AST_EXPRESSION_TYPE_PARENTH:
-			entry=mCc_tac_from_expression(prog,exp->expression);
-			break;
-		case MCC_AST_EXPRESSION_TYPE_CALL_EXPR:
-			entry=mCc_tac_from_expression_call(prog,exp);
-			break;
-		case MCC_AST_EXPRESSION_TYPE_ARR_SUBSC:
-			entry=mCc_tac_from_expression_arr_subscr(prog,exp);
-			break;
-	}
-	return entry;
-
 }
 
 static struct mCc_tac_quad_entry *
@@ -199,11 +132,20 @@ mCc_tac_from_expression_arr_subscr(struct mCc_tac_program *prog,struct mCc_ast_e
 	// rec. create mCc_tac_program for array index
 	// create quad [load, result_of_prog]
 	struct mCc_tac_quad_entry *result = mCc_tac_creat_new_entry();
-	struct mCC_tac_entry *result1 =	get_var_from_id(expr->array_id);
+	struct mCC_tac_entry *result1 =	mCc_get_var_from_id(prog,expr->array_id);
 	struct mCC_tac_entry *result2 = mCc_tac_from_expression(prog, expr->subscript_expr);//array subscript
 	struct mCc_tac_quad *array_subscr = mCc_tac_quad_new_load(result, result2, result);
 	mCc_tac_program_add_quad(prog, array_subscr);
 	return result;
+}
+
+struct mCc_tac_label *mCc_get_label_from_fun_name(struct mCc_ast_identifier *f_name)
+{
+
+    struct mCc_tac_label *label = malloc(sizeof(label));
+    strcpy(label->str, f_name->id_value);
+
+    return label;
 }
 
 static struct mCc_tac_quad_entry *
@@ -221,7 +163,7 @@ mCc_tac_from_expression_call(struct mCc_tac_program *prog,
 		mCc_tac_program_add_quad(prog, param);
 	}
 
-	struct mCc_tac_label label_fun = get_label_from_fun_name(expr->f_name);
+	struct mCc_tac_label label_fun = mCc_get_label_from_fun_name(expr->f_name);
 	struct mCc_tac_quad *jump_to_fun = mCc_tac_quad_new_jump(label_fun);
 	mCc_tac_program_add_quad(prog, jump_to_fun);
 }
@@ -270,8 +212,8 @@ mCc_tac_from_statement_if_else(struct mCc_tac_program *prog,
 static struct mCc_tac_quad_entry mCc_tac_entry_from_assg(struct mCc_tac_program *prog,
 						struct mCc_ast_statement *stmt){
 
-	struct mCc_tac_quad new_quad;
-	struct mCC_tac_entry *result=get_var_from_id(stmt->id_assgn);
+	struct mCc_tac_quad *new_quad;
+	struct mCC_tac_entry *result=mCc_get_var_from_id(prog,stmt->id_assgn);
 
 	struct mCc_tac_quad_entry *result_lhs =
 				mCc_tac_from_expression(prog, stmt->lhs_assgn);
@@ -279,7 +221,7 @@ static struct mCc_tac_quad_entry mCc_tac_entry_from_assg(struct mCc_tac_program 
 			mCc_tac_from_expression(prog, stmt->rhs_assgn);
 
 	if (stmt->rhs_assgn->type==MCC_AST_EXPRESSION_TYPE_LITERAL){
-		struct mCc_tac_quad_literal lit_result=get_quad_literal(stmt->rhs_assgn);
+		struct mCc_tac_quad_literal *lit_result=mCc_get_quad_literal(stmt->rhs_assgn);
 		new_quad =mCc_tac_quad_new_assign_lit(lit_result,result);
         if (stmt->rhs_assgn->type == MCC_AST_TYPE_STRING)
             mCc_string_from_assgn(result, lit_result);
@@ -317,17 +259,17 @@ static int mCc_tac_from_statement_while(struct mCc_tac_program *prog,
 static int mCc_tac_from_statement_return(struct mCc_tac_program *prog,
                                          struct mCc_ast_statement *stmt)
 {
-	struct mCc_tac_quad_entry entry;
+	struct mCc_tac_quad_entry *entry;
 	if(stmt->ret_val){
 		entry=mCc_tac_from_expression(prog,stmt->ret_val);
 	}
-	new_quad=mCc_tac_quad_new_return(prog,stmt);
+	struct mCc_tac_quad *new_quad=mCc_tac_quad_new_return(prog,stmt);
 
 }
 
 static int mCc_tac_from_function_def(struct mCc_tac_program *prog, struct mCc_ast_function_def *fun_def)
 {
-	struct mCc_tac_label label_fun = get_label_from_fun_name(fun_def->identifier);
+	struct mCc_tac_label label_fun = mCc_get_label_from_fun_name(fun_def->identifier);
 
 	struct mCc_tac_quad *label_fun_quad = mCc_tac_quad_new_label(label_fun);
 	mCc_tac_program_add_quad(prog, label_fun_quad);
@@ -335,6 +277,7 @@ static int mCc_tac_from_function_def(struct mCc_tac_program *prog, struct mCc_as
 
 	mCc_tac_from_statement(prog, fun_def->body);
 	// TODO error checking
+    return;
 }
 
 struct mCc_tac_quad_literal* mCc_get_quad_literal(struct mCc_ast_literal *literal){
@@ -360,11 +303,76 @@ struct mCc_tac_quad_literal* mCc_get_quad_literal(struct mCc_ast_literal *litera
 	return lit_quad;
 }
 
-struct mCc_tac_label *mCc_get_label_from_fun_name(struct mCc_ast_identifier *f_name)
-{
 
-	struct mCc_tac_label *label = malloc(sizeof(label));
-	strcpy(label->str, f_name->id_value);
+static void mCc_tac_from_stmt(struct mCc_ast_program *prog,
+                              struct mCc_ast_statement *stmt){
 
-	return label;
+    switch (stmt->type){
+        case MCC_AST_STATEMENT_TYPE_IF:
+            mCc_tac_from_statement_if(prog,stmt);
+            break;
+        case MCC_AST_STATEMENT_TYPE_IFELSE:
+            mCc_tac_from_statement_if_else(prog,stmt);
+            break;
+        case MCC_AST_STATEMENT_TYPE_RET:
+            mCc_tac_from_statement_return(prog,stmt);
+            break;
+        case MCC_AST_STATEMENT_TYPE_RET_VOID:
+            mCc_tac_from_statement_return(prog,stmt);
+            break;
+        case MCC_AST_STATEMENT_TYPE_WHILE:
+            mCc_tac_from_statement_while;
+            break;
+        case MCC_AST_STATEMENT_TYPE_DECL:
+            mCc_tac_entry_from_declaration(stmt->declaration);
+            break;
+        case MCC_AST_STATEMENT_TYPE_ASSGN:
+            mCc_tac_entry_from_assg(prog,stmt);
+            break;
+        case MCC_AST_STATEMENT_TYPE_EXPR:
+            mCc_tac_from_expression(prog,stmt->expression);
+            break;
+        case MCC_AST_STATEMENT_TYPE_CMPND:
+            for(int i=0;i<(stmt->compound_stmt_count);i++) {
+                mCc_tac_from_stmt(prog, stmt->compound_stmts[i]);
+            }
+            break;
+    }
+    return ;
+}
+
+static struct mCc_tac_quad_entry *
+mCc_tac_from_expression(struct mCc_ast_program *prog,
+                        struct mCc_ast_expression *exp){
+
+    struct mCc_tac_quad_entry *entry;
+
+    switch (exp->type){
+        case MCC_AST_EXPRESSION_TYPE_LITERAL:
+            entry=mCc_tac_create_new_entry();
+            struct mCc_tac_quad_literal *lit=mCc_get_quad_literal(exp->literal);
+            struct mCc_tac_quad *lit_quad=mCc_tac_quad_new_assign_lit(lit,entry);
+            mCc_tac_program_add_quad(prog, lit_quad);
+            break;
+        case MCC_AST_EXPRESSION_TYPE_IDENTIFIER:
+            entry=exp->identifier->symtab_ref->tac_tmp;
+            break;
+        case MCC_AST_EXPRESSION_TYPE_UNARY_OP:
+            entry=mCc_tac_from_expression(prog,exp->unary_expression);
+            break;
+        case MCC_AST_EXPRESSION_TYPE_BINARY_OP:
+            entry=mCc_tac_from_expression_binary(prog,exp);
+            break;
+        case MCC_AST_EXPRESSION_TYPE_PARENTH:
+            entry=mCc_tac_from_expression(prog,exp->expression);
+            break;
+        case MCC_AST_EXPRESSION_TYPE_CALL_EXPR:
+            entry=mCc_tac_from_expression_call(prog,exp);
+            break;
+        case MCC_AST_EXPRESSION_TYPE_ARR_SUBSCR:
+            entry=mCc_tac_from_expression_arr_subscr(prog,exp);
+            break;
+    }
+    return entry;
+
 }
