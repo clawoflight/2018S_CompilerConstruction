@@ -213,7 +213,7 @@ mCc_tac_from_statement_if_else(struct mCc_tac_program *prog,
 	mCc_tac_program_add_quad(prog, jump_after_if);
 
 	mCc_tac_from_stmt(prog, stmt->else_stmt);
-	struct mCc_tac_quad *label_after_if_quad = mCc_Tac_quad_new_label(label_after_if);
+	struct mCc_tac_quad *label_after_if_quad = mCc_tac_quad_new_label(label_after_if);
 	mCc_tac_program_add_quad(prog, label_after_if_quad);
 
     return cond;
@@ -223,7 +223,7 @@ static struct mCC_tac_entry* mCc_tac_entry_from_assg(struct mCc_tac_program *pro
 						struct mCc_ast_statement *stmt){
 
 	struct mCc_tac_quad *new_quad;
-	struct mCc_tac_quad_entry *result = mCc_get_var_from_id(prog,stmt->id_assgn);
+	struct mCc_tac_quad_entry *result = mCc_get_var_from_id(stmt->id_assgn);
 
 	struct mCc_tac_quad_entry *result_lhs =
 				mCc_tac_from_expression(prog, stmt->lhs_assgn);
