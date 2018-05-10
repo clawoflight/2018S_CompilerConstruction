@@ -12,13 +12,13 @@ void print_usage(const char *prg)
 {
 	printf("usage: %s [--help] <FILE> [--print-tac <FILE>]\n\n", prg);
 	printf("  <FILE>        Input filepath or - for stdin\n");
-	printf("  --print-tac   Print the three-address code to the given path");
-	printf("  --help        Print this message");
+	printf("  --print-tac   Print the three-address code to the given path\n");
+	printf("  --help        Print this message\n");
 }
 
 int main(int argc, char *argv[])
 {
-	if (argc < 2 || strcmp("--help", argv[1])) {
+	if (argc < 2 || strcmp("--help", argv[1]) == 0) {
 		print_usage(argv[0]);
 		return EXIT_FAILURE;
 	}
