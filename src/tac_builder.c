@@ -236,6 +236,17 @@ static struct mCc_tac_quad_entry mCc_tac_entry_from_assg(struct mCc_tac_program 
 	}
 	mCc_tac_program_add_quad(prog, new_quad);
 }
+static int mCc_tac_from_statement_return(struct mCc_tac_program *prog,
+										 struct mCc_ast_statement *stmt)
+{
+	struct mCc_tac_quad_entry *entry;
+	if(stmt->ret_val){
+		entry=mCc_tac_from_expression(prog,stmt->ret_val);
+	}
+	struct mCc_tac_quad *new_quad=mCc_tac_quad_new_return(prog,entry);
+	mCc_tac_program_add_quad(prog, new_quad);
+	return;
+}
 
 static int mCc_tac_from_statement_while(struct mCc_tac_program *prog,
                                         struct mCc_ast_statement *stmt)
@@ -253,22 +264,11 @@ static int mCc_tac_from_statement_while(struct mCc_tac_program *prog,
 	    mCc_tac_quad_new_jumpfalse(cond, label_after_while);
 	mCc_tac_program_add_quad(prog, jump_after_while);
 
-	mCc_tac_from_statement(prog, stmt->while_stmt);
+	mCc_tac_from_stmt(prog, stmt->while_stmt);
 	struct mCc_tac_quad *jump_to_cond = mCc_tac_quad_new_jump(label_cond);
 	mCc_tac_program_add_quad(prog, jump_to_cond);
 	mCc_tac_program_add_quad(prog, label_after_while_quad);
-}
-
-
-static int mCc_tac_from_statement_return(struct mCc_tac_program *prog,
-                                         struct mCc_ast_statement *stmt)
-{
-	struct mCc_tac_quad_entry *entry;
-	if(stmt->ret_val){
-		entry=mCc_tac_from_expression(prog,stmt->ret_val);
-	}
-	struct mCc_tac_quad *new_quad=mCc_tac_quad_new_return(prog,stmt);
-
+	return;
 }
 
 static int mCc_tac_from_function_def(struct mCc_tac_program *prog, struct mCc_ast_function_def *fun_def)
@@ -279,9 +279,9 @@ static int mCc_tac_from_function_def(struct mCc_tac_program *prog, struct mCc_as
 	mCc_tac_program_add_quad(prog, label_fun_quad);
 	// TODO error checking
 
-	mCc_tac_from_statement(prog, fun_def->body);
+	mCc_tac_from_stmt(prog, fun_def->body);
 	// TODO error checking
-    return;
+    return ;
 }
 
 struct mCc_tac_quad_literal* mCc_get_quad_literal(struct mCc_ast_literal *literal){
@@ -325,7 +325,7 @@ static void mCc_tac_from_stmt(struct mCc_tac_program *prog,
             mCc_tac_from_statement_return(prog,stmt);
             break;
         case MCC_AST_STATEMENT_TYPE_WHILE:
-            mCc_tac_from_statement_while;
+            mCc_tac_from_statement_while(prog,stmt);
             break;
         case MCC_AST_STATEMENT_TYPE_DECL:
             mCc_tac_entry_from_declaration(stmt->declaration);
