@@ -148,7 +148,7 @@ struct mCc_tac_quad *mCc_tac_quad_new_op_binary(enum mCc_tac_quad_binary_op op,
 
 }
 
-struct mCc_tac_quad *mCc_tac_quad_new_jump(struct mCc_tac_label* label){
+struct mCc_tac_quad *mCc_tac_quad_new_jump(struct mCc_tac_label label){
 
     struct mCc_tac_quad *quad = malloc(sizeof(*quad));
 
@@ -163,7 +163,7 @@ struct mCc_tac_quad *mCc_tac_quad_new_jump(struct mCc_tac_label* label){
 
 struct mCc_tac_quad *
 mCc_tac_quad_new_jumpfalse(struct mCc_tac_quad_entry *condition,
-                           struct mCc_tac_label* label){
+                           struct mCc_tac_label label){
     assert(condition);
     struct mCc_tac_quad *quad = malloc(sizeof(*quad));
 
@@ -177,7 +177,7 @@ mCc_tac_quad_new_jumpfalse(struct mCc_tac_quad_entry *condition,
     return quad;
 }
 
-struct mCc_tac_quad *mCc_tac_quad_new_label(struct mCc_tac_label* label){
+struct mCc_tac_quad *mCc_tac_quad_new_label(struct mCc_tac_label label){
 
     struct mCc_tac_quad *quad = malloc(sizeof(*quad));
 
@@ -205,9 +205,7 @@ struct mCc_tac_quad *mCc_tac_quad_new_param(struct mCc_tac_quad_entry *value){
     return quad;
 }
 
-struct mCc_tac_quad *mCc_tac_quad_new_call(struct mCc_tac_label* label){
-
-    assert(label);
+struct mCc_tac_quad *mCc_tac_quad_new_call(struct mCc_tac_label label){
 
     struct mCc_tac_quad *quad = malloc(sizeof(*quad));
 
@@ -216,7 +214,7 @@ struct mCc_tac_quad *mCc_tac_quad_new_call(struct mCc_tac_label* label){
     }
 
     quad->type=MCC_TAC_QUAD_CALL;
-    quad->arg1=label;
+    quad->result.label=label;
     return quad;
 
 }
@@ -275,7 +273,7 @@ struct mCc_tac_quad *mCc_tac_quad_new_return(struct mCc_tac_quad_entry *ret_valu
     }
     if(ret_value) {
         quad->type = MCC_TAC_QUAD_RETURN;
-        quad->arg1 = value;
+        quad->arg1 = ret_value;
     }else{
         quad->type = MCC_TAC_QUAD_RETURN_VOID;
         }
