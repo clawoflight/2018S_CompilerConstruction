@@ -91,7 +91,7 @@ struct mCc_tac_quad_literal {
 #define MCC_TAC_STRING_LEN (4096)
 struct mCc_tac_quad_entry {
     int number;
-    char str_value[MCC_TAC_STRING_LEN_LEN]; /// (Optional)For Strings
+    char str_value[MCC_TAC_STRING_LEN]; /// (Optional)For Strings
 };
 
 #define MCC_TAC_LABEL_LEN (4096)

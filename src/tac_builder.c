@@ -189,7 +189,7 @@ mCc_tac_from_expression_call(struct mCc_tac_program *prog,
 		mCc_tac_program_add_quad(prog, param);
 	}
 
-	struct mCc_tac_label label_fun = TODO_get_label_for_function(expr->f_name);
+	struct mCc_tac_label label_fun = get_label_from_fun_name(expr->f_name);
 	struct mCc_tac_quad *jump_to_fun = mCc_tac_quad_new_jump(label_fun);
 	mCc_tac_program_add_quad(prog, jump_to_fun);
 }
