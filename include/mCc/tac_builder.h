@@ -11,8 +11,7 @@
 extern "C" {
 #endif
 
-#include "ast.h"
-#include "tac.h"
+#include "mCc/tac.h"
 
 /**
  * @brief Build a TAC program from an AST.

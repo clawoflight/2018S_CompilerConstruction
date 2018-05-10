@@ -243,10 +243,8 @@ struct mCc_tac_quad *mCc_tac_quad_new_store(struct mCc_tac_quad_entry *index,
 }
 
 struct mCc_tac_quad *
-mCc_tac_quad_new_return(struct mCc_tac_quad_entry *ret_value,
-                        struct mCc_tac_quad_entry *result)
+mCc_tac_quad_new_return(struct mCc_tac_quad_entry *ret_value)
 {
-	assert(result);
 
 	struct mCc_tac_quad *quad = malloc(sizeof(*quad));
 
@@ -256,10 +254,10 @@ mCc_tac_quad_new_return(struct mCc_tac_quad_entry *ret_value,
     if(ret_value) {
         quad->type = MCC_TAC_QUAD_RETURN;
         quad->arg1 = ret_value;
-    } else {
+		//quad->result.ref = result;		//TODO how to get the value which waits for the return value
+	} else {
         quad->type = MCC_TAC_QUAD_RETURN_VOID;
     }
-    quad->result.ref = result;
 
 	return quad;
 }

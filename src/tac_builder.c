@@ -4,11 +4,8 @@
  * @author bennett
  * @date 2018-04-27
  */
-#include "mCc/tac.h"
 #include "mCc/tac_builder.h"
-#include "mCc/ast.h"
 #include "mCc/symtab.h"
-#include <string.h>
 
 /*********************************** Global array of strings */
 
@@ -219,7 +216,7 @@ mCc_tac_from_statement_if_else(struct mCc_tac_program *prog,
     return cond;
 }
 
-static struct mCC_tac_entry* mCc_tac_entry_from_assg(struct mCc_tac_program *prog,
+static void mCc_tac_entry_from_assg(struct mCc_tac_program *prog,
 						struct mCc_ast_statement *stmt){
 
 	struct mCc_tac_quad *new_quad;
@@ -231,9 +228,9 @@ static struct mCC_tac_entry* mCc_tac_entry_from_assg(struct mCc_tac_program *pro
 			mCc_tac_from_expression(prog, stmt->rhs_assgn);
 
 	if (stmt->rhs_assgn->type==MCC_AST_EXPRESSION_TYPE_LITERAL){
-		struct mCc_tac_quad_literal *lit_result=mCc_get_quad_literal(stmt->rhs_assgn);
+		struct mCc_tac_quad_literal *lit_result=mCc_get_quad_literal(stmt->rhs_assgn->literal);
 		new_quad =mCc_tac_quad_new_assign_lit(lit_result,result);
-        if (stmt->rhs_assgn->type == MCC_AST_TYPE_STRING)
+        if (stmt->rhs_assgn->literal->type == MCC_AST_LITERAL_TYPE_STRING)
             mCc_tac_string_from_assgn(result, lit_result);
 	} else if(stmt->lhs_assgn){
 		new_quad = mCc_tac_quad_new_store(result_lhs,result_rhs,result);
@@ -241,7 +238,7 @@ static struct mCC_tac_entry* mCc_tac_entry_from_assg(struct mCc_tac_program *pro
 		new_quad = mCc_tac_quad_new_assign(result_rhs, result);
 	}
 	mCc_tac_program_add_quad(prog, new_quad);
-	return result;
+
 }
 static int mCc_tac_from_statement_return(struct mCc_tac_program *prog,
 										 struct mCc_ast_statement *stmt)
@@ -250,7 +247,7 @@ static int mCc_tac_from_statement_return(struct mCc_tac_program *prog,
 	if(stmt->ret_val){
 		entry=mCc_tac_from_expression(prog,stmt->ret_val);
 	}
-	struct mCc_tac_quad *new_quad = mCc_tac_quad_new_return(prog,entry);
+	struct mCc_tac_quad *new_quad = mCc_tac_quad_new_return(entry);//TODO save the variable which gets the return value back
 	mCc_tac_program_add_quad(prog, new_quad);
 	return;
 }
@@ -344,7 +341,7 @@ static void mCc_tac_from_stmt(struct mCc_tac_program *prog,
             mCc_tac_from_expression(prog,stmt->expression);
             break;
         case MCC_AST_STATEMENT_TYPE_CMPND:
-            for(int i=0;i<(stmt->compound_stmt_count);i++) {
+            for(unsigned int i=0 ; i < (stmt->compound_stmt_count); i++) {
                 mCc_tac_from_stmt(prog, stmt->compound_stmts[i]);
             }
             break;

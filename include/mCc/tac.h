@@ -187,7 +187,11 @@ struct mCc_tac_quad *mCc_tac_quad_new_call(struct mCc_tac_label label);
  */
 struct mCc_tac_quad *mCc_tac_quad_new_load(struct mCc_tac_quad_entry *array,
                                            struct mCc_tac_quad_entry *index,
+
                                            struct mCc_tac_quad_entry *result);
+
+struct mCc_tac_quad *mCc_tac_quad_new_return(struct mCc_tac_quad_entry *ret_value);
+
 
 /**
  * Storing an value in an index of an array
