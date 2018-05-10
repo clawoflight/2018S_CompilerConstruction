@@ -54,8 +54,9 @@ static void mCc_tac_from_stmt(struct mCc_ast_program *prog,
 			mCc_tac_from_expression(prog,stmt->expression);
 			break;
 		case MCC_AST_STATEMENT_TYPE_CMPND:
-            //TODO implement
-			mCc_tac_from_stmt(prog,stmt->compound_stmts);
+            for(int i=0;i<(stmt->compound_stmt_count);i++) {
+				mCc_tac_from_stmt(prog, stmt->compound_stmts[i]);
+			}
 			break;
 	}
 	return entry;
