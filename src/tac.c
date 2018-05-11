@@ -8,6 +8,7 @@
 #include "mCc/tac.h"
 #include "mCc/ast.h"
 #include <string.h>
+#include <assert.h>
 
 struct mCc_tac_quad_entry *mCc_tac_create_new_entry()
 {
@@ -434,7 +435,57 @@ void mCc_tac_quad_print(struct mCc_tac_quad *self, FILE *out)
 
 void mCc_tac_quad_delete(struct mCc_tac_quad *self)
 {
+	assert(self);
+
+	switch(self->type){
+		case MCC_TAC_QUAD_ASSIGN:
+			break;
+		case MCC_TAC_QUAD_ASSIGN_LIT:
+			break;
+		case MCC_TAC_QUAD_OP_UNARY:
+			break;
+		case MCC_TAC_QUAD_OP_BINARY:
+			break;
+		case MCC_TAC_QUAD_JUMP:
+			break;
+		case MCC_TAC_QUAD_JUMPFALSE:
+			break;
+		case MCC_TAC_QUAD_LABEL:
+			break;
+		case MCC_TAC_QUAD_PARAM:
+			break;
+		case MCC_TAC_QUAD_CALL:
+			break;
+		case MCC_TAC_QUAD_LOAD:
+			break;
+		case MCC_TAC_QUAD_STORE:
+			break;
+		case MCC_TAC_QUAD_RETURN:
+			break;
+		case MCC_TAC_QUAD_RETURN_VOID:
+			break;
+	}
+
+	free(self);
 	// TODO implement
+	return;
+}
+
+void mCc_tac_quad_entry_delete(struct mCc_tac_quad_entry *entry)
+{
+	//TODO implement
+	return;
+}
+
+void mCc_tac_quad_literal_delete(struct mCc_tac_quad_literal *lit)
+{
+	//TODO implement
+	return;
+}
+
+void mCc_tac_label_delete(struct mCc_tac_label *label)
+{
+	//TODO implement
 	return;
 }
 
