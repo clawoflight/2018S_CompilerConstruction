@@ -159,7 +159,7 @@ mCc_tac_from_expression_call(struct mCc_tac_program *prog,
 	// TODO: I fear that we will need to first compute all params, then push
 	// them. That would make this far more annoying - use variable-length array
 	// to store results maybe?
-	for (unsigned int i = expr->arguments->expression_count - 1; i >= 0; --i) {
+	for (int i = expr->arguments->expression_count - 1; i >= 0; --i) {
 		struct mCc_tac_quad_entry *param_temporary =
 		    mCc_tac_from_expression(prog, expr->arguments->expressions[i]);
 		struct mCc_tac_quad *param = mCc_tac_quad_new_param(param_temporary);
@@ -169,6 +169,8 @@ mCc_tac_from_expression_call(struct mCc_tac_program *prog,
 	struct mCc_tac_label label_fun = mCc_get_label_from_fun_name(expr->f_name);
 	struct mCc_tac_quad *jump_to_fun = mCc_tac_quad_new_jump(label_fun);
 	mCc_tac_program_add_quad(prog, jump_to_fun);
+
+    return; //TODO: What to return? we expect an entry, but which entry?
 }
 
 static struct mCc_tac_quad_entry *
@@ -240,7 +242,7 @@ static void mCc_tac_entry_from_assg(struct mCc_tac_program *prog,
 	mCc_tac_program_add_quad(prog, new_quad);
 
 }
-static int mCc_tac_from_statement_return(struct mCc_tac_program *prog,
+static void mCc_tac_from_statement_return(struct mCc_tac_program *prog,
 										 struct mCc_ast_statement *stmt)
 {
 	struct mCc_tac_quad_entry *entry;
@@ -252,7 +254,7 @@ static int mCc_tac_from_statement_return(struct mCc_tac_program *prog,
 	return;
 }
 
-static int mCc_tac_from_statement_while(struct mCc_tac_program *prog,
+static void mCc_tac_from_statement_while(struct mCc_tac_program *prog,
                                         struct mCc_ast_statement *stmt)
 {
 	// TODO error handling everywhere
@@ -275,7 +277,7 @@ static int mCc_tac_from_statement_while(struct mCc_tac_program *prog,
 	return;
 }
 
-static int mCc_tac_from_function_def(struct mCc_tac_program *prog, struct mCc_ast_function_def *fun_def)
+static void mCc_tac_from_function_def(struct mCc_tac_program *prog, struct mCc_ast_function_def *fun_def)
 {
 	struct mCc_tac_label label_fun = mCc_get_label_from_fun_name(fun_def->identifier);
 
@@ -289,7 +291,7 @@ static int mCc_tac_from_function_def(struct mCc_tac_program *prog, struct mCc_as
 }
 
 struct mCc_tac_quad_literal* mCc_get_quad_literal(struct mCc_ast_literal *literal){
-	struct mCc_tac_quad_literal *lit_quad;
+	struct mCc_tac_quad_literal *lit_quad = malloc(sizeof(lit_quad));
 	switch (literal->type){
 		case MCC_AST_LITERAL_TYPE_INT:
 			lit_quad->type=MCC_TAC_QUAD_LIT_INT;
@@ -385,7 +387,8 @@ mCc_tac_from_expression(struct mCc_tac_program *prog,
 
 }
 
-struct mCc_tac_program *mCc_tac_build(struct mCc_tac_program *prog)
+struct mCc_tac_program *mCc_tac_build(struct mCc_ast_program *prog)
 {
 	// TODO
+	return;
 }

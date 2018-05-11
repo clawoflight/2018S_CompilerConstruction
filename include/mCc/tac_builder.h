@@ -12,6 +12,7 @@ extern "C" {
 #endif
 
 #include "mCc/tac.h"
+#include "mCc/ast.h"
 
 /**
  * @brief Build a TAC program from an AST.
@@ -20,7 +21,7 @@ extern "C" {
  *
  * @return A TAC program, or NULL on error
  */
-struct mCc_tac_program *mCc_tac_build(struct mCc_tac_program *prog);
+struct mCc_tac_program *mCc_tac_build(struct mCc_ast_program *prog);
 
 #ifdef __cplusplus
 }

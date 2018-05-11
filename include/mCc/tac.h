@@ -19,7 +19,7 @@ extern "C" {
 /******************************** Data Structures */
 
 /// Size by which to increase compound_stmts when reallocing
-const int quad_alloc_block_size = 10;
+static const int quad_alloc_block_size = 10;
 
 /// Binary Operators
 enum mCc_tac_quad_binary_op {
