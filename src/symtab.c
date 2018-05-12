@@ -279,6 +279,7 @@ int mCc_symtab_scope_add_decl(struct mCc_symtab_scope *self,
 		return 1;
 	}
 	mCc_symtab_scope_add_entry(self, entry);
+	decl->decl_id->symtab_ref = entry;
 
 	return 0;
 }
