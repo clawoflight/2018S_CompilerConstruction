@@ -503,8 +503,7 @@ void mCc_tac_quad_delete(struct mCc_tac_quad *self)
 		case MCC_TAC_QUAD_RETURN_VOID:
 			break;
 	}
-	if (self->comment)
-		free(self->comment);
+	// Don't free comment because that is a string literal
 
 	free(self);
 	// TODO implement
