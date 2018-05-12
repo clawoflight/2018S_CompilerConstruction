@@ -536,7 +536,7 @@ struct mCc_tac_program *mCc_tac_program_new(int quad_alloc_size)
 
 	if (quad_alloc_size > 0) { // allocate memory if specified
 		if ((program->quads =
-		         malloc(quad_alloc_size * sizeof(program->quads))) == NULL) {
+		         malloc(quad_alloc_size * sizeof(*program->quads))) == NULL) {
 			return NULL;
 		}
 	}
@@ -556,7 +556,7 @@ int mCc_tac_program_add_quad(struct mCc_tac_program *self,
 	// Allocate additional memory if necessary
 	struct mCc_tac_quad **tmp;
 	self->quad_alloc_size += quad_alloc_block_size;
-	if ((tmp = realloc(self->quads, self->quad_alloc_size * sizeof(self))) ==
+	if ((tmp = realloc(self->quads, self->quad_alloc_size * sizeof(*tmp))) ==
 	    NULL) {
 		mCc_tac_program_delete(self, true);
 		return 1;
