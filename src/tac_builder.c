@@ -247,8 +247,9 @@ static void mCc_tac_entry_from_assg(struct mCc_tac_program *prog,
 	struct mCc_tac_quad *new_quad;
 	struct mCc_tac_quad_entry *result = mCc_get_var_from_id(stmt->id_assgn);
 
-	struct mCc_tac_quad_entry *result_lhs =
-	    mCc_tac_from_expression(prog, stmt->lhs_assgn);
+	struct mCc_tac_quad_entry *result_lhs;
+	if (stmt->lhs_assgn)
+		result_lhs = mCc_tac_from_expression(prog, stmt->lhs_assgn);
 	struct mCc_tac_quad_entry *result_rhs =
 	    mCc_tac_from_expression(prog, stmt->rhs_assgn);
 
