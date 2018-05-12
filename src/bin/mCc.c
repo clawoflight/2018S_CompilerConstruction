@@ -37,11 +37,13 @@ int main(int argc, char *argv[])
 
 	/* tac output TODO: move to getopt later if needed */
 	FILE *tac_out = NULL;
-	if (argc > 3 && strcmp("--print-tac", argv[3]) == 0) {
-		if (strcmp("-", argv[4]) == 0) {
+	int print_tac = 0;
+	if (argc == 4 && strcmp("--print-tac", argv[2]) == 0) {
+		print_tac = 1;
+		if (strcmp("-", argv[3]) == 0) {
 			tac_out = stdout;
 		} else {
-			tac_out = fopen(argv[4], "r");
+			tac_out = fopen(argv[3], "r");
 			if (!tac_out) {
 				perror("fopen");
 				return EXIT_FAILURE;
@@ -95,7 +97,8 @@ int main(int argc, char *argv[])
 
 	/* three-addess code generation */
 	struct mCc_tac_program *tac = mCc_tac_build(prog);
-	mCc_tac_program_print(tac, tac_out);
+	if (print_tac)
+		mCc_tac_program_print(tac, tac_out);
 
 	if (tac_out && tac_out != stdout)
 		fclose(tac_out);
