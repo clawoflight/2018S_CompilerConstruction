@@ -386,6 +386,9 @@ void mCc_tac_quad_print(struct mCc_tac_quad *self, FILE *out)
 
 	assert(self);
 	assert(out);
+	if (self->comment) {
+		fprintf(out, "# %s\n", self->comment);
+	}
 
 	switch (self->type) {
 	case MCC_TAC_QUAD_ASSIGN:
