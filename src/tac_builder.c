@@ -268,6 +268,7 @@ static void mCc_tac_entry_from_assg(struct mCc_tac_program *prog,
 	}
 	mCc_tac_program_add_quad(prog, new_quad);
 }
+
 static void mCc_tac_from_statement_return(struct mCc_tac_program *prog,
                                           struct mCc_ast_statement *stmt)
 {
@@ -323,7 +324,7 @@ static int mCc_tac_from_function_def(struct mCc_tac_program *prog,
 struct mCc_tac_quad_literal *
 mCc_get_quad_literal(struct mCc_ast_literal *literal)
 {
-	struct mCc_tac_quad_literal *lit_quad = malloc(sizeof(lit_quad));
+	struct mCc_tac_quad_literal *lit_quad = malloc(sizeof(*lit_quad));
 	switch (literal->type) {
 	case MCC_AST_LITERAL_TYPE_INT:
 		lit_quad->type = MCC_TAC_QUAD_LIT_INT;
