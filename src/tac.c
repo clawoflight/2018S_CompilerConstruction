@@ -442,32 +442,55 @@ void mCc_tac_quad_delete(struct mCc_tac_quad *self)
 
 	switch(self->type){
 		case MCC_TAC_QUAD_ASSIGN:
+			mCc_tac_quad_entry_delete(self->arg1);
+			mCc_tac_quad_entry_delete(self->result.ref);
 			break;
 		case MCC_TAC_QUAD_ASSIGN_LIT:
+			mCc_tac_quad_entry_delete(self->arg1);
+			mCc_tac_quad_entry_delete(self->result.ref);
+			mCc_tac_quad_literal_delete(self->literal);
 			break;
 		case MCC_TAC_QUAD_OP_UNARY:
+			mCc_tac_quad_entry_delete(self->arg1);
+			mCc_tac_quad_entry_delete(self->result.ref);
 			break;
 		case MCC_TAC_QUAD_OP_BINARY:
+			mCc_tac_quad_entry_delete(self->arg1);
+			mCc_tac_quad_entry_delete(self->arg2);
+			mCc_tac_quad_entry_delete(self->result.ref);
 			break;
 		case MCC_TAC_QUAD_JUMP:
 			break;
 		case MCC_TAC_QUAD_JUMPFALSE:
+			mCc_tac_quad_entry_delete(self->arg1);
 			break;
 		case MCC_TAC_QUAD_LABEL:
 			break;
 		case MCC_TAC_QUAD_PARAM:
+			mCc_tac_quad_entry_delete(self->arg1);
 			break;
 		case MCC_TAC_QUAD_CALL:
 			break;
 		case MCC_TAC_QUAD_LOAD:
+			mCc_tac_quad_entry_delete(self->arg1);
+			mCc_tac_quad_entry_delete(self->arg2);
+			mCc_tac_quad_entry_delete(self->result.ref);
 			break;
 		case MCC_TAC_QUAD_STORE:
+			mCc_tac_quad_entry_delete(self->arg1);
+			mCc_tac_quad_entry_delete(self->arg2);
+			mCc_tac_quad_entry_delete(self->result.ref);
 			break;
 		case MCC_TAC_QUAD_RETURN:
+			mCc_tac_quad_entry_delete(self->arg1);
+			//mCc_tac_quad_entry_delete(self->result.ref);
+			//In return ist es auskommentiert
 			break;
 		case MCC_TAC_QUAD_RETURN_VOID:
 			break;
 	}
+	if (self->comment)
+		free(self->comment);
 
 	free(self);
 	// TODO implement
@@ -476,19 +499,13 @@ void mCc_tac_quad_delete(struct mCc_tac_quad *self)
 
 void mCc_tac_quad_entry_delete(struct mCc_tac_quad_entry *entry)
 {
-	//TODO implement
+	free(entry);
 	return;
 }
 
 void mCc_tac_quad_literal_delete(struct mCc_tac_quad_literal *lit)
 {
-	//TODO implement
-	return;
-}
-
-void mCc_tac_label_delete(struct mCc_tac_label *label)
-{
-	//TODO implement
+	free(lit);
 	return;
 }
 

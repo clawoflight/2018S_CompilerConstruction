@@ -211,7 +211,6 @@ void mCc_tac_quad_print(struct mCc_tac_quad *self, FILE *out);
 void mCc_tac_quad_delete(struct mCc_tac_quad *self);
 void mCc_tac_quad_entry_delete(struct mCc_tac_quad_entry *entry);
 void mCc_tac_quad_literal_delete(struct mCc_tac_quad_literal *lit);
-void mCc_tac_label_delete(struct mCc_tac_label *label);
 
 /********************************** Program Functions */
 
