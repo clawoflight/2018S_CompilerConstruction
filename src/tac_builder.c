@@ -269,7 +269,7 @@ static void mCc_tac_entry_from_assg(struct mCc_tac_program *prog,
 static void mCc_tac_from_statement_return(struct mCc_tac_program *prog,
                                           struct mCc_ast_statement *stmt)
 {
-	struct mCc_tac_quad_entry *entry;
+	struct mCc_tac_quad_entry *entry = NULL;
 	if (stmt->ret_val) {
 		entry = mCc_tac_from_expression(prog, stmt->ret_val);
 	}
