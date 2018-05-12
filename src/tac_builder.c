@@ -49,7 +49,7 @@ static void mCc_tac_string_from_assgn(struct mCc_tac_quad_entry *entry,
 
 static void mCc_tac_entry_from_declaration(struct mCc_ast_declaration *decl)
 {
-	struct mCc_tac_quad_entry *entry = malloc(sizeof(entry));
+	struct mCc_tac_quad_entry *entry = malloc(sizeof(*entry));
 
 	if (decl->decl_type != MCC_AST_TYPE_STRING)
 		entry = mCc_tac_create_new_entry();
@@ -428,7 +428,7 @@ struct mCc_tac_program *mCc_tac_build(struct mCc_ast_program *prog)
 
 	for (unsigned int i = 0; i < prog->func_def_count; ++i) {
 		if (!mCc_tac_from_function_def(tac, prog->func_defs[i])) {
-			mCc_tac_program_delete(tac, true);
+            mCc_tac_program_delete(tac, true);
 			return NULL;
 		}
 	}
