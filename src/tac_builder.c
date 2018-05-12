@@ -316,6 +316,25 @@ static int mCc_tac_from_function_def(struct mCc_tac_program *prog,
 	mCc_tac_program_add_quad(prog, label_fun_quad);
 	// TODO error checking
 
+	// Copy arguments to new temporaries
+	struct mCc_tac_quad_entry *virtual_pointer_to_arguments; // TODO simply define this with -1 as num once entries are no longer malloced
+	for (int i = fun_def->para->decl_count - 1; i > 0; --i) {
+
+		// Load argument index into a quad
+		// TODO create a literal containing the above loop index i
+		struct mCc_tac_quad_literal *i_lit;
+		struct mCc_tac_quad_entry *i_entry = mCc_tac_create_new_entry();
+		struct mCc_tac_quad *i_quad = mCc_tac_quad_new_assign_lit(i_lit, i_entry);
+		mCc_tac_program_add_quad(prog, i_quad);
+
+		// Load argument from stack into new temporary
+		struct mCc_tac_quad_entry *new_entry = mCc_tac_create_new_entry();
+		struct mCc_tac_quad *load_param = mCc_tac_quad_new_load(virtual_pointer_to_arguments, i_entry, new_entry);
+		mCc_tac_program_add_quad(prog, load_param);
+
+		fun_def->para->decl[i]->decl_id->symtab_ref->tac_tmp = new_entry;
+	}
+
 	mCc_tac_from_stmt(prog, fun_def->body);
 	// TODO error checking
 	return;
