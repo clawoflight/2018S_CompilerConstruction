@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 		if (strcmp("-", argv[3]) == 0) {
 			tac_out = stdout;
 		} else {
-			tac_out = fopen(argv[3], "r");
+			tac_out = fopen(argv[3], "a");
 			if (!tac_out) {
 				perror("fopen");
 				return EXIT_FAILURE;
@@ -94,7 +94,6 @@ int main(int argc, char *argv[])
 		mCc_ast_delete_program(prog);
 		return EXIT_FAILURE;
 	}
-
 	/* three-addess code generation */
 	struct mCc_tac_program *tac = mCc_tac_build(prog);
 	if (print_tac)
@@ -111,7 +110,7 @@ int main(int argc, char *argv[])
 	 */
 
 	/* cleanup */
-	mCc_tac_program_delete(tac, true);
+	//mCc_tac_program_delete(tac, true);            //Mem problems
 	mCc_symtab_delete_all_scopes();
 	mCc_ast_delete_program(prog);
 
