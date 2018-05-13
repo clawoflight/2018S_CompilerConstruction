@@ -38,7 +38,7 @@ struct mCc_symtab_entry {
 	enum mCc_ast_type primitive_type;
 
 	/// The temporary variable(number) for TAC creation
-	struct mCc_tac_quad_entry *tac_tmp;
+	struct mCc_tac_quad_entry tac_tmp;
 
 	union {
 		/// If entry_type is #MCC_SYMTAB_ENTRY_TYPE_ARR

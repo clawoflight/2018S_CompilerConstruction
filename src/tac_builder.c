@@ -17,9 +17,9 @@ static unsigned int global_string_alloc_size = 0;
 static unsigned int global_string_count = 0;
 
 /// All strings ever created, to use for generating assembly
-static struct mCc_tac_quad_entry **global_string_arr = NULL;
+static struct mCc_tac_quad_entry *global_string_arr = NULL;
 
-static struct mCc_tac_quad_entry *
+static struct mCc_tac_quad_entry
 mCc_tac_from_expression(struct mCc_tac_program *prog,
                         struct mCc_ast_expression *exp);
 static int mCc_tac_from_stmt(struct mCc_tac_program *prog,
@@ -27,10 +27,10 @@ static int mCc_tac_from_stmt(struct mCc_tac_program *prog,
 struct mCc_tac_quad_literal *
 mCc_get_quad_literal(struct mCc_ast_literal *literal);
 
-static void mCc_tac_string_from_assgn(struct mCc_tac_quad_entry *entry,
+static void mCc_tac_string_from_assgn(struct mCc_tac_quad_entry entry,
                                       struct mCc_tac_quad_literal *lit)
 {
-	strcpy(entry->str_value, lit->strval);
+	strcpy(entry.str_value, lit->strval);
 
 	if (global_string_count < global_string_alloc_size) {
 		global_string_arr[global_string_count++] = entry;
@@ -49,7 +49,7 @@ static void mCc_tac_string_from_assgn(struct mCc_tac_quad_entry *entry,
 
 static void mCc_tac_entry_from_declaration(struct mCc_ast_declaration *decl)
 {
-	struct mCc_tac_quad_entry *entry = malloc(sizeof(*entry));
+	struct mCc_tac_quad_entry entry;
 
 	if (decl->decl_type != MCC_AST_TYPE_STRING)
 		entry = mCc_tac_create_new_entry();
@@ -59,20 +59,20 @@ static void mCc_tac_entry_from_declaration(struct mCc_ast_declaration *decl)
 	decl->decl_id->symtab_ref->tac_tmp = entry;
 }
 
-static struct mCc_tac_quad_entry *
+static struct mCc_tac_quad_entry
 mCc_get_var_from_id(struct mCc_ast_identifier *id)
 {
 	// TODO Error if tmp was not found
 	return id->symtab_ref->tac_tmp;
 }
 
-static struct mCc_tac_quad_entry *
+static struct mCc_tac_quad_entry
 mCc_tac_from_expression_binary(struct mCc_tac_program *prog,
                                struct mCc_ast_expression *expr)
 {
-	struct mCc_tac_quad_entry *result1 =
+	struct mCc_tac_quad_entry result1 =
 	    mCc_tac_from_expression(prog, expr->lhs);
-	struct mCc_tac_quad_entry *result2 =
+	struct mCc_tac_quad_entry result2 =
 	    mCc_tac_from_expression(prog, expr->rhs);
 
 	enum mCc_tac_quad_binary_op op;
@@ -107,7 +107,7 @@ mCc_tac_from_expression_binary(struct mCc_tac_program *prog,
 	case MCC_AST_BINARY_OP_NEQ: op = MCC_TAC_OP_BINARY_NEQ; break;
 	}
 
-	struct mCc_tac_quad_entry *new_result = mCc_tac_create_new_entry();
+	struct mCc_tac_quad_entry new_result = mCc_tac_create_new_entry();
 
 	struct mCc_tac_quad *binary_op =
 	    mCc_tac_quad_new_op_binary(op, result1, result2, new_result);
@@ -118,7 +118,7 @@ mCc_tac_from_expression_binary(struct mCc_tac_program *prog,
 	return new_result;
 }
 
-static struct mCc_tac_quad_entry *
+static struct mCc_tac_quad_entry
 mCc_tac_from_expression_unary(struct mCc_tac_program *prog,
                               struct mCc_ast_expression *expr)
 {
@@ -128,7 +128,7 @@ mCc_tac_from_expression_unary(struct mCc_tac_program *prog,
 	case MCC_AST_UNARY_OP_NOT: op = MCC_TAC_OP_UNARY_NOT; break;
 	}
 
-	struct mCc_tac_quad_entry *result =
+	struct mCc_tac_quad_entry result =
 	    mCc_tac_from_expression(prog, expr->unary_expression);
 
 	struct mCc_tac_quad *result_quad =
@@ -138,15 +138,15 @@ mCc_tac_from_expression_unary(struct mCc_tac_program *prog,
 	return result;
 }
 
-static struct mCc_tac_quad_entry *
+static struct mCc_tac_quad_entry
 mCc_tac_from_expression_arr_subscr(struct mCc_tac_program *prog,
                                    struct mCc_ast_expression *expr)
 {
 	// rec. create mCc_tac_program for array index
 	// create quad [load, result_of_prog]
-	struct mCc_tac_quad_entry *result = mCc_tac_create_new_entry();
-	struct mCc_tac_quad_entry *result1 = mCc_get_var_from_id(expr->array_id);
-	struct mCc_tac_quad_entry *result2 =
+	struct mCc_tac_quad_entry result = mCc_tac_create_new_entry();
+	struct mCc_tac_quad_entry result1 = mCc_get_var_from_id(expr->array_id);
+	struct mCc_tac_quad_entry result2 =
 	    mCc_tac_from_expression(prog, expr->subscript_expr); // array subscript
 	struct mCc_tac_quad *array_subscr =
 	    mCc_tac_quad_new_load(result1, result2, result);
@@ -164,7 +164,7 @@ mCc_get_label_from_fun_name(struct mCc_ast_identifier *f_name)
 	return label;
 }
 
-static struct mCc_tac_quad_entry *
+static struct mCc_tac_quad_entry
 mCc_tac_from_expression_call(struct mCc_tac_program *prog,
                              struct mCc_ast_expression *expr)
 {
@@ -173,7 +173,7 @@ mCc_tac_from_expression_call(struct mCc_tac_program *prog,
 	// them. That would make this far more annoying - use variable-length array
 	// to store results maybe?
 	for (int i = expr->arguments->expression_count - 1; i >= 0; --i) {
-		struct mCc_tac_quad_entry *param_temporary =
+		struct mCc_tac_quad_entry param_temporary =
 		    mCc_tac_from_expression(prog, expr->arguments->expressions[i]);
 		struct mCc_tac_quad *param = mCc_tac_quad_new_param(param_temporary);
 		mCc_tac_program_add_quad(prog, param);
@@ -186,14 +186,14 @@ mCc_tac_from_expression_call(struct mCc_tac_program *prog,
 	return; // TODO: What to return? we expect an entry, but which entry?
 }
 
-static struct mCc_tac_quad_entry *
+static struct mCc_tac_quad_entry
 mCc_tac_from_statement_if(struct mCc_tac_program *prog,
                           struct mCc_ast_statement *stmt)
 {
 	// TODO error handling everywhere
 	struct mCc_tac_label label_after_if = mCc_tac_get_new_label();
 
-	struct mCc_tac_quad_entry *cond =
+	struct mCc_tac_quad_entry cond =
 	    mCc_tac_from_expression(prog, stmt->if_cond);
 	mCc_tac_from_stmt(prog, stmt->if_stmt);
 
@@ -209,7 +209,7 @@ mCc_tac_from_statement_if(struct mCc_tac_program *prog,
 	return cond;
 }
 
-static struct mCc_tac_quad_entry *
+static struct mCc_tac_quad_entry
 mCc_tac_from_statement_if_else(struct mCc_tac_program *prog,
                                struct mCc_ast_statement *stmt)
 {
@@ -218,7 +218,7 @@ mCc_tac_from_statement_if_else(struct mCc_tac_program *prog,
 	struct mCc_tac_label label_after_if = mCc_tac_get_new_label();
 
 	// Compute condition
-	struct mCc_tac_quad_entry *cond =
+	struct mCc_tac_quad_entry cond =
 	    mCc_tac_from_expression(prog, stmt->if_cond);
 	struct mCc_tac_quad *jump_to_else =
 	    mCc_tac_quad_new_jumpfalse(cond, label_else);
@@ -247,12 +247,12 @@ static void mCc_tac_entry_from_assg(struct mCc_tac_program *prog,
 {
 
 	struct mCc_tac_quad *new_quad;
-	struct mCc_tac_quad_entry *result = mCc_get_var_from_id(stmt->id_assgn);
+	struct mCc_tac_quad_entry result = mCc_get_var_from_id(stmt->id_assgn);
 
-	struct mCc_tac_quad_entry *result_lhs;
+	struct mCc_tac_quad_entry result_lhs;
 	if (stmt->lhs_assgn)
 		result_lhs = mCc_tac_from_expression(prog, stmt->lhs_assgn);
-	struct mCc_tac_quad_entry *result_rhs =
+	struct mCc_tac_quad_entry result_rhs =
 	    mCc_tac_from_expression(prog, stmt->rhs_assgn);
 
 	if (stmt->rhs_assgn->type == MCC_AST_EXPRESSION_TYPE_LITERAL) {
@@ -272,7 +272,7 @@ static void mCc_tac_entry_from_assg(struct mCc_tac_program *prog,
 static void mCc_tac_from_statement_return(struct mCc_tac_program *prog,
                                           struct mCc_ast_statement *stmt)
 {
-	struct mCc_tac_quad_entry *entry = NULL;
+	struct mCc_tac_quad_entry entry;
 	if (stmt->ret_val) {
 		entry = mCc_tac_from_expression(prog, stmt->ret_val);
 	}
@@ -293,7 +293,7 @@ static void mCc_tac_from_statement_while(struct mCc_tac_program *prog,
 	    mCc_tac_quad_new_label(label_after_while);
 
 	mCc_tac_program_add_quad(prog, label_cond_quad);
-	struct mCc_tac_quad_entry *cond =
+	struct mCc_tac_quad_entry cond =
 	    mCc_tac_from_expression(prog, stmt->while_cond);
 	struct mCc_tac_quad *jump_after_while =
 	    mCc_tac_quad_new_jumpfalse(cond, label_after_while);
@@ -317,19 +317,19 @@ static int mCc_tac_from_function_def(struct mCc_tac_program *prog,
 	// TODO error checking
 
 	// Copy arguments to new temporaries
-	struct mCc_tac_quad_entry *virtual_pointer_to_arguments; // TODO simply define this with -1 as num once entries are no longer malloced
+	struct mCc_tac_quad_entry virtual_pointer_to_arguments; // TODO simply define this with -1 as num once entries are no longer malloced
 	if(fun_def->para) {
         for (int i = fun_def->para->decl_count - 1; i > 0; --i) {
 
             // Load argument index into a quad
             // TODO create a literal containing the above loop index i
             struct mCc_tac_quad_literal *i_lit;
-            struct mCc_tac_quad_entry *i_entry = mCc_tac_create_new_entry();
+            struct mCc_tac_quad_entry i_entry = mCc_tac_create_new_entry();
             struct mCc_tac_quad *i_quad = mCc_tac_quad_new_assign_lit(i_lit, i_entry);
             mCc_tac_program_add_quad(prog, i_quad);
 
             // Load argument from stack into new temporary
-            struct mCc_tac_quad_entry *new_entry = mCc_tac_create_new_entry();
+            struct mCc_tac_quad_entry new_entry = mCc_tac_create_new_entry();
             struct mCc_tac_quad *load_param = mCc_tac_quad_new_load(virtual_pointer_to_arguments, i_entry, new_entry);
             mCc_tac_program_add_quad(prog, load_param);
 
@@ -403,13 +403,13 @@ static int mCc_tac_from_stmt(struct mCc_tac_program *prog,
 	}
 }
 
-static struct mCc_tac_quad_entry *
+static struct mCc_tac_quad_entry
 mCc_tac_from_expression(struct mCc_tac_program *prog,
                         struct mCc_ast_expression *exp)
 {
 	assert(prog);
 	assert(exp);
-	struct mCc_tac_quad_entry *entry;
+	struct mCc_tac_quad_entry entry;
 
 	switch (exp->type) {
 	case MCC_AST_EXPRESSION_TYPE_LITERAL:

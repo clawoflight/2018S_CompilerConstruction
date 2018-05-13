@@ -10,25 +10,25 @@
 #include <string.h>
 #include <assert.h>
 
-struct mCc_tac_quad_entry *mCc_tac_create_new_entry()
+struct mCc_tac_quad_entry mCc_tac_create_new_entry()
 {
     static int current_var = 0;
 
-	struct mCc_tac_quad_entry *entry = malloc(sizeof(*entry));
+	struct mCc_tac_quad_entry entry;
 
-    entry->number = current_var;
+    entry.number = current_var;
     current_var++;
 
     return entry;
 }
 
-struct mCc_tac_quad_entry *mCc_tac_create_new_string()
+struct mCc_tac_quad_entry mCc_tac_create_new_string()
 {
     static int current_string = 0;
 
-    struct mCc_tac_quad_entry *entry = malloc(sizeof(*entry));
+    struct mCc_tac_quad_entry entry;
 
-    entry->number = current_string;
+    entry.number = current_string;
     current_string++;
 
     return entry;
@@ -45,11 +45,11 @@ struct mCc_tac_label mCc_tac_get_new_label()
 	return label;
 }
 
-struct mCc_tac_quad *mCc_tac_quad_new_assign(struct mCc_tac_quad_entry *arg1,
-                                             struct mCc_tac_quad_entry *result)
+struct mCc_tac_quad *mCc_tac_quad_new_assign(struct mCc_tac_quad_entry arg1,
+                                             struct mCc_tac_quad_entry result)
 {
-	assert(arg1);
-	assert(result);
+	//assert(arg1);
+//	assert(result);
 
 	struct mCc_tac_quad *quad = malloc(sizeof(*quad));
 
@@ -66,10 +66,10 @@ struct mCc_tac_quad *mCc_tac_quad_new_assign(struct mCc_tac_quad_entry *arg1,
 
 struct mCc_tac_quad *
 mCc_tac_quad_new_assign_lit(struct mCc_tac_quad_literal *arg1,
-                            struct mCc_tac_quad_entry *result)
+                            struct mCc_tac_quad_entry result)
 {
 	// assert(arg1);
-	assert(result);
+	//assert(result);
 
 	struct mCc_tac_quad *quad = malloc(sizeof(*quad));
 
@@ -86,11 +86,11 @@ mCc_tac_quad_new_assign_lit(struct mCc_tac_quad_literal *arg1,
 
 struct mCc_tac_quad *
 mCc_tac_quad_new_op_unary(enum mCc_tac_quad_unary_op op,
-                          struct mCc_tac_quad_entry *arg1,
-                          struct mCc_tac_quad_entry *result)
+                          struct mCc_tac_quad_entry arg1,
+                          struct mCc_tac_quad_entry result)
 {
-	assert(arg1);
-	assert(result);
+	//assert(arg1);
+//	assert(result);
 
 	struct mCc_tac_quad *quad = malloc(sizeof(*quad));
 
@@ -107,12 +107,12 @@ mCc_tac_quad_new_op_unary(enum mCc_tac_quad_unary_op op,
 }
 
 struct mCc_tac_quad *mCc_tac_quad_new_op_binary(
-    enum mCc_tac_quad_binary_op op, struct mCc_tac_quad_entry *arg1,
-    struct mCc_tac_quad_entry *arg2, struct mCc_tac_quad_entry *result)
+    enum mCc_tac_quad_binary_op op, struct mCc_tac_quad_entry arg1,
+    struct mCc_tac_quad_entry arg2, struct mCc_tac_quad_entry result)
 {
-	assert(arg1);
-	assert(arg2);
-	assert(result);
+//	assert(arg1);
+//	assert(arg2);
+//	assert(result);
 
 	struct mCc_tac_quad *quad = malloc(sizeof(*quad));
 
@@ -144,10 +144,10 @@ struct mCc_tac_quad *mCc_tac_quad_new_jump(struct mCc_tac_label label){
 }
 
 struct mCc_tac_quad *
-mCc_tac_quad_new_jumpfalse(struct mCc_tac_quad_entry *condition,
+mCc_tac_quad_new_jumpfalse(struct mCc_tac_quad_entry condition,
                            struct mCc_tac_label label)
 {
-    assert(condition);
+   // assert(condition);
     struct mCc_tac_quad *quad = malloc(sizeof(*quad));
 
 	if (!quad) {
@@ -176,10 +176,10 @@ struct mCc_tac_quad *mCc_tac_quad_new_label(struct mCc_tac_label label)
 	return quad;
 }
 
-struct mCc_tac_quad *mCc_tac_quad_new_param(struct mCc_tac_quad_entry *value)
+struct mCc_tac_quad *mCc_tac_quad_new_param(struct mCc_tac_quad_entry value)
 {
 
-	assert(value);
+//	assert(value);
 
 	struct mCc_tac_quad *quad = malloc(sizeof(*quad));
 
@@ -210,13 +210,13 @@ struct mCc_tac_quad *mCc_tac_quad_new_call(struct mCc_tac_label label)
 
 }
 
-struct mCc_tac_quad *mCc_tac_quad_new_load(struct mCc_tac_quad_entry *array,
-                                           struct mCc_tac_quad_entry *index,
-                                           struct mCc_tac_quad_entry *result)
+struct mCc_tac_quad *mCc_tac_quad_new_load(struct mCc_tac_quad_entry array,
+                                           struct mCc_tac_quad_entry index,
+                                           struct mCc_tac_quad_entry result)
 {
-	assert(array);
-	assert(index);
-	assert(result);
+//	assert(array);
+//	assert(index);
+//	assert(result);
 
 	struct mCc_tac_quad *quad = malloc(sizeof(*quad));
 
@@ -233,14 +233,14 @@ struct mCc_tac_quad *mCc_tac_quad_new_load(struct mCc_tac_quad_entry *array,
 	return quad;
 }
 
-struct mCc_tac_quad *mCc_tac_quad_new_store(struct mCc_tac_quad_entry *index,
-                                            struct mCc_tac_quad_entry *value,
-                                            struct mCc_tac_quad_entry *array)
+struct mCc_tac_quad *mCc_tac_quad_new_store(struct mCc_tac_quad_entry index,
+                                            struct mCc_tac_quad_entry value,
+                                            struct mCc_tac_quad_entry array)
 {
 
-	assert(array);
-	assert(index);
-	assert(value);
+//	assert(array);
+//	assert(index);
+//	assert(value);
 
 	struct mCc_tac_quad *quad = malloc(sizeof(*quad));
 
@@ -258,7 +258,7 @@ struct mCc_tac_quad *mCc_tac_quad_new_store(struct mCc_tac_quad_entry *index,
 }
 
 struct mCc_tac_quad *
-mCc_tac_quad_new_return(struct mCc_tac_quad_entry *ret_value)
+mCc_tac_quad_new_return(struct mCc_tac_quad_entry ret_value)
 {
 
 	struct mCc_tac_quad *quad = malloc(sizeof(*quad));
@@ -266,7 +266,7 @@ mCc_tac_quad_new_return(struct mCc_tac_quad_entry *ret_value)
     if (!quad) {
         return NULL;
     }
-    if(ret_value) {
+    if(ret_value!=NULL) {
         quad->type = MCC_TAC_QUAD_RETURN;
         quad->arg1 = ret_value;
 		//quad->result.ref = result;		//TODO how to get the value which waits for the return value
@@ -290,68 +290,68 @@ void print_tac_bin_op(struct mCc_tac_quad *self, FILE *out)
 {
 	switch (self->bin_op) {
 	case MCC_TAC_OP_BINARY_ADD:
-		fprintf(out, "\tt%d = t%d + t%d\n", self->result.ref->number,
-		        self->arg1->number, self->arg2->number);
+		fprintf(out, "\tt%d = t%d + t%d\n", self->result.ref.number,
+		        self->arg1.number, self->arg2.number);
 		break;
 	case MCC_TAC_OP_BINARY_SUB:
-		fprintf(out, "\tt%d = t%d - t%d\n", self->result.ref->number,
-		        self->arg1->number, self->arg2->number);
+		fprintf(out, "\tt%d = t%d - t%d\n", self->result.ref.number,
+		        self->arg1.number, self->arg2.number);
 		break;
 	case MCC_TAC_OP_BINARY_MUL:
-		fprintf(out, "\tt%d = t%d * t%d\n", self->result.ref->number,
-		        self->arg1->number, self->arg2->number);
+		fprintf(out, "\tt%d = t%d * t%d\n", self->result.ref.number,
+		        self->arg1.number, self->arg2.number);
 		break;
 	case MCC_TAC_OP_BINARY_DIV:
-		fprintf(out, "\t%d = t%d / t%d\n", self->result.ref->number,
-		        self->arg1->number, self->arg2->number);
+		fprintf(out, "\t%d = t%d / t%d\n", self->result.ref.number,
+		        self->arg1.number, self->arg2.number);
 		break;
 	case MCC_TAC_OP_BINARY_LT:
-		fprintf(out, "\tt%d = t%d < t%d\n", self->result.ref->number,
-		        self->arg1->number, self->arg2->number);
+		fprintf(out, "\tt%d = t%d < t%d\n", self->result.ref.number,
+		        self->arg1.number, self->arg2.number);
 		break;
 	case MCC_TAC_OP_BINARY_GT:
-		fprintf(out, "\tt%d = t%d > t%d\n", self->result.ref->number,
-		        self->arg1->number, self->arg2->number);
+		fprintf(out, "\tt%d = t%d > t%d\n", self->result.ref.number,
+		        self->arg1.number, self->arg2.number);
 		break;
 	case MCC_TAC_OP_BINARY_LEQ:
-		fprintf(out, "\tt%d = t%d <= t%d\n", self->result.ref->number,
-		        self->arg1->number, self->arg2->number);
+		fprintf(out, "\tt%d = t%d <= t%d\n", self->result.ref.number,
+		        self->arg1.number, self->arg2.number);
 		break;
 	case MCC_TAC_OP_BINARY_GEQ:
-		fprintf(out, "\tt%d = t%d >= t%d\n", self->result.ref->number,
-		        self->arg1->number, self->arg2->number);
+		fprintf(out, "\tt%d = t%d >= t%d\n", self->result.ref.number,
+		        self->arg1.number, self->arg2.number);
 		break;
 	case MCC_TAC_OP_BINARY_AND:
-		fprintf(out, "\tt%d = t%d && t%d\n", self->result.ref->number,
-		        self->arg1->number, self->arg2->number);
+		fprintf(out, "\tt%d = t%d && t%d\n", self->result.ref.number,
+		        self->arg1.number, self->arg2.number);
 		break;
 	case MCC_TAC_OP_BINARY_OR:
-		fprintf(out, "\tt%d = t%d || t%d\n", self->result.ref->number,
-		        self->arg1->number, self->arg2->number);
+		fprintf(out, "\tt%d = t%d || t%d\n", self->result.ref.number,
+		        self->arg1.number, self->arg2.number);
 		break;
 	case MCC_TAC_OP_BINARY_EQ:
-		fprintf(out, "\tt%d = t%d == t%d\n", self->result.ref->number,
-		        self->arg1->number, self->arg2->number);
+		fprintf(out, "\tt%d = t%d == t%d\n", self->result.ref.number,
+		        self->arg1.number, self->arg2.number);
 		break;
 	case MCC_TAC_OP_BINARY_NEQ:
-		fprintf(out, "\tt%d = t%d != t%d\n", self->result.ref->number,
-		        self->arg1->number, self->arg2->number);
+		fprintf(out, "\tt%d = t%d != t%d\n", self->result.ref.number,
+		        self->arg1.number, self->arg2.number);
 		break;
 	case MCC_TAC_OP_BINARY_FLOAT_ADD:
-		fprintf(out, "\tt%d = t%d + t%d\n", self->result.ref->number,
-		        self->arg1->number, self->arg2->number);
+		fprintf(out, "\tt%d = t%d + t%d\n", self->result.ref.number,
+		        self->arg1.number, self->arg2.number);
 		break;
 	case MCC_TAC_OP_BINARY_FLOAT_SUB:
-		fprintf(out, "\tt%d = t%d - t%d\n", self->result.ref->number,
-		        self->arg1->number, self->arg2->number);
+		fprintf(out, "\tt%d = t%d - t%d\n", self->result.ref.number,
+		        self->arg1.number, self->arg2.number);
 		break;
 	case MCC_TAC_OP_BINARY_FLOAT_MUL:
-		fprintf(out, "\tt%d = t%d * t%d\n", self->result.ref->number,
-		        self->arg1->number, self->arg2->number);
+		fprintf(out, "\tt%d = t%d * t%d\n", self->result.ref.number,
+		        self->arg1.number, self->arg2.number);
 		break;
 	case MCC_TAC_OP_BINARY_FLOAT_DIV:
-		fprintf(out, "\tt%d = t%d / t%d\n", self->result.ref->number,
-		        self->arg1->number, self->arg2->number);
+		fprintf(out, "\tt%d = t%d / t%d\n", self->result.ref.number,
+		        self->arg1.number, self->arg2.number);
 		break;
 	}
 	return;
@@ -361,12 +361,12 @@ void print_tac_unary_op(struct mCc_tac_quad *self, FILE *out)
 {
 	switch (self->un_op) {
 	case MCC_TAC_OP_UNARY_NEG:
-		fprintf(out, "\tt%d = -t%d\n", self->result.ref->number,
-		        self->arg1->number);
+		fprintf(out, "\tt%d = -t%d\n", self->result.ref.number,
+		        self->arg1.number);
 		break;
 	case MCC_TAC_OP_UNARY_NOT:
-		fprintf(out, "\tt%d = !t%d\n", self->result.ref->number,
-		        self->arg1->number);
+		fprintf(out, "\tt%d = !t%d\n", self->result.ref.number,
+		        self->arg1.number);
 		break;
 	}
 	return;
@@ -376,19 +376,19 @@ void print_tac_literal(struct mCc_tac_quad *self, FILE *out)
 {
 	switch (self->literal->type) {
 	case MCC_TAC_QUAD_LIT_INT:
-		fprintf(out, "\tt%d = %d\n", self->result.ref->number,
+		fprintf(out, "\tt%d = %d\n", self->result.ref.number,
 		        self->literal->ival);
 		break;
 	case MCC_TAC_QUAD_LIT_FLOAT:
-		fprintf(out, "\tt%d = %f\n", self->result.ref->number,
+		fprintf(out, "\tt%d = %f\n", self->result.ref.number,
 		        self->literal->fval);
 		break;
 	case MCC_TAC_QUAD_LIT_BOOL:
-		fprintf(out, "\tt%d = %s\n", self->result.ref->number,
+		fprintf(out, "\tt%d = %s\n", self->result.ref.number,
 		        self->literal->ival ? "true" : "false");
 		break;
 	case MCC_TAC_QUAD_LIT_STR:
-		fprintf(out, "\tt%d = %s\n", self->result.ref->number,
+		fprintf(out, "\tt%d = %s\n", self->result.ref.number,
 		        self->literal->strval);
 		break;
 	}
@@ -405,8 +405,8 @@ void mCc_tac_quad_print(struct mCc_tac_quad *self, FILE *out)
 	}
 	switch (self->type) {
 	case MCC_TAC_QUAD_ASSIGN:
-		fprintf(out, "\tt%d = t%d\n", self->result.ref->number,
-		        self->arg1->number);
+		fprintf(out, "\tt%d = t%d\n", self->result.ref.number,
+		        self->arg1.number);
 		break;
 	case MCC_TAC_QUAD_ASSIGN_LIT: print_tac_literal(self, out); break;
 	case MCC_TAC_QUAD_OP_UNARY: print_tac_unary_op(self, out); break;
@@ -417,7 +417,7 @@ void mCc_tac_quad_print(struct mCc_tac_quad *self, FILE *out)
 		fputc('\n', out);
 		break;
 	case MCC_TAC_QUAD_JUMPFALSE:
-		fprintf(out, "\tjumpfalse t%d ", self->arg1->number);
+		fprintf(out, "\tjumpfalse t%d ", self->arg1.number);
 		mCc_tac_print_label(self->result.label, out);
 		fputc('\n', out);
 		break;
@@ -426,7 +426,7 @@ void mCc_tac_quad_print(struct mCc_tac_quad *self, FILE *out)
 		fputs(":\n", out);
 		break;
 	case MCC_TAC_QUAD_PARAM:
-		fprintf(out, "\tparam t%d\n", self->arg1->number);
+		fprintf(out, "\tparam t%d\n", self->arg1.number);
 		break;
 	case MCC_TAC_QUAD_CALL:
 		fputs("\tcall ", out);
@@ -434,15 +434,15 @@ void mCc_tac_quad_print(struct mCc_tac_quad *self, FILE *out)
 		fputc('\n', out);
 		break;
 	case MCC_TAC_QUAD_LOAD:
-		fprintf(out, "\tt%d = t%d[t%d]\n", self->result.ref->number,
-		        self->arg1->number, self->arg2->number);
+		fprintf(out, "\tt%d = t%d[t%d]\n", self->result.ref.number,
+		        self->arg1.number, self->arg2.number);
 		break;
 	case MCC_TAC_QUAD_STORE:
-		fprintf(out, "\tt%d[t%d] = t%d\n", self->result.ref->number,
-		        self->arg2->number, self->arg1->number);
+		fprintf(out, "\tt%d[t%d] = t%d\n", self->result.ref.number,
+		        self->arg2.number, self->arg1.number);
 		break;
 	case MCC_TAC_QUAD_RETURN:
-		fprintf(out, "\treturn t%d\n", self->arg1->number);
+		fprintf(out, "\treturn t%d\n", self->arg1.number);
 		break;
 	case MCC_TAC_QUAD_RETURN_VOID: fprintf(out, "\treturn \n"); break;
 	}
@@ -453,14 +453,14 @@ void mCc_tac_quad_delete(struct mCc_tac_quad *self)
 {
 	assert(self);
 
-	switch(self->type){
+	/*switch(self->type){
 		case MCC_TAC_QUAD_ASSIGN:
 			mCc_tac_quad_entry_delete(self->arg1);
 			mCc_tac_quad_entry_delete(self->result.ref);
 			break;
 		case MCC_TAC_QUAD_ASSIGN_LIT:
 			mCc_tac_quad_entry_delete(self->arg1);
-			mCc_tac_quad_entry_delete(self->result.ref);
+            mCc_tac_quad_entry_delete(self->result.ref);
 			mCc_tac_quad_literal_delete(self->literal);
 			break;
 		case MCC_TAC_QUAD_OP_UNARY:
@@ -501,7 +501,7 @@ void mCc_tac_quad_delete(struct mCc_tac_quad *self)
 			break;
 		case MCC_TAC_QUAD_RETURN_VOID:
 			break;
-	}
+	}*/
 	// Don't free comment because that is a string literal
 
 	free(self);
@@ -509,12 +509,12 @@ void mCc_tac_quad_delete(struct mCc_tac_quad *self)
 	return;
 }
 
-void mCc_tac_quad_entry_delete(struct mCc_tac_quad_entry *entry)
+/*void mCc_tac_quad_entry_delete(struct mCc_tac_quad_entry *entry)
 {
 	free(entry);
 	return;
 }
-
+*/
 void mCc_tac_quad_literal_delete(struct mCc_tac_quad_literal *lit)
 {
 	free(lit);

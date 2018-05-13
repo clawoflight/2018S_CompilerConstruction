@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
 	 */
 
 	/* cleanup */
-	//mCc_tac_program_delete(tac, true);            //Mem problems
+	mCc_tac_program_delete(tac, true);            //Mem problems
 	mCc_symtab_delete_all_scopes();
 	mCc_ast_delete_program(prog);
 
