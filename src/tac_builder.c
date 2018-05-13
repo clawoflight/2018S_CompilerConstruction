@@ -171,13 +171,14 @@ mCc_tac_from_expression_call(struct mCc_tac_program *prog,
 	// Compute all params in reverse order and push them
 	// TODO: I fear that we will need to first compute all params, then push
 	// them. That would make this far more annoying - use variable-length array
-	// to store results maybe?
-	for (int i = expr->arguments->expression_count - 1; i >= 0; --i) {
-		struct mCc_tac_quad_entry param_temporary =
-		    mCc_tac_from_expression(prog, expr->arguments->expressions[i]);
-		struct mCc_tac_quad *param = mCc_tac_quad_new_param(param_temporary);
-		mCc_tac_program_add_quad(prog, param);
-	}
+    // to store results maybe?
+    if(expr->arguments)
+        for (int i = expr->arguments->expression_count - 1; i >= 0; --i) {
+            struct mCc_tac_quad_entry param_temporary =
+                mCc_tac_from_expression(prog, expr->arguments->expressions[i]);
+            struct mCc_tac_quad *param = mCc_tac_quad_new_param(param_temporary);
+            mCc_tac_program_add_quad(prog, param);
+        }
 
 	struct mCc_tac_label label_fun = mCc_get_label_from_fun_name(expr->f_name);
 	struct mCc_tac_quad *jump_to_fun = mCc_tac_quad_new_call(label_fun);
