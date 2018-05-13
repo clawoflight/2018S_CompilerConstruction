@@ -64,7 +64,6 @@ static void mCc_tac_entry_from_declaration(struct mCc_ast_declaration *decl)
 static struct mCc_tac_quad_entry
 mCc_get_var_from_id(struct mCc_ast_identifier *id)
 {
-	// TODO Error if tmp was not found
 	return id->symtab_ref->tac_tmp;
 }
 
@@ -113,9 +112,14 @@ mCc_tac_from_expression_binary(struct mCc_tac_program *prog,
 
 	struct mCc_tac_quad *binary_op =
 	    mCc_tac_quad_new_op_binary(op, result1, result2, new_result);
-	// TODO error checking
-	mCc_tac_program_add_quad(prog, binary_op);
-	// TODO error checking
+
+	if(!binary_op){
+        return NULL;
+    }
+
+	if(mCc_tac_program_add_quad(prog, binary_op)==1){
+        return NULL;
+    }
 
 	return new_result;
 }
@@ -137,8 +141,9 @@ mCc_tac_from_expression_unary(struct mCc_tac_program *prog,
 
 	struct mCc_tac_quad *result_quad =
 	    mCc_tac_quad_new_op_unary(op, result, result);
-	mCc_tac_program_add_quad(prog, result_quad);
-	// TODO error checking
+	if(mCc_tac_program_add_quad(prog, result_quad)==1) {
+        return NULL;
+    }
 	return result;
 }
 
@@ -154,7 +159,9 @@ mCc_tac_from_expression_arr_subscr(struct mCc_tac_program *prog,
 	    mCc_tac_from_expression(prog, expr->subscript_expr); // array subscript
 	struct mCc_tac_quad *array_subscr =
 	    mCc_tac_quad_new_load(result1, result2, result);
-	mCc_tac_program_add_quad(prog, array_subscr);
+    if(mCc_tac_program_add_quad(prog, array_subscr)==1){
+        return NULL;
+    }
 	return result;
 }
 
@@ -326,8 +333,9 @@ static int mCc_tac_from_function_def(struct mCc_tac_program *prog,
 	    mCc_get_label_from_fun_name(fun_def->identifier);
 
 	struct mCc_tac_quad *label_fun_quad = mCc_tac_quad_new_label(label_fun);
-	mCc_tac_program_add_quad(prog, label_fun_quad);
-	// TODO error checking
+	if(mCc_tac_program_add_quad(prog, label_fun_quad)==1){
+        return 1;
+    };
 
 	// Copy arguments to new temporaries
 	struct mCc_tac_quad_entry virtual_pointer_to_arguments; // TODO simply define this with -1 as num once entries are no longer malloced
@@ -349,10 +357,12 @@ static int mCc_tac_from_function_def(struct mCc_tac_program *prog,
             fun_def->para->decl[i]->decl_id->symtab_ref->tac_tmp = new_entry;
         }
     }
-	if(fun_def->body)
-		mCc_tac_from_stmt(prog, fun_def->body);
-		// TODO error checking
-	return 1;
+	if(fun_def->body) {
+        if (mCc_tac_from_stmt(prog, fun_def->body)) {
+            return 1;
+        }
+    }
+	return 0;
 }
 
 struct mCc_tac_quad_literal *
