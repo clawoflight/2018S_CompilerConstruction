@@ -344,8 +344,9 @@ static int mCc_tac_from_function_def(struct mCc_tac_program *prog,
             fun_def->para->decl[i]->decl_id->symtab_ref->tac_tmp = new_entry;
         }
     }
-	mCc_tac_from_stmt(prog, fun_def->body);
-	// TODO error checking
+	if(fun_def->body)
+		mCc_tac_from_stmt(prog, fun_def->body);
+		// TODO error checking
 	return 1;
 }
 
