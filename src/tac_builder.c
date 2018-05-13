@@ -200,11 +200,13 @@ mCc_tac_from_statement_if(struct mCc_tac_program *prog,
 
 	struct mCc_tac_quad_entry cond =
 	    mCc_tac_from_expression(prog, stmt->if_cond);
-	mCc_tac_from_stmt(prog, stmt->if_stmt);
+
 
 	struct mCc_tac_quad *jump_after_if = mCc_tac_quad_new_jumpfalse(cond, label_after_if);
 	jump_after_if->comment = "Evaluate if condition";
 	mCc_tac_program_add_quad(prog, jump_after_if);
+
+	mCc_tac_from_stmt(prog, stmt->if_stmt);
 
 	struct mCc_tac_quad *label_after_if_quad =
 	    mCc_tac_quad_new_label(label_after_if);
