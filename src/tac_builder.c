@@ -37,11 +37,13 @@ static void mCc_tac_string_from_assgn(struct mCc_tac_quad_entry entry,
 		return;
 	}
 
-	struct mCc_tac_quad_entry **tmp;
+	struct mCc_tac_quad_entry *tmp;
 	global_string_alloc_size += global_string_block_size;
 	if ((tmp = realloc(global_string_arr,
 	                   global_string_alloc_size * sizeof(*tmp))) == NULL)
 		return;
+
+	printf("\nTEST\n");
 
 	global_string_arr = tmp;
 	global_string_arr[global_string_count++] = entry;
