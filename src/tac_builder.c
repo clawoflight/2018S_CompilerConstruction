@@ -122,6 +122,8 @@ static struct mCc_tac_quad_entry
 mCc_tac_from_expression_unary(struct mCc_tac_program *prog,
                               struct mCc_ast_expression *expr)
 {
+    assert(expr);
+
 	enum mCc_tac_quad_unary_op op;
 	switch (expr->unary_op) {
 	case MCC_AST_UNARY_OP_NEG: op = MCC_TAC_OP_UNARY_NEG; break;
@@ -428,7 +430,7 @@ mCc_tac_from_expression(struct mCc_tac_program *prog,
 		entry = exp->identifier->symtab_ref->tac_tmp;
 		break;
 	case MCC_AST_EXPRESSION_TYPE_UNARY_OP:
-		entry = mCc_tac_from_expression_unary(prog, exp->unary_expression);
+		entry = mCc_tac_from_expression_unary(prog, exp);
 		break;
 	case MCC_AST_EXPRESSION_TYPE_BINARY_OP:
 		entry = mCc_tac_from_expression_binary(prog, exp);
