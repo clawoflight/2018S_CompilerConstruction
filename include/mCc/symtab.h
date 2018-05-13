@@ -10,6 +10,7 @@
 #include "ast.h"
 
 #include "lib/uthash.h"
+#include "tac.h"
 
 #ifdef __cplusplus
 extern "C" {

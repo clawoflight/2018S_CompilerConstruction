@@ -257,6 +257,22 @@ struct mCc_tac_quad *mCc_tac_quad_new_store(struct mCc_tac_quad_entry index,
 	return quad;
 }
 
+
+
+struct mCc_tac_quad * mCc_tac_quad_new_return_void()
+{
+    struct mCc_tac_quad *quad = malloc(sizeof(*quad));
+
+    if (!quad) {
+        return NULL;
+    }
+
+    quad->comment = NULL;
+    quad->type = MCC_TAC_QUAD_RETURN_VOID;
+
+    return quad;
+}
+
 struct mCc_tac_quad *
 mCc_tac_quad_new_return(struct mCc_tac_quad_entry ret_value)
 {
@@ -266,13 +282,12 @@ mCc_tac_quad_new_return(struct mCc_tac_quad_entry ret_value)
     if (!quad) {
         return NULL;
     }
-    if(ret_value!=NULL) {
-        quad->type = MCC_TAC_QUAD_RETURN;
-        quad->arg1 = ret_value;
-		//quad->result.ref = result;		//TODO how to get the value which waits for the return value
-	} else {
-        quad->type = MCC_TAC_QUAD_RETURN_VOID;
-    }
+
+    quad->comment = NULL;
+    quad->type = MCC_TAC_QUAD_RETURN;
+    quad->arg1 = ret_value;
+    //quad->result.ref = result;
+    // TODO how to get the value which waits for the return value
 
 	return quad;
 }
@@ -453,55 +468,35 @@ void mCc_tac_quad_delete(struct mCc_tac_quad *self)
 {
 	assert(self);
 
-	/*switch(self->type){
+	switch(self->type){
 		case MCC_TAC_QUAD_ASSIGN:
-			mCc_tac_quad_entry_delete(self->arg1);
-			mCc_tac_quad_entry_delete(self->result.ref);
 			break;
 		case MCC_TAC_QUAD_ASSIGN_LIT:
-			mCc_tac_quad_entry_delete(self->arg1);
-            mCc_tac_quad_entry_delete(self->result.ref);
 			mCc_tac_quad_literal_delete(self->literal);
 			break;
 		case MCC_TAC_QUAD_OP_UNARY:
-			mCc_tac_quad_entry_delete(self->arg1);
-			mCc_tac_quad_entry_delete(self->result.ref);
 			break;
 		case MCC_TAC_QUAD_OP_BINARY:
-			mCc_tac_quad_entry_delete(self->arg1);
-			mCc_tac_quad_entry_delete(self->arg2);
-			mCc_tac_quad_entry_delete(self->result.ref);
 			break;
 		case MCC_TAC_QUAD_JUMP:
 			break;
 		case MCC_TAC_QUAD_JUMPFALSE:
-			mCc_tac_quad_entry_delete(self->arg1);
 			break;
 		case MCC_TAC_QUAD_LABEL:
 			break;
 		case MCC_TAC_QUAD_PARAM:
-			mCc_tac_quad_entry_delete(self->arg1);
 			break;
 		case MCC_TAC_QUAD_CALL:
 			break;
 		case MCC_TAC_QUAD_LOAD:
-			mCc_tac_quad_entry_delete(self->arg1);
-			mCc_tac_quad_entry_delete(self->arg2);
-			mCc_tac_quad_entry_delete(self->result.ref);
 			break;
 		case MCC_TAC_QUAD_STORE:
-			mCc_tac_quad_entry_delete(self->arg1);
-			mCc_tac_quad_entry_delete(self->arg2);
-			mCc_tac_quad_entry_delete(self->result.ref);
 			break;
 		case MCC_TAC_QUAD_RETURN:
-			mCc_tac_quad_entry_delete(self->arg1);
-			//mCc_tac_quad_entry_delete(self->result.ref);
-			//In return ist es auskommentiert
 			break;
 		case MCC_TAC_QUAD_RETURN_VOID:
 			break;
-	}*/
+	}
 	// Don't free comment because that is a string literal
 
 	free(self);
@@ -509,12 +504,7 @@ void mCc_tac_quad_delete(struct mCc_tac_quad *self)
 	return;
 }
 
-/*void mCc_tac_quad_entry_delete(struct mCc_tac_quad_entry *entry)
-{
-	free(entry);
-	return;
-}
-*/
+
 void mCc_tac_quad_literal_delete(struct mCc_tac_quad_literal *lit)
 {
 	free(lit);
@@ -604,5 +594,6 @@ void mCc_tac_program_delete(struct mCc_tac_program *self, bool delete_quads_too)
 			mCc_tac_quad_delete(self->quads[i]);
 		}
 	}
+    free(self->quads);
 	free(self);
 }

@@ -190,6 +190,7 @@ struct mCc_tac_quad *mCc_tac_quad_new_load(struct mCc_tac_quad_entry array,
 
                                            struct mCc_tac_quad_entry result);
 
+struct mCc_tac_quad *mCc_tac_quad_new_return_void();
 struct mCc_tac_quad *mCc_tac_quad_new_return(struct mCc_tac_quad_entry ret_value);
 
 

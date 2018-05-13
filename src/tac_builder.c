@@ -273,12 +273,17 @@ static void mCc_tac_from_statement_return(struct mCc_tac_program *prog,
                                           struct mCc_ast_statement *stmt)
 {
 	struct mCc_tac_quad_entry entry;
+    struct mCc_tac_quad *new_quad;
 	if (stmt->ret_val) {
 		entry = mCc_tac_from_expression(prog, stmt->ret_val);
 	}
-	struct mCc_tac_quad *new_quad = mCc_tac_quad_new_return(
+    if(stmt->type == MCC_AST_STATEMENT_TYPE_RET)
+	    new_quad = mCc_tac_quad_new_return(
 	    entry); // TODO save the variable which gets the return value back
-	mCc_tac_program_add_quad(prog, new_quad);
+    else
+        new_quad = mCc_tac_quad_new_return_void();
+
+    mCc_tac_program_add_quad(prog, new_quad);
 	return;
 }
 
