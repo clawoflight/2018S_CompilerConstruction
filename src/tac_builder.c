@@ -27,26 +27,25 @@ static int mCc_tac_from_stmt(struct mCc_tac_program *prog,
 struct mCc_tac_quad_literal *
 mCc_get_quad_literal(struct mCc_ast_literal *literal);
 
-static void mCc_tac_string_from_assgn(struct mCc_tac_quad_entry entry,
+static int mCc_tac_string_from_assgn(struct mCc_tac_quad_entry entry,
                                       struct mCc_tac_quad_literal *lit)
 {
 	strcpy(entry.str_value, lit->strval);
 
 	if (global_string_count < global_string_alloc_size) {
 		global_string_arr[global_string_count++] = entry;
-		return;
+		return 1;
 	}
 
 	struct mCc_tac_quad_entry *tmp;
 	global_string_alloc_size += global_string_block_size;
 	if ((tmp = realloc(global_string_arr,
 	                   global_string_alloc_size * sizeof(*tmp))) == NULL)
-		return;
-
-	printf("\nTEST\n");
+		return 1;
 
 	global_string_arr = tmp;
 	global_string_arr[global_string_count++] = entry;
+	return 0;
 }
 
 static void mCc_tac_entry_from_declaration(struct mCc_ast_declaration *decl)
@@ -110,16 +109,10 @@ mCc_tac_from_expression_binary(struct mCc_tac_program *prog,
 
 	struct mCc_tac_quad_entry new_result = mCc_tac_create_new_entry();
 
+	#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 	struct mCc_tac_quad *binary_op =
 	    mCc_tac_quad_new_op_binary(op, result1, result2, new_result);
-
-	if(!binary_op){
-		// TODO error handling
-    }
-
-	if(mCc_tac_program_add_quad(prog, binary_op)){
-		// TODO error handling
-    }
+	mCc_tac_program_add_quad(prog, binary_op);
 
 	return new_result;
 }
@@ -139,11 +132,10 @@ mCc_tac_from_expression_unary(struct mCc_tac_program *prog,
 	struct mCc_tac_quad_entry result =
 	    mCc_tac_from_expression(prog, expr->unary_expression);
 
+	#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 	struct mCc_tac_quad *result_quad =
 	    mCc_tac_quad_new_op_unary(op, result, result);
-	if(mCc_tac_program_add_quad(prog, result_quad)) {
-		// TODO error handling
-    }
+	mCc_tac_program_add_quad(prog, result_quad);
 	return result;
 }
 
@@ -201,11 +193,10 @@ mCc_tac_from_expression_call(struct mCc_tac_program *prog,
 	return retval;
 }
 
-static struct mCc_tac_quad_entry
+static int
 mCc_tac_from_statement_if(struct mCc_tac_program *prog,
                           struct mCc_ast_statement *stmt)
 {
-	// TODO error handling everywhere
 	struct mCc_tac_label label_after_if = mCc_tac_get_new_label();
 
 	struct mCc_tac_quad_entry cond =
@@ -214,23 +205,24 @@ mCc_tac_from_statement_if(struct mCc_tac_program *prog,
 
 	struct mCc_tac_quad *jump_after_if = mCc_tac_quad_new_jumpfalse(cond, label_after_if);
 	jump_after_if->comment = "Evaluate if condition";
-	mCc_tac_program_add_quad(prog, jump_after_if);
+	if (mCc_tac_program_add_quad(prog, jump_after_if))
+		return 1;
 
 	mCc_tac_from_stmt(prog, stmt->if_stmt);
 
 	struct mCc_tac_quad *label_after_if_quad =
 	    mCc_tac_quad_new_label(label_after_if);
 	label_after_if_quad->comment = "End of if";
-	mCc_tac_program_add_quad(prog, label_after_if_quad);
+	if (mCc_tac_program_add_quad(prog, label_after_if_quad))
+		return 1;
 
-	return cond;
+	return 0;
 }
 
-static struct mCc_tac_quad_entry
+static int
 mCc_tac_from_statement_if_else(struct mCc_tac_program *prog,
                                struct mCc_ast_statement *stmt)
 {
-	// TODO error handling everywhere
 	struct mCc_tac_label label_else = mCc_tac_get_new_label();
 	struct mCc_tac_label label_after_if = mCc_tac_get_new_label();
 
@@ -240,26 +232,30 @@ mCc_tac_from_statement_if_else(struct mCc_tac_program *prog,
 	struct mCc_tac_quad *jump_to_else =
 	    mCc_tac_quad_new_jumpfalse(cond, label_else);
 	jump_to_else->comment = "Evaluate if condition";
-	mCc_tac_program_add_quad(prog, jump_to_else);
+	if (mCc_tac_program_add_quad(prog, jump_to_else))
+		return 1;
 
 	mCc_tac_from_stmt(prog, stmt->if_stmt);
 	struct mCc_tac_quad *jump_after_if = mCc_tac_quad_new_jump(label_after_if);
 	jump_after_if->comment = "Jump after if";
-	mCc_tac_program_add_quad(prog, jump_after_if);
+	if (mCc_tac_program_add_quad(prog, jump_after_if))
+		return 1;
 
 	struct mCc_tac_quad *label_else_quad = mCc_tac_quad_new_label(label_else);
 	label_else_quad->comment = "Else branch";
-	mCc_tac_program_add_quad(prog, label_else_quad);
+	if (mCc_tac_program_add_quad(prog, label_else_quad))
+		return 1;
 	mCc_tac_from_stmt(prog, stmt->else_stmt);
 	struct mCc_tac_quad *label_after_if_quad =
 	    mCc_tac_quad_new_label(label_after_if);
 	label_after_if_quad->comment = "End of if";
-	mCc_tac_program_add_quad(prog, label_after_if_quad);
+	if (mCc_tac_program_add_quad(prog, label_after_if_quad))
+		return 1;
 
-	return cond;
+	return 0;
 }
 
-static void mCc_tac_entry_from_assg(struct mCc_tac_program *prog,
+static int mCc_tac_entry_from_assg(struct mCc_tac_program *prog,
                                     struct mCc_ast_statement *stmt)
 {
 
@@ -286,10 +282,12 @@ static void mCc_tac_entry_from_assg(struct mCc_tac_program *prog,
                 mCc_tac_from_expression(prog, stmt->rhs_assgn);
 		new_quad = mCc_tac_quad_new_assign(result_rhs, result);
 	}
-	mCc_tac_program_add_quad(prog, new_quad);
+	if (!new_quad || mCc_tac_program_add_quad(prog, new_quad))
+		return 1;
+	return 0;
 }
 
-static void mCc_tac_from_statement_return(struct mCc_tac_program *prog,
+static int mCc_tac_from_statement_return(struct mCc_tac_program *prog,
                                           struct mCc_ast_statement *stmt)
 {
 	struct mCc_tac_quad_entry entry;
@@ -298,19 +296,18 @@ static void mCc_tac_from_statement_return(struct mCc_tac_program *prog,
 		entry = mCc_tac_from_expression(prog, stmt->ret_val);
 	}
     if(stmt->type == MCC_AST_STATEMENT_TYPE_RET)
-	    new_quad = mCc_tac_quad_new_return(
-	    entry); // TODO save the variable which gets the return value back
+	    new_quad = mCc_tac_quad_new_return(entry);
     else
         new_quad = mCc_tac_quad_new_return_void();
 
-    mCc_tac_program_add_quad(prog, new_quad);
-	return;
+    if (!new_quad || mCc_tac_program_add_quad(prog, new_quad))
+		return 1;
+	return 0;
 }
 
-static void mCc_tac_from_statement_while(struct mCc_tac_program *prog,
+static int mCc_tac_from_statement_while(struct mCc_tac_program *prog,
                                          struct mCc_ast_statement *stmt)
 {
-	// TODO error handling everywhere
 	struct mCc_tac_label label_cond = mCc_tac_get_new_label();
 	struct mCc_tac_label label_after_while = mCc_tac_get_new_label();
 	struct mCc_tac_quad *label_cond_quad = mCc_tac_quad_new_label(label_cond);
@@ -324,13 +321,16 @@ static void mCc_tac_from_statement_while(struct mCc_tac_program *prog,
 	struct mCc_tac_quad *jump_after_while =
 	    mCc_tac_quad_new_jumpfalse(cond, label_after_while);
 	jump_after_while->comment = "Evaluate while condition";
-	mCc_tac_program_add_quad(prog, jump_after_while);
+	if (mCc_tac_program_add_quad(prog, jump_after_while))
+		return 1;
 
 	mCc_tac_from_stmt(prog, stmt->while_stmt);
 	struct mCc_tac_quad *jump_to_cond = mCc_tac_quad_new_jump(label_cond);
-	mCc_tac_program_add_quad(prog, jump_to_cond);
-	mCc_tac_program_add_quad(prog, label_after_while_quad);
-	return;
+	if (mCc_tac_program_add_quad(prog, jump_to_cond))
+		return 1;
+	if (mCc_tac_program_add_quad(prog, label_after_while_quad))
+		return 1;
+	return 0;
 }
 
 static int mCc_tac_from_function_def(struct mCc_tac_program *prog,
@@ -351,15 +351,19 @@ static int mCc_tac_from_function_def(struct mCc_tac_program *prog,
 
             // Load argument index into a quad
             struct mCc_tac_quad_literal *i_lit=malloc(sizeof(*i_lit));
+			if (!i_lit)
+				return 1;
             i_lit->ival=i;
             struct mCc_tac_quad_entry i_entry = mCc_tac_create_new_entry();
             struct mCc_tac_quad *i_quad = mCc_tac_quad_new_assign_lit(i_lit, i_entry);
-            mCc_tac_program_add_quad(prog, i_quad);
+            if (mCc_tac_program_add_quad(prog, i_quad))
+				return 1;
 
             // Load argument from stack into new temporary
             struct mCc_tac_quad_entry new_entry = mCc_tac_create_new_entry();
             struct mCc_tac_quad *load_param = mCc_tac_quad_new_load(virtual_pointer_to_arguments, i_entry, new_entry);
-            mCc_tac_program_add_quad(prog, load_param);
+            if (mCc_tac_program_add_quad(prog, load_param))
+				return 1;
 
             fun_def->para->decl[i]->decl_id->symtab_ref->tac_tmp = new_entry;
         }
@@ -376,6 +380,9 @@ struct mCc_tac_quad_literal *
 mCc_get_quad_literal(struct mCc_ast_literal *literal)
 {
 	struct mCc_tac_quad_literal *lit_quad = malloc(sizeof(*lit_quad));
+	if (!lit_quad)
+		return NULL;
+
 	switch (literal->type) {
 	case MCC_AST_LITERAL_TYPE_INT:
 		lit_quad->type = MCC_TAC_QUAD_LIT_INT;
@@ -403,34 +410,29 @@ static int mCc_tac_from_stmt(struct mCc_tac_program *prog,
 
 	switch (stmt->type) {
 	case MCC_AST_STATEMENT_TYPE_IF:
-		mCc_tac_from_statement_if(prog, stmt);
-		break;
+		return mCc_tac_from_statement_if(prog, stmt);
 	case MCC_AST_STATEMENT_TYPE_IFELSE:
-		mCc_tac_from_statement_if_else(prog, stmt);
-		break;
+		return mCc_tac_from_statement_if_else(prog, stmt);
 	case MCC_AST_STATEMENT_TYPE_RET:
-		mCc_tac_from_statement_return(prog, stmt);
-		break;
+		return mCc_tac_from_statement_return(prog, stmt);
 	case MCC_AST_STATEMENT_TYPE_RET_VOID:
-		mCc_tac_from_statement_return(prog, stmt);
-		break;
+		return mCc_tac_from_statement_return(prog, stmt);
 	case MCC_AST_STATEMENT_TYPE_WHILE:
-		mCc_tac_from_statement_while(prog, stmt);
-		break;
+		return mCc_tac_from_statement_while(prog, stmt);
 	case MCC_AST_STATEMENT_TYPE_DECL:
 		mCc_tac_entry_from_declaration(stmt->declaration);
-		break;
+		return 0;
 	case MCC_AST_STATEMENT_TYPE_ASSGN:
-		mCc_tac_entry_from_assg(prog, stmt);
-		break;
+		return mCc_tac_entry_from_assg(prog, stmt);
 	case MCC_AST_STATEMENT_TYPE_EXPR:
 		mCc_tac_from_expression(prog, stmt->expression);
-		break;
+		return 0;
 	case MCC_AST_STATEMENT_TYPE_CMPND:
 		for (unsigned int i = 0; i < (stmt->compound_stmt_count); i++) {
-			mCc_tac_from_stmt(prog, stmt->compound_stmts[i]);
+			if (mCc_tac_from_stmt(prog, stmt->compound_stmts[i]))
+				return 1;
 		}
-		break;
+		return 0;
 	}
 	return 0;
 }
