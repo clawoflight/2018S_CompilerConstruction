@@ -96,8 +96,10 @@ int main(int argc, char *argv[])
 	}
 	/* three-addess code generation */
 	struct mCc_tac_program *tac = mCc_tac_build(prog);
-	if (print_tac)
+	if (print_tac && tac)
 		mCc_tac_program_print(tac, tac_out);
+	else if (!tac)
+		fputs("Memory error while building the TAC!\n", stderr);
 
 	if (tac_out && tac_out != stdout)
 		fclose(tac_out);
@@ -110,7 +112,8 @@ int main(int argc, char *argv[])
 	 */
 
 	/* cleanup */
-	mCc_tac_program_delete(tac, true);            //Mem problems
+	if (tac)
+		mCc_tac_program_delete(tac, true);
 	mCc_symtab_delete_all_scopes();
 	mCc_ast_delete_program(prog);
 

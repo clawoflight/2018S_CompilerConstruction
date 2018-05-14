@@ -584,11 +584,11 @@ void mCc_tac_program_print(struct mCc_tac_program *self, FILE *out)
 	for (unsigned int i = 0; i < self->quad_count; i++) {
 		mCc_tac_quad_print(self->quads[i], out);
 	}
-	return;
 }
 
 void mCc_tac_program_delete(struct mCc_tac_program *self, bool delete_quads_too)
 {
+	assert(self);
 	if (delete_quads_too) {
 		for (unsigned int i = 0; i < self->quad_count; i++) {
 			mCc_tac_quad_delete(self->quads[i]);
