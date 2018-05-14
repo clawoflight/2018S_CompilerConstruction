@@ -53,5 +53,9 @@ To run all integration test a script is provided named test-i.sh, which can run 
 ```
 ./test-i.sh
 ``` 
+In order to print the Three Address Code (TAC) into a seperate file, the flag --print-tac and the corresponding file has to be secified.
+```
+./mCc /ackermann.mC --print-tac /tac-out.txt
+
 
 # Kown issues
