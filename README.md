@@ -22,40 +22,40 @@ First get the Code of the compiler:
 $ git clone https://github.com/clawoflight/2018S_CompilerConstruction.git
 $ cd mCc
 ```
-Then build meson 
+Then setup the build system:
 ```
 meson builddir
 cd builddir
 ```
-Now build ninja
+Then call ninja to compile.
 ```
 ninja 
 ```
 
 ## Execution
-The parser has two mains. The first one takes a file as imput. The second one takes the input to compile via the std. input of the user.
-
+The compiler can be called with `mCc`, see it's help message for details.
+`mC_to_dot` is provided to visualize the AST. It can only read from stdin and write to stdout.
 ```
-./mCc filname.c
+./mCc --help
 ./mC_to_dot
 ```
-The unit test can be found in /test and can all be run with :
+The unit tests can be found in `test` and can be run with:
 ```
-ninja test 
+ninja test
+ninja testgrind # tests behind valgrind
+```
+Integration tests can be run with:
+```
+../test/integration
 ```
 
-All the integration tests can be run with both main programs either providing the input file or by coping the code into the std. input. 
+In order to print the Three Address Code (TAC), the flag --print-tac and the corresponding output may be specified. `-` for stdout is supported.
 ```
-./mC /doc/examples/ackermann.mC
-./mC_to_dot /doc/examples/ackermann.mC
-```
-To run all integration test a script is provided named test-i.sh, which can run both main programs with all integration examples. In the script the selected main program is currently mC_to_dot this can be switched to mC with a file input in order to test the examples with the mC program
-```
-./test-i.sh
-``` 
-In order to print the Three Address Code (TAC) into a seperate file, the flag --print-tac and the corresponding file has to be secified.
-```
-./mCc /ackermann.mC --print-tac /tac-out.txt
+./mCc ackermann.mC --print-tac tac-out.txt
 
+# decent syntax highlighting:
+./mCc ackermann.mC --print-tac - | highlight -O xterm256 --syntax asm | less
+./mCc ackermann.mC --print-tac - | highlight --syntax asm > tac-out.html
+```
 
 # Kown issues
