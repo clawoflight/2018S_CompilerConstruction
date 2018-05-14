@@ -54,8 +54,11 @@ In order to print the Three Address Code (TAC), the flag --print-tac and the cor
 ./mCc ackermann.mC --print-tac tac-out.txt
 
 # decent syntax highlighting:
+./mCc ackermann.mC --print-tac - | vim -c "setf asm" -
 ./mCc ackermann.mC --print-tac - | highlight -O xterm256 --syntax asm | less
 ./mCc ackermann.mC --print-tac - | highlight --syntax asm > tac-out.html
 ```
 
 # Kown issues
+- Due to lack of time, overall code quality went down a notch.
+- Insufficient error checking during TAC construction.
