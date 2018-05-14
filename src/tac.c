@@ -300,7 +300,7 @@ static inline void mCc_tac_print_label(struct mCc_tac_label label, FILE *out)
 	}
 }
 
-void print_tac_bin_op(struct mCc_tac_quad *self, FILE *out)
+static void print_tac_bin_op(struct mCc_tac_quad *self, FILE *out)
 {
 	switch (self->bin_op) {
 	case MCC_TAC_OP_BINARY_ADD:
@@ -371,7 +371,7 @@ void print_tac_bin_op(struct mCc_tac_quad *self, FILE *out)
 	return;
 }
 
-void print_tac_unary_op(struct mCc_tac_quad *self, FILE *out)
+static void print_tac_unary_op(struct mCc_tac_quad *self, FILE *out)
 {
 	switch (self->un_op) {
 	case MCC_TAC_OP_UNARY_NEG:
@@ -386,7 +386,7 @@ void print_tac_unary_op(struct mCc_tac_quad *self, FILE *out)
 	return;
 }
 
-void print_tac_literal(struct mCc_tac_quad *self, FILE *out)
+static void print_tac_literal(struct mCc_tac_quad *self, FILE *out)
 {
 	switch (self->literal->type) {
 	case MCC_TAC_QUAD_LIT_INT:
@@ -409,7 +409,7 @@ void print_tac_literal(struct mCc_tac_quad *self, FILE *out)
 	return;
 }
 
-void mCc_tac_quad_print(struct mCc_tac_quad *self, FILE *out)
+static void mCc_tac_quad_print(struct mCc_tac_quad *self, FILE *out)
 {
 
 	assert(self);
@@ -466,7 +466,7 @@ void mCc_tac_quad_print(struct mCc_tac_quad *self, FILE *out)
 	return;
 }
 
-void mCc_tac_quad_delete(struct mCc_tac_quad *self)
+static void mCc_tac_quad_delete(struct mCc_tac_quad *self)
 {
 	assert(self);
 
@@ -506,7 +506,7 @@ void mCc_tac_quad_delete(struct mCc_tac_quad *self)
 }
 
 
-void mCc_tac_quad_literal_delete(struct mCc_tac_quad_literal *lit)
+static void mCc_tac_quad_literal_delete(struct mCc_tac_quad_literal *lit)
 {
 	free(lit);
 	return;
