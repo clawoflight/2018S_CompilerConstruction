@@ -287,8 +287,6 @@ mCc_tac_quad_new_return(struct mCc_tac_quad_entry ret_value)
     quad->comment = NULL;
     quad->type = MCC_TAC_QUAD_RETURN;
     quad->arg1 = ret_value;
-    //quad->result.ref = result;
-    // TODO how to get the value which waits for the return value
 
 	return quad;
 }
