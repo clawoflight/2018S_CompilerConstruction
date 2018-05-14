@@ -404,7 +404,7 @@ void print_tac_literal(struct mCc_tac_quad *self, FILE *out)
 		        self->literal->ival ? "true" : "false");
 		break;
 	case MCC_TAC_QUAD_LIT_STR:
-		fprintf(out, "\tt%d = %s\n", self->result.ref.number,
+		fprintf(out, "\tt%d = \"%s\"\n", self->result.ref.number,
 		        self->literal->strval);
 		break;
 	}
@@ -445,7 +445,10 @@ void mCc_tac_quad_print(struct mCc_tac_quad *self, FILE *out)
 		fprintf(out, "\tparam t%d\n", self->arg1.number);
 		break;
 	case MCC_TAC_QUAD_CALL:
-		fputs("\tcall ", out);
+		if (self->arg1.number)
+			fprintf(out, "\tt%d = call ", self->arg1.number);
+		else
+			fputs("\tcall ", out);
 		mCc_tac_print_label(self->result.label, out);
 		fputc('\n', out);
 		break;
