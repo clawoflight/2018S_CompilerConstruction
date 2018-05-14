@@ -9,12 +9,6 @@
 
 * Update integration script: https://github.com/W4RH4WK/mCc/commit/d4d9fef8fc4e1e4f1d393b032dc2f26a4d6c70eb
 
-# Issues / Errors
-
-## Integration test: 
-* Remove array without brackets error bec. we want to pass arrays to a function
-* integration with symtab 
-
 # Assignment 2 
 
 ## Task 0 
@@ -23,33 +17,33 @@
 ## Task 1
 ~~Find out what symbol tables are and how they are typically used.~~
 
-Implement the creation of symbol tables.
+~~Implement the creation of symbol tables.~~
 
-extend tests
+~~extend tests~~
 
 ## Task 2
-Implement a check to detect uses of unknown functions in every scope
+~~Implement a check to detect uses of unknown functions in every scope~~
 
-Implement a check which ensures there is one function named main present. It should not take any parameters and return void.
+~~Implement a check which ensures there is one function named main present. It should not take any parameters and return void.~~
 
-Implement a check which ensures that every function has a unique name. Also take the built-in functions into account.
+~~Implement a check which ensures that every function has a unique name. Also take the built-in functions into account.~~
 
-tests
+~~tests~~
 
 ## Task 3
-Implement a check which ensures that all execution paths of a function return a value, unless the function is declared to return void
+~~Implement a check which ensures that all execution paths of a function return a value, unless the function is declared to return void~~
 
-tests
+~~tests~~
 
 ## Task 4
-Implement type checking. (also for return types)
+~~Implement type checking. (also for return types)~~
 
-tests
+~~tests~~
 
 ## Task 5 
 Implement the conversion from AST (including symbol tables) to three-address code (TAC).
 
-Implement a way to output the generated TAC
+Implement a way to output the generated TAC~~
 
 tests
 
