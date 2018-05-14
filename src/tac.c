@@ -302,7 +302,6 @@ static inline void mCc_tac_print_label(struct mCc_tac_label label, FILE *out)
 
 static void print_tac_bin_op(struct mCc_tac_quad *self, FILE *out)
 {
-    fprintf(out, "\tType: %d\n", self->type);
 	switch (self->bin_op) {
 	case MCC_TAC_OP_BINARY_ADD:
 		fprintf(out, "\tt%d = t%d + t%d\n", self->result.ref.number,
