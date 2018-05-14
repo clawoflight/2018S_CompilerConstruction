@@ -10,7 +10,7 @@ void main() {
     int i;
     i = size;
     while (i > 0) {
-       to_be_sorted[size-i-1] = i;
+       to_be_sorted[size-i] = i-1;
        i = i-1;
     }
     bubblesort(to_be_sorted);

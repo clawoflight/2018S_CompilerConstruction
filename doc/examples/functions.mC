@@ -2,7 +2,8 @@ void main() {
     int test;
     while_function (3.3, true);
     test = dangling_else_function();
-    print(test);
+    print_int(test);
+    print_nl();
     array_functions();
 }
 
@@ -18,6 +19,7 @@ void while_function(float f, bool b) {
     i = 0;
     while (i < 2) {
         print_int(i);
+        print_nl();
         i = i + 1;
     }
     string str;
@@ -28,14 +30,19 @@ void while_function(float f, bool b) {
     } else 6.7 >= f;
     if (boolean) print(str);
     else print("else");
+    print_nl();
     return;
 }
 
 void array_functions() {
     int[10] arr;
     if (7 == 7) arr[1+1] = 8;
-    print(arr[2]);
-    if (6 != 6) arr[3] = 6;
-    print(arr[3]);
+    print_int(arr[2]);
+    print_nl();
+    if (6 != 6) {
+        arr[3] = 6;
+        print_int(arr[3]);
+        print_nl();
+    }
     return;
 }
