@@ -210,23 +210,6 @@ mCc_symtab_scope_lookup_id(struct mCc_symtab_scope *scope,
 	return entry;
 }
 
-int mCc_symtab_check_main_properties(struct mCc_symtab_scope *scope)
-{
-	struct mCc_ast_identifier id;
-	id.id_value = "main";
-
-	struct mCc_symtab_entry *entry = mCc_symtab_scope_lookup_id(scope, &id);
-
-	if (entry) {
-		if (entry->primitive_type == MCC_AST_TYPE_VOID) {
-			if (!entry->params) {
-				return 0; /// if all properties are full filled
-			}
-		}
-	}
-	return -1;
-}
-
 /******************************* Public Functions */
 
 struct mCc_symtab_scope *mCc_symtab_new_scope_in(struct mCc_symtab_scope *self,

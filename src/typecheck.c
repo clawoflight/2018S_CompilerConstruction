@@ -543,6 +543,23 @@ static inline bool mCc_check_statement(struct mCc_ast_statement *stmt)
 	return false; ///< Should never be here
 }
 
+int mCc_typecheck_check_main_properties(struct mCc_symtab_scope *scope)
+{
+	struct mCc_ast_identifier id;
+	id.id_value = "main";
+
+	struct mCc_symtab_entry *entry = mCc_symtab_scope_lookup_id(scope, &id);
+
+	if (entry) {
+		if (entry->primitive_type == MCC_AST_TYPE_VOID) {
+			if (!entry->params) {
+				return 0; /// if all properties are full filled
+			}
+		}
+	}
+	return -1;
+}
+
 struct mCc_typecheck_result mCc_typecheck(struct mCc_ast_program *program)
 {
 	bool all_correct = true;
