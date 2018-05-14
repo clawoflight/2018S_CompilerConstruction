@@ -243,8 +243,10 @@ static inline enum mCc_ast_type
 mCc_check_expression(struct mCc_ast_expression *expr)
 {
 
-	if (typecheck_result.status == MCC_TYPECHECK_STATUS_ERROR)
-		return MCC_AST_TYPE_VOID;
+	if (typecheck_result.status == MCC_TYPECHECK_STATUS_ERROR){
+        expr->node.computed_type = MCC_AST_TYPE_VOID;
+        return MCC_AST_TYPE_VOID;
+    }
 
 	switch (expr->type) {
 	case MCC_AST_EXPRESSION_TYPE_LITERAL:
