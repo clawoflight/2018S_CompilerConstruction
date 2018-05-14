@@ -180,7 +180,7 @@ struct mCc_tac_quad *mCc_tac_quad_new_param(struct mCc_tac_quad_entry value);
 /**
  * new "goto" quadruple MCC_TAC_QUAD_CALL Label - -
  */
-struct mCc_tac_quad *mCc_tac_quad_new_call(struct mCc_tac_label label);
+struct mCc_tac_quad *mCc_tac_quad_new_call(struct mCc_tac_label label, struct mCc_tac_quad_entry result);
 /**
  * Loading a value from an array and saving it
  * @return a quadruple in the style MCC_TAC_QUAD_LOAD array index result

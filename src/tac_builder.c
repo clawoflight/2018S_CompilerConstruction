@@ -193,10 +193,11 @@ mCc_tac_from_expression_call(struct mCc_tac_program *prog,
 	}
 
 	struct mCc_tac_label label_fun = mCc_get_label_from_fun_name(expr->f_name);
-	struct mCc_tac_quad *jump_to_fun = mCc_tac_quad_new_call(label_fun);
+	struct mCc_tac_quad_entry retval = mCc_tac_create_new_entry();
+	struct mCc_tac_quad *jump_to_fun = mCc_tac_quad_new_call(label_fun, retval);
 	mCc_tac_program_add_quad(prog, jump_to_fun);
 
-	return; // TODO: What to return? we expect an entry, but which entry?
+	return retval;
 }
 
 static struct mCc_tac_quad_entry
@@ -311,12 +312,14 @@ static void mCc_tac_from_statement_while(struct mCc_tac_program *prog,
 	struct mCc_tac_quad *label_cond_quad = mCc_tac_quad_new_label(label_cond);
 	struct mCc_tac_quad *label_after_while_quad =
 	    mCc_tac_quad_new_label(label_after_while);
+	label_after_while_quad->comment = "End of while";
 
 	mCc_tac_program_add_quad(prog, label_cond_quad);
 	struct mCc_tac_quad_entry cond =
 	    mCc_tac_from_expression(prog, stmt->while_cond);
 	struct mCc_tac_quad *jump_after_while =
 	    mCc_tac_quad_new_jumpfalse(cond, label_after_while);
+	jump_after_while->comment = "Evaluate while condition";
 	mCc_tac_program_add_quad(prog, jump_after_while);
 
 	mCc_tac_from_stmt(prog, stmt->while_stmt);
@@ -340,7 +343,7 @@ static int mCc_tac_from_function_def(struct mCc_tac_program *prog,
 	// Copy arguments to new temporaries
 	struct mCc_tac_quad_entry virtual_pointer_to_arguments = {.number = -1};
 	if(fun_def->para) {
-        for (int i = fun_def->para->decl_count - 1; i > 0; --i) {
+        for (int i = fun_def->para->decl_count - 1; i >= 0; --i) {
 
             // Load argument index into a quad
             struct mCc_tac_quad_literal *i_lit=malloc(sizeof(*i_lit));
@@ -425,6 +428,7 @@ static int mCc_tac_from_stmt(struct mCc_tac_program *prog,
 		}
 		break;
 	}
+	return 0;
 }
 
 static struct mCc_tac_quad_entry

@@ -194,7 +194,7 @@ struct mCc_tac_quad *mCc_tac_quad_new_param(struct mCc_tac_quad_entry value)
 	return quad;
 }
 
-struct mCc_tac_quad *mCc_tac_quad_new_call(struct mCc_tac_label label)
+struct mCc_tac_quad *mCc_tac_quad_new_call(struct mCc_tac_label label, struct mCc_tac_quad_entry result)
 {
 
 	struct mCc_tac_quad *quad = malloc(sizeof(*quad));
@@ -205,6 +205,7 @@ struct mCc_tac_quad *mCc_tac_quad_new_call(struct mCc_tac_label label)
 
 	quad->comment = NULL;
     quad->type=MCC_TAC_QUAD_CALL;
+	quad->arg1 = result;
     quad->result.label=label;
     return quad;
 
@@ -526,6 +527,7 @@ struct mCc_tac_program *mCc_tac_program_new(int quad_alloc_size)
 	if (quad_alloc_size > 0) { // allocate memory if specified
 		if ((program->quads =
 		         malloc(quad_alloc_size * sizeof(*program->quads))) == NULL) {
+			free(program);
 			return NULL;
 		}
 	}
