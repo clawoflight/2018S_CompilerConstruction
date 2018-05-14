@@ -322,6 +322,7 @@ static int mCc_tac_from_statement_while(struct mCc_tac_program *prog,
 
 	mCc_tac_from_stmt(prog, stmt->while_stmt);
 	struct mCc_tac_quad *jump_to_cond = mCc_tac_quad_new_jump(label_cond);
+	jump_to_cond->comment = "Repeat Loop";
 	if (mCc_tac_program_add_quad(prog, jump_to_cond))
 		return 1;
 	if (mCc_tac_program_add_quad(prog, label_after_while_quad))
