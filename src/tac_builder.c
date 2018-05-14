@@ -262,10 +262,9 @@ static int mCc_tac_entry_from_assg(struct mCc_tac_program *prog,
 	struct mCc_tac_quad_entry result = mCc_get_var_from_id(stmt->id_assgn);
 
 	struct mCc_tac_quad_entry result_lhs;
+    struct mCc_tac_quad_entry result_rhs ;
 	if (stmt->lhs_assgn)
 		result_lhs = mCc_tac_from_expression(prog, stmt->lhs_assgn);
-	struct mCc_tac_quad_entry result_rhs =
-	    mCc_tac_from_expression(prog, stmt->rhs_assgn);
 
 	if (stmt->rhs_assgn->type == MCC_AST_EXPRESSION_TYPE_LITERAL) {
 		struct mCc_tac_quad_literal *lit_result =
@@ -274,8 +273,10 @@ static int mCc_tac_entry_from_assg(struct mCc_tac_program *prog,
 		if (stmt->rhs_assgn->literal->type == MCC_AST_LITERAL_TYPE_STRING)
 			mCc_tac_string_from_assgn(result, lit_result);
 	} else if (stmt->lhs_assgn) {
+        result_rhs = mCc_tac_from_expression(prog, stmt->rhs_assgn);
 		new_quad = mCc_tac_quad_new_store(result_lhs, result_rhs, result);
 	} else {
+        result_rhs = mCc_tac_from_expression(prog, stmt->rhs_assgn);
 		new_quad = mCc_tac_quad_new_assign(result_rhs, result);
 	}
 	if (!new_quad || mCc_tac_program_add_quad(prog, new_quad))

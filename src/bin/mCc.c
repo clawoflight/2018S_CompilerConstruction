@@ -111,7 +111,6 @@ int main(int argc, char *argv[])
 		fclose(tac_out);
 
 	/*    TODO
-	 * - create three-address code
 	 * - do some optimisations
 	 * - output assembly code
 	 * - invoke backend compiler
