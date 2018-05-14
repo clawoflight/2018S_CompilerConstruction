@@ -86,14 +86,16 @@ int main(int argc, char *argv[])
 	/* type checking */
 	struct mCc_typecheck_result check_result = mCc_typecheck(prog);
 
-    if(mCc_typecheck_check_main_properties == -1){
-        fprintf(stderr, "Error in %s at 1:1. Main function is missing", argv[1]);
-    }
+	if (mCc_typecheck_check_main_properties(link_result.root_symtab) == -1) {
+		fprintf(stderr, "Error in %s: No main function!\n", argv[1]);
+		goto typecheck_err;
+	}
 	if (check_result.status || !check_result.stmt_type) {
 		fprintf(stderr, "Error in %s at %d:%d - %d:%d: %s\n", argv[1],
 		        check_result.err_loc.start_line, check_result.err_loc.start_col,
 		        check_result.err_loc.end_line, check_result.err_loc.end_col,
 		        check_result.err_msg);
+typecheck_err:
 		mCc_symtab_delete_all_scopes();
 		mCc_ast_delete_program(prog);
 		return EXIT_FAILURE;
