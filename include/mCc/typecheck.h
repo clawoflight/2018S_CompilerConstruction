@@ -49,7 +49,7 @@ struct mCc_typecheck_result mCc_typecheck(struct mCc_ast_program *program);
  * @param scope
  * @return 0 on success or -1 on error
  */
-int mCc_typecheck_check_main_properties(struct mCc_symtab_scope *scope );
+int mCc_typecheck_check_main_properties(struct mCc_symtab_scope *scope);
 
 /**
  * Dummy func for testing

@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "Error in %s: No main function!\n", argv[1]);
 		goto typecheck_err;
 	}
-	if (check_result.status || !check_result.stmt_type) {
+	if (check_result.status) {
 		fprintf(stderr, "Error in %s at %d:%d - %d:%d: %s\n", argv[1],
 		        check_result.err_loc.start_line, check_result.err_loc.start_col,
 		        check_result.err_loc.end_line, check_result.err_loc.end_col,
