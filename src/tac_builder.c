@@ -349,6 +349,7 @@ static int mCc_tac_from_function_def(struct mCc_tac_program *prog,
 
             // Load argument index into a quad
             struct mCc_tac_quad_literal *i_lit=malloc(sizeof(*i_lit));
+			i_lit->type = MCC_TAC_QUAD_LIT_INT;
 			if (!i_lit)
 				return 1;
             i_lit->ival=i;
