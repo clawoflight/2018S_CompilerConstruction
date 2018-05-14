@@ -409,7 +409,7 @@ static void print_tac_literal(struct mCc_tac_quad *self, FILE *out)
 	return;
 }
 
-static void mCc_tac_quad_print(struct mCc_tac_quad *self, FILE *out)
+void mCc_tac_quad_print(struct mCc_tac_quad *self, FILE *out)
 {
 
 	assert(self);
@@ -466,7 +466,7 @@ static void mCc_tac_quad_print(struct mCc_tac_quad *self, FILE *out)
 	return;
 }
 
-static void mCc_tac_quad_delete(struct mCc_tac_quad *self)
+void mCc_tac_quad_delete(struct mCc_tac_quad *self)
 {
 	assert(self);
 
@@ -506,7 +506,7 @@ static void mCc_tac_quad_delete(struct mCc_tac_quad *self)
 }
 
 
-static void mCc_tac_quad_literal_delete(struct mCc_tac_quad_literal *lit)
+void mCc_tac_quad_literal_delete(struct mCc_tac_quad_literal *lit)
 {
 	free(lit);
 	return;
