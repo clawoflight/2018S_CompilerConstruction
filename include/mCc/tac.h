@@ -207,11 +207,11 @@ struct mCc_tac_quad *mCc_tac_quad_new_store(struct mCc_tac_quad_entry index,
  * @param self
  * @param out
  */
-void mCc_tac_quad_print(struct mCc_tac_quad *self, FILE *out);
+static void mCc_tac_quad_print(struct mCc_tac_quad *self, FILE *out);
 
-void mCc_tac_quad_delete(struct mCc_tac_quad *self);
+static void mCc_tac_quad_delete(struct mCc_tac_quad *self);
 void mCc_tac_quad_entry_delete(struct mCc_tac_quad_entry entry);
-void mCc_tac_quad_literal_delete(struct mCc_tac_quad_literal *lit);
+static void mCc_tac_quad_literal_delete(struct mCc_tac_quad_literal *lit);
 
 /********************************** Program Functions */
 
