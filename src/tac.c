@@ -502,7 +502,6 @@ void mCc_tac_quad_delete(struct mCc_tac_quad *self)
 	// Don't free comment because that is a string literal
 
 	free(self);
-	// TODO implement
 	return;
 }
 

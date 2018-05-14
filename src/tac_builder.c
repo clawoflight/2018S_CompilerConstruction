@@ -487,3 +487,7 @@ struct mCc_tac_program *mCc_tac_build(struct mCc_ast_program *prog)
 
 	return tac;
 }
+
+void mCc_tac_free_global_string_array(){
+	free(global_string_arr);
+}

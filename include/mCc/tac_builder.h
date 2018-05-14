@@ -23,6 +23,8 @@ extern "C" {
  */
 struct mCc_tac_program *mCc_tac_build(struct mCc_ast_program *prog);
 
+
+void mCc_tac_free_global_string_array();
 #ifdef __cplusplus
 }
 #endif
