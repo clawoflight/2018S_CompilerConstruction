@@ -214,6 +214,7 @@ static inline bool mCc_check_paramaters(struct mCc_ast_arguments *args,
 		return true;
 	}
 	snprintf(typecheck_result.err_msg, err_len, "Mismatch number of arguments");
+	typecheck_result.err_loc = sloc;
 	return false;
 }
 
@@ -503,6 +504,7 @@ static inline bool mCc_check_function(struct mCc_ast_function_def *func)
 	if (!general_ret) {
 		snprintf(typecheck_result.err_msg, err_len,
 		         "Function may not reach a return");
+		typecheck_result.err_loc = func->node.sloc;
 	}
 
 	if (func->func_type == MCC_AST_TYPE_VOID) {
