@@ -123,7 +123,7 @@ typecheck_err:
 	 */
 
 	/* cleanup */
-	mCc_tac_program_delete(tac, true);
+	mCc_tac_program_delete(tac);
 	mCc_tac_free_global_string_array();
 	mCc_symtab_delete_all_scopes();
 	mCc_ast_delete_program(prog);

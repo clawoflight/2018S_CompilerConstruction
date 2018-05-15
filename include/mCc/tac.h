@@ -236,21 +236,6 @@ int mCc_tac_program_add_quad(struct mCc_tac_program *self,
                              struct mCc_tac_quad *quad);
 
 /**
- * @brief Append a program to a program.
- *
- * by copying all quad pointers from the old program to the end of the new one,
- * calling #mCc_tac_program_add_quad for each. This creates a FLAT program. No
- * Nesting!
- *
- * @param self The program to which to add
- * @param other_prog The program whose quads to copy over
- *
- * @return 0 on success, non-zero on memory error
- */
-int mCc_tac_program_add_program(struct mCc_tac_program *self,
-                                struct mCc_tac_program *other_prog);
-
-/**
  * @brief Print a program by serially printing it's quads.
  *
  * @param self The program to print
@@ -261,13 +246,9 @@ void mCc_tac_program_print(struct mCc_tac_program *self, FILE *out);
 /**
  * @brief Delete a program.
  *
- * When copying to a new program, don't delete the quads in the old one!
- *
  * @param self The program to delete
- * @param delete_quads_too Whether to delete all quads contained in the program
  */
-void mCc_tac_program_delete(struct mCc_tac_program *self,
-                            bool delete_quads_too);
+void mCc_tac_program_delete(struct mCc_tac_program *self);
 
 #ifdef __cplusplus
 }

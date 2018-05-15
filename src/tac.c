@@ -300,7 +300,7 @@ static inline void mCc_tac_print_label(struct mCc_tac_label label, FILE *out)
 	}
 }
 
-static void print_tac_bin_op(struct mCc_tac_quad *self, FILE *out)
+static void mCc_tac_print_bin_op(struct mCc_tac_quad *self, FILE *out)
 {
 	switch (self->bin_op) {
 	case MCC_TAC_OP_BINARY_ADD:
@@ -371,7 +371,7 @@ static void print_tac_bin_op(struct mCc_tac_quad *self, FILE *out)
 	return;
 }
 
-static void print_tac_unary_op(struct mCc_tac_quad *self, FILE *out)
+static void mCc_tac_print_unary_op(struct mCc_tac_quad *self, FILE *out)
 {
 	switch (self->un_op) {
 	case MCC_TAC_OP_UNARY_NEG:
@@ -386,7 +386,7 @@ static void print_tac_unary_op(struct mCc_tac_quad *self, FILE *out)
 	return;
 }
 
-static void print_tac_literal(struct mCc_tac_quad *self, FILE *out)
+static void mCc_tac_print_literal(struct mCc_tac_quad *self, FILE *out)
 {
 	switch (self->literal->type) {
 	case MCC_TAC_QUAD_LIT_INT:
@@ -422,9 +422,9 @@ void mCc_tac_quad_print(struct mCc_tac_quad *self, FILE *out)
 		fprintf(out, "\tt%d = t%d\n", self->result.ref.number,
 		        self->arg1.number);
 		break;
-	case MCC_TAC_QUAD_ASSIGN_LIT: print_tac_literal(self, out); break;
-	case MCC_TAC_QUAD_OP_UNARY: print_tac_unary_op(self, out); break;
-	case MCC_TAC_QUAD_OP_BINARY: print_tac_bin_op(self, out); break;
+	case MCC_TAC_QUAD_ASSIGN_LIT: mCc_tac_print_literal(self, out); break;
+	case MCC_TAC_QUAD_OP_UNARY: mCc_tac_print_unary_op(self, out); break;
+	case MCC_TAC_QUAD_OP_BINARY: mCc_tac_print_bin_op(self, out); break;
 	case MCC_TAC_QUAD_JUMP:
 		fputs("\tjump ", out);
 		mCc_tac_print_label(self->result.label, out);
@@ -549,33 +549,12 @@ int mCc_tac_program_add_quad(struct mCc_tac_program *self,
 	self->quad_alloc_size += quad_alloc_block_size;
 	if ((tmp = realloc(self->quads, self->quad_alloc_size * sizeof(*tmp))) ==
 	    NULL) {
-		mCc_tac_program_delete(self, true);
+		mCc_tac_program_delete(self);
 		return 1;
 	}
 
 	self->quads = tmp;
 	self->quads[self->quad_count++] = quad;
-	return 0;
-}
-
-int mCc_tac_program_add_program(struct mCc_tac_program *self,
-                                struct mCc_tac_program *other_prog)
-{
-	assert(self);
-	assert(other_prog);
-
-	self->quad_count = other_prog->quad_count;
-	self->quad_alloc_size = other_prog->quad_alloc_size;
-
-	for (unsigned int i = 0; i < other_prog->quad_count; i++) {
-		if (mCc_tac_program_add_quad(self, other_prog->quads[i]) != 0) {
-			mCc_tac_program_delete(other_prog, true);
-			mCc_tac_program_delete(self, true);
-			return 1;
-		}
-	}
-	mCc_tac_program_delete(other_prog, false);
-
 	return 0;
 }
 
@@ -588,13 +567,11 @@ void mCc_tac_program_print(struct mCc_tac_program *self, FILE *out)
 	}
 }
 
-void mCc_tac_program_delete(struct mCc_tac_program *self, bool delete_quads_too)
+void mCc_tac_program_delete(struct mCc_tac_program *self)
 {
 	assert(self);
-	if (delete_quads_too) {
-		for (unsigned int i = 0; i < self->quad_count; i++) {
-			mCc_tac_quad_delete(self->quads[i]);
-		}
+	for (unsigned int i = 0; i < self->quad_count; i++) {
+		mCc_tac_quad_delete(self->quads[i]);
 	}
     free(self->quads);
 	free(self);
