@@ -19,7 +19,7 @@ extern "C" {
 /******************************** Data Structures */
 
 /// Size by which to increase compound_stmts when reallocing
-const int quad_alloc_block_size = 10;
+static const int quad_alloc_block_size = 10;
 
 /// Binary Operators
 enum mCc_tac_quad_binary_op {
@@ -88,8 +88,10 @@ struct mCc_tac_quad_literal {
 	};
 };
 /// this struct is the used as the type of the quad entries
+#define MCC_TAC_STRING_LEN (4096)
 struct mCc_tac_quad_entry {
-    int number;
+    int number; /// Temporary. -1 will be used as array pointer to params
+    char str_value[MCC_TAC_STRING_LEN]; /// (Optional)For Strings
 };
 
 #define MCC_TAC_LABEL_LEN (4096)
@@ -110,13 +112,13 @@ struct mCc_tac_quad {
         enum mCc_tac_quad_binary_op bin_op;
         enum mCc_tac_quad_unary_op un_op;
     };
-	struct mCc_tac_quad_entry *arg1;
-	struct mCc_tac_quad_entry *arg2;
+	struct mCc_tac_quad_entry arg1;
+	struct mCc_tac_quad_entry arg2;
 
 	/// The result can be a reference or a label
 	union {
 		struct mCc_tac_label label;
-		struct mCc_tac_quad_entry *ref;
+		struct mCc_tac_quad_entry ref;
 	} result;
 };
 
@@ -138,20 +140,24 @@ struct mCc_tac_program {
 
 /********************************** Quad Functions */
 
-struct mCc_tac_quad *mCc_tac_quad_new_assign(struct mCc_tac_quad_entry *arg1,
-                                             struct mCc_tac_quad_entry *result);
+struct mCc_tac_quad_entry mCc_tac_create_new_entry();
+struct mCc_tac_quad_entry mCc_tac_create_new_string();
+struct mCc_tac_label mCc_tac_get_new_label();
+
+struct mCc_tac_quad *mCc_tac_quad_new_assign(struct mCc_tac_quad_entry arg1,
+                                             struct mCc_tac_quad_entry result);
 
 struct mCc_tac_quad *mCc_tac_quad_new_assign_lit(struct mCc_tac_quad_literal *arg1,
-                                                 struct mCc_tac_quad_entry *result);
+                                                 struct mCc_tac_quad_entry result);
 
 struct mCc_tac_quad *mCc_tac_quad_new_op_unary(enum mCc_tac_quad_unary_op op,
-                                               struct mCc_tac_quad_entry *arg1,
-                                               struct mCc_tac_quad_entry *result);
+                                               struct mCc_tac_quad_entry arg1,
+                                               struct mCc_tac_quad_entry result);
 
 struct mCc_tac_quad *mCc_tac_quad_new_op_binary(enum mCc_tac_quad_binary_op op,
-                                                struct mCc_tac_quad_entry *arg1,
-                                                struct mCc_tac_quad_entry *arg2,
-                                                struct mCc_tac_quad_entry *result);
+                                                struct mCc_tac_quad_entry arg1,
+                                                struct mCc_tac_quad_entry arg2,
+                                                struct mCc_tac_quad_entry result);
 
 /**
  * @return  new quadruple in the style: MCC_TAC_QUAD_JUMP - - label
@@ -162,34 +168,39 @@ struct mCc_tac_quad *mCc_tac_quad_new_jump(struct mCc_tac_label label);
  * New quadruple in the style MCC_TAC_QUAD_JUMPFALSE condition Label -
  */
 struct mCc_tac_quad *
-mCc_tac_quad_new_jumpfalse(struct mCc_tac_quad_entry *condition,
+mCc_tac_quad_new_jumpfalse(struct mCc_tac_quad_entry condition,
                            struct mCc_tac_label label);
 
 struct mCc_tac_quad *mCc_tac_quad_new_label(struct mCc_tac_label label);
 /**
  * New quadruple in the style MCC_TAC_QUAD_PARAM value - -
  */
-struct mCc_tac_quad *mCc_tac_quad_new_param(struct mCc_tac_quad_entry *value);
+struct mCc_tac_quad *mCc_tac_quad_new_param(struct mCc_tac_quad_entry value);
 
 /**
  * new "goto" quadruple MCC_TAC_QUAD_CALL Label - -
  */
-struct mCc_tac_quad *mCc_tac_quad_new_call(struct mCc_tac_label label);
+struct mCc_tac_quad *mCc_tac_quad_new_call(struct mCc_tac_label label, struct mCc_tac_quad_entry result);
 /**
  * Loading a value from an array and saving it
  * @return a quadruple in the style MCC_TAC_QUAD_LOAD array index result
  */
-struct mCc_tac_quad *mCc_tac_quad_new_load(struct mCc_tac_quad_entry *array,
-                                           struct mCc_tac_quad_entry *index,
-                                           struct mCc_tac_quad_entry *result);
+struct mCc_tac_quad *mCc_tac_quad_new_load(struct mCc_tac_quad_entry array,
+                                           struct mCc_tac_quad_entry index,
+
+                                           struct mCc_tac_quad_entry result);
+
+struct mCc_tac_quad *mCc_tac_quad_new_return_void();
+struct mCc_tac_quad *mCc_tac_quad_new_return(struct mCc_tac_quad_entry ret_value);
+
 
 /**
  * Storing an value in an index of an array
  * @return a quadruple in the style MCC_TAC_QUAD_STORE value index array
  */
-struct mCc_tac_quad *mCc_tac_quad_new_store(struct mCc_tac_quad_entry *index,
-                                            struct mCc_tac_quad_entry *value,
-                                            struct mCc_tac_quad_entry *array);
+struct mCc_tac_quad *mCc_tac_quad_new_store(struct mCc_tac_quad_entry index,
+                                            struct mCc_tac_quad_entry value,
+                                            struct mCc_tac_quad_entry array);
 
 /**
  * @brief Print a quad.
@@ -199,6 +210,8 @@ struct mCc_tac_quad *mCc_tac_quad_new_store(struct mCc_tac_quad_entry *index,
 void mCc_tac_quad_print(struct mCc_tac_quad *self, FILE *out);
 
 void mCc_tac_quad_delete(struct mCc_tac_quad *self);
+void mCc_tac_quad_entry_delete(struct mCc_tac_quad_entry entry);
+void mCc_tac_quad_literal_delete(struct mCc_tac_quad_literal *lit);
 
 /********************************** Program Functions */
 
@@ -223,21 +236,6 @@ int mCc_tac_program_add_quad(struct mCc_tac_program *self,
                              struct mCc_tac_quad *quad);
 
 /**
- * @brief Append a program to a program.
- *
- * by copying all quad pointers from the old program to the end of the new one,
- * calling #mCc_tac_program_add_quad for each. This creates a FLAT program. No
- * Nesting!
- *
- * @param self The program to which to add
- * @param other_prog The program whose quads to copy over
- *
- * @return 0 on success, non-zero on memory error
- */
-int mCc_tac_program_add_program(struct mCc_tac_program *self,
-                                struct mCc_tac_program *other_prog);
-
-/**
  * @brief Print a program by serially printing it's quads.
  *
  * @param self The program to print
@@ -248,13 +246,9 @@ void mCc_tac_program_print(struct mCc_tac_program *self, FILE *out);
 /**
  * @brief Delete a program.
  *
- * When copying to a new program, don't delete the quads in the old one!
- *
  * @param self The program to delete
- * @param delete_quads_too Whether to delete all quads contained in the program
  */
-void mCc_tac_program_delete(struct mCc_tac_program *self,
-                            bool delete_quads_too);
+void mCc_tac_program_delete(struct mCc_tac_program *self);
 
 #ifdef __cplusplus
 }

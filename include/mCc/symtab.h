@@ -10,6 +10,7 @@
 #include "ast.h"
 
 #include "lib/uthash.h"
+#include "tac.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,6 +37,9 @@ struct mCc_symtab_entry {
 
 	/// The primitive type (int, bool, ...)
 	enum mCc_ast_type primitive_type;
+
+	/// The temporary variable(number) for TAC creation
+	struct mCc_tac_quad_entry tac_tmp;
 
 	union {
 		/// If entry_type is #MCC_SYMTAB_ENTRY_TYPE_ARR
@@ -169,13 +173,6 @@ enum MCC_SYMTAB_SCOPE_LINK_ERROR {
 struct mCc_symtab_entry *
 mCc_symtab_scope_lookup_id(struct mCc_symtab_scope *scope,
                            struct mCc_ast_identifier *id);
-
-/**
- * check whether the main is declared in the right way (return type int, no parameter and name main)
- * @param scope
- * @return 0 on success or -1 on error
- */
-int mCc_symtab_check_main_properties(struct mCc_symtab_scope *scope );
 
 /**
  * @brief Link the identifier from an expression to the corresponding symtab

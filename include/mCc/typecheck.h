@@ -45,6 +45,13 @@ struct mCc_typecheck_result {
 struct mCc_typecheck_result mCc_typecheck(struct mCc_ast_program *program);
 
 /**
+ * check whether the main is declared in the right way (return type int, no parameter and name main)
+ * @param scope
+ * @return 0 on success or -1 on error
+ */
+int mCc_typecheck_check_main_properties(struct mCc_symtab_scope *scope);
+
+/**
  * Dummy func for testing
  */
 struct mCc_typecheck_result test_type_check(struct mCc_ast_expression *expression);

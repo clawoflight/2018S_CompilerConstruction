@@ -243,8 +243,10 @@ static inline enum mCc_ast_type
 mCc_check_expression(struct mCc_ast_expression *expr)
 {
 
-	if (typecheck_result.status == MCC_TYPECHECK_STATUS_ERROR)
-		return MCC_AST_TYPE_VOID;
+	if (typecheck_result.status == MCC_TYPECHECK_STATUS_ERROR){
+        expr->node.computed_type = MCC_AST_TYPE_VOID;
+        return MCC_AST_TYPE_VOID;
+    }
 
 	switch (expr->type) {
 	case MCC_AST_EXPRESSION_TYPE_LITERAL:
@@ -541,6 +543,23 @@ static inline bool mCc_check_statement(struct mCc_ast_statement *stmt)
 		break;
 	}
 	return false; ///< Should never be here
+}
+
+int mCc_typecheck_check_main_properties(struct mCc_symtab_scope *scope)
+{
+	struct mCc_ast_identifier id;
+	id.id_value = "main";
+
+	struct mCc_symtab_entry *entry = mCc_symtab_scope_lookup_id(scope, &id);
+
+	if (entry) {
+		if (entry->primitive_type == MCC_AST_TYPE_VOID) {
+			if (!entry->params) {
+				return 0; /// if all properties are full filled
+			}
+		}
+	}
+	return -1;
 }
 
 struct mCc_typecheck_result mCc_typecheck(struct mCc_ast_program *program)

@@ -24,6 +24,7 @@ mCc_ast_new_expression_literal(struct mCc_ast_literal *literal)
 
 	expr->type = MCC_AST_EXPRESSION_TYPE_LITERAL;
 	expr->literal = literal;
+	expr->node.computed_type = MCC_AST_TYPE_VOID;
 	return expr;
 }
 
@@ -38,6 +39,7 @@ mCc_ast_new_expression_identifier(struct mCc_ast_identifier *identifier)
 
 	expr->type = MCC_AST_EXPRESSION_TYPE_IDENTIFIER;
 	expr->identifier = identifier;
+	expr->node.computed_type = MCC_AST_TYPE_VOID;
 	return expr;
 }
 
@@ -54,6 +56,7 @@ mCc_ast_new_expression_unary_op(enum mCc_ast_unary_op op,
 	expr->type = MCC_AST_EXPRESSION_TYPE_UNARY_OP;
 	expr->unary_op = op;
 	expr->unary_expression = subexpression;
+	expr->node.computed_type = MCC_AST_TYPE_VOID;
 	return expr;
 }
 
@@ -74,6 +77,7 @@ mCc_ast_new_expression_binary_op(enum mCc_ast_binary_op op,
 	expr->op = op;
 	expr->lhs = lhs;
 	expr->rhs = rhs;
+	expr->node.computed_type = MCC_AST_TYPE_VOID;
 	return expr;
 }
 
@@ -89,6 +93,7 @@ mCc_ast_new_expression_parenth(struct mCc_ast_expression *expression)
 
 	expr->type = MCC_AST_EXPRESSION_TYPE_PARENTH;
 	expr->expression = expression;
+	expr->node.computed_type = MCC_AST_TYPE_VOID;
 	return expr;
 }
 
@@ -105,6 +110,7 @@ mCc_ast_new_expression_call_expr(struct mCc_ast_identifier *identifier,
 	expr->type = MCC_AST_EXPRESSION_TYPE_CALL_EXPR;
 	expr->f_name = identifier;
 	expr->arguments = arguments;
+	expr->node.computed_type = MCC_AST_TYPE_VOID;
 	return expr;
 }
 
@@ -122,6 +128,7 @@ mCc_ast_new_expression_arr_subscr(struct mCc_ast_identifier *array_id,
 	expr->type = MCC_AST_EXPRESSION_TYPE_ARR_SUBSCR;
 	expr->array_id = array_id;
 	expr->subscript_expr = subscript_expr;
+	expr->node.computed_type = MCC_AST_TYPE_VOID;
 	return expr;
 }
 
