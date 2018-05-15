@@ -39,10 +39,12 @@ struct mCc_typecheck_result {
 /**
  * @brief Typecheck the given program.
  * @param program The program to typecheck
+ * @param scope The scope for main function
  *
  * @return an #mCc_typecheck_result containing status, error and location.
  */
-struct mCc_typecheck_result mCc_typecheck(struct mCc_ast_program *program);
+struct mCc_typecheck_result mCc_typecheck(struct mCc_ast_program *program,
+										  struct mCc_symtab_scope *scope);
 
 /**
  * check whether the main is declared in the right way (return type int, no parameter and name main)

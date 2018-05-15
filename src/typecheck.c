@@ -572,18 +572,24 @@ int mCc_typecheck_check_main_properties(struct mCc_symtab_scope *scope)
 		set_not_matching_types_error(NULL,MCC_AST_TYPE_VOID, MCC_AST_TYPE_VOID,
 									 entry->sloc);
 		snprintf(typecheck_result.err_msg, err_len,
-				 "Main function is has to be void and does not take any arguments");
+				 "Main function has to be void and does not take any arguments");
+        return -1;
 	}
-	set_not_matching_types_error(NULL,MCC_AST_TYPE_VOID, MCC_AST_TYPE_VOID,
-								 curr_func->node.sloc);
+    typecheck_result.status = MCC_TYPECHECK_STATUS_ERROR;
 	snprintf(typecheck_result.err_msg, err_len,
 			 "Main function has to be present");
-	typecheck_result.err_loc = curr_func->node.sloc;
 	return -1;
 }
 
-struct mCc_typecheck_result mCc_typecheck(struct mCc_ast_program *program)
+struct mCc_typecheck_result mCc_typecheck(struct mCc_ast_program *program,
+                                          struct mCc_symtab_scope *scope)
 {
+
+    if (mCc_typecheck_check_main_properties(scope) == -1){
+        typecheck_result.stmt_type = false;
+        return typecheck_result;
+    }
+
 	bool all_correct = true;
 	for (unsigned int i = 0; i < program->func_def_count; i++) {
 		curr_func = program->func_defs[i];
