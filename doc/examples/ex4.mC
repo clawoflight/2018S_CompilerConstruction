@@ -2,7 +2,7 @@ void foo(){}
 
 void bar(float useless){}
 
-float foo2(){}
+void foo2(){}
 
 int helloWorld(){
     print("GoodBye cruel world");
