@@ -197,8 +197,8 @@ static inline bool mCc_check_paramaters(struct mCc_ast_arguments *args,
 	if (typecheck_result.status == MCC_TYPECHECK_STATUS_ERROR)
 		return MCC_AST_TYPE_VOID;
 
-	if ((!params || !params->decl_count || params->decl_count == 0) &&
-	    (!args || !args->expression_count || args->expression_count == 0))
+	if ((!params || params->decl_count == 0) &&
+	    (!args || args->expression_count == 0))
 		return true;
 
 	if (params && args && params->decl_count && args->expression_count &&
