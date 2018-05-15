@@ -614,10 +614,13 @@ mCc_typecheck_test_type_check(struct mCc_ast_expression *expression)
 	return typecheck_result;
 }
 
-bool mCc_typecheck_test_type_check_stmt(struct mCc_ast_statement *stmt)
+struct mCc_typecheck_result
+mCc_typecheck_test_type_check_stmt(struct mCc_ast_statement *stmt)
 {
 	typecheck_result.status = MCC_TYPECHECK_STATUS_OK;
-	return mCc_check_statement(stmt);
+    if(!mCc_check_statement(stmt))
+        typecheck_result.status = MCC_TYPECHECK_STATUS_ERROR;
+	return typecheck_result;
 }
 
 struct mCc_typecheck_result

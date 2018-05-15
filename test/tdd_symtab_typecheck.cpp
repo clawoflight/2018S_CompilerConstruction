@@ -9,6 +9,7 @@ TEST(TYPE_CHECK, LITERAL)
     struct mCc_ast_expression *expr = mCc_ast_new_expression_literal(lit);
 
     ASSERT_EQ(MCC_AST_TYPE_INT, mCc_typecheck_test_type_check(expr).type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_OK, mCc_typecheck_test_type_check(expr).status);
     mCc_ast_delete_expression(expr);
 }
 
@@ -24,6 +25,8 @@ TEST(TYPE_CHECK, IDENTIFIER)
         mCc_symtab_scope_lookup_id(scope, decl->decl_id);
     struct mCc_ast_expression *expr = mCc_ast_new_expression_identifier(id);
     expr->identifier->symtab_ref = found;
+
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_OK, mCc_typecheck_test_type_check(expr).status);
     ASSERT_EQ(MCC_AST_TYPE_STRING, mCc_typecheck_test_type_check(expr).type);
 
     mCc_ast_delete_declaration(decl);
@@ -38,6 +41,7 @@ TEST(TYPE_CHECK_UNARY, UNARY_NEG_FLOAT)
     auto expr = result.expression;
 
     ASSERT_EQ(MCC_AST_TYPE_FLOAT, mCc_typecheck_test_type_check(expr).type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_OK, mCc_typecheck_test_type_check(expr).status);
 
     mCc_ast_delete_expression(expr);
 }
@@ -49,6 +53,7 @@ TEST(TYPE_CHECK_UNARY, UNARY_NEG_STRING)
     auto expr = result.expression;
 
     ASSERT_EQ(MCC_AST_TYPE_VOID, mCc_typecheck_test_type_check(expr).type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_ERROR, mCc_typecheck_test_type_check(expr).status);
     mCc_ast_delete_expression(expr);
 }
 
@@ -61,6 +66,7 @@ TEST(TYPE_CHECK_UNARY, UNARY_NOT_BOOL)
     auto expr = result.expression;
 
     ASSERT_EQ(MCC_AST_TYPE_BOOL, mCc_typecheck_test_type_check(expr).type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_OK, mCc_typecheck_test_type_check(expr).status);
 
     mCc_ast_delete_expression(expr);
 }
@@ -72,6 +78,7 @@ TEST(TYPE_CHECK_UNARY, UNARY_NOT_INT)
     auto expr = result.expression;
 
     ASSERT_EQ(MCC_AST_TYPE_VOID, mCc_typecheck_test_type_check(expr).type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_ERROR, mCc_typecheck_test_type_check(expr).status);
     mCc_ast_delete_expression(expr);
 }
 
@@ -82,6 +89,7 @@ TEST(TYPE_CHECK_BINARY, NOT_MATCHING_SIDES)
     auto expr = result.expression;
 
     ASSERT_EQ(MCC_AST_TYPE_VOID, mCc_typecheck_test_type_check(expr).type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_ERROR, mCc_typecheck_test_type_check(expr).status);
     mCc_ast_delete_expression(expr);
 }
 
@@ -92,6 +100,7 @@ TEST(TYPE_CHECK_BINARY, BINARY_SUB_INT)
     auto expr = result.expression;
 
     ASSERT_EQ(MCC_AST_TYPE_INT, mCc_typecheck_test_type_check(expr).type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_OK, mCc_typecheck_test_type_check(expr).status);
     mCc_ast_delete_expression(expr);
 }
 
@@ -102,6 +111,7 @@ TEST(TYPE_CHECK_BINARY, BINARY_ADD_STRING)
     auto expr = result.expression;
 
     ASSERT_EQ(MCC_AST_TYPE_VOID, mCc_typecheck_test_type_check(expr).type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_ERROR, mCc_typecheck_test_type_check(expr).status);
     mCc_ast_delete_expression(expr);
 }
 
@@ -112,6 +122,7 @@ TEST(TYPE_CHECK_BINARY, BINARY_LT_FLOAT)
     auto expr = result.expression;
 
     ASSERT_EQ(MCC_AST_TYPE_BOOL, mCc_typecheck_test_type_check(expr).type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_OK, mCc_typecheck_test_type_check(expr).status);
     mCc_ast_delete_expression(expr);
 }
 
@@ -122,6 +133,7 @@ TEST(TYPE_CHECK_BINARY, BINARY_GEQ_BOOL)
     auto expr = result.expression;
 
     ASSERT_EQ(MCC_AST_TYPE_VOID, mCc_typecheck_test_type_check(expr).type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_ERROR, mCc_typecheck_test_type_check(expr).status);
     mCc_ast_delete_expression(expr);
 }
 
@@ -133,6 +145,7 @@ TEST(TYPE_CHECK_BINARY, BINARY_AND_BOOL)
     auto expr = result.expression;
 
     ASSERT_EQ(MCC_AST_TYPE_BOOL, mCc_typecheck_test_type_check(expr).type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_OK, mCc_typecheck_test_type_check(expr).status);
     mCc_ast_delete_expression(expr);
 }
 
@@ -144,6 +157,7 @@ TEST(TYPE_CHECK_BINARY, BINARY_OR_INT)
     auto expr = result.expression;
 
     ASSERT_EQ(MCC_AST_TYPE_VOID, mCc_typecheck_test_type_check(expr).type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_ERROR, mCc_typecheck_test_type_check(expr).status);
     mCc_ast_delete_expression(expr);
 }
 
@@ -154,6 +168,7 @@ TEST(TYPE_CHECK_BINARY, BINARY_EQ_STRING)
     auto expr = result.expression;
 
     ASSERT_EQ(MCC_AST_TYPE_BOOL, mCc_typecheck_test_type_check(expr).type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_OK, mCc_typecheck_test_type_check(expr).status);
     mCc_ast_delete_expression(expr);
 }
 
@@ -165,6 +180,7 @@ TEST(TYPE_CHECK_BINARY, BINARY_NEQ_BOOL)
     auto expr = result.expression;
 
     ASSERT_EQ(MCC_AST_TYPE_BOOL, mCc_typecheck_test_type_check(expr).type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_OK, mCc_typecheck_test_type_check(expr).status);
     mCc_ast_delete_expression(expr);
 }
 
@@ -175,6 +191,7 @@ TEST(TYPE_CHECK_PARENTH, PARENTH)
     auto expr = result.expression;
 
     ASSERT_EQ(MCC_AST_TYPE_INT, mCc_typecheck_test_type_check(expr).type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_OK, mCc_typecheck_test_type_check(expr).status);
     mCc_ast_delete_expression(expr);
 }
 
@@ -195,6 +212,7 @@ TEST(TYPE_CHECK_ARR_SUBSCR, INT_SUBSCR)
     expr->identifier->symtab_ref = found;
 
     ASSERT_EQ(MCC_AST_TYPE_STRING, mCc_typecheck_test_type_check(expr).type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_OK, mCc_typecheck_test_type_check(expr).status);
     mCc_ast_delete_declaration(decl);
     mCc_ast_delete_expression(expr);
     mCc_symtab_delete_all_scopes();
@@ -217,6 +235,7 @@ TEST(TYPE_CHECK_ARR_SUBSCR, NO_INT_SUBSCR)
     expr->identifier->symtab_ref = found;
 
     ASSERT_EQ(MCC_AST_TYPE_VOID, mCc_typecheck_test_type_check(expr).type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_ERROR, mCc_typecheck_test_type_check(expr).status);
     mCc_ast_delete_declaration(decl);
     mCc_ast_delete_expression(expr);
     mCc_symtab_delete_all_scopes();
@@ -239,6 +258,7 @@ TEST(TYPE_CHECK_ARR_SUBSCR, EXPR_SUBSCR)
     expr->identifier->symtab_ref = found;
 
     ASSERT_EQ(MCC_AST_TYPE_STRING, mCc_typecheck_test_type_check(expr).type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_OK, mCc_typecheck_test_type_check(expr).status);
     mCc_ast_delete_declaration(decl);
     mCc_ast_delete_expression(expr);
     mCc_symtab_delete_all_scopes();
@@ -258,6 +278,7 @@ TEST(TYPE_CHECK_ARGUMENTS, VOID)
     expr->f_name->symtab_ref = found;
 
     ASSERT_EQ(MCC_AST_TYPE_VOID, mCc_typecheck_test_type_check(expr).type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_OK, mCc_typecheck_test_type_check(expr).status);
     mCc_ast_delete_expression(expr);
     mCc_symtab_delete_all_scopes();
 }
@@ -276,6 +297,7 @@ TEST(TYPE_CHECK_ARGUMENTS, MATCHING_PARAMS)
     expr->f_name->symtab_ref = found;
 
     ASSERT_EQ(MCC_AST_TYPE_VOID, mCc_typecheck_test_type_check(expr).type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_OK, mCc_typecheck_test_type_check(expr).status);
     mCc_ast_delete_expression(expr);
     mCc_symtab_delete_all_scopes();
 }
@@ -294,6 +316,7 @@ TEST(TYPE_CHECK_ARGUMENTS, NOT_MATCHING_PARAMS)
     expr->f_name->symtab_ref = found;
 
     ASSERT_EQ(MCC_AST_TYPE_VOID, mCc_typecheck_test_type_check(expr).type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_ERROR, mCc_typecheck_test_type_check(expr).status);
     mCc_ast_delete_expression(expr);
     mCc_symtab_delete_all_scopes();
 }
@@ -312,6 +335,7 @@ TEST(TYPE_CHECK_ARGUMENTS, WRONG_NUMBER_OF_ARGS)
     expr->f_name->symtab_ref = found;
 
     ASSERT_EQ(MCC_AST_TYPE_VOID, mCc_typecheck_test_type_check(expr).type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_ERROR, mCc_typecheck_test_type_check(expr).status);
     mCc_ast_delete_expression(expr);
     mCc_symtab_delete_all_scopes();
 }
@@ -330,6 +354,7 @@ TEST(TYPE_CHECK_CALL_EXPR, RETURN_INT)
     expr->f_name->symtab_ref = found;
 
     ASSERT_EQ(MCC_AST_TYPE_INT, mCc_typecheck_test_type_check(expr).type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_OK, mCc_typecheck_test_type_check(expr).status);
     mCc_ast_delete_expression(expr);
     mCc_symtab_delete_all_scopes();
 }
@@ -341,7 +366,7 @@ TEST(TYPE_CHECK_IFELSE, DANGLING_IF)
     auto stmt = result.statement;
 
     ASSERT_EQ(MCC_AST_STATEMENT_TYPE_IF, stmt->type);
-    ASSERT_TRUE(mCc_typecheck_test_type_check_stmt(stmt));
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_OK, mCc_typecheck_test_type_check_stmt(stmt).status);
 
     mCc_ast_delete_statement(stmt);
 }
@@ -353,7 +378,7 @@ TEST(TYPE_CHECK_IFELSE, IF_ELSE)
     auto stmt = result.statement;
 
     ASSERT_EQ(MCC_AST_STATEMENT_TYPE_IFELSE, stmt->type);
-    ASSERT_TRUE(mCc_typecheck_test_type_check_stmt(stmt));
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_OK, mCc_typecheck_test_type_check_stmt(stmt).status);
 
     mCc_ast_delete_statement(stmt);
 }
@@ -365,7 +390,7 @@ TEST(TYPE_CHECK_IFELSE, NO_BOOL_COND)
     auto stmt = result.statement;
 
     ASSERT_EQ(MCC_AST_STATEMENT_TYPE_IF, stmt->type);
-    ASSERT_FALSE(mCc_typecheck_test_type_check_stmt(stmt));
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_ERROR, mCc_typecheck_test_type_check_stmt(stmt).status);
 
     mCc_ast_delete_statement(stmt);
 }
@@ -377,7 +402,7 @@ TEST(TYPE_CHECK_WHILE, WHILE_SUCCESS)
     auto stmt = result.statement;
 
     ASSERT_EQ(MCC_AST_STATEMENT_TYPE_WHILE, stmt->type);
-    ASSERT_TRUE(mCc_typecheck_test_type_check_stmt(stmt));
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_OK, mCc_typecheck_test_type_check_stmt(stmt).status);
 
     mCc_ast_delete_statement(stmt);
 }
@@ -389,7 +414,7 @@ TEST(TYPE_CHECK_WHILE, WHILE_NO_BOOL)
     auto stmt = result.statement;
 
     ASSERT_EQ(MCC_AST_STATEMENT_TYPE_WHILE, stmt->type);
-    ASSERT_FALSE(mCc_typecheck_test_type_check_stmt(stmt));
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_ERROR, mCc_typecheck_test_type_check_stmt(stmt).status);
 
     mCc_ast_delete_statement(stmt);
 }
@@ -401,7 +426,7 @@ TEST(TYPE_CHECK_WHILE, WHILE_WRONG_BODY)
     auto stmt = result.statement;
 
     ASSERT_EQ(MCC_AST_STATEMENT_TYPE_WHILE, stmt->type);
-    ASSERT_FALSE(mCc_typecheck_test_type_check_stmt(stmt));
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_ERROR, mCc_typecheck_test_type_check_stmt(stmt).status);
 
     mCc_ast_delete_statement(stmt);
 }
@@ -424,7 +449,7 @@ TEST(TYPE_CHECK_ASSGN, ASSGN_SUCCESS)
     stmt->id_assgn->symtab_ref = found;
 
     ASSERT_EQ(MCC_AST_STATEMENT_TYPE_ASSGN, stmt->type);
-    ASSERT_TRUE(mCc_typecheck_test_type_check_stmt(stmt));
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_OK, mCc_typecheck_test_type_check_stmt(stmt).status);
 
     mCc_ast_delete_declaration(decl);
     mCc_ast_delete_statement(stmt);
@@ -449,7 +474,7 @@ TEST(TYPE_CHECK_ASSGN, ASSGN_FAILURE)
     stmt->id_assgn->symtab_ref = found;
 
     ASSERT_EQ(MCC_AST_STATEMENT_TYPE_ASSGN, stmt->type);
-    ASSERT_FALSE(mCc_typecheck_test_type_check_stmt(stmt));
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_ERROR, mCc_typecheck_test_type_check_stmt(stmt).status);
 
     mCc_ast_delete_declaration(decl);
     mCc_ast_delete_statement(stmt);
@@ -463,7 +488,7 @@ TEST(TYPE_CHECK_EXPR, EXPR_SUCCESS)
     auto stmt = result.statement;
 
     ASSERT_EQ(MCC_AST_STATEMENT_TYPE_EXPR, stmt->type);
-    ASSERT_TRUE(mCc_typecheck_test_type_check_stmt(stmt));
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_OK, mCc_typecheck_test_type_check_stmt(stmt).status);
 
     mCc_ast_delete_statement(stmt);
 }
@@ -475,7 +500,7 @@ TEST(TYPE_CHECK_CMPND, EMPTY)
     auto stmt = result.statement;
 
     ASSERT_EQ(MCC_AST_STATEMENT_TYPE_CMPND, stmt->type);
-    ASSERT_TRUE(mCc_typecheck_test_type_check_stmt(stmt));
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_OK, mCc_typecheck_test_type_check_stmt(stmt).status);
 
     mCc_ast_delete_statement(stmt);
 }
@@ -487,7 +512,7 @@ TEST(TYPE_CHECK_CMPND, SINGLE)
     auto stmt = result.statement;
 
     ASSERT_EQ(MCC_AST_STATEMENT_TYPE_CMPND, stmt->type);
-    ASSERT_TRUE(mCc_typecheck_test_type_check_stmt(stmt));
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_OK, mCc_typecheck_test_type_check_stmt(stmt).status);
 
     mCc_ast_delete_statement(stmt);
 }
@@ -500,7 +525,7 @@ TEST(TYPE_CHECK_CMPND, MULTIPLE)
     auto stmt = result.statement;
 
     ASSERT_EQ(MCC_AST_STATEMENT_TYPE_CMPND, stmt->type);
-    ASSERT_TRUE(mCc_typecheck_test_type_check_stmt(stmt));
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_OK, mCc_typecheck_test_type_check_stmt(stmt).status);
 
     mCc_ast_delete_statement(stmt);
 }
