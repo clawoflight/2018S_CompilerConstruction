@@ -207,7 +207,7 @@ static inline bool mCc_check_paramaters(struct mCc_ast_arguments *args,
 			enum mCc_ast_type computed_type =
 			    mCc_check_expression(args->expressions[i]);
 			if (params->decl[i]->decl_type != computed_type) {
-				set_not_matching_types_error(NULL, params->decl[i]->decl_type,
+				set_not_matching_types_error(NULL,params->decl[i]->decl_type,
 				                             computed_type, sloc);
 				return false;
 			}
@@ -485,10 +485,16 @@ static inline bool mCc_check_function(struct mCc_ast_function_def *func)
 	if (typecheck_result.status == MCC_TYPECHECK_STATUS_ERROR)
 		return false;
 
-	if ((func->func_type == MCC_AST_TYPE_VOID) && !func->body)
+	if ((func->func_type == MCC_AST_TYPE_VOID) && !func->body) {
 		return true;
-	else if ((func->func_type != MCC_AST_TYPE_VOID) && !func->body)
+	}
+	else if ((func->func_type != MCC_AST_TYPE_VOID) && !func->body) {
+		set_not_matching_types_error(NULL,func->func_type, func->func_type,
+									 func->node.sloc);
+		snprintf(typecheck_result.err_msg, err_len,
+				 "Function %s needs a return statement",func->identifier->id_value);
 		return false;
+	}
 
 	func->body->node.outside_if = true;
 	bool check_func_for_return = mCc_check_cmpnd_return(func->body);
