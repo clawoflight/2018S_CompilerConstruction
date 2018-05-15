@@ -736,7 +736,7 @@ TEST(TYPE_CHECK_PARAM, UNMATCHING_NUMBER_3)
 
 TEST(TYPE_CHECK_PARAM, UNMATCHING_NUMBER_4)
 {
-    const char input[] = "int foo(int a, int b){}  void main() {int a; foo(test, 1, 2);return;}";
+    const char input[] = "int foo(int a, int b){}  void main() {int a; foo(true, 1, 2);return;}";
     auto result = mCc_parser_parse_string(input);
     auto prog = result.program;
 
@@ -749,7 +749,7 @@ TEST(TYPE_CHECK_PARAM, UNMATCHING_NUMBER_4)
 
 TEST(TYPE_CHECK_PARAM, UNMATCHING_TYPE)
 {
-const char input[] = "int foo(int a){}  void main() {int a; foo(test);return;}";
+const char input[] = "int foo(int a){}  void main() {int a; foo(true);return;}";
 auto result = mCc_parser_parse_string(input);
 auto prog = result.program;
 
