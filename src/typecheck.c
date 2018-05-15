@@ -214,6 +214,8 @@ static inline bool mCc_check_paramaters(struct mCc_ast_arguments *args,
 		}
 		return true;
 	}
+    set_not_matching_types_error(NULL,MCC_AST_TYPE_VOID,
+                                 MCC_AST_TYPE_VOID, sloc);
 	snprintf(typecheck_result.err_msg, err_len, "Mismatch number of arguments");
 	typecheck_result.err_loc = sloc;
 	return false;
@@ -322,7 +324,7 @@ static inline bool mCc_check_ret(struct mCc_ast_statement *stmt)
 	enum mCc_ast_type ret_type = mCc_check_expression(stmt->ret_val);
 
 	if (ret_type != curr_func->func_type) {
-		set_not_matching_types_error(NULL, ret_type, curr_func->func_type,
+		set_not_matching_types_error(NULL, curr_func->func_type, ret_type,
 		                             stmt->node.sloc);
 		return false;
 	}
@@ -336,7 +338,7 @@ static inline bool mCc_check_ret_void(struct mCc_ast_statement *stmt)
 
 	enum mCc_ast_type ret_type = MCC_AST_TYPE_VOID;
 	if (ret_type != curr_func->func_type) {
-		set_not_matching_types_error(NULL, ret_type, curr_func->func_type,
+		set_not_matching_types_error(NULL, curr_func->func_type, ret_type,
 		                             stmt->node.sloc);
 		return false;
 	}
@@ -567,7 +569,16 @@ int mCc_typecheck_check_main_properties(struct mCc_symtab_scope *scope)
 				return 0; /// if all properties are full filled
 			}
 		}
+		set_not_matching_types_error(NULL,MCC_AST_TYPE_VOID, MCC_AST_TYPE_VOID,
+									 entry->sloc);
+		snprintf(typecheck_result.err_msg, err_len,
+				 "Main function is has to be void and does not take any arguments");
 	}
+	set_not_matching_types_error(NULL,MCC_AST_TYPE_VOID, MCC_AST_TYPE_VOID,
+								 curr_func->node.sloc);
+	snprintf(typecheck_result.err_msg, err_len,
+			 "Main function has to be present");
+	typecheck_result.err_loc = curr_func->node.sloc;
 	return -1;
 }
 
