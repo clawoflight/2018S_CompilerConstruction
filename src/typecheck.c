@@ -197,11 +197,12 @@ static inline bool mCc_check_paramaters(struct mCc_ast_arguments *args,
 	if (typecheck_result.status == MCC_TYPECHECK_STATUS_ERROR)
 		return MCC_AST_TYPE_VOID;
 
-	if ((!params || params->decl_count == 0) &&
-	    (!args || args->expression_count == 0))
+	if ((!params || !params->decl_count || params->decl_count == 0) &&
+	    (!args || !args->expression_count || args->expression_count == 0))
 		return true;
 
-	if (params->decl_count == args->expression_count) {
+	if (params && args && params->decl_count && args->expression_count &&
+            params->decl_count == args->expression_count) {
 		for (unsigned int i = 0; i < params->decl_count; ++i) {
 			enum mCc_ast_type computed_type =
 			    mCc_check_expression(args->expressions[i]);
@@ -582,21 +583,21 @@ struct mCc_typecheck_result mCc_typecheck(struct mCc_ast_program *program)
  * Dummy Functions for testing
  */
 struct mCc_typecheck_result
-test_type_check(struct mCc_ast_expression *expression)
+mCc_typecheck_test_type_check(struct mCc_ast_expression *expression)
 {
 	typecheck_result.type = mCc_check_expression(expression);
 	typecheck_result.status = MCC_TYPECHECK_STATUS_OK;
 	return typecheck_result;
 }
 
-bool test_type_check_stmt(struct mCc_ast_statement *stmt)
+bool mCc_typecheck_test_type_check_stmt(struct mCc_ast_statement *stmt)
 {
 	typecheck_result.status = MCC_TYPECHECK_STATUS_OK;
 	return mCc_check_statement(stmt);
 }
 
 struct mCc_typecheck_result
-test_type_check_program(struct mCc_ast_program *prog)
+mCc_typecheck_test_type_check_program(struct mCc_ast_program *prog)
 {
 	bool all_correct = true;
 	for (unsigned int i = 0; i < prog->func_def_count; i++) {

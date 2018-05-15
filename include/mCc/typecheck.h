@@ -54,9 +54,9 @@ int mCc_typecheck_check_main_properties(struct mCc_symtab_scope *scope);
 /**
  * Dummy func for testing
  */
-struct mCc_typecheck_result test_type_check(struct mCc_ast_expression *expression);
-bool test_type_check_stmt(struct mCc_ast_statement *stmt);
-struct mCc_typecheck_result test_type_check_program(struct mCc_ast_program *prog);
+struct mCc_typecheck_result mCc_typecheck_test_type_check(struct mCc_ast_expression *expression);
+bool mCc_typecheck_test_type_check_stmt(struct mCc_ast_statement *stmt);
+struct mCc_typecheck_result mCc_typecheck_test_type_check_program(struct mCc_ast_program *prog);
 
 
 #ifdef __cplusplus
