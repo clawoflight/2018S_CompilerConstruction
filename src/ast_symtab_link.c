@@ -71,51 +71,6 @@ static void handle_assign(struct mCc_ast_statement *stmt, void *data)
 	}
 }
 
-/* static void handle_return(struct mCc_ast_statement *stmt, void *data) */
-/* { */
-/*     if (tmp_result.status) */
-/*         return; // Return if an error happened */
-/*     struct mCc_symtab_scope *scope = (struct mCc_symtab_scope *)data; */
-/*  */
-/*     enum MCC_SYMTAB_SCOPE_LINK_ERROR retval = */
-/*             mCc_symtab_scope_link_ref_return(scope, stmt); */
-/*     switch (retval) { */
-/*         case MCC_SYMTAB_SCOPE_LINK_ERR_OK: return; */
-/*         case MCC_SYMTAB_SCOPE_LINK_ERR_UNDECLARED_ID: */
-/*             if ((snprintf(tmp_result.err_msg, err_len, "Use of undeclared id: '%s'", */
-/*                           stmt->id_assgn->id_value) == -1)) { */
-/*                 strcpy(tmp_result.err_msg, "Use of undeclared id"); */
-/*             } */
-/*             break; */
-/*         case MCC_SYMTAB_SCOPE_LINK_ERR_ASSIGN_TO_FUNCTION: //Fallthrough */
-/*         case MCC_SYMTAB_SCOPE_LINK_ERR_VAR: */
-/*             if ((snprintf(tmp_result.err_msg, err_len, */
-/*                           "Use of subscript on variable: '%s'", */
-/*                           stmt->id_assgn->id_value) == -1)) { */
-/*                 strcpy(tmp_result.err_msg, "Use of subscript on variable"); */
-/*             } */
-/*             break; */
-/*         case MCC_SYMTAB_SCOPE_LINK_ERR_ARR_WITHOUT_BRACKS: */
-/*             if ((snprintf(tmp_result.err_msg, err_len, */
-/*                           "Use of array without subscript: '%s'", */
-/*                           stmt->id_assgn->id_value) == -1)) { */
-/*                 strcpy(tmp_result.err_msg, "Use of array without subscript"); */
-/*             } */
-/*             break; */
-/*         case MCC_SYMTAB_SCOPE_LINK_ERR_FUN_WITHOUT_CALL: #<{(| Fallthrough |)}># */
-/*         case MCC_SYMTAB_SCOPE_LINK_ERROR_INVALID_AST_OBJECT: */
-/*             strcpy(tmp_result.err_msg, */
-/*                    "Development error! This error should not have happened here."); */
-/*             break; */
-/*     } */
-/*  */
-/*     // If an error happened, set status */
-/*     if (tmp_result.err_msg[0]) { */
-/*         tmp_result.err_loc = stmt->node.sloc; */
-/*         tmp_result.status = 1; */
-/*     } */
-/* } */
-
 static void handle_expression(struct mCc_ast_expression *expr, void *data)
 {
 	if (tmp_result.status)
@@ -127,9 +82,24 @@ static void handle_expression(struct mCc_ast_expression *expr, void *data)
 	switch (retval) {
 	case MCC_SYMTAB_SCOPE_LINK_ERR_OK: return;
 	case MCC_SYMTAB_SCOPE_LINK_ERR_UNDECLARED_ID:
-		if ((snprintf(tmp_result.err_msg, err_len, "Use of undeclared id: '%s'",
-		              expr->identifier->id_value) == -1)) {
-			strcpy(tmp_result.err_msg, "Snprintf error");
+		if (expr->type == MCC_AST_EXPRESSION_TYPE_IDENTIFIER) {
+			if ((snprintf(tmp_result.err_msg, err_len,
+			              "Use of undeclared id: '%s'",
+			              expr->identifier->id_value) == -1)) {
+				strcpy(tmp_result.err_msg, "Snprintf error");
+			}
+		} else if (expr->type == MCC_AST_EXPRESSION_TYPE_CALL_EXPR) {
+			if ((snprintf(tmp_result.err_msg, err_len,
+			              "Use of undeclared id: '%s'",
+			              expr->f_name->id_value) == -1)) {
+				strcpy(tmp_result.err_msg, "Snprintf error");
+			}
+		} else { // MCC_AST_EXPRESSION_TYPE_ARR_SUBSCR
+			if ((snprintf(tmp_result.err_msg, err_len,
+			              "Use of undeclared id: '%s'",
+			              expr->array_id->id_value) == -1)) {
+				strcpy(tmp_result.err_msg, "Snprintf error");
+			}
 		}
 		break;
 	case MCC_SYMTAB_SCOPE_LINK_ERR_ASSIGN_TO_FUNCTION:
@@ -196,29 +166,6 @@ static void handle_declaration(struct mCc_ast_declaration *decl, void *data)
 	}
 }
 
-/* static void handle_func_def(struct mCc_ast_function_def *fn, void *data) */
-/* { */
-/* 	if (tmp_result.status) */
-/* 		return; // Return if an error happened */
-/* 	struct mCc_symtab_scope *scope = *(struct mCc_symtab_scope **)data; */
-/* 	int retval = mCc_symtab_scope_add_func_def(scope, fn); */
-/* 	switch (retval) { */
-/* 	case 1: */
-/* 		if (snprintf(tmp_result.err_msg, err_len, "Redeclared function '%s'", */
-/* 		             fn->identifier->id_value) == -1) { */
-/* 			strcpy(tmp_result.err_msg, "Redeclared function"); */
-/* 		}; */
-/* 		break; */
-/* 	case -1: strcpy(tmp_result.err_msg, "Memory allocation error"); break; */
-/* 	default: break; */
-/* 	} */
-/* 	// If an error happened, set status */
-/* 	if (tmp_result.err_msg[0]) { */
-/* 		tmp_result.err_loc = fn->node.sloc; */
-/* 		tmp_result.status = 1; */
-/* 	} */
-/* } */
-
 /***************************************************** Main things */
 
 static struct mCc_ast_visitor
@@ -266,7 +213,9 @@ mCc_ast_symtab_build(struct mCc_ast_program *program)
 	memset(&tmp_result, 0, sizeof(tmp_result));
 	struct mCc_symtab_scope *root_scope = mCc_symtab_new_scope_in(NULL, "");
 	if (root_scope == NULL) {
-		// TODO set error msg and status and return
+		strcpy(tmp_result.err_msg, "Memory error");
+		tmp_result.status = 1;
+		goto end;
 	}
 
 	// This will be used by the callbacks to store the scope they are currently
