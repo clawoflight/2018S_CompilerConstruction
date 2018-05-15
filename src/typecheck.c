@@ -510,14 +510,15 @@ static inline bool mCc_check_function(struct mCc_ast_function_def *func)
 		}
 	}
 
-	if (!general_ret) {
+    if (func->func_type == MCC_AST_TYPE_VOID) {
+        return (check_func_for_return && check_func);
+    }
+
+    if (!general_ret) {
+        typecheck_result.status = MCC_TYPECHECK_STATUS_ERROR;
 		snprintf(typecheck_result.err_msg, err_len,
 		         "Function may not reach a return");
 		typecheck_result.err_loc = func->node.sloc;
-	}
-
-	if (func->func_type == MCC_AST_TYPE_VOID) {
-		return (check_func_for_return && check_func);
 	}
 
 	return (check_func_for_return && check_func && general_ret);
@@ -608,8 +609,8 @@ struct mCc_typecheck_result mCc_typecheck(struct mCc_ast_program *program,
 struct mCc_typecheck_result
 mCc_typecheck_test_type_check(struct mCc_ast_expression *expression)
 {
+    typecheck_result.status = MCC_TYPECHECK_STATUS_OK;
 	typecheck_result.type = mCc_check_expression(expression);
-	typecheck_result.status = MCC_TYPECHECK_STATUS_OK;
 	return typecheck_result;
 }
 
@@ -622,6 +623,8 @@ bool mCc_typecheck_test_type_check_stmt(struct mCc_ast_statement *stmt)
 struct mCc_typecheck_result
 mCc_typecheck_test_type_check_program(struct mCc_ast_program *prog)
 {
+    typecheck_result.status = MCC_TYPECHECK_STATUS_OK;
+
 	bool all_correct = true;
 	for (unsigned int i = 0; i < prog->func_def_count; i++) {
 		curr_func = prog->func_defs[i];
@@ -635,7 +638,6 @@ mCc_typecheck_test_type_check_program(struct mCc_ast_program *prog)
 	 * there
 	 */
 
-	typecheck_result.status = MCC_TYPECHECK_STATUS_OK;
 	typecheck_result.stmt_type = all_correct;
 	return typecheck_result;
 }

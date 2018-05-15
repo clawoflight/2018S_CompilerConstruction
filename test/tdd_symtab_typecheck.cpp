@@ -512,7 +512,7 @@ TEST(TYPE_CHECK_RETURN, RETURN_VOID)
     auto prog = result.program;
 
     mCc_ast_symtab_build(prog);
-    ASSERT_TRUE(mCc_typecheck_test_type_check_program(prog).stmt_type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_OK, mCc_typecheck_test_type_check_program(prog).status);
 
     mCc_ast_delete_program(prog);
     mCc_symtab_delete_all_scopes();
@@ -525,7 +525,7 @@ TEST(TYPE_CHECK_RETURN, RETURN_INT)
     auto prog = result.program;
 
     mCc_ast_symtab_build(prog);
-    ASSERT_TRUE(mCc_typecheck_test_type_check_program(prog).stmt_type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_OK, mCc_typecheck_test_type_check_program(prog).status);
 
     mCc_ast_delete_program(prog);
     mCc_symtab_delete_all_scopes();
@@ -539,7 +539,7 @@ TEST(TYPE_CHECK_RETURN, RETURN_WRONG_TYPE)
     auto prog = result.program;
 
     mCc_ast_symtab_build(prog);
-    ASSERT_FALSE(mCc_typecheck_test_type_check_program(prog).stmt_type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_ERROR, mCc_typecheck_test_type_check_program(prog).status);
 
     mCc_ast_delete_program(prog);
     mCc_symtab_delete_all_scopes();
@@ -552,7 +552,7 @@ TEST(TYPE_CHECK_RETURN, RETURN_IF_WRONG)
     auto prog = result.program;
 
     mCc_ast_symtab_build(prog);
-    ASSERT_TRUE(mCc_typecheck_test_type_check_program(prog).stmt_type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_OK, mCc_typecheck_test_type_check_program(prog).status);
 
     mCc_ast_delete_program(prog);
     mCc_symtab_delete_all_scopes();
@@ -565,7 +565,7 @@ TEST(TYPE_CHECK_RETURN, RETURN_IF)
     auto prog = result.program;
 
     mCc_ast_symtab_build(prog);
-    ASSERT_TRUE(mCc_typecheck_test_type_check_program(prog).stmt_type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_OK, mCc_typecheck_test_type_check_program(prog).status);
 
     mCc_ast_delete_program(prog);
     mCc_symtab_delete_all_scopes();
@@ -573,12 +573,12 @@ TEST(TYPE_CHECK_RETURN, RETURN_IF)
 
 TEST(TYPE_CHECK_RETURN, RETURN_DOUBLE_IF)
 {
-    const char input[] = "void main() {if(2<3){return;} return;}";
+    const char input[] = "void main() {if(2<3)if(3<2){return;} return;}";
     auto result = mCc_parser_parse_string(input);
     auto prog = result.program;
 
     mCc_ast_symtab_build(prog);
-    ASSERT_TRUE(mCc_typecheck_test_type_check_program(prog).stmt_type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_OK, mCc_typecheck_test_type_check_program(prog).status);
 
     mCc_ast_delete_program(prog);
     mCc_symtab_delete_all_scopes();
@@ -591,7 +591,7 @@ TEST(TYPE_CHECK_RETURN, RETURN_IF_ELSE)
     auto prog = result.program;
 
     mCc_ast_symtab_build(prog);
-    ASSERT_TRUE(mCc_typecheck_test_type_check_program(prog).stmt_type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_OK, mCc_typecheck_test_type_check_program(prog).status);
 
     mCc_ast_delete_program(prog);
     mCc_symtab_delete_all_scopes();
@@ -604,7 +604,7 @@ TEST(TYPE_CHECK_RETURN, RETURN_IF_ELIF)
     auto prog = result.program;
 
     mCc_ast_symtab_build(prog);
-    ASSERT_FALSE(mCc_typecheck_test_type_check_program(prog).stmt_type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_OK, mCc_typecheck_test_type_check_program(prog).status);
 
     mCc_ast_delete_program(prog);
     mCc_symtab_delete_all_scopes();
@@ -618,7 +618,7 @@ TEST(TYPE_CHECK_ERROR_MSG, UNARY)
 
     mCc_ast_symtab_build(prog);
     auto check_result = mCc_typecheck_test_type_check_program(prog);
-    ASSERT_FALSE(check_result.stmt_type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_ERROR, check_result.status);
     ASSERT_STREQ("Expected type Integer or Float, but found Bool",
                 check_result.err_msg);
 
@@ -634,7 +634,7 @@ TEST(TYPE_CHECK_ERROR_MSG, BINARY_MISMATCH)
 
     mCc_ast_symtab_build(prog);
     auto check_result = mCc_typecheck_test_type_check_program(prog);
-    ASSERT_FALSE(check_result.stmt_type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_ERROR, check_result.status);
     ASSERT_STREQ("Expected type Integer, but found Bool",
     check_result.err_msg);
 
@@ -649,7 +649,7 @@ TEST(TYPE_CHECK_RETURN, VOID_NO_RETURN)
     auto prog = result.program;
 
     mCc_ast_symtab_build(prog);
-    ASSERT_TRUE(mCc_typecheck_test_type_check_program(prog).stmt_type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_OK, mCc_typecheck_test_type_check_program(prog).status);
 
     mCc_ast_delete_program(prog);
     mCc_symtab_delete_all_scopes();
@@ -662,7 +662,7 @@ TEST(TYPE_CHECK_RETURN, VOID_EMPTY_BODY)
     auto prog = result.program;
 
     mCc_ast_symtab_build(prog);
-    ASSERT_TRUE(mCc_typecheck_test_type_check_program(prog).stmt_type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_OK, mCc_typecheck_test_type_check_program(prog).status);
 
     mCc_ast_delete_program(prog);
     mCc_symtab_delete_all_scopes();
@@ -676,7 +676,7 @@ TEST(TYPE_CHECK_RETURN, TYPE_EMPTY_BODY)
     auto prog = result.program;
 
     mCc_ast_symtab_build(prog);
-    ASSERT_FALSE(mCc_typecheck_test_type_check_program(prog).stmt_type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_ERROR, mCc_typecheck_test_type_check_program(prog).status);
 
     mCc_ast_delete_program(prog);
     mCc_symtab_delete_all_scopes();
@@ -689,7 +689,7 @@ TEST(TYPE_CHECK_RETURN, TYPE_IF_NO_CMPND)
     auto prog = result.program;
 
     mCc_ast_symtab_build(prog);
-    ASSERT_FALSE(mCc_typecheck_test_type_check_program(prog).stmt_type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_ERROR, mCc_typecheck_test_type_check_program(prog).status);
 
     mCc_ast_delete_program(prog);
     mCc_symtab_delete_all_scopes();
@@ -702,7 +702,7 @@ TEST(TYPE_CHECK_PARAM, UNMATCHING_NUMBER)
     auto prog = result.program;
 
     mCc_ast_symtab_build(prog);
-    ASSERT_FALSE(mCc_typecheck_test_type_check_program(prog).stmt_type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_ERROR, mCc_typecheck_test_type_check_program(prog).status);
 
     mCc_ast_delete_program(prog);
     mCc_symtab_delete_all_scopes();
@@ -715,7 +715,7 @@ TEST(TYPE_CHECK_PARAM, UNMATCHING_NUMBER_2)
     auto prog = result.program;
 
     mCc_ast_symtab_build(prog);
-    ASSERT_FALSE(mCc_typecheck_test_type_check_program(prog).stmt_type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_ERROR, mCc_typecheck_test_type_check_program(prog).status);
 
     mCc_ast_delete_program(prog);
     mCc_symtab_delete_all_scopes();
@@ -728,7 +728,7 @@ TEST(TYPE_CHECK_PARAM, UNMATCHING_NUMBER_3)
     auto prog = result.program;
 
     mCc_ast_symtab_build(prog);
-    ASSERT_FALSE(mCc_typecheck_test_type_check_program(prog).stmt_type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_ERROR, mCc_typecheck_test_type_check_program(prog).status);
 
     mCc_ast_delete_program(prog);
     mCc_symtab_delete_all_scopes();
@@ -741,7 +741,7 @@ TEST(TYPE_CHECK_PARAM, UNMATCHING_NUMBER_4)
     auto prog = result.program;
 
     mCc_ast_symtab_build(prog);
-    ASSERT_FALSE(mCc_typecheck_test_type_check_program(prog).stmt_type);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_ERROR, mCc_typecheck_test_type_check_program(prog).status);
 
     mCc_ast_delete_program(prog);
     mCc_symtab_delete_all_scopes();
@@ -749,13 +749,13 @@ TEST(TYPE_CHECK_PARAM, UNMATCHING_NUMBER_4)
 
 TEST(TYPE_CHECK_PARAM, UNMATCHING_TYPE)
 {
-const char input[] = "int foo(int a){}  void main() {int a; foo(true);return;}";
-auto result = mCc_parser_parse_string(input);
-auto prog = result.program;
+    const char input[] = "int foo(int a){}  void main() {int a; foo(true);return;}";
+    auto result = mCc_parser_parse_string(input);
+    auto prog = result.program;
 
-mCc_ast_symtab_build(prog);
-ASSERT_FALSE(mCc_typecheck_test_type_check_program(prog).stmt_type);
+    mCc_ast_symtab_build(prog);
+    ASSERT_EQ(MCC_TYPECHECK_STATUS_ERROR, mCc_typecheck_test_type_check_program(prog).status);
 
-mCc_ast_delete_program(prog);
-mCc_symtab_delete_all_scopes();
+    mCc_ast_delete_program(prog);
+    mCc_symtab_delete_all_scopes();
 }
