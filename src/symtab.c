@@ -92,6 +92,10 @@ static inline void mCc_symtab_add_built_in_function(
 		built_in =
 		    mCc_ast_new_function_def_type(func_type, func_id, para, NULL);
 
+	built_in->node.sloc.start_line = 0;
+	built_in->node.sloc.end_line = 0;
+	built_in->node.sloc.start_col = 0;
+	built_in->node.sloc.end_col = 0;
 	mCc_symtab_scope_add_func_def(scope, built_in);
 
 	built_in_arr[built_in_count++] = built_in;
@@ -410,4 +414,37 @@ void mCc_symtab_delete_all_scopes(void)
 
 	global_scope_gc_count = 0;
 	global_scope_gc_alloc_size = 0;
+}
+
+void mCc_symtab_print_all_scopes(FILE *out)
+{
+	fputs("| Table | Symbol | Entry | Type | Location |\n", out);
+	fputs("| ---   |  ---   | ---   | ---  |    ---   |\n", out);
+
+	struct mCc_symtab_entry *e, *tmp;
+	for (unsigned int i = 0; i < global_scope_gc_count; ++i) {
+		HASH_ITER(hh, global_scope_gc_arr[i]->hash_table, e, tmp)
+		{
+			char *entry_type;
+			switch (e->entry_type) {
+			case MCC_SYMTAB_ENTRY_TYPE_VAR: entry_type = "var"; break;
+			case MCC_SYMTAB_ENTRY_TYPE_ARR: entry_type = "arr"; break;
+			case MCC_SYMTAB_ENTRY_TYPE_FUNC: entry_type = "func"; break;
+			}
+			char *prim_type;
+			switch (e->primitive_type) {
+			case MCC_AST_TYPE_BOOL: prim_type = "bool"; break;
+			case MCC_AST_TYPE_INT: prim_type = "int"; break;
+			case MCC_AST_TYPE_FLOAT: prim_type = "float"; break;
+			case MCC_AST_TYPE_STRING: prim_type = "string"; break;
+			case MCC_AST_TYPE_VOID: prim_type = "void"; break;
+			}
+
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+			fprintf(out, "| %s | %s | %s | %s | %d:%d - %d:%d | \n",
+			        global_scope_gc_arr[i]->name, e->identifier->id_value,
+			        entry_type, prim_type, e->sloc.start_line,
+			        e->sloc.start_col, e->sloc.end_line, e->sloc.end_col);
+		}
+	}
 }

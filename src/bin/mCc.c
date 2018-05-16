@@ -10,15 +10,16 @@
 
 void print_usage(const char *prg)
 {
-	printf("usage: %s [--help] <FILE> [--print-tac <FILE>]\n\n", prg);
-	printf("  <FILE>        Input filepath or - for stdin\n");
-	printf("  --print-tac   Print the three-address code to the given path\n");
-	printf("  --help        Print this message\n");
+	printf("usage: %s [--help] <FILE> [--print-(tac|symtab) <FILE>]\n\n", prg);
+	printf("  <FILE>         Filepath or - for stdin\n");
+	printf("  --print-symtab Print the symbol tables\n");
+	printf("  --print-tac    Print the three-address code to the given path\n");
+	printf("  --help         Print this message\n");
 }
 
 int main(int argc, char *argv[])
 {
-	if (argc < 2 || strcmp("--help", argv[1]) == 0) {
+	if (argc < 2 || argc == 3 || strcmp("--help", argv[1]) == 0) {
 		print_usage(argv[0]);
 		return EXIT_FAILURE;
 	}
@@ -35,6 +36,21 @@ int main(int argc, char *argv[])
 		}
 	}
 
+	/* symtab output TODO: move to getopt later if needed */
+	FILE *st_out = NULL;
+	int print_st = 0;
+	if (argc == 4 && strcmp("--print-symtab", argv[2]) == 0) {
+		print_st = 1;
+		if (strcmp("-", argv[3]) == 0) {
+			st_out = stdout;
+		} else {
+			st_out = fopen(argv[3], "a");
+			if (!st_out) {
+				perror("fopen");
+				return EXIT_FAILURE;
+			}
+		}
+	}
 	/* tac output TODO: move to getopt later if needed */
 	FILE *tac_out = NULL;
 	int print_tac = 0;
@@ -82,6 +98,8 @@ int main(int argc, char *argv[])
 		mCc_ast_delete_program(prog);
 		return EXIT_FAILURE;
 	}
+	if (print_st)
+		mCc_symtab_print_all_scopes(st_out);
 
 	/* type checking */
 	struct mCc_typecheck_result check_result =
@@ -110,9 +128,6 @@ int main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 
-	if (tac_out && tac_out != stdout)
-		fclose(tac_out);
-
 	/*    TODO
 	 * - do some optimisations
 	 * - output assembly code
@@ -120,6 +135,11 @@ int main(int argc, char *argv[])
 	 */
 
 	/* cleanup */
+	if (st_out && st_out != stdout)
+		fclose(st_out);
+	if (tac_out && tac_out != stdout)
+		fclose(tac_out);
+
 	mCc_tac_program_delete(tac);
 	mCc_tac_free_global_string_array();
 	mCc_symtab_delete_all_scopes();

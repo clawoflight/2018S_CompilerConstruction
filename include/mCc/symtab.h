@@ -216,6 +216,8 @@ mCc_symtab_scope_link_ref_assignment(struct mCc_symtab_scope *self,
  */
 void mCc_symtab_delete_all_scopes(void);
 
+void mCc_symtab_print_all_scopes(FILE *out);
+
 #ifdef __cplusplus
 }
 #endif
