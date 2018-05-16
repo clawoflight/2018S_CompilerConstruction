@@ -1,19 +1,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <libgen.h>
 
 #include "mCc/ast.h"
 #include "mCc/ast_symtab_link.h"
 #include "mCc/parser.h"
 #include "mCc/tac_builder.h"
 #include "mCc/typecheck.h"
+#include "mCc/asm.h"
 
 void print_usage(const char *prg)
 {
-	printf("usage: %s [--help] <FILE> [--print-(tac|symtab) <FILE>]\n\n", prg);
+	printf("usage: %s [--help] <FILE> [--print-(tac|symtab|asm) <FILE>]\n\n", prg);
 	printf("  <FILE>         Filepath or - for stdin\n");
 	printf("  --print-symtab Print the symbol tables\n");
 	printf("  --print-tac    Print the three-address code to the given path\n");
+	printf("  --print-asm    Print the assembler code to the given path\n");
 	printf("  --help         Print this message\n");
 }
 
@@ -25,10 +28,13 @@ int main(int argc, char *argv[])
 	}
 
 	/* determine input source */
+	char *filename;
 	FILE *in;
 	if (strcmp("-", argv[1]) == 0) {
 		in = stdin;
+		filename = "read from stdin";
 	} else {
+		filename = basename(argv[1]);
 		in = fopen(argv[1], "r");
 		if (!in) {
 			perror("fopen");
@@ -61,6 +67,20 @@ int main(int argc, char *argv[])
 		} else {
 			tac_out = fopen(argv[3], "a");
 			if (!tac_out) {
+				perror("fopen");
+				return EXIT_FAILURE;
+			}
+		}
+	}
+
+	/* asm output TODO: move to getopt later if needed */
+	FILE *asm_out = NULL;
+	if (argc == 4 && strcmp("--print-asm", argv[2]) == 0) {
+		if (strcmp("-", argv[3]) == 0) {
+			asm_out = stdout;
+		} else {
+			asm_out = fopen(argv[3], "a");
+			if (!asm_out) {
 				perror("fopen");
 				return EXIT_FAILURE;
 			}
@@ -128,6 +148,13 @@ int main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 
+	/* Assembler code generation */
+	if (asm_out){
+		fprintf(asm_out, ".file\t\"%s\"\n", filename);
+		mCc_asm_generate_assembly(tac, asm_out);
+	}
+
+
 	/*    TODO
 	 * - do some optimisations
 	 * - output assembly code
@@ -139,6 +166,8 @@ int main(int argc, char *argv[])
 		fclose(st_out);
 	if (tac_out && tac_out != stdout)
 		fclose(tac_out);
+	if (asm_out && asm_out != stdout)
+		fclose(asm_out);
 
 	mCc_tac_program_delete(tac);
 	mCc_tac_free_global_string_array();
