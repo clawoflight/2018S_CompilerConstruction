@@ -48,6 +48,15 @@ Integration tests can be run with:
 ```
 ../test/integration
 ```
+In order dump the symbol tables, the flag --print-tac and the corresponding output may be specified. `-` for stdout is supported.
+The symbol tables will be printed as markdown table.
+```
+./mCc ackermann.mC --print-symtab st-out.md
+
+# Generate HTML
+./mCc ackermann.mC --print-symtab - | markdown > st-out.html
+./mCc ackermann.mC --print-symtab - | pandoc -f markdown -o st-out.html
+```
 
 In order to print the Three Address Code (TAC), the flag --print-tac and the corresponding output may be specified. `-` for stdout is supported.
 ```
@@ -60,5 +69,5 @@ In order to print the Three Address Code (TAC), the flag --print-tac and the cor
 ```
 
 # Kown issues
-- Due to lack of time, overall code quality went down a notch.
+- Due to lack of time, overall code quality went down a notch. Sorry.
 - Insufficient error checking during TAC construction.
