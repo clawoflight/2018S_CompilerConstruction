@@ -83,9 +83,9 @@ int main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 
-    /* type checking */
+	/* type checking */
 	struct mCc_typecheck_result check_result =
-            mCc_typecheck(prog, link_result.root_symtab);
+	    mCc_typecheck(prog, link_result.root_symtab);
 
 	if (check_result.status) {
 		fprintf(stderr, "Error in %s at %d:%d - %d:%d: %s\n", argv[1],
