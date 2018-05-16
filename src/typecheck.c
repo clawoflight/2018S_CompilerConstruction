@@ -590,7 +590,6 @@ struct mCc_typecheck_result mCc_typecheck(struct mCc_ast_program *program,
 {
 
 	if (mCc_typecheck_check_main_properties(scope) == -1) {
-		typecheck_result.stmt_type = false;
 		return typecheck_result;
 	}
 
@@ -602,7 +601,6 @@ struct mCc_typecheck_result mCc_typecheck(struct mCc_ast_program *program,
 			break;
 	}
 
-	typecheck_result.stmt_type = all_correct;
 	return typecheck_result;
 }
 

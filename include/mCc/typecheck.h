@@ -32,7 +32,6 @@ struct mCc_typecheck_result {
 	enum mCc_ast_type type;
 	char err_msg[err_len];
 	struct mCc_ast_source_location err_loc;
-	bool stmt_type;
 };
 
 /**
