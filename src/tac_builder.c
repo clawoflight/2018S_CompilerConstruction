@@ -23,12 +23,12 @@ static struct mCc_tac_quad_entry
 mCc_tac_from_expression(struct mCc_tac_program *prog,
                         struct mCc_ast_expression *exp);
 static int mCc_tac_from_stmt(struct mCc_tac_program *prog,
-                              struct mCc_ast_statement *stmt);
+                             struct mCc_ast_statement *stmt);
 struct mCc_tac_quad_literal *
 mCc_get_quad_literal(struct mCc_ast_literal *literal);
 
 static int mCc_tac_string_from_assgn(struct mCc_tac_quad_entry entry,
-                                      struct mCc_tac_quad_literal *lit)
+                                     struct mCc_tac_quad_literal *lit)
 {
 	strcpy(entry.str_value, lit->strval);
 
@@ -109,7 +109,7 @@ mCc_tac_from_expression_binary(struct mCc_tac_program *prog,
 
 	struct mCc_tac_quad_entry new_result = mCc_tac_create_new_entry();
 
-	#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 	struct mCc_tac_quad *binary_op =
 	    mCc_tac_quad_new_op_binary(op, result1, result2, new_result);
 	mCc_tac_program_add_quad(prog, binary_op);
@@ -121,7 +121,7 @@ static struct mCc_tac_quad_entry
 mCc_tac_from_expression_unary(struct mCc_tac_program *prog,
                               struct mCc_ast_expression *expr)
 {
-    assert(expr);
+	assert(expr);
 
 	enum mCc_tac_quad_unary_op op;
 	switch (expr->unary_op) {
@@ -132,7 +132,7 @@ mCc_tac_from_expression_unary(struct mCc_tac_program *prog,
 	struct mCc_tac_quad_entry result =
 	    mCc_tac_from_expression(prog, expr->unary_expression);
 
-	#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 	struct mCc_tac_quad *result_quad =
 	    mCc_tac_quad_new_op_unary(op, result, result);
 	mCc_tac_program_add_quad(prog, result_quad);
@@ -151,9 +151,9 @@ mCc_tac_from_expression_arr_subscr(struct mCc_tac_program *prog,
 	    mCc_tac_from_expression(prog, expr->subscript_expr); // array subscript
 	struct mCc_tac_quad *array_subscr =
 	    mCc_tac_quad_new_load(result1, result2, result);
-    if(mCc_tac_program_add_quad(prog, array_subscr)){
+	if (mCc_tac_program_add_quad(prog, array_subscr)) {
 		// TODO error handling
-    }
+	}
 	return result;
 }
 
@@ -174,12 +174,13 @@ mCc_tac_from_expression_call(struct mCc_tac_program *prog,
 	// Compute all params in reverse order and push them
 	// TODO: I fear that we will need to first compute all params, then push
 	// them. That would make this far more annoying - use variable-length array
-    // to store results maybe?
-    if(expr->arguments) {
+	// to store results maybe?
+	if (expr->arguments) {
 		for (int i = expr->arguments->expression_count - 1; i >= 0; --i) {
 			struct mCc_tac_quad_entry param_temporary =
-					mCc_tac_from_expression(prog, expr->arguments->expressions[i]);
-			struct mCc_tac_quad *param = mCc_tac_quad_new_param(param_temporary);
+			    mCc_tac_from_expression(prog, expr->arguments->expressions[i]);
+			struct mCc_tac_quad *param =
+			    mCc_tac_quad_new_param(param_temporary);
 			mCc_tac_program_add_quad(prog, param);
 		}
 	}
@@ -192,17 +193,16 @@ mCc_tac_from_expression_call(struct mCc_tac_program *prog,
 	return retval;
 }
 
-static int
-mCc_tac_from_statement_if(struct mCc_tac_program *prog,
-                          struct mCc_ast_statement *stmt)
+static int mCc_tac_from_statement_if(struct mCc_tac_program *prog,
+                                     struct mCc_ast_statement *stmt)
 {
 	struct mCc_tac_label label_after_if = mCc_tac_get_new_label();
 
 	struct mCc_tac_quad_entry cond =
 	    mCc_tac_from_expression(prog, stmt->if_cond);
 
-
-	struct mCc_tac_quad *jump_after_if = mCc_tac_quad_new_jumpfalse(cond, label_after_if);
+	struct mCc_tac_quad *jump_after_if =
+	    mCc_tac_quad_new_jumpfalse(cond, label_after_if);
 	jump_after_if->comment = "Evaluate if condition";
 	if (mCc_tac_program_add_quad(prog, jump_after_if))
 		return 1;
@@ -218,9 +218,8 @@ mCc_tac_from_statement_if(struct mCc_tac_program *prog,
 	return 0;
 }
 
-static int
-mCc_tac_from_statement_if_else(struct mCc_tac_program *prog,
-                               struct mCc_ast_statement *stmt)
+static int mCc_tac_from_statement_if_else(struct mCc_tac_program *prog,
+                                          struct mCc_ast_statement *stmt)
 {
 	struct mCc_tac_label label_else = mCc_tac_get_new_label();
 	struct mCc_tac_label label_after_if = mCc_tac_get_new_label();
@@ -255,14 +254,14 @@ mCc_tac_from_statement_if_else(struct mCc_tac_program *prog,
 }
 
 static int mCc_tac_entry_from_assg(struct mCc_tac_program *prog,
-                                    struct mCc_ast_statement *stmt)
+                                   struct mCc_ast_statement *stmt)
 {
 
 	struct mCc_tac_quad *new_quad;
 	struct mCc_tac_quad_entry result = mCc_get_var_from_id(stmt->id_assgn);
 
 	struct mCc_tac_quad_entry result_lhs;
-    struct mCc_tac_quad_entry result_rhs ;
+	struct mCc_tac_quad_entry result_rhs;
 	if (stmt->lhs_assgn)
 		result_lhs = mCc_tac_from_expression(prog, stmt->lhs_assgn);
 
@@ -273,10 +272,10 @@ static int mCc_tac_entry_from_assg(struct mCc_tac_program *prog,
 		if (stmt->rhs_assgn->literal->type == MCC_AST_LITERAL_TYPE_STRING)
 			mCc_tac_string_from_assgn(result, lit_result);
 	} else if (stmt->lhs_assgn) {
-        result_rhs = mCc_tac_from_expression(prog, stmt->rhs_assgn);
+		result_rhs = mCc_tac_from_expression(prog, stmt->rhs_assgn);
 		new_quad = mCc_tac_quad_new_store(result_lhs, result_rhs, result);
 	} else {
-        result_rhs = mCc_tac_from_expression(prog, stmt->rhs_assgn);
+		result_rhs = mCc_tac_from_expression(prog, stmt->rhs_assgn);
 		new_quad = mCc_tac_quad_new_assign(result_rhs, result);
 	}
 	if (!new_quad || mCc_tac_program_add_quad(prog, new_quad))
@@ -285,25 +284,25 @@ static int mCc_tac_entry_from_assg(struct mCc_tac_program *prog,
 }
 
 static int mCc_tac_from_statement_return(struct mCc_tac_program *prog,
-                                          struct mCc_ast_statement *stmt)
+                                         struct mCc_ast_statement *stmt)
 {
 	struct mCc_tac_quad_entry entry;
-    struct mCc_tac_quad *new_quad;
+	struct mCc_tac_quad *new_quad;
 	if (stmt->ret_val) {
 		entry = mCc_tac_from_expression(prog, stmt->ret_val);
 	}
-    if(stmt->type == MCC_AST_STATEMENT_TYPE_RET)
-	    new_quad = mCc_tac_quad_new_return(entry);
-    else
-        new_quad = mCc_tac_quad_new_return_void();
+	if (stmt->type == MCC_AST_STATEMENT_TYPE_RET)
+		new_quad = mCc_tac_quad_new_return(entry);
+	else
+		new_quad = mCc_tac_quad_new_return_void();
 
-    if (!new_quad || mCc_tac_program_add_quad(prog, new_quad))
+	if (!new_quad || mCc_tac_program_add_quad(prog, new_quad))
 		return 1;
 	return 0;
 }
 
 static int mCc_tac_from_statement_while(struct mCc_tac_program *prog,
-                                         struct mCc_ast_statement *stmt)
+                                        struct mCc_ast_statement *stmt)
 {
 	struct mCc_tac_label label_cond = mCc_tac_get_new_label();
 	struct mCc_tac_label label_after_while = mCc_tac_get_new_label();
@@ -338,41 +337,43 @@ static int mCc_tac_from_function_def(struct mCc_tac_program *prog,
 	    mCc_get_label_from_fun_name(fun_def->identifier);
 
 	struct mCc_tac_quad *label_fun_quad = mCc_tac_quad_new_label(label_fun);
-	if(mCc_tac_program_add_quad(prog, label_fun_quad)){
-        return 1;
-    };
+	if (mCc_tac_program_add_quad(prog, label_fun_quad)) {
+		return 1;
+	};
 
 	// Copy arguments to new temporaries
-	struct mCc_tac_quad_entry virtual_pointer_to_arguments = {.number = -1};
-	if(fun_def->para) {
-        for (int i = fun_def->para->decl_count - 1; i >= 0; --i) {
+	struct mCc_tac_quad_entry virtual_pointer_to_arguments = { .number = -1 };
+	if (fun_def->para) {
+		for (int i = fun_def->para->decl_count - 1; i >= 0; --i) {
 
-            // Load argument index into a quad
-            struct mCc_tac_quad_literal *i_lit=malloc(sizeof(*i_lit));
+			// Load argument index into a quad
+			struct mCc_tac_quad_literal *i_lit = malloc(sizeof(*i_lit));
 			i_lit->type = MCC_TAC_QUAD_LIT_INT;
 			if (!i_lit)
 				return 1;
-            i_lit->ival=i;
-            struct mCc_tac_quad_entry i_entry = mCc_tac_create_new_entry();
-            struct mCc_tac_quad *i_quad = mCc_tac_quad_new_assign_lit(i_lit, i_entry);
-            if (mCc_tac_program_add_quad(prog, i_quad))
+			i_lit->ival = i;
+			struct mCc_tac_quad_entry i_entry = mCc_tac_create_new_entry();
+			struct mCc_tac_quad *i_quad =
+			    mCc_tac_quad_new_assign_lit(i_lit, i_entry);
+			if (mCc_tac_program_add_quad(prog, i_quad))
 				return 1;
 
-            // Load argument from stack into new temporary
-            struct mCc_tac_quad_entry new_entry = mCc_tac_create_new_entry();
-            struct mCc_tac_quad *load_param = mCc_tac_quad_new_load(virtual_pointer_to_arguments, i_entry, new_entry);
+			// Load argument from stack into new temporary
+			struct mCc_tac_quad_entry new_entry = mCc_tac_create_new_entry();
+			struct mCc_tac_quad *load_param = mCc_tac_quad_new_load(
+			    virtual_pointer_to_arguments, i_entry, new_entry);
 			load_param->comment = "load param from stack to temporary";
-            if (mCc_tac_program_add_quad(prog, load_param))
+			if (mCc_tac_program_add_quad(prog, load_param))
 				return 1;
 
-            fun_def->para->decl[i]->decl_id->symtab_ref->tac_tmp = new_entry;
-        }
-    }
-	if(fun_def->body) {
-        if (mCc_tac_from_stmt(prog, fun_def->body)) {
-            return 1;
-        }
-    }
+			fun_def->para->decl[i]->decl_id->symtab_ref->tac_tmp = new_entry;
+		}
+	}
+	if (fun_def->body) {
+		if (mCc_tac_from_stmt(prog, fun_def->body)) {
+			return 1;
+		}
+	}
 	return 0;
 }
 
@@ -482,7 +483,7 @@ struct mCc_tac_program *mCc_tac_build(struct mCc_ast_program *prog)
 
 	for (unsigned int i = 0; i < prog->func_def_count; ++i) {
 		if (mCc_tac_from_function_def(tac, prog->func_defs[i])) {
-            mCc_tac_program_delete(tac);
+			mCc_tac_program_delete(tac);
 			return NULL;
 		}
 	}
@@ -490,6 +491,7 @@ struct mCc_tac_program *mCc_tac_build(struct mCc_ast_program *prog)
 	return tac;
 }
 
-void mCc_tac_free_global_string_array(){
+void mCc_tac_free_global_string_array()
+{
 	free(global_string_arr);
 }

@@ -5,40 +5,40 @@
  * @date 2018-04-27
  *
  */
-#include "mCc/tac.h"
 #include "mCc/ast.h"
-#include <string.h>
+#include "mCc/tac.h"
 #include <assert.h>
+#include <string.h>
 
 struct mCc_tac_quad_entry mCc_tac_create_new_entry()
 {
-    static int current_var = 0;
+	static int current_var = 0;
 
 	struct mCc_tac_quad_entry entry;
 
-    entry.number = current_var;
-    current_var++;
+	entry.number = current_var;
+	current_var++;
 
-    return entry;
+	return entry;
 }
 
 struct mCc_tac_quad_entry mCc_tac_create_new_string()
 {
-    static int current_string = 0;
+	static int current_string = 0;
 
-    struct mCc_tac_quad_entry entry;
+	struct mCc_tac_quad_entry entry;
 
-    entry.number = current_string;
-    current_string++;
+	entry.number = current_string;
+	current_string++;
 
-    return entry;
+	return entry;
 }
 
 struct mCc_tac_label mCc_tac_get_new_label()
 {
 	static int current_lab = 0;
 
-	struct mCc_tac_label label = {0};
+	struct mCc_tac_label label = { 0 };
 
 	label.num = current_lab;
 	current_lab++;
@@ -48,8 +48,8 @@ struct mCc_tac_label mCc_tac_get_new_label()
 struct mCc_tac_quad *mCc_tac_quad_new_assign(struct mCc_tac_quad_entry arg1,
                                              struct mCc_tac_quad_entry result)
 {
-	//assert(arg1);
-//	assert(result);
+	// assert(arg1);
+	//	assert(result);
 
 	struct mCc_tac_quad *quad = malloc(sizeof(*quad));
 
@@ -69,7 +69,7 @@ mCc_tac_quad_new_assign_lit(struct mCc_tac_quad_literal *arg1,
                             struct mCc_tac_quad_entry result)
 {
 	// assert(arg1);
-	//assert(result);
+	// assert(result);
 
 	struct mCc_tac_quad *quad = malloc(sizeof(*quad));
 
@@ -84,13 +84,12 @@ mCc_tac_quad_new_assign_lit(struct mCc_tac_quad_literal *arg1,
 	return quad;
 }
 
-struct mCc_tac_quad *
-mCc_tac_quad_new_op_unary(enum mCc_tac_quad_unary_op op,
-                          struct mCc_tac_quad_entry arg1,
-                          struct mCc_tac_quad_entry result)
+struct mCc_tac_quad *mCc_tac_quad_new_op_unary(enum mCc_tac_quad_unary_op op,
+                                               struct mCc_tac_quad_entry arg1,
+                                               struct mCc_tac_quad_entry result)
 {
-	//assert(arg1);
-//	assert(result);
+	// assert(arg1);
+	//	assert(result);
 
 	struct mCc_tac_quad *quad = malloc(sizeof(*quad));
 
@@ -110,9 +109,9 @@ struct mCc_tac_quad *mCc_tac_quad_new_op_binary(
     enum mCc_tac_quad_binary_op op, struct mCc_tac_quad_entry arg1,
     struct mCc_tac_quad_entry arg2, struct mCc_tac_quad_entry result)
 {
-//	assert(arg1);
-//	assert(arg2);
-//	assert(result);
+	//	assert(arg1);
+	//	assert(arg2);
+	//	assert(result);
 
 	struct mCc_tac_quad *quad = malloc(sizeof(*quad));
 
@@ -129,7 +128,8 @@ struct mCc_tac_quad *mCc_tac_quad_new_op_binary(
 	return quad;
 }
 
-struct mCc_tac_quad *mCc_tac_quad_new_jump(struct mCc_tac_label label){
+struct mCc_tac_quad *mCc_tac_quad_new_jump(struct mCc_tac_label label)
+{
 
 	struct mCc_tac_quad *quad = malloc(sizeof(*quad));
 
@@ -147,8 +147,8 @@ struct mCc_tac_quad *
 mCc_tac_quad_new_jumpfalse(struct mCc_tac_quad_entry condition,
                            struct mCc_tac_label label)
 {
-   // assert(condition);
-    struct mCc_tac_quad *quad = malloc(sizeof(*quad));
+	// assert(condition);
+	struct mCc_tac_quad *quad = malloc(sizeof(*quad));
 
 	if (!quad) {
 		return NULL;
@@ -179,7 +179,7 @@ struct mCc_tac_quad *mCc_tac_quad_new_label(struct mCc_tac_label label)
 struct mCc_tac_quad *mCc_tac_quad_new_param(struct mCc_tac_quad_entry value)
 {
 
-//	assert(value);
+	//	assert(value);
 
 	struct mCc_tac_quad *quad = malloc(sizeof(*quad));
 
@@ -194,7 +194,8 @@ struct mCc_tac_quad *mCc_tac_quad_new_param(struct mCc_tac_quad_entry value)
 	return quad;
 }
 
-struct mCc_tac_quad *mCc_tac_quad_new_call(struct mCc_tac_label label, struct mCc_tac_quad_entry result)
+struct mCc_tac_quad *mCc_tac_quad_new_call(struct mCc_tac_label label,
+                                           struct mCc_tac_quad_entry result)
 {
 
 	struct mCc_tac_quad *quad = malloc(sizeof(*quad));
@@ -204,20 +205,19 @@ struct mCc_tac_quad *mCc_tac_quad_new_call(struct mCc_tac_label label, struct mC
 	}
 
 	quad->comment = NULL;
-    quad->type=MCC_TAC_QUAD_CALL;
+	quad->type = MCC_TAC_QUAD_CALL;
 	quad->arg1 = result;
-    quad->result.label=label;
-    return quad;
-
+	quad->result.label = label;
+	return quad;
 }
 
 struct mCc_tac_quad *mCc_tac_quad_new_load(struct mCc_tac_quad_entry array,
                                            struct mCc_tac_quad_entry index,
                                            struct mCc_tac_quad_entry result)
 {
-//	assert(array);
-//	assert(index);
-//	assert(result);
+	//	assert(array);
+	//	assert(index);
+	//	assert(result);
 
 	struct mCc_tac_quad *quad = malloc(sizeof(*quad));
 
@@ -239,9 +239,9 @@ struct mCc_tac_quad *mCc_tac_quad_new_store(struct mCc_tac_quad_entry index,
                                             struct mCc_tac_quad_entry array)
 {
 
-//	assert(array);
-//	assert(index);
-//	assert(value);
+	//	assert(array);
+	//	assert(index);
+	//	assert(value);
 
 	struct mCc_tac_quad *quad = malloc(sizeof(*quad));
 
@@ -258,20 +258,18 @@ struct mCc_tac_quad *mCc_tac_quad_new_store(struct mCc_tac_quad_entry index,
 	return quad;
 }
 
-
-
-struct mCc_tac_quad * mCc_tac_quad_new_return_void()
+struct mCc_tac_quad *mCc_tac_quad_new_return_void()
 {
-    struct mCc_tac_quad *quad = malloc(sizeof(*quad));
+	struct mCc_tac_quad *quad = malloc(sizeof(*quad));
 
-    if (!quad) {
-        return NULL;
-    }
+	if (!quad) {
+		return NULL;
+	}
 
-    quad->comment = NULL;
-    quad->type = MCC_TAC_QUAD_RETURN_VOID;
+	quad->comment = NULL;
+	quad->type = MCC_TAC_QUAD_RETURN_VOID;
 
-    return quad;
+	return quad;
 }
 
 struct mCc_tac_quad *
@@ -280,13 +278,13 @@ mCc_tac_quad_new_return(struct mCc_tac_quad_entry ret_value)
 
 	struct mCc_tac_quad *quad = malloc(sizeof(*quad));
 
-    if (!quad) {
-        return NULL;
-    }
+	if (!quad) {
+		return NULL;
+	}
 
-    quad->comment = NULL;
-    quad->type = MCC_TAC_QUAD_RETURN;
-    quad->arg1 = ret_value;
+	quad->comment = NULL;
+	quad->type = MCC_TAC_QUAD_RETURN;
+	quad->arg1 = ret_value;
 
 	return quad;
 }
@@ -470,41 +468,28 @@ void mCc_tac_quad_delete(struct mCc_tac_quad *self)
 {
 	assert(self);
 
-	switch(self->type){
-		case MCC_TAC_QUAD_ASSIGN:
-			break;
-		case MCC_TAC_QUAD_ASSIGN_LIT:
-			mCc_tac_quad_literal_delete(self->literal);
-			break;
-		case MCC_TAC_QUAD_OP_UNARY:
-			break;
-		case MCC_TAC_QUAD_OP_BINARY:
-			break;
-		case MCC_TAC_QUAD_JUMP:
-			break;
-		case MCC_TAC_QUAD_JUMPFALSE:
-			break;
-		case MCC_TAC_QUAD_LABEL:
-			break;
-		case MCC_TAC_QUAD_PARAM:
-			break;
-		case MCC_TAC_QUAD_CALL:
-			break;
-		case MCC_TAC_QUAD_LOAD:
-			break;
-		case MCC_TAC_QUAD_STORE:
-			break;
-		case MCC_TAC_QUAD_RETURN:
-			break;
-		case MCC_TAC_QUAD_RETURN_VOID:
-			break;
+	switch (self->type) {
+	case MCC_TAC_QUAD_ASSIGN: break;
+	case MCC_TAC_QUAD_ASSIGN_LIT:
+		mCc_tac_quad_literal_delete(self->literal);
+		break;
+	case MCC_TAC_QUAD_OP_UNARY: break;
+	case MCC_TAC_QUAD_OP_BINARY: break;
+	case MCC_TAC_QUAD_JUMP: break;
+	case MCC_TAC_QUAD_JUMPFALSE: break;
+	case MCC_TAC_QUAD_LABEL: break;
+	case MCC_TAC_QUAD_PARAM: break;
+	case MCC_TAC_QUAD_CALL: break;
+	case MCC_TAC_QUAD_LOAD: break;
+	case MCC_TAC_QUAD_STORE: break;
+	case MCC_TAC_QUAD_RETURN: break;
+	case MCC_TAC_QUAD_RETURN_VOID: break;
 	}
 	// Don't free comment because that is a string literal
 
 	free(self);
 	return;
 }
-
 
 void mCc_tac_quad_literal_delete(struct mCc_tac_quad_literal *lit)
 {
@@ -573,6 +558,6 @@ void mCc_tac_program_delete(struct mCc_tac_program *self)
 	for (unsigned int i = 0; i < self->quad_count; i++) {
 		mCc_tac_quad_delete(self->quads[i]);
 	}
-    free(self->quads);
+	free(self->quads);
 	free(self);
 }
