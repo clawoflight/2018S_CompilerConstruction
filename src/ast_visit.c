@@ -6,7 +6,6 @@
  */
 #include "mCc/ast_visit.h"
 #include "mCc/symtab.h"
-#include "stack.h"
 
 #include <assert.h>
 #include <stdio.h>
