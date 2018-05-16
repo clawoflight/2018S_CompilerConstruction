@@ -23,7 +23,8 @@ struct mCc_ast_symtab_build_result {
 	struct mCc_symtab_scope *root_symtab;
 };
 
-struct mCc_ast_symtab_build_result mCc_ast_symtab_build(struct mCc_ast_program *prog);
+struct mCc_ast_symtab_build_result
+mCc_ast_symtab_build(struct mCc_ast_program *prog);
 
 #ifdef __cplusplus
 }

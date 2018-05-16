@@ -153,10 +153,10 @@ enum MCC_SYMTAB_SCOPE_LINK_ERROR {
 	                                              ///< lvalue
 	MCC_SYMTAB_SCOPE_LINK_ERR_VAR, ///< Use of variable like an array or
 	                               ///< function
-	MCC_SYMTAB_SCOPE_LINK_ERR_ARR_WITHOUT_BRACKS,  ///< Use of array like a
-	                                               ///< variable or function
+	MCC_SYMTAB_SCOPE_LINK_ERR_ARR_WITHOUT_BRACKS,   ///< Use of array like a
+	                                                ///< variable or function
 	MCC_SYMTAB_SCOPE_LINK_ERROR_INVALID_AST_OBJECT, ///< Attempt to link an ast
-	                                               ///< object without ID
+	                                                ///< object without ID
 };
 
 /**
@@ -204,7 +204,7 @@ mCc_symtab_scope_link_ref_expression(struct mCc_symtab_scope *self,
  */
 enum MCC_SYMTAB_SCOPE_LINK_ERROR
 mCc_symtab_scope_link_ref_assignment(struct mCc_symtab_scope *self,
-									 struct mCc_ast_statement *stmt);
+                                     struct mCc_ast_statement *stmt);
 
 /**
  * @brief Free all scopes, their hash tables and entries.
