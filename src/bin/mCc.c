@@ -151,8 +151,8 @@ int main(int argc, char *argv[])
 	}
 
 	/* Assembler code generation */
-		fprintf(asm_out, ".file\t\"%s\"\n", filename);
-		mCc_asm_generate_assembly(tac, asm_out);
+    fprintf(asm_out, "\t\t.file\t\"%s\"\n", filename);
+    mCc_asm_generate_assembly(tac, asm_out);
 
 
 	/*    TODO
