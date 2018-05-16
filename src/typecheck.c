@@ -30,7 +30,7 @@ static inline void set_not_matching_types_error(
 	if (typecheck_result.status == MCC_TYPECHECK_STATUS_OK) {
 		typecheck_result.err_loc = sloc;
 
-		#pragma GCC diagnostic ignored "-Wsign-compare"
+#pragma GCC diagnostic ignored "-Wsign-compare"
 		if (expected_as_type != -1) {
 			switch (expected_as_type) {
 			case MCC_AST_TYPE_BOOL: expected_as_string = "Bool"; break;
@@ -202,21 +202,22 @@ static inline bool mCc_check_paramaters(struct mCc_ast_arguments *args,
 		return true;
 
 	if (params && args && params->decl_count && args->expression_count &&
-            params->decl_count == args->expression_count) {
+	    params->decl_count == args->expression_count) {
 		for (unsigned int i = 0; i < params->decl_count; ++i) {
 			enum mCc_ast_type computed_type =
 			    mCc_check_expression(args->expressions[i]);
 			if (params->decl[i]->decl_type != computed_type) {
-				set_not_matching_types_error(NULL,params->decl[i]->decl_type,
+				set_not_matching_types_error(NULL, params->decl[i]->decl_type,
 				                             computed_type, sloc);
 				return false;
 			}
 		}
 		return true;
 	}
-    set_not_matching_types_error(NULL,MCC_AST_TYPE_VOID,
-                                 MCC_AST_TYPE_VOID, sloc);
-	snprintf(typecheck_result.err_msg, err_len, "Mismatch number of arguments");
+	set_not_matching_types_error(NULL, MCC_AST_TYPE_VOID, MCC_AST_TYPE_VOID,
+	                             sloc);
+	snprintf(typecheck_result.err_msg, err_len,
+	         "Mismatched number of arguments");
 	typecheck_result.err_loc = sloc;
 	return false;
 }
@@ -247,10 +248,10 @@ static inline enum mCc_ast_type
 mCc_check_expression(struct mCc_ast_expression *expr)
 {
 
-	if (typecheck_result.status == MCC_TYPECHECK_STATUS_ERROR){
-        expr->node.computed_type = MCC_AST_TYPE_VOID;
-        return MCC_AST_TYPE_VOID;
-    }
+	if (typecheck_result.status == MCC_TYPECHECK_STATUS_ERROR) {
+		expr->node.computed_type = MCC_AST_TYPE_VOID;
+		return MCC_AST_TYPE_VOID;
+	}
 
 	switch (expr->type) {
 	case MCC_AST_EXPRESSION_TYPE_LITERAL:
@@ -489,12 +490,12 @@ static inline bool mCc_check_function(struct mCc_ast_function_def *func)
 
 	if ((func->func_type == MCC_AST_TYPE_VOID) && !func->body) {
 		return true;
-	}
-	else if ((func->func_type != MCC_AST_TYPE_VOID) && !func->body) {
-		set_not_matching_types_error(NULL,func->func_type, func->func_type,
-									 func->node.sloc);
+	} else if ((func->func_type != MCC_AST_TYPE_VOID) && !func->body) {
+		set_not_matching_types_error(NULL, func->func_type, func->func_type,
+		                             func->node.sloc);
 		snprintf(typecheck_result.err_msg, err_len,
-				 "Function %s needs a return statement",func->identifier->id_value);
+		         "Function %s needs a return statement",
+		         func->identifier->id_value);
 		return false;
 	}
 
@@ -510,14 +511,15 @@ static inline bool mCc_check_function(struct mCc_ast_function_def *func)
 		}
 	}
 
-    if (func->func_type == MCC_AST_TYPE_VOID) {
-        return (check_func_for_return && check_func);
-    }
+	if (func->func_type == MCC_AST_TYPE_VOID) {
+		return (check_func_for_return && check_func);
+	}
 
-    if (!general_ret) {
-        typecheck_result.status = MCC_TYPECHECK_STATUS_ERROR;
+	if (!general_ret) {
+		typecheck_result.status = MCC_TYPECHECK_STATUS_ERROR;
 		snprintf(typecheck_result.err_msg, err_len,
-		         "Function may not reach a return");
+		         "Function %s may not reach a return",
+				 func->identifier->id_value);
 		typecheck_result.err_loc = func->node.sloc;
 	}
 
@@ -570,15 +572,16 @@ int mCc_typecheck_check_main_properties(struct mCc_symtab_scope *scope)
 				return 0; /// if all properties are full filled
 			}
 		}
-		set_not_matching_types_error(NULL,MCC_AST_TYPE_VOID, MCC_AST_TYPE_VOID,
-									 entry->sloc);
-		snprintf(typecheck_result.err_msg, err_len,
-				 "Main function has to be void and does not take any arguments");
-        return -1;
+		set_not_matching_types_error(NULL, MCC_AST_TYPE_VOID, MCC_AST_TYPE_VOID,
+		                             entry->sloc);
+		snprintf(
+		    typecheck_result.err_msg, err_len,
+		    "Main function has to be void and does not take any arguments");
+		return -1;
 	}
-    typecheck_result.status = MCC_TYPECHECK_STATUS_ERROR;
+	typecheck_result.status = MCC_TYPECHECK_STATUS_ERROR;
 	snprintf(typecheck_result.err_msg, err_len,
-			 "Main function has to be present");
+	         "Main function has to be present");
 	return -1;
 }
 
@@ -586,10 +589,10 @@ struct mCc_typecheck_result mCc_typecheck(struct mCc_ast_program *program,
                                           struct mCc_symtab_scope *scope)
 {
 
-    if (mCc_typecheck_check_main_properties(scope) == -1){
-        typecheck_result.stmt_type = false;
-        return typecheck_result;
-    }
+	if (mCc_typecheck_check_main_properties(scope) == -1) {
+		typecheck_result.stmt_type = false;
+		return typecheck_result;
+	}
 
 	bool all_correct = true;
 	for (unsigned int i = 0; i < program->func_def_count; i++) {
@@ -609,7 +612,7 @@ struct mCc_typecheck_result mCc_typecheck(struct mCc_ast_program *program,
 struct mCc_typecheck_result
 mCc_typecheck_test_type_check(struct mCc_ast_expression *expression)
 {
-    typecheck_result.status = MCC_TYPECHECK_STATUS_OK;
+	typecheck_result.status = MCC_TYPECHECK_STATUS_OK;
 	typecheck_result.type = mCc_check_expression(expression);
 	return typecheck_result;
 }
@@ -618,15 +621,15 @@ struct mCc_typecheck_result
 mCc_typecheck_test_type_check_stmt(struct mCc_ast_statement *stmt)
 {
 	typecheck_result.status = MCC_TYPECHECK_STATUS_OK;
-    if(!mCc_check_statement(stmt))
-        typecheck_result.status = MCC_TYPECHECK_STATUS_ERROR;
+	if (!mCc_check_statement(stmt))
+		typecheck_result.status = MCC_TYPECHECK_STATUS_ERROR;
 	return typecheck_result;
 }
 
 struct mCc_typecheck_result
 mCc_typecheck_test_type_check_program(struct mCc_ast_program *prog)
 {
-    typecheck_result.status = MCC_TYPECHECK_STATUS_OK;
+	typecheck_result.status = MCC_TYPECHECK_STATUS_OK;
 
 	bool all_correct = true;
 	for (unsigned int i = 0; i < prog->func_def_count; i++) {
@@ -635,12 +638,5 @@ mCc_typecheck_test_type_check_program(struct mCc_ast_program *prog)
 		if (!all_correct)
 			break;
 	}
-	/**
-	 * Set to status ok for unit tests
-	 * Else in the real program we can let the status be error and distinguish
-	 * there
-	 */
-
-	typecheck_result.stmt_type = all_correct;
 	return typecheck_result;
 }
