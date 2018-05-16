@@ -8,9 +8,9 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "mCc/ast.h"
 #include "mCc/ast_statements.h"
 #include "mCc/symtab.h"
-#include "mCc/ast.h"
 
 static void mCc_symtab_delete_scope(struct mCc_symtab_scope *scope);
 static void mCc_symtab_delete_entry(struct mCc_symtab_entry *entry);
@@ -172,7 +172,7 @@ static struct mCc_symtab_entry *mCc_symtab_new_entry(
 
 	switch (entry_type) {
 	case MCC_SYMTAB_ENTRY_TYPE_ARR:
-		#pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
+#pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
 		new_entry->arr_size = (unsigned int)optarg;
 		break;
 	case MCC_SYMTAB_ENTRY_TYPE_FUNC: new_entry->params = optarg; break;
