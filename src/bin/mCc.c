@@ -85,7 +85,9 @@ int main(int argc, char *argv[])
 				return EXIT_FAILURE;
 			}
 		}
-	}
+	} else {
+        asm_out = fopen("default.asm", "w");
+    }
 
 	struct mCc_ast_program *prog = NULL;
 
@@ -149,10 +151,8 @@ int main(int argc, char *argv[])
 	}
 
 	/* Assembler code generation */
-	if (asm_out){
 		fprintf(asm_out, ".file\t\"%s\"\n", filename);
 		mCc_asm_generate_assembly(tac, asm_out);
-	}
 
 
 	/*    TODO
