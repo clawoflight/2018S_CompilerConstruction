@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
 			}
 		}
 	} else {
-        asm_out = fopen("default.asm", "w");
+        asm_out = fopen("default.s", "w");
     }
 
 	struct mCc_ast_program *prog = NULL;
@@ -151,7 +151,8 @@ int main(int argc, char *argv[])
 	}
 
 	/* Assembler code generation */
-    fprintf(asm_out, "\t\t.file\t\"%s\"\n", filename);
+    fprintf(asm_out, "\t.file\t\"%s\"\n", filename);
+    fprintf(asm_out, "\t.text\n");
     mCc_asm_generate_assembly(tac, asm_out);
 
 

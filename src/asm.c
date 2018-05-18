@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include "mCc/asm.h"
 
@@ -15,6 +16,7 @@ static struct mCc_asm_stack_pos position[ARRAY_LENGTH];
 
 static int current_elements_in_array = 0;
 static int current_frame_pointer = 0;
+static bool first_function = true;
 
 static void mCc_asm_test_print(FILE *out)
 {
@@ -57,7 +59,7 @@ static void mCc_asm_print_assign_lit(struct mCc_tac_quad *quad, FILE *out)
     switch (lit->type){
         case MCC_TAC_QUAD_LIT_INT:
           //  if ()
-            fprintf(out, "\t\tmovl\t$%d, %d(%%ebp)\n", lit->ival,
+            fprintf(out, "\tmovl\t$%d, %d(%%ebp)\n", lit->ival,
                     result);
             break;
         case MCC_TAC_QUAD_LIT_FLOAT:
@@ -83,8 +85,8 @@ static void mCc_asm_print_assign(struct mCc_tac_quad *quad,FILE *out){
         result = current_frame_pointer;
     }
 
-    fprintf(out,"\t\tmovl\t%d(%%ebp), %%eax\n",source);
-    fprintf(out,"\t\tmovl\t%%eax, %d(%%ebp)\n",result);
+    fprintf(out,"\tmovl\t%d(%%ebp), %%eax\n",source);
+    fprintf(out,"\tmovl\t%%eax, %d(%%ebp)\n",result);
 }
 
 static void mCc_asm_print_un_op(struct mCc_tac_quad *quad,FILE *out)
@@ -92,8 +94,8 @@ static void mCc_asm_print_un_op(struct mCc_tac_quad *quad,FILE *out)
     switch (quad->un_op){
         case MCC_TAC_OP_UNARY_NEG:
           //  if(quad->arg1)
-            fprintf(out, "\t\tnegl\t%%eax\n");
-            fprintf(out, "\t\tmovl\t%%eax, %d(%%ebp)\n", current_frame_pointer);
+            fprintf(out, "\tnegl\t%%eax\n");
+            fprintf(out, "\tmovl\t%%eax, %d(%%ebp)\n", current_frame_pointer);
             break;
         case MCC_TAC_OP_UNARY_NOT:
             break;
@@ -115,55 +117,55 @@ static void mCc_asm_print_bin_op(struct mCc_tac_quad *quad,FILE *out){
         result = current_frame_pointer;
     }
 
-    fprintf(out,"\t\tmovl\t%d(%%ebp), %%edx\n",op1);
+    fprintf(out,"\tmovl\t%d(%%ebp), %%edx\n",op1);
     switch (quad->bin_op) {
         case MCC_TAC_OP_BINARY_ADD:
-            fprintf(out,"\t\tmovl\t%d(%%ebp), %%eax\n",op2);
-            fprintf(out,"\t\taddl\t%%edx,%%eax\n");
+            fprintf(out,"\tmovl\t%d(%%ebp), %%eax\n",op2);
+            fprintf(out,"\taddl\t%%edx,%%eax\n");
             break;
         case MCC_TAC_OP_BINARY_SUB:
-            fprintf(out,"\t\tsubl\t%d(%%ebp), %%eax\n",current_frame_pointer);
+            fprintf(out,"\tsubl\t%d(%%ebp), %%eax\n",current_frame_pointer);
             break;
         case MCC_TAC_OP_BINARY_MUL:
-            fprintf(out,"\t\timull\t%d(%%ebp), %%eax\n",current_frame_pointer);
+            fprintf(out,"\timull\t%d(%%ebp), %%eax\n",current_frame_pointer);
             break;
         case MCC_TAC_OP_BINARY_DIV:
-            fprintf(out,"\t\tcltd\n");
-            fprintf(out,"\t\tidivl\t%d(%Debp)\n",current_frame_pointer);
+            fprintf(out,"\tcltd\n");
+            fprintf(out,"\tidivl\t%d(%Debp)\n",current_frame_pointer);
             break;
         case MCC_TAC_OP_BINARY_LT:
-            fprintf(out,"\t\tcmpl\t%d(%%ebp), %%eax\n",current_frame_pointer);
-            fprintf(out,"\t\tsetl\t%%al\n");
-            fprintf(out,"\t\tmovzbl\t%%al, %%eax\n");
+            fprintf(out,"\tcmpl\t%d(%%ebp), %%eax\n",current_frame_pointer);
+            fprintf(out,"\tsetl\t%%al\n");
+            fprintf(out,"\tmovzbl\t%%al, %%eax\n");
             break;
         case MCC_TAC_OP_BINARY_GT:
-            fprintf(out,"\t\tcmpl\t%d(%%ebp), %%eax\n",current_frame_pointer);
-            fprintf(out,"\t\tsetg\t%%al\n");
-            fprintf(out,"\t\tmovzbl\t%%al, %%eax\n");
+            fprintf(out,"\tcmpl\t%d(%%ebp), %%eax\n",current_frame_pointer);
+            fprintf(out,"\tsetg\t%%al\n");
+            fprintf(out,"\tmovzbl\t%%al, %%eax\n");
             break;
         case MCC_TAC_OP_BINARY_LEQ:
-            fprintf(out,"\t\tcmpl\t%d(%%ebp), %%eax\n",current_frame_pointer);
-            fprintf(out,"\t\tsetle\t%%al\n");
-            fprintf(out,"\t\tmovzbl\t%%al, %%eax\n");
+            fprintf(out,"\tcmpl\t%d(%%ebp), %%eax\n",current_frame_pointer);
+            fprintf(out,"\tsetle\t%%al\n");
+            fprintf(out,"\tmovzbl\t%%al, %%eax\n");
             break;
         case MCC_TAC_OP_BINARY_GEQ:
-            fprintf(out,"\t\tcmpl\t%d(%%ebp), %%eax\n",current_frame_pointer);
-            fprintf(out,"\t\tsetge\t%%al\n");
-            fprintf(out,"\t\tmovzbl\t%%al, %%eax\n");
+            fprintf(out,"\tcmpl\t%d(%%ebp), %%eax\n",current_frame_pointer);
+            fprintf(out,"\tsetge\t%%al\n");
+            fprintf(out,"\tmovzbl\t%%al, %%eax\n");
             break;
         case MCC_TAC_OP_BINARY_AND:
-            fprintf(out,"\t\tandl\t%d(%%ebp), %%eax\n",current_frame_pointer);
+            fprintf(out,"\tandl\t%d(%%ebp), %%eax\n",current_frame_pointer);
             break;
         case MCC_TAC_OP_BINARY_OR:
-            fprintf(out,"\t\torl\t%d(%%ebp), %%eax\n",current_frame_pointer);
+            fprintf(out,"\torl\t%d(%%ebp), %%eax\n",current_frame_pointer);
             break;
         case MCC_TAC_OP_BINARY_EQ:
-            fprintf(out,"\t\tcmpl\t%d(%%ebp), %%eax\n",current_frame_pointer);
-            fprintf(out,"\t\tsete\t%%al\n");
-            fprintf(out,"\t\tmovzbl\t%%al, %%eax\n");
+            fprintf(out,"\tcmpl\t%d(%%ebp), %%eax\n",current_frame_pointer);
+            fprintf(out,"\tsete\t%%al\n");
+            fprintf(out,"\tmovzbl\t%%al, %%eax\n");
             break;
     }
-    fprintf(out,"\t\tmovl\t%%eax, %d(%%ebp)\n",result);
+    fprintf(out,"\tmovl\t%%eax, %d(%%ebp)\n",result);
 
 }
 
@@ -172,9 +174,17 @@ static void mCc_asm_print_label(struct mCc_tac_quad *quad, FILE *out)
     //Check if it's a function
     //TODO: additional checks required
     if (quad->result.label.str){
+        current_frame_pointer = 0;
+        if (!first_function){
+            fprintf(out, "\tleave\n");
+            fprintf(out, "\tret\n");
+        }
+        first_function = 0;
+        fprintf(out, "\t.globl\t%s\n", quad->result.label.str);
+        fprintf(out, "\t.type\t%s, @function\n", quad->result.label.str);
         fprintf(out, "%s:\n", quad->result.label.str);
-        fprintf(out, "\t\tpushl\t%%ebp\n");
-        fprintf(out, "\t\tmovl\t%%esp, %%ebp\n");
+        fprintf(out, "\tpushl\t%%ebp\n");
+        fprintf(out, "\tmovl\t%%esp, %%ebp\n");
     }
 }
 
@@ -221,5 +231,7 @@ void mCc_asm_generate_assembly(struct mCc_tac_program *prog, FILE *out)
     for (unsigned int i = 0; i < prog->quad_count; ++i){
         mCc_asm_assembly_from_quad(prog->quads[i], out);
     }
+    fprintf(out, "\tleave\n");
+    fprintf(out, "\tret\n");
     mCc_asm_test_print(out);
 }
