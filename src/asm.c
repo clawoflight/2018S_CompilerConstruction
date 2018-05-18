@@ -29,6 +29,43 @@ static void mCc_asm_print_assign_lit(struct mCc_tac_quad_literal *lit, FILE *out
     }
 }
 
+static void mCc_asm_print_assign(struct mCc_tac_quad *quad,FILE *out){
+    if(quad->arg1.number<0){
+        fprintf(out,"\t\tmovl\t-4(%%ebp), %%eax\n");
+    }else {
+        fprintf(out, "\t\tmovl\t8(%%ebp), %%eax\n");
+    }
+
+}
+
+static void mCc_asm_print_bin_op(struct mCc_tac_quad *quad,FILE *out){
+    switch (quad->bin_op) {
+        case MCC_TAC_OP_BINARY_ADD:
+            break;
+        case MCC_TAC_OP_BINARY_SUB:
+            break;
+        case MCC_TAC_OP_BINARY_MUL:
+            break;
+        case MCC_TAC_OP_BINARY_DIV:
+            break;
+        case MCC_TAC_OP_BINARY_LT:
+            break;
+        case MCC_TAC_OP_BINARY_GT:
+            break;
+        case MCC_TAC_OP_BINARY_LEQ:
+            break;
+        case MCC_TAC_OP_BINARY_GEQ:
+            break;
+        case MCC_TAC_OP_BINARY_AND:
+            break;
+        case MCC_TAC_OP_BINARY_OR:
+            break;
+        case MCC_TAC_OP_BINARY_EQ:
+            break;
+    }
+
+}
+
 static void mCc_asm_print_label(struct mCc_tac_quad *quad, FILE *out)
 {
     //Check if it's a function
@@ -43,6 +80,7 @@ static void mCc_asm_assembly_from_quad(struct mCc_tac_quad *quad, FILE *out)
    // fprintf(out, "type: %d\n", quad->type);
     switch(quad->type){
         case MCC_TAC_QUAD_ASSIGN:
+            mCc_asm_print_assign(quad,out);
             break;
         case MCC_TAC_QUAD_ASSIGN_LIT:
             mCc_asm_print_assign_lit(quad->literal, out);
@@ -50,6 +88,7 @@ static void mCc_asm_assembly_from_quad(struct mCc_tac_quad *quad, FILE *out)
         case MCC_TAC_QUAD_OP_UNARY:
             break;
         case MCC_TAC_QUAD_OP_BINARY:
+            mCc_asm_print_bin_op(quad,out);
             break;
         case MCC_TAC_QUAD_JUMP:
             break;
