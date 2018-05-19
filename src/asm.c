@@ -91,6 +91,7 @@ static void mCc_asm_print_assign(struct mCc_tac_quad *quad,FILE *out){
 
 static void mCc_asm_print_un_op(struct mCc_tac_quad *quad,FILE *out)
 {
+    //Does not work yet
     switch (quad->un_op){
         case MCC_TAC_OP_UNARY_NEG:
           //  if(quad->arg1)
@@ -124,43 +125,43 @@ static void mCc_asm_print_bin_op(struct mCc_tac_quad *quad,FILE *out){
             fprintf(out,"\taddl\t%%edx,%%eax\n");
             break;
         case MCC_TAC_OP_BINARY_SUB:
-            fprintf(out,"\tsubl\t%d(%%ebp), %%eax\n",current_frame_pointer);
+            fprintf(out,"\tsubl\t%d(%%ebp), %%eax\n",op2);
             break;
         case MCC_TAC_OP_BINARY_MUL:
-            fprintf(out,"\timull\t%d(%%ebp), %%eax\n",current_frame_pointer);
+            fprintf(out,"\timull\t%d(%%ebp), %%eax\n",op2);
             break;
         case MCC_TAC_OP_BINARY_DIV:
             fprintf(out,"\tcltd\n");
-            fprintf(out,"\tidivl\t%d(%Debp)\n",current_frame_pointer);
+            fprintf(out,"\tidivl\t%d(%Debp)\n",op2);
             break;
         case MCC_TAC_OP_BINARY_LT:
-            fprintf(out,"\tcmpl\t%d(%%ebp), %%eax\n",current_frame_pointer);
+            fprintf(out,"\tcmpl\t%d(%%ebp), %%eax\n",op2);
             fprintf(out,"\tsetl\t%%al\n");
             fprintf(out,"\tmovzbl\t%%al, %%eax\n");
             break;
         case MCC_TAC_OP_BINARY_GT:
-            fprintf(out,"\tcmpl\t%d(%%ebp), %%eax\n",current_frame_pointer);
+            fprintf(out,"\tcmpl\t%d(%%ebp), %%eax\n",op2);
             fprintf(out,"\tsetg\t%%al\n");
             fprintf(out,"\tmovzbl\t%%al, %%eax\n");
             break;
         case MCC_TAC_OP_BINARY_LEQ:
-            fprintf(out,"\tcmpl\t%d(%%ebp), %%eax\n",current_frame_pointer);
+            fprintf(out,"\tcmpl\t%d(%%ebp), %%eax\n",op2);
             fprintf(out,"\tsetle\t%%al\n");
             fprintf(out,"\tmovzbl\t%%al, %%eax\n");
             break;
         case MCC_TAC_OP_BINARY_GEQ:
-            fprintf(out,"\tcmpl\t%d(%%ebp), %%eax\n",current_frame_pointer);
+            fprintf(out,"\tcmpl\t%d(%%ebp), %%eax\n",op2);
             fprintf(out,"\tsetge\t%%al\n");
             fprintf(out,"\tmovzbl\t%%al, %%eax\n");
             break;
         case MCC_TAC_OP_BINARY_AND:
-            fprintf(out,"\tandl\t%d(%%ebp), %%eax\n",current_frame_pointer);
+            fprintf(out,"\tandl\t%d(%%ebp), %%eax\n",op2);
             break;
         case MCC_TAC_OP_BINARY_OR:
-            fprintf(out,"\torl\t%d(%%ebp), %%eax\n",current_frame_pointer);
+            fprintf(out,"\torl\t%d(%%ebp), %%eax\n",op2);
             break;
         case MCC_TAC_OP_BINARY_EQ:
-            fprintf(out,"\tcmpl\t%d(%%ebp), %%eax\n",current_frame_pointer);
+            fprintf(out,"\tcmpl\t%d(%%ebp), %%eax\n",op2);
             fprintf(out,"\tsete\t%%al\n");
             fprintf(out,"\tmovzbl\t%%al, %%eax\n");
             break;
