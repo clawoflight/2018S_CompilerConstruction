@@ -214,6 +214,7 @@ static void mCc_asm_print_label(struct mCc_tac_quad *quad, FILE *out)
     }
     else {
         current_frame_pointer = 0;
+        current_param_pointer = 0;
         if (!first_function){
             fprintf(out, "\tleave\n");
             fprintf(out, "\tret\n");
@@ -246,6 +247,11 @@ static void mCc_asm_handle_load(struct mCc_tac_quad *quad){
     }
 }
 
+static void mCc_asm_print_param(struct mCc_tac_quad *quad, FILE *out)
+{
+
+}
+
 static void mCc_asm_assembly_from_quad(struct mCc_tac_quad *quad, FILE *out)
 {
 
@@ -273,6 +279,7 @@ static void mCc_asm_assembly_from_quad(struct mCc_tac_quad *quad, FILE *out)
             mCc_asm_print_label(quad, out);
             break;
         case MCC_TAC_QUAD_PARAM:
+            mCc_asm_print_param(quad, out);
             break;
         case MCC_TAC_QUAD_CALL:
             break;
