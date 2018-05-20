@@ -345,7 +345,8 @@ static int mCc_tac_from_function_def(struct mCc_tac_program *prog,
 	// Copy arguments to new temporaries
 	struct mCc_tac_quad_entry virtual_pointer_to_arguments = { .number = -1 };
 	if (fun_def->para) {
-		for (int i = fun_def->para->decl_count - 1; i >= 0; --i) {
+		//for (int i = fun_def->para->decl_count - 1; i >= 0; --i) {
+		for (int i = 0; i < fun_def->para->decl_count; ++i) {
 
 			// Load argument index into a quad
 			struct mCc_tac_quad_literal *i_lit = malloc(sizeof(*i_lit));
