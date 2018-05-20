@@ -193,6 +193,14 @@ static void mCc_asm_print_bin_op(struct mCc_tac_quad *quad,FILE *out){
             fprintf(out,"\tcmpl \t%d(%%ebp), %%eax\n",op2);
             fprintf(out,"\tsetne\t%%al\n");
             fprintf(out,"\tmovb\t%%al, %%eax\n");
+        case MCC_TAC_OP_BINARY_FLOAT_ADD:
+            break;
+        case MCC_TAC_OP_BINARY_FLOAT_SUB:
+            break;
+        case MCC_TAC_OP_BINARY_FLOAT_MUL:
+            break;
+        case MCC_TAC_OP_BINARY_FLOAT_DIV:
+            break;
     }
     fprintf(out,"\tmovl\t%%eax, %d(%%ebp)\n",result);
 
@@ -225,7 +233,7 @@ static void mCc_asm_print_jump_false(struct mCc_tac_quad *quad, FILE *out){
     fprintf(out,"\tjne\t.L%d\n",quad->result.label.num);
 }
 
-static void mCc_asm_print_load(struct mCc_tac_quad *quad, FILE *out){
+static void mCc_asm_handle_load(struct mCc_tac_quad *quad){
     int result=mCc_asm_get_stack_ptr_from_number(quad->result.ref.number);
     if (result == -1){
         current_param_pointer += 4;
@@ -269,7 +277,7 @@ static void mCc_asm_assembly_from_quad(struct mCc_tac_quad *quad, FILE *out)
         case MCC_TAC_QUAD_CALL:
             break;
         case MCC_TAC_QUAD_LOAD:
-            mCc_asm_print_load(quad, out);
+            mCc_asm_handle_load(quad);
             break;
         case MCC_TAC_QUAD_STORE:
             break;
