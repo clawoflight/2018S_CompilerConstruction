@@ -29,17 +29,23 @@ static void mCc_asm_test_print(FILE *out)
     }
 }
 
-
-static int mCc_asm_get_stack_ptr_from_number(int number){
-    for (int i = 0; i < current_elements_in_local_array; ++i){
-        if (position[i].tac_number == number)
-            return position[i].stack_ptr;
+static int mCc_asm_get_param_ptr_from_number(int number)
+{
+    for (int i = 0; i < current_elements_in_param_array; ++i){
+        if (position_param[i].tac_number == number)
+            return position_param[i].stack_ptr;
     }
     return -1;
 }
 
-static int mCc_asm_get_number_from_stack_pointer(int stack_ptr){
 
+static int mCc_asm_get_stack_ptr_from_number(int number)
+{
+    for (int i = 0; i < current_elements_in_local_array; ++i){
+        if (position[i].tac_number == number)
+            return position[i].stack_ptr;
+    }
+    return mCc_asm_get_param_ptr_from_number(number);
 }
 
 static void mCc_asm_print_assign_lit(struct mCc_tac_quad *quad, FILE *out)
