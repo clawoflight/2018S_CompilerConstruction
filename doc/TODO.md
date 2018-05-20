@@ -1,55 +1,30 @@
 # General Feedback Corrections:
 
-* only one Readme which contains 
-  * list of all required dependencies    
-  * instructions on how to build everything and execute unit / integration tests   
-  * a section listing known issues
-  
-* library symbols: Double check that all exported symbols of your library are prefixed. Have a look using nm -g --defined-only libmCc.so. If one of your symbols has no prefix, either add one or make it static.
+# Assignment 3
 
-* Update integration script: https://github.com/W4RH4WK/mCc/commit/d4d9fef8fc4e1e4f1d393b032dc2f26a4d6c70eb
 
-# Assignment 2 
+## Task 1 
+Implement Code Generation
+The task is to convert your TAC to assembly code which can be compiled with the GNU Assembler.
 
-## Task 0 
-~~integrate all the test inputs and test if all inputs are parsed correctly.~~
+## Task 2 
+Implement back-end compiler invocation.
 
-## Task 1
-~~Find out what symbol tables are and how they are typically used.~~
-
-~~Implement the creation of symbol tables.~~
-
-~~extend tests~~
-
-## Task 2
-~~Implement a check to detect uses of unknown functions in every scope~~
-
-~~Implement a check which ensures there is one function named main present. It should not take any parameters and return void.~~
-
-~~Implement a check which ensures that every function has a unique name. Also take the built-in functions into account.~~
-
-~~tests~~
+Now that we obtained assembly code we can convert it to an executable by running it through an assembler and linker. For this we'll simply pass it to GCC. This also allows us to attach the built-in functions, just pass the C source file to the compiler call.
+Double check whether the built-in functions provided to your back-end compiler use the same calling convention.
+You should now have a working compiler which can convert valid mC input programs to executables.
 
 ## Task 3
-~~Implement a check which ensures that all execution paths of a function return a value, unless the function is declared to return void~~
 
-~~tests~~
+Polish the commandline parameter handling of your main compiler executable. At least the following flags must be provided:
+
+  * -h / --help to display usage information
+  * -v / --version to display version information
+  * -o / --output to specify the resulting executable
+
 
 ## Task 4
-~~Implement type checking. (also for return types)~~
+Extend your integration test runner to also execute the generated binary. Pass the content of the corresponding .stdin file to the binary and compare its output with the corresponding .stdout file. Matching output indicates success.
 
-~~tests~~
+Either use a temporary directory (mktemp) or the build directory to store the integration test executables.
 
-## Task 5 
-Implement the conversion from AST (including symbol tables) to three-address code (TAC).
-
-Implement a way to output the generated TAC~~
-
-tests
-
-## Bonus Task
-Implement some form of trace output for the type checking process. 
-
-Provide an executable to dump symbol tables in a human readable format.
-
-Use static single assignment (SSA).
