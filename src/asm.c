@@ -36,15 +36,6 @@ static void mCc_asm_test_print(FILE *out)
     }
 }
 
-static int mCc_asm_get_param_ptr_from_number(int number)
-{
-    for (int i = 0; i < current_elements_in_param_array; ++i){
-        if (position_param[i].tac_number == number)
-            return position_param[i].stack_ptr;
-    }
-    return -1;
-}
-
 
 static int mCc_asm_get_stack_ptr_from_number(int number)
 {
@@ -52,7 +43,12 @@ static int mCc_asm_get_stack_ptr_from_number(int number)
         if (position[i].tac_number == number)
             return position[i].stack_ptr;
     }
-    return mCc_asm_get_param_ptr_from_number(number);
+    for (int i = 0; i < current_elements_in_param_array; ++i){
+        if (position_param[i].tac_number == number)
+            return position_param[i].stack_ptr;
+    }
+
+    return -1;
 }
 
 static void mCc_asm_print_assign_lit(struct mCc_tac_quad *quad, FILE *out)
@@ -214,7 +210,7 @@ static void mCc_asm_print_label(struct mCc_tac_quad *quad, FILE *out)
     }
     else {
         current_frame_pointer = 0;
-        current_param_pointer = 0;
+        current_param_pointer = 4;
         if (!first_function){
             fprintf(out, "\tleave\n");
             fprintf(out, "\tret\n");
@@ -243,13 +239,13 @@ static void mCc_asm_handle_load(struct mCc_tac_quad *quad){
         new_number.stack_ptr = current_param_pointer;
 
         position_param[current_elements_in_param_array++] = new_number;
-        result = current_param_pointer;
     }
 }
 
 static void mCc_asm_print_param(struct mCc_tac_quad *quad, FILE *out)
 {
-
+    int result = mCc_asm_get_stack_ptr_from_number(quad->arg1.number);
+    fprintf(out, "\tpushl\t%d(%%ebp)\n", result);
 }
 
 static void mCc_asm_assembly_from_quad(struct mCc_tac_quad *quad, FILE *out)
