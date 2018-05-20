@@ -93,7 +93,7 @@ static void mCc_asm_print_assign(struct mCc_tac_quad *quad,FILE *out){
         new_number.tac_number = quad->result.ref.number;
         new_number.stack_ptr = current_frame_pointer;
 
-        position_param[current_elements_in_local_array++] = new_number;
+        position[current_elements_in_local_array++] = new_number;
         result = current_frame_pointer;
     }
 
@@ -264,7 +264,33 @@ static void mCc_asm_print_return(struct mCc_tac_quad *quad, FILE * out){
 static void mCc_asm_print_param(struct mCc_tac_quad *quad, FILE *out)
 {
     int result = mCc_asm_get_stack_ptr_from_number(quad->arg1.number);
+    if (result == -1){
+        current_frame_pointer -= 4;
+        struct mCc_asm_stack_pos new_number;
+        new_number.tac_number = quad->result.ref.number;
+        new_number.stack_ptr = current_frame_pointer;
+
+        position[current_elements_in_local_array++] = new_number;
+        result = current_frame_pointer;
+    }
     fprintf(out, "\tpushl\t%d(%%ebp)\n", result);
+}
+
+static void mCc_asm_print_call(struct mCc_tac_quad *quad, FILE *out)
+{
+    int result = mCc_asm_get_stack_ptr_from_number(quad->arg1.number);
+
+    if (result == -1){
+        current_frame_pointer -= 4;
+        struct mCc_asm_stack_pos new_number;
+        new_number.tac_number = quad->arg1.number;
+        new_number.stack_ptr = current_frame_pointer;
+
+        position[current_elements_in_local_array++] = new_number;
+        result = current_frame_pointer;
+    }
+    fprintf(out, "\tcall\t%s\n", quad->result.label.str);
+    fprintf(out, "\tmovl\t%%eax, %d(%%ebp)\n", result);
 }
 
 static void mCc_asm_assembly_from_quad(struct mCc_tac_quad *quad, FILE *out)
@@ -297,6 +323,7 @@ static void mCc_asm_assembly_from_quad(struct mCc_tac_quad *quad, FILE *out)
             mCc_asm_print_param(quad, out);
             break;
         case MCC_TAC_QUAD_CALL:
+            mCc_asm_print_call(quad, out);
             break;
         case MCC_TAC_QUAD_LOAD:
             mCc_asm_handle_load(quad);
