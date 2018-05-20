@@ -18,7 +18,7 @@ static struct mCc_asm_stack_pos position_param[ARRAY_LENGTH];
 static int current_elements_in_local_array = 0;
 static int current_elements_in_param_array = 0;
 static int current_frame_pointer = 0;
-static int current_param_pointer = 0;
+static int current_param_pointer = 4;
 static bool first_function = true;
 
 static void mCc_asm_test_print(FILE *out)
