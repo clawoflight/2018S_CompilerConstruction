@@ -23,9 +23,16 @@ static bool first_function = true;
 
 static void mCc_asm_test_print(FILE *out)
 {
+    fprintf(out, "=============== Local Stack");
     for (int i = 0; i < current_elements_in_local_array; ++i){
         fprintf(out, "\nNumber: %d\nStack: %d\n",
             position[i].tac_number, position[i].stack_ptr);
+    }
+
+    fprintf(out, "=============== Param Stack");
+    for (int i = 0; i < current_elements_in_param_array; ++i){
+        fprintf(out, "\nNumber: %d\nStack: %d\n",
+                position_param[i].tac_number, position_param[i].stack_ptr);
     }
 }
 
