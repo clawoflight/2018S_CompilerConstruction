@@ -163,6 +163,7 @@ mCc_get_label_from_fun_name(struct mCc_ast_identifier *f_name)
 
 	struct mCc_tac_label label;
 	strcpy(label.str, f_name->id_value);
+    label.num=-1;                          // for assembly to distinguish if we have a label or func. name
 
 	return label;
 }

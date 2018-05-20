@@ -165,6 +165,10 @@ static void mCc_asm_print_bin_op(struct mCc_tac_quad *quad,FILE *out){
             fprintf(out,"\tsete\t%%al\n");
             fprintf(out,"\tmovzbl\t%%al, %%eax\n");
             break;
+        case MCC_TAC_OP_BINARY_NEQ:
+            fprintf(out,"\tcmpl \t%d(%%ebp), %%eax\n",op2);
+            fprintf(out,"\tsetne\t%%al\n");
+            fprintf(out," \tmovzbl\t%%al, %%eax\n");
     }
     fprintf(out,"\tmovl\t%%eax, %d(%%ebp)\n",result);
 
@@ -172,9 +176,11 @@ static void mCc_asm_print_bin_op(struct mCc_tac_quad *quad,FILE *out){
 
 static void mCc_asm_print_label(struct mCc_tac_quad *quad, FILE *out)
 {
-    //Check if it's a function
-    //TODO: additional checks required
-    if (quad->result.label.str){
+
+    if(quad->result.label.num > -1){
+        fprintf(out,".L%d:\n",quad->result.label.num);
+    }
+    else {
         current_frame_pointer = 0;
         if (!first_function){
             fprintf(out, "\tleave\n");
@@ -187,6 +193,12 @@ static void mCc_asm_print_label(struct mCc_tac_quad *quad, FILE *out)
         fprintf(out, "\tpushl\t%%ebp\n");
         fprintf(out, "\tmovl\t%%esp, %%ebp\n");
     }
+}
+
+static void mCc_asm_print_jump_false(struct mCc_tac_quad *quad, FILE *out){
+    int condition=mCc_asm_get_stack_ptr_from_number(quad->arg1.number);
+    fprintf(out,"\tcmpl\t$1, %d(%%ebp)\n",condition);           // compare always with true
+    fprintf(out,"\tjne\t.L%d\n",quad->result.label.num);
 }
 
 static void mCc_asm_assembly_from_quad(struct mCc_tac_quad *quad, FILE *out)
@@ -206,8 +218,10 @@ static void mCc_asm_assembly_from_quad(struct mCc_tac_quad *quad, FILE *out)
             mCc_asm_print_bin_op(quad,out);
             break;
         case MCC_TAC_QUAD_JUMP:
+            fprintf(out,"\tjmp\t.L%d\n",quad->result.label.num);
             break;
         case MCC_TAC_QUAD_JUMPFALSE:
+            mCc_asm_print_jump_false(quad,out);
             break;
         case MCC_TAC_QUAD_LABEL:
             mCc_asm_print_label(quad, out);
