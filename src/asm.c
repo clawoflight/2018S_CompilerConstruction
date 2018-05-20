@@ -152,7 +152,7 @@ static void mCc_asm_print_bin_op(struct mCc_tac_quad *quad,FILE *out){
             break;
         case MCC_TAC_OP_BINARY_DIV:
             fprintf(out,"\tcltd\n");
-            fprintf(out,"\tidivl\t%d(%Debp)\n",op2);
+            fprintf(out,"\tidivl\t%d(%%ebp)\n",op2);
             break;
         case MCC_TAC_OP_BINARY_LT:
             fprintf(out,"\tcmpl\t%d(%%ebp), %%eax\n",op2);
@@ -211,10 +211,7 @@ static void mCc_asm_print_label(struct mCc_tac_quad *quad, FILE *out)
     else {
         current_frame_pointer = 0;
         current_param_pointer = 4;
-        if (!first_function){
-            fprintf(out, "\tleave\n");
-            fprintf(out, "\tret\n");
-        }
+
         first_function = 0;
         fprintf(out, "\t.globl\t%s\n", quad->result.label.str);
         fprintf(out, "\t.type\t%s, @function\n", quad->result.label.str);
@@ -240,6 +237,28 @@ static void mCc_asm_handle_load(struct mCc_tac_quad *quad){
 
         position_param[current_elements_in_param_array++] = new_number;
     }
+}
+
+static void mCc_asm_print_return_void(struct mCc_tac_quad *quad, FILE * out){
+    if(current_param_pointer>4){ //parameter were initialized
+        fprintf(out,"\tpopl\t%%ebp\n");
+    }
+    else{   // no init param
+        fprintf(out, "\tleave\n");
+    }
+    fprintf(out, "\tret\n");
+}
+
+static void mCc_asm_print_return(struct mCc_tac_quad *quad, FILE * out){
+    int ret_val= mCc_asm_get_stack_ptr_from_number(quad->arg1.number);
+    fprintf(out,"\tmovl\t%d(%%ebp), %%eax\n",ret_val);
+    if(current_param_pointer>4){ //parameter
+        fprintf(out,"\tpopl\t%%ebp\n");
+    }
+    else{   //local
+        fprintf(out, "\tleave\n");
+    }
+    fprintf(out, "\tret\n");
 }
 
 static void mCc_asm_print_param(struct mCc_tac_quad *quad, FILE *out)
@@ -285,8 +304,10 @@ static void mCc_asm_assembly_from_quad(struct mCc_tac_quad *quad, FILE *out)
         case MCC_TAC_QUAD_STORE:
             break;
         case MCC_TAC_QUAD_RETURN:
+            mCc_asm_print_return(quad,out);
             break;
         case MCC_TAC_QUAD_RETURN_VOID:
+            mCc_asm_print_return_void(quad,out);
             break;
     }
 }
@@ -296,7 +317,6 @@ void mCc_asm_generate_assembly(struct mCc_tac_program *prog, FILE *out)
     for (unsigned int i = 0; i < prog->quad_count; ++i){
         mCc_asm_assembly_from_quad(prog->quads[i], out);
     }
-    fprintf(out, "\tleave\n");
-    fprintf(out, "\tret\n");
+    //TODO add in tac_builder: if a void function do not have a return than we also need a ret in assembly
     mCc_asm_test_print(out);
 }
