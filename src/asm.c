@@ -233,7 +233,7 @@ static void mCc_asm_print_load(struct mCc_tac_quad *quad, FILE *out){
         new_number.tac_number = quad->result.ref.number;
         new_number.stack_ptr = current_param_pointer;
 
-        position[current_elements_in_param_array++] = new_number;
+        position_param[current_elements_in_param_array++] = new_number;
         result = current_param_pointer;
     }
 }
