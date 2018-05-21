@@ -18,7 +18,8 @@ struct mCc_asm_stack_pos {
 	int stack_ptr;
 };
 
-void mCc_asm_generate_assembly(struct mCc_tac_program *prog, FILE *out);
+void mCc_asm_generate_assembly(struct mCc_tac_program *prog, FILE *out,
+                               char *source_filename);
 
 #ifdef __cplusplus
 }

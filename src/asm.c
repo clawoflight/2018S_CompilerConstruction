@@ -203,8 +203,8 @@ static void mCc_asm_print_label(struct mCc_tac_quad *quad, FILE *out)
 		current_param_pointer = 4;
 
 		first_function = 0;
-		fprintf(out, "\t.globl\t%s\n", quad->result.label.str);
-		fprintf(out, "\t.type\t%s, @function\n", quad->result.label.str);
+		fprintf(out, ".globl\t%s\n", quad->result.label.str);
+		fprintf(out, ".type\t%s, @function\n", quad->result.label.str);
 		fprintf(out, "%s:\n", quad->result.label.str);
 		fprintf(out, "\tpushl\t%%ebp\n");
 		fprintf(out, "\tmovl\t%%esp, %%ebp\n");
@@ -289,6 +289,10 @@ static void mCc_asm_print_call(struct mCc_tac_quad *quad, FILE *out)
 static void mCc_asm_assembly_from_quad(struct mCc_tac_quad *quad, FILE *out)
 {
 
+	if (quad->comment) {
+		fprintf(out, "; %s\n", quad->comment);
+	}
+
 	// fprintf(out, "type: %d\n", quad->type);
 	switch (quad->type) {
 	case MCC_TAC_QUAD_ASSIGN: mCc_asm_print_assign(quad, out); break;
@@ -309,8 +313,13 @@ static void mCc_asm_assembly_from_quad(struct mCc_tac_quad *quad, FILE *out)
 	}
 }
 
-void mCc_asm_generate_assembly(struct mCc_tac_program *prog, FILE *out)
+void mCc_asm_generate_assembly(struct mCc_tac_program *prog, FILE *out,
+                               char *source_filename)
 {
+	fprintf(out, ".file\t\"%s\"\n", source_filename);
+	// TODO print strings in .data segment
+	fprintf(out, ".text\n");
+
 	for (unsigned int i = 0; i < prog->quad_count; ++i) {
 		mCc_asm_assembly_from_quad(prog->quads[i], out);
 	}
