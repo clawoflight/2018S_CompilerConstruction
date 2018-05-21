@@ -16,8 +16,7 @@
 
 static void print_usage(const char *prg)
 {
-	printf("usage: %s [options] <FILE>\n\n",
-	       prg);
+	printf("usage: %s [options] <FILE>\n\n", prg);
 	puts("Options:");
 	printf("  <FILE>         Input file, or - for stdin\n");
 	printf("  --help         Print this message\n");
@@ -25,7 +24,8 @@ static void print_usage(const char *prg)
 	printf("  -o <FILE>      Path to generated executable, default is a.out\n");
 	printf("  --print-symtab Print the symbol tables\n");
 	printf("  --print-tac    Print the three-address code to the given path\n");
-	/* printf("  --print-asm    Print the assembler code to the given path\n"); */
+	/* printf("  --print-asm    Print the assembler code to the given path\n");
+	 */
 }
 
 static int compile(char *source, char *executable)
