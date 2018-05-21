@@ -1,7 +1,10 @@
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/wait.h>
 #include <libgen.h>
+#include <unistd.h>
 
 #include "mCc/ast.h"
 #include "mCc/ast_symtab_link.h"
@@ -18,6 +21,25 @@ void print_usage(const char *prg)
 	printf("  --print-tac    Print the three-address code to the given path\n");
 	printf("  --print-asm    Print the assembler code to the given path\n");
 	printf("  --help         Print this message\n");
+}
+
+int compile(char *source, char *executable)
+{
+	int pid;
+	if ((pid = fork()) == 0) {
+		execlp("gcc", "gcc", "-m32", source, "../src/mC_builtins.c", "-o", executable, (const char*) NULL);
+		// exec* only returns on error
+		perror("gcc");
+		exit(errno);
+	} else {
+		int wstatus;
+		if (waitpid(pid, &wstatus, 0) < 0) {
+			perror("waitpid");
+			return EXIT_FAILURE;
+		}
+		// return gcc's exit status
+		return WIFEXITED(wstatus) ? WEXITSTATUS(wstatus) : EXIT_FAILURE;
+	}
 }
 
 int main(int argc, char *argv[])
@@ -86,7 +108,7 @@ int main(int argc, char *argv[])
 			}
 		}
 	} else {
-        asm_out = fopen("default.s", "w");
+        asm_out = fopen("a.s", "w");
     }
 
 	struct mCc_ast_program *prog = NULL;
@@ -152,6 +174,7 @@ int main(int argc, char *argv[])
 
 	/* Assembler code generation */
     mCc_asm_generate_assembly(tac, asm_out, filename);
+	int exit_status = compile("a.s", "a.out");
 
 
 	/*    TODO
@@ -173,5 +196,5 @@ int main(int argc, char *argv[])
 	mCc_symtab_delete_all_scopes();
 	mCc_ast_delete_program(prog);
 
-	return EXIT_SUCCESS;
+	return exit_status;
 }
