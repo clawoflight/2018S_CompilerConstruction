@@ -13,13 +13,12 @@
 extern "C" {
 #endif
 
-struct mCc_asm_stack_pos{
-    int tac_number;
-    int stack_ptr;
+struct mCc_asm_stack_pos {
+	int tac_number;
+	int stack_ptr;
 };
 
 void mCc_asm_generate_assembly(struct mCc_tac_program *prog, FILE *out);
-
 
 #ifdef __cplusplus
 }
