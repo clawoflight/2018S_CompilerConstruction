@@ -33,7 +33,7 @@ static int compile(char *source, char *executable)
 	int pid;
 	if ((pid = fork()) == 0) {
 		execlp("gcc", "gcc", "-m32", source, "../src/mC_builtins.c", "-o",
-		       executable, (const char *)NULL);
+		       executable, (char *)NULL);
 		// exec* only returns on error
 		perror("gcc");
 		exit(errno);
@@ -177,6 +177,8 @@ int main(int argc, char *argv[])
 	}
 	if (print_st)
 		mCc_symtab_print_all_scopes(st_out);
+	if (st_out && st_out != stdout)
+		fclose(st_out);
 
 	/* type checking */
 	struct mCc_typecheck_result check_result =
@@ -204,9 +206,14 @@ int main(int argc, char *argv[])
 		mCc_ast_delete_program(prog);
 		return EXIT_FAILURE;
 	}
+	if (tac_out && tac_out != stdout)
+		fclose(tac_out);
 
 	/* Assembler code generation */
 	mCc_asm_generate_assembly(tac, asm_out, filename);
+
+	if (asm_out && asm_out != stdout)
+		fclose(asm_out);
 
 	int exit_status = EXIT_SUCCESS;
 	// Only compile if nothing was printed
@@ -220,13 +227,6 @@ int main(int argc, char *argv[])
 	 */
 
 	/* cleanup */
-	if (st_out && st_out != stdout)
-		fclose(st_out);
-	if (tac_out && tac_out != stdout)
-		fclose(tac_out);
-	if (asm_out && asm_out != stdout)
-		fclose(asm_out);
-
 	mCc_tac_program_delete(tac);
 	mCc_tac_free_global_string_array();
 	mCc_symtab_delete_all_scopes();

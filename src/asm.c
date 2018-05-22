@@ -23,15 +23,15 @@ static bool first_function = true;
 
 static void mCc_asm_test_print(FILE *out)
 {
-	fprintf(out, "=============== Local Stack");
+	fprintf(out, "#=============== Local Stack\n");
 	for (int i = 0; i < current_elements_in_local_array; ++i) {
-		fprintf(out, "\nNumber: %d\nStack: %d\n", position[i].tac_number,
+		fprintf(out, "\n#Number: %d\n#Stack: %d\n", position[i].tac_number,
 		        position[i].stack_ptr);
 	}
 
-	fprintf(out, "=============== Param Stack");
+	fprintf(out, "#=============== Param Stack\n");
 	for (int i = 0; i < current_elements_in_param_array; ++i) {
-		fprintf(out, "\nNumber: %d\nStack: %d\n", position_param[i].tac_number,
+		fprintf(out, "\n#Number: %d\n#Stack: %d\n", position_param[i].tac_number,
 		        position_param[i].stack_ptr);
 	}
 }
@@ -325,7 +325,8 @@ void mCc_asm_generate_assembly(struct mCc_tac_program *prog, FILE *out,
                                char *source_filename)
 {
 	fprintf(out, ".file\t\"%s\"\n", source_filename);
-	fprintf(out, ".data\n");
+	fprintf(out, ".text\n");
+	fprintf(out, ".section .rodata\n");
 	mCc_asm_print_string_literals(prog, out);
 	fprintf(out, ".text\n");
 
