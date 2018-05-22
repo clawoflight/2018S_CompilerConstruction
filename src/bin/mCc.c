@@ -18,14 +18,14 @@ static void print_usage(const char *prg)
 {
 	printf("usage: %s [options] <FILE>\n\n", prg);
 	puts("Options:");
-	printf("  <FILE>         Input file, or - for stdin\n");
-	printf("  --help         Print this message\n");
-	printf("  --version      Print the version\n");
-	printf("  -o <FILE>      Path to generated executable, default is a.out\n");
-	printf("  --print-symtab Print the symbol tables\n");
-	printf("  --print-tac    Print the three-address code to the given path\n");
-	/* printf("  --print-asm    Print the assembler code to the given path\n");
-	 */
+	printf("  <FILE>                   Input file, or - for stdin\n");
+	printf("  --help                   Print this message\n");
+	printf("  --version                Print the version\n");
+	printf("  -o <FILE>                Path to generated executable, default is a.out\n");
+	printf("  --print-symtab [FILE|-]  Print the symbol tables\n");
+	printf("  --print-tac    [FILE|-]  Print the three-address code to the given path\n");
+	printf("  --print-asm    [FILE|-]  Print the assembler code to the given path\n");
+	printf("\nPrinting anything disables compilation.\n");
 }
 
 static int compile(char *source, char *executable)
@@ -62,6 +62,7 @@ int main(int argc, char *argv[])
 	int print_tac = 0;
 
 	FILE *asm_out = fopen("a.s", "w");
+	int print_asm = 0;
 	if (!asm_out) {
 		perror("fopen");
 		return EXIT_FAILURE;
@@ -72,9 +73,9 @@ int main(int argc, char *argv[])
 		static struct option long_options[] = {
 			{ "help", no_argument, 0, 'h' },
 			{ "version", no_argument, 0, 'V' },
-			{ "print-tac", required_argument, 0, 't' },
-			{ "print-symtab", required_argument, 0, 's' },
-			/* { "print-asm", required_argument, 0, 'a' }, */
+			{ "print-tac", optional_argument, 0, 't' },
+			{ "print-symtab", optional_argument, 0, 's' },
+			{ "print-asm", optional_argument, 0, 'a' },
 			{ 0, 0, 0, 0 }
 		};
 		if ((c = getopt_long(argc, argv, "hVo:", long_options, NULL)) == -1)
@@ -93,7 +94,7 @@ int main(int argc, char *argv[])
 			// TODO
 			break;
 		case 't':
-			if (strcmp("-", optarg) == 0) {
+			if (!optarg || strcmp("-", optarg) == 0) {
 				tac_out = stdout;
 			} else if (!(tac_out = fopen(optarg, "w"))) {
 				perror("fopen");
@@ -102,7 +103,7 @@ int main(int argc, char *argv[])
 			print_tac = 1;
 			break;
 		case 's':
-			if (strcmp("-", optarg) == 0) {
+			if (!optarg || strcmp("-", optarg) == 0) {
 				st_out = stdout;
 			} else if (!(st_out = fopen(optarg, "w"))) {
 				perror("fopen");
@@ -110,17 +111,22 @@ int main(int argc, char *argv[])
 			}
 			print_st = 1;
 			break;
-			/* case 'a': */
-			/* 	if (strcmp("-", optarg) == 0) { */
-			/* 		asm_out = stdout; */
-			/* 	} else if (!(asm_out = fopen(optarg, "a"))) { */
-			/* 		perror("fopen"); */
-			/* 		return EXIT_FAILURE; */
-			/* 	} */
-			/* 	break; */
+		case 'a':
+			if (!optarg || strcmp("-", optarg) == 0) {
+				asm_out = stdout;
+			} else if (!(asm_out = fopen(optarg, "a"))) {
+				perror("fopen");
+				return EXIT_FAILURE;
+			}
+			print_asm = 1;
+			break;
 		}
 	}
 	// Now, first non-option arg is in argv[optind]
+	if (optind >= argc) {
+		fputs("Missing required positional argument: <FILE>\n", stderr);
+		return EXIT_FAILURE;
+	}
 
 	/* determine input source */
 	char *filename;
@@ -200,7 +206,11 @@ int main(int argc, char *argv[])
 
 	/* Assembler code generation */
 	mCc_asm_generate_assembly(tac, asm_out, filename);
-	int exit_status = compile("a.s", "a.out");
+
+	int exit_status = EXIT_SUCCESS;
+	// Only compile if nothing was printed
+	if (!(print_st || print_tac || print_asm))
+		exit_status = compile("a.s", "a.out");
 
 	/*    TODO
 	 * - do some optimisations
