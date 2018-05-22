@@ -52,10 +52,7 @@ static void mCc_tac_entry_from_declaration(struct mCc_ast_declaration *decl)
 {
 	struct mCc_tac_quad_entry entry;
 
-	if (decl->decl_type != MCC_AST_TYPE_STRING)
-		entry = mCc_tac_create_new_entry();
-	else
-		entry = mCc_tac_create_new_string();
+    entry = mCc_tac_create_new_entry();
 
 	decl->decl_id->symtab_ref->tac_tmp = entry;
 }
@@ -270,8 +267,10 @@ static int mCc_tac_entry_from_assg(struct mCc_tac_program *prog,
 		struct mCc_tac_quad_literal *lit_result =
 		    mCc_get_quad_literal(stmt->rhs_assgn->literal);
 		new_quad = mCc_tac_quad_new_assign_lit(lit_result, result);
-		if (stmt->rhs_assgn->literal->type == MCC_AST_LITERAL_TYPE_STRING)
-			mCc_tac_string_from_assgn(result, lit_result);
+		if (stmt->rhs_assgn->literal->type == MCC_AST_LITERAL_TYPE_STRING) {
+            struct mCc_tac_quad_entry string = mCc_tac_create_new_string();
+            mCc_tac_string_from_assgn(string, lit_result);
+        }
 	} else if (stmt->lhs_assgn) {
 		result_rhs = mCc_tac_from_expression(prog, stmt->rhs_assgn);
 		new_quad = mCc_tac_quad_new_store(result_lhs, result_rhs, result);
