@@ -37,7 +37,7 @@ static int compile(char *source, char *executable)
 		// exec* only returns on error
 		perror("gcc");
 		exit(errno);
-	} else {
+	} else { // parent
 		int wstatus;
 		if (waitpid(pid, &wstatus, 0) < 0) {
 			perror("waitpid");
@@ -68,6 +68,7 @@ int main(int argc, char *argv[])
 		perror("fopen");
 		return EXIT_FAILURE;
 	}
+	char *executable = "a.out";
 
 	while (1) {
 		int c;
@@ -92,7 +93,7 @@ int main(int argc, char *argv[])
 			// getopt prints the error message itself
 			return EXIT_FAILURE;
 		case 'o':
-			// TODO
+			executable = optarg;
 			break;
 		case 't':
 			if (!optarg || strcmp("-", optarg) == 0) {
@@ -209,6 +210,10 @@ int main(int argc, char *argv[])
 	if (tac_out && tac_out != stdout)
 		fclose(tac_out);
 
+	/*    TODO
+	 * - do some optimisations
+	 */
+
 	/* Assembler code generation */
 	mCc_asm_generate_assembly(tac, asm_out, filename);
 
@@ -218,13 +223,7 @@ int main(int argc, char *argv[])
 	int exit_status = EXIT_SUCCESS;
 	// Only compile if nothing was printed
 	if (!(print_st || print_tac || print_asm))
-		exit_status = compile("a.s", "a.out");
-
-	/*    TODO
-	 * - do some optimisations
-	 * - output assembly code
-	 * - invoke backend compiler
-	 */
+		exit_status = compile("a.s", executable);
 
 	/* cleanup */
 	mCc_tac_program_delete(tac);
