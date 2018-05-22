@@ -290,7 +290,7 @@ static void mCc_asm_assembly_from_quad(struct mCc_tac_quad *quad, FILE *out)
 {
 
 	if (quad->comment) {
-		fprintf(out, "; %s\n", quad->comment);
+		fprintf(out, "# %s\n", quad->comment);
 	}
 
 	// fprintf(out, "type: %d\n", quad->type);
