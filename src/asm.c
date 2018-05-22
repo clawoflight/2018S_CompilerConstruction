@@ -203,7 +203,7 @@ static void mCc_asm_print_label(struct mCc_tac_quad *quad, FILE *out)
 		current_param_pointer = 4;
 
 		first_function = 0;
-		fprintf(out, ".globl\t%s\n", quad->result.label.str);
+		fprintf(out, ".global\t%s\n", quad->result.label.str);
 		fprintf(out, ".type\t%s, @function\n", quad->result.label.str);
 		fprintf(out, "%s:\n", quad->result.label.str);
 		fprintf(out, "\tpushl\t%%ebp\n");
@@ -313,11 +313,20 @@ static void mCc_asm_assembly_from_quad(struct mCc_tac_quad *quad, FILE *out)
 	}
 }
 
+static void mCc_asm_print_string_literals(struct mCc_tac_program *prog, FILE *out)
+{
+	for (unsigned int i = 0; i < prog->string_literal_count; ++i) {
+		fprintf(out, "S%d:\n", prog->string_literals[i].number);
+		fprintf(out, ".string \"%s\"\n", prog->string_literals[i].str_value);
+	}
+}
+
 void mCc_asm_generate_assembly(struct mCc_tac_program *prog, FILE *out,
                                char *source_filename)
 {
 	fprintf(out, ".file\t\"%s\"\n", source_filename);
-	// TODO print strings in .data segment
+	fprintf(out, ".data\n");
+	mCc_asm_print_string_literals(prog, out);
 	fprintf(out, ".text\n");
 
 	for (unsigned int i = 0; i < prog->quad_count; ++i) {

@@ -136,6 +136,10 @@ struct mCc_tac_program {
 	unsigned int quad_count;
 	/// The quads contained in this program
 	struct mCc_tac_quad **quads;
+
+	/// String literals used in the program
+	struct mCc_tac_quad_entry *string_literals;
+	unsigned int string_literal_count;
 };
 
 /********************************** Quad Functions */

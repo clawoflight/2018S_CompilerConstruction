@@ -364,7 +364,7 @@ static int mCc_tac_from_function_def(struct mCc_tac_program *prog,
 			struct mCc_tac_quad_entry new_entry = mCc_tac_create_new_entry();
 			struct mCc_tac_quad *load_param = mCc_tac_quad_new_load(
 			    virtual_pointer_to_arguments, i_entry, new_entry);
-            
+
 			load_param->comment = "load param from stack to temporary";
 			if (mCc_tac_program_add_quad(prog, load_param))
 				return 1;
@@ -490,6 +490,9 @@ struct mCc_tac_program *mCc_tac_build(struct mCc_ast_program *prog)
 			return NULL;
 		}
 	}
+
+	tac->string_literals = global_string_arr;
+	tac->string_literal_count = global_string_count;
 
 	return tac;
 }
