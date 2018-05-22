@@ -55,6 +55,7 @@ int main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 
+	// Variables set by the command-line options
 	FILE *st_out = NULL; // symtab
 	int print_st = 0;
 
