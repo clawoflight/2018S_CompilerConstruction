@@ -183,10 +183,31 @@ static void mCc_asm_print_bin_op(struct mCc_tac_quad *quad, FILE *out)
         fprintf(out, "\tmovb\t%%al, %d(%%ebp)\n", result);
 		break;
 	case MCC_TAC_OP_BINARY_AND:
-		fprintf(out, "\tandl\t%d(%%ebp), %%eax\n", op2);
+		fprintf(out, "\tcmpb\t$0, %d(%%ebp)\n",op1);
+        fprintf(out,"\tje\t.L%d\n",quad->result.label.num);
+        fprintf(out,"\tcmpb\t$0, %d(%%ebp)\n",op2);
+        fprintf(out,"\tje\t.L%d\n",quad->result.label.num);
+        fprintf(out,"\tmovl\t$1, %%eax\n");
+        fprintf(out,"\tjmp .L%d\n",quad->result.label.num+1);
+        fprintf(out,".L%d:\n",quad->result.label.num);
+        fprintf(out,"\tmovl\t$0, %%eax\n");
+        fprintf(out,".L%d:\n",quad->result.label.num+1);
+        fprintf(out,"\tmovb\t%%al, %d(%%ebp)\n",result);
+        fprintf(out,"\tandb\t$1, %d(%%ebp)\n",result);
 		break;
 	case MCC_TAC_OP_BINARY_OR:
-		fprintf(out, "\torl\t%d(%%ebp), %%eax\n", op2);
+        fprintf(out,"cmpb $0, %d(%%ebp)\n",op1);
+        fprintf(out,"jne .L%d\n",quad->result.label.num);
+        fprintf(out,"cmpb $0, %d(%ebp)\n",op2);
+        fprintf(out,"je .L%d\n",quad->result.label.num+1);
+        fprintf(out,".L%d:\n",quad->result.label.num);
+        fprintf(out,"movl $1, %%eax\n");
+        fprintf(out,"jmp .L%d\n",quad->result.label.num+2);
+        fprintf(out,".L%d:\n",quad->result.label.num+1);
+        fprintf(out,"movl $0, %%eax\n");
+        fprintf(out,".L%d:\n",quad->result.label.num+2);
+        fprintf(out,"movb %%al, %d(%%ebp)\n",result);
+        fprintf(out,"andb $1, %d(%%ebp)\n",result);
 		break;
 	case MCC_TAC_OP_BINARY_EQ:
         fprintf(out, "\tmovzbl\t%d(%%ebp), %%eax\n", op1);
