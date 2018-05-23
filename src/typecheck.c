@@ -511,9 +511,9 @@ static inline bool mCc_check_function(struct mCc_ast_function_def *func)
 		}
 	}
 
-	if (func->func_type == MCC_AST_TYPE_VOID) {
+	if (func->func_type == MCC_AST_TYPE_VOID)
 		return (check_func_for_return && check_func);
-	}
+
 
 	if (!general_ret) {
 		typecheck_result.status = MCC_TYPECHECK_STATUS_ERROR;
