@@ -20,7 +20,6 @@ static int current_elements_in_param_array = 0;
 static int current_frame_pointer = 0;
 static int current_param_pointer = 4;
 static int var_count=0;
-static bool first_function = true;
 
 static void mCc_asm_test_print(FILE *out)
 {
@@ -37,18 +36,39 @@ static void mCc_asm_test_print(FILE *out)
 	}
 }
 
-static int mCc_asm_get_stack_ptr_from_number(int number)
+static struct mCc_asm_stack_pos mCc_asm_get_stack_ptr_from_number(int number)
 {
 	for (int i = 0; i < current_elements_in_local_array; ++i) {
 		if (position[i].tac_number == number)
-			return position[i].stack_ptr;
+			return position[i];
 	}
 	for (int i = 0; i < current_elements_in_param_array; ++i) {
 		if (position_param[i].tac_number == number)
-			return position_param[i].stack_ptr;
+			return position_param[i];
 	}
+	struct mCc_asm_stack_pos tmp;
+	tmp.tac_number = -1;
+	return tmp;
+}
 
-	return -1;
+static int mCc_asm_move_current_pointer(struct mCc_asm_stack_pos position,
+                                        int pointer)
+{
+    int ret = 0;
+    switch (position.lit_type){
+        case MCC_TAC_QUAD_LIT_INT:
+            ret = -4;
+        case MCC_TAC_QUAD_LIT_BOOL:
+            ret = -1;
+        case MCC_TAC_QUAD_LIT_FLOAT:
+        case MCC_TAC_QUAD_LIT_STR:
+        default:
+            ret = -4;
+    }
+    if (pointer <= 0)
+        return ret;
+    else
+        return -ret;
 }
 
 static void mCc_asm_print_assign_lit(struct mCc_tac_quad *quad, FILE *out)
@@ -56,26 +76,27 @@ static void mCc_asm_print_assign_lit(struct mCc_tac_quad *quad, FILE *out)
 	struct mCc_tac_quad_literal *lit;
 	lit = quad->literal;
 
-	int result = mCc_asm_get_stack_ptr_from_number(quad->result.ref.number);
+	struct mCc_asm_stack_pos result = mCc_asm_get_stack_ptr_from_number(quad->result.ref.number);
 
-	if (result == -1) {
-		current_frame_pointer -= 4;
-		struct mCc_asm_stack_pos new_number;
-		new_number.tac_number = quad->result.ref.number;
+	if (result.tac_number == -1) {
+        struct mCc_asm_stack_pos new_number;
+        new_number.lit_type = lit->type;
+        current_frame_pointer += mCc_asm_move_current_pointer(new_number, current_frame_pointer);
+        new_number.tac_number = quad->result.ref.number;
 		new_number.stack_ptr = current_frame_pointer;
 
+
 		position[current_elements_in_local_array++] = new_number;
-		result = current_frame_pointer;
+		result = new_number;
 	}
 
 	switch (lit->type) {
 	case MCC_TAC_QUAD_LIT_INT:
-		//  if ()
-		fprintf(out, "\tmovl\t$%d, %d(%%ebp)\n", lit->ival, result);
+		fprintf(out, "\tmovl\t$%d, %d(%%ebp)\n", lit->ival, result.stack_ptr);
 		break;
 	case MCC_TAC_QUAD_LIT_FLOAT: break;
 	case MCC_TAC_QUAD_LIT_BOOL:
-		fprintf(out, "\tmovl\t$%d, %d(%%ebp)\n", lit->bval ? 1 : 0, result);
+		fprintf(out, "\tmovl\t$%d, %d(%%ebp)\n", lit->bval ? 1 : 0, result.stack_ptr);
 		break;
 	case MCC_TAC_QUAD_LIT_STR: break;
 	}
@@ -83,123 +104,126 @@ static void mCc_asm_print_assign_lit(struct mCc_tac_quad *quad, FILE *out)
 
 static void mCc_asm_print_assign(struct mCc_tac_quad *quad, FILE *out)
 {
-	int result = mCc_asm_get_stack_ptr_from_number(quad->result.ref.number);
-	int source = mCc_asm_get_stack_ptr_from_number(quad->arg1.number);
+    struct mCc_asm_stack_pos result = mCc_asm_get_stack_ptr_from_number(quad->result.ref.number);
+    struct mCc_asm_stack_pos source = mCc_asm_get_stack_ptr_from_number(quad->arg1.number);
 
-	if (result == -1) {
-		current_frame_pointer -= 4;
+	if (result.tac_number == -1) {
+		current_frame_pointer += mCc_asm_move_current_pointer(source, current_frame_pointer);
 		struct mCc_asm_stack_pos new_number;
 		new_number.tac_number = quad->result.ref.number;
 		new_number.stack_ptr = current_frame_pointer;
+        new_number.lit_type = source.lit_type;
 
 		position[current_elements_in_local_array++] = new_number;
-		result = current_frame_pointer;
+		result = new_number;
 	}
 
-	fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n", source);
-	fprintf(out, "\tmovl\t%%eax, %d(%%ebp)\n", result);
+	fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n", source.stack_ptr);
+	fprintf(out, "\tmovl\t%%eax, %d(%%ebp)\n", result.stack_ptr);
 }
 
 static void mCc_asm_print_un_op(struct mCc_tac_quad *quad, FILE *out)
 {
-	int op1 = mCc_asm_get_stack_ptr_from_number(quad->arg1.number);
-	int result = mCc_asm_get_stack_ptr_from_number(quad->result.ref.number);
-	if (result == -1) {
-		current_frame_pointer -= 4;
+    struct mCc_asm_stack_pos op1 = mCc_asm_get_stack_ptr_from_number(quad->arg1.number);
+    struct mCc_asm_stack_pos result = mCc_asm_get_stack_ptr_from_number(quad->result.ref.number);
+	if (result.tac_number == -1) {
+		current_frame_pointer += mCc_asm_move_current_pointer(op1, current_frame_pointer);
 		struct mCc_asm_stack_pos new_number;
 		new_number.tac_number = quad->result.ref.number;
 		new_number.stack_ptr = current_frame_pointer;
+        new_number.lit_type = op1.lit_type;
 
 		position[current_elements_in_local_array++] = new_number;
-		result = current_frame_pointer;
+		result = new_number;
 	}
 	switch (quad->un_op) {
-	case MCC_TAC_OP_UNARY_NEG: fprintf(out, "\tnegl\t%d(%%ebp)\n", op1); break;
+	case MCC_TAC_OP_UNARY_NEG: fprintf(out, "\tnegl\t%d(%%ebp)\n", op1.stack_ptr); break;
 	case MCC_TAC_OP_UNARY_NOT: break;
 	}
 }
 
 static void mCc_asm_print_bin_op(struct mCc_tac_quad *quad, FILE *out)
 {
-	int result = mCc_asm_get_stack_ptr_from_number(quad->result.ref.number);
-	int op1 = mCc_asm_get_stack_ptr_from_number(quad->arg1.number);
-	int op2 = mCc_asm_get_stack_ptr_from_number(quad->arg2.number);
+    struct mCc_asm_stack_pos result = mCc_asm_get_stack_ptr_from_number(quad->result.ref.number);
+    struct mCc_asm_stack_pos op1 = mCc_asm_get_stack_ptr_from_number(quad->arg1.number);
+    struct mCc_asm_stack_pos op2 = mCc_asm_get_stack_ptr_from_number(quad->arg2.number);
 
-	if (result == -1) {
-		current_frame_pointer -= 4;
+	if (result.tac_number == -1) {
+		current_frame_pointer += mCc_asm_move_current_pointer(op1, current_frame_pointer);
 		struct mCc_asm_stack_pos new_number;
 		new_number.tac_number = quad->result.ref.number;
 		new_number.stack_ptr = current_frame_pointer;
+        new_number.lit_type = op1.lit_type;
 
 		position[current_elements_in_local_array++] = new_number;
-		result = current_frame_pointer;
+		result = new_number;
 	}
 
 
 	switch (quad->bin_op) {
 	case MCC_TAC_OP_BINARY_ADD:
-        fprintf(out, "\tmovl\t%d(%%ebp), %%edx\n", op1);
-		fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n", op2);
+        fprintf(out, "\tmovl\t%d(%%ebp), %%edx\n", op1.stack_ptr);
+		fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n", op2.stack_ptr);
 		fprintf(out, "\taddl\t%%edx,%%eax\n");
-        fprintf(out, "\tmovl\t%%eax, %d(%%ebp)\n", result);
+        fprintf(out, "\tmovl\t%%eax, %d(%%ebp)\n", result.stack_ptr);
 		break;
 	case MCC_TAC_OP_BINARY_SUB:
-        fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n", op1);
-		fprintf(out, "\tsubl\t%d(%%ebp), %%eax\n", op2);
-        fprintf(out, "\tmovl\t%%eax, %d(%%ebp)\n", result);
+        fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n", op1.stack_ptr);
+		fprintf(out, "\tsubl\t%d(%%ebp), %%eax\n", op2.stack_ptr);
+        fprintf(out, "\tmovl\t%%eax, %d(%%ebp)\n", result.stack_ptr);
 		break;
 	case MCC_TAC_OP_BINARY_MUL:
-        fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n", op1);
-		fprintf(out, "\timull\t%d(%%ebp), %%eax\n", op2);
-        fprintf(out, "\tmovl\t%%eax, %d(%%ebp)\n", result);
+        fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n", op1.stack_ptr);
+		fprintf(out, "\timull\t%d(%%ebp), %%eax\n", op2.stack_ptr);
+        fprintf(out, "\tmovl\t%%eax, %d(%%ebp)\n", result.stack_ptr);
 		break;
 	case MCC_TAC_OP_BINARY_DIV:
-        fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n", op1);
+        fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n", op1.stack_ptr);
 		fprintf(out, "\tcltd\n");
-		fprintf(out, "\tidivl\t%d(%%ebp)\n", op2);
-        fprintf(out, "\tmovl\t%%eax, %d(%%ebp)\n", result);
+		fprintf(out, "\tidivl\t%d(%%ebp)\n", op2.stack_ptr);
+        fprintf(out, "\tmovl\t%%eax, %d(%%ebp)\n", result.stack_ptr);
 		break;
 	case MCC_TAC_OP_BINARY_LT:
-        fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n", op1);
-		fprintf(out, "\tcmpl\t%d(%%ebp), %%eax\n", op2);
+        fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n", op1.stack_ptr);
+		fprintf(out, "\tcmpl\t%d(%%ebp), %%eax\n", op2.stack_ptr);
 		fprintf(out, "\tsetl\t%%al\n");
-		fprintf(out, "\tmovb\t%%al, %d(%%ebp)\n", result);
+		fprintf(out, "\tmovb\t%%al, %d(%%ebp)\n", result.stack_ptr);
 		break;
 	case MCC_TAC_OP_BINARY_GT:
-        fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n", op1);
-		fprintf(out, "\tcmpl\t%d(%%ebp), %%eax\n", op2);
+        fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n", op1.stack_ptr);
+		fprintf(out, "\tcmpl\t%d(%%ebp), %%eax\n", op2.stack_ptr);
 		fprintf(out, "\tsetg\t%%al\n");
-        fprintf(out, "\tmovb\t%%al, %d(%%ebp)\n", result);
+        fprintf(out, "\tmovb\t%%al, %d(%%ebp)\n", result.stack_ptr);
 		break;
 	case MCC_TAC_OP_BINARY_LEQ:
-        fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n", op1);
-		fprintf(out, "\tcmpl\t%d(%%ebp), %%eax\n", op2);
+        fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n", op1.stack_ptr);
+		fprintf(out, "\tcmpl\t%d(%%ebp), %%eax\n", op2.stack_ptr);
 		fprintf(out, "\tsetle\t%%al\n");
-        fprintf(out, "\tmovb\t%%al, %d(%%ebp)\n", result);
+        fprintf(out, "\tmovb\t%%al, %d(%%ebp)\n", result.stack_ptr);
 		break;
 	case MCC_TAC_OP_BINARY_GEQ:
-        fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n", op1);
-		fprintf(out, "\tcmpl\t%d(%%ebp), %%eax\n", op2);
+        fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n", op1.stack_ptr);
+		fprintf(out, "\tcmpl\t%d(%%ebp), %%eax\n", op2.stack_ptr);
 		fprintf(out, "\tsetge\t%%al\n");
-        fprintf(out, "\tmovb\t%%al, %d(%%ebp)\n", result);
+        fprintf(out, "\tmovb\t%%al, %d(%%ebp)\n", result.stack_ptr);
 		break;
 	case MCC_TAC_OP_BINARY_AND:
-		fprintf(out, "\tcmpb\t$0, %d(%%ebp)\n",op1);
+		fprintf(out, "\tcmpb\t$0, %d(%%ebp)\n",op1.stack_ptr);
         fprintf(out,"\tje\t.L%d\n",quad->result.label.num);
-        fprintf(out,"\tcmpb\t$0, %d(%%ebp)\n",op2);
+        fprintf(out,"\tcmpb\t$0, %d(%%ebp)\n",op2.stack_ptr);
         fprintf(out,"\tje\t.L%d\n",quad->result.label.num);
         fprintf(out,"\tmovl\t$1, %%eax\n");
         fprintf(out,"\tjmp .L%d\n",quad->result.label.num+1);
         fprintf(out,".L%d:\n",quad->result.label.num);
         fprintf(out,"\tmovl\t$0, %%eax\n");
         fprintf(out,".L%d:\n",quad->result.label.num+1);
-        fprintf(out,"\tmovb\t%%al, %d(%%ebp)\n",result);
-        fprintf(out,"\tandb\t$1, %d(%%ebp)\n",result);
+        fprintf(out,"\tmovb\t%%al, %d(%%ebp)\n",result.stack_ptr);
+        fprintf(out,"\tandb\t$1, %d(%%ebp)\n",result.stack_ptr);
 		break;
 	case MCC_TAC_OP_BINARY_OR:
-        fprintf(out,"cmpb $0, %d(%%ebp)\n",op1);
+        fprintf(out,"cmpb $0, %d(%%ebp)\n",op1.stack_ptr);
         fprintf(out,"jne .L%d\n",quad->result.label.num);
-        fprintf(out,"cmpb $0, %d(%%ebp)\n",op2);
+        fprintf(out,"cmpb $0, %d(%%ebp)\n",op2.stack_ptr);
         fprintf(out,"je .L%d\n",quad->result.label.num+1);
         fprintf(out,".L%d:\n",quad->result.label.num);
         fprintf(out,"movl $1, %%eax\n");
@@ -207,18 +231,18 @@ static void mCc_asm_print_bin_op(struct mCc_tac_quad *quad, FILE *out)
         fprintf(out,".L%d:\n",quad->result.label.num+1);
         fprintf(out,"movl $0, %%eax\n");
         fprintf(out,".L%d:\n",quad->result.label.num+2);
-        fprintf(out,"movb %%al, %d(%%ebp)\n",result);
-        fprintf(out,"andb $1, %d(%%ebp)\n",result);
+        fprintf(out,"movb %%al, %d(%%ebp)\n",result.stack_ptr);
+        fprintf(out,"andb $1, %d(%%ebp)\n",result.stack_ptr);
 		break;
 	case MCC_TAC_OP_BINARY_EQ:
-        fprintf(out, "\tmovzbl\t%d(%%ebp), %%eax\n", op1);
-		fprintf(out, "\tcmpb\t%d(%%ebp), %%eax\n", op2);
+        fprintf(out, "\tmovzbl\t%d(%%ebp), %%eax\n", op1.stack_ptr);
+		fprintf(out, "\tcmpb\t%d(%%ebp), %%eax\n", op2.stack_ptr);
 		fprintf(out, "\tsete\t%%al\n");
-        fprintf(out, "\tmovb\t%%al, %d(%%ebp)\n", result);
+        fprintf(out, "\tmovb\t%%al, %d(%%ebp)\n", result.stack_ptr);
 		break;
 	case MCC_TAC_OP_BINARY_NEQ:
-        fprintf(out, "\tmovzbl\t%d(%%ebp), %%eax\n", op1);
-		fprintf(out, "\tcmpl \t%d(%%ebp), %%eax\n", op2);
+        fprintf(out, "\tmovzbl\t%d(%%ebp), %%eax\n", op1.stack_ptr);
+		fprintf(out, "\tcmpl \t%d(%%ebp), %%eax\n", op2.stack_ptr);
 		fprintf(out, "\tsetne\t%%al\n");
 		fprintf(out, "\tmovb\t%%al, %%eax\n");
 	case MCC_TAC_OP_BINARY_FLOAT_ADD: break;
@@ -237,7 +261,6 @@ static void mCc_asm_print_label(struct mCc_tac_quad *quad, FILE *out)
 		current_frame_pointer = 0;
 		current_param_pointer = 4;
 
-		first_function = 0;
 		fprintf(out, ".global\t%s\n", quad->result.label.str);
 		fprintf(out, ".type\t%s, @function\n", quad->result.label.str);
 		fprintf(out, "%s:\n", quad->result.label.str);
@@ -260,20 +283,21 @@ static void mCc_asm_print_label(struct mCc_tac_quad *quad, FILE *out)
 
 static void mCc_asm_print_jump_false(struct mCc_tac_quad *quad, FILE *out)
 {
-	int condition = mCc_asm_get_stack_ptr_from_number(quad->arg1.number);
+    struct mCc_asm_stack_pos condition = mCc_asm_get_stack_ptr_from_number(quad->arg1.number);
 	fprintf(out, "\tcmpl\t$1, %d(%%ebp)\n",
-	        condition); // compare always with true
+	        condition.stack_ptr); // compare always with true
 	fprintf(out, "\tjne\t.L%d\n", quad->result.label.num);
 }
 
 static void mCc_asm_handle_load(struct mCc_tac_quad *quad)
 {
-	int result = mCc_asm_get_stack_ptr_from_number(quad->result.ref.number);
-	if (result == -1) {
-		current_param_pointer += 4;
-		struct mCc_asm_stack_pos new_number;
+    struct mCc_asm_stack_pos result = mCc_asm_get_stack_ptr_from_number(quad->result.ref.number);
+	if (result.tac_number == -1) {
+        struct mCc_asm_stack_pos new_number;
+        current_param_pointer += mCc_asm_move_current_pointer(new_number, current_param_pointer);
 		new_number.tac_number = quad->result.ref.number;
 		new_number.stack_ptr = current_param_pointer;
+        //TODO think about what lit type to assign here
 
 		position_param[current_elements_in_param_array++] = new_number;
 	}
@@ -291,8 +315,8 @@ static void mCc_asm_print_return_void(struct mCc_tac_quad *quad, FILE *out)
 
 static void mCc_asm_print_return(struct mCc_tac_quad *quad, FILE *out)
 {
-	int ret_val = mCc_asm_get_stack_ptr_from_number(quad->arg1.number);
-	fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n", ret_val);
+    struct mCc_asm_stack_pos ret_val = mCc_asm_get_stack_ptr_from_number(quad->arg1.number);
+	fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n", ret_val.stack_ptr);
 	if (current_param_pointer > 4) { // parameter
 		fprintf(out, "\tpopl\t%%ebp\n");
 	} else { // local
@@ -303,34 +327,35 @@ static void mCc_asm_print_return(struct mCc_tac_quad *quad, FILE *out)
 
 static void mCc_asm_print_param(struct mCc_tac_quad *quad, FILE *out)
 {
-	int result = mCc_asm_get_stack_ptr_from_number(quad->arg1.number);
-	if (result == -1) {
-		current_frame_pointer -= 4;
-		struct mCc_asm_stack_pos new_number;
+    struct mCc_asm_stack_pos result = mCc_asm_get_stack_ptr_from_number(quad->arg1.number);
+	if (result.tac_number == -1) {
+        struct mCc_asm_stack_pos new_number;
+        current_frame_pointer += mCc_asm_move_current_pointer(new_number, current_frame_pointer);
 		new_number.tac_number = quad->result.ref.number;
 		new_number.stack_ptr = current_frame_pointer;
+        //TODO think about what lit type to assign here
 
 		position[current_elements_in_local_array++] = new_number;
-		result = current_frame_pointer;
+		result = new_number;
 	}
-	fprintf(out, "\tpushl\t%d(%%ebp)\n", result);
+	fprintf(out, "\tpushl\t%d(%%ebp)\n", result.stack_ptr);
 }
 
 static void mCc_asm_print_call(struct mCc_tac_quad *quad, FILE *out)
 {
-	int result = mCc_asm_get_stack_ptr_from_number(quad->arg1.number);
+    struct mCc_asm_stack_pos result = mCc_asm_get_stack_ptr_from_number(quad->arg1.number);
 
-	if (result == -1) {
-		current_frame_pointer -= 4;
-		struct mCc_asm_stack_pos new_number;
+	if (result.tac_number == -1) {
+        struct mCc_asm_stack_pos new_number;
+        current_frame_pointer += mCc_asm_move_current_pointer(new_number, current_frame_pointer);
 		new_number.tac_number = quad->arg1.number;
 		new_number.stack_ptr = current_frame_pointer;
-
+        //TODO WHAT TO DO HERE
 		position[current_elements_in_local_array++] = new_number;
-		result = current_frame_pointer;
+		result = new_number;
 	}
 	fprintf(out, "\tcall\t%s\n", quad->result.label.str);
-	fprintf(out, "\tmovl\t%%eax, %d(%%ebp)\n", result);
+	fprintf(out, "\tmovl\t%%eax, %d(%%ebp)\n", result.stack_ptr);
 }
 
 static void mCc_asm_assembly_from_quad(struct mCc_tac_quad *quad, FILE *out)

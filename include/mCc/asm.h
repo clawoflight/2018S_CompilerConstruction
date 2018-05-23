@@ -16,6 +16,7 @@ extern "C" {
 struct mCc_asm_stack_pos {
 	int tac_number;
 	int stack_ptr;
+    enum mCc_tac_quad_literal_type lit_type;
 };
 
 void mCc_asm_generate_assembly(struct mCc_tac_program *prog, FILE *out,
