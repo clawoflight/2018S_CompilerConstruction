@@ -373,9 +373,16 @@ static int mCc_tac_from_function_def(struct mCc_tac_program *prog,
 	//if there is an empty body for a void func
 	// add a return stmt at the end
 	if (!fun_def->body && fun_def->func_type == MCC_AST_TYPE_VOID)
-		fun_def->body = mCc_ast_new_statement_compound(mCc_ast_new_statement_return(NULL));
+		fun_def->body =
+				mCc_ast_new_statement_compound(mCc_ast_new_statement_return(NULL));
 
 	if (fun_def->body) {
+        if (fun_def->func_type == MCC_AST_TYPE_VOID &&
+				fun_def->body->compound_stmts[fun_def->body->compound_stmt_count-1]->type
+				!= MCC_AST_STATEMENT_TYPE_RET_VOID){
+            fun_def->body = mCc_ast_compound_statement_add(
+                    fun_def->body,
+                    mCc_ast_new_statement_return(NULL));}
 		if (mCc_tac_from_stmt(prog, fun_def->body)) {
 			return 1;
 		}
@@ -435,9 +442,10 @@ static int mCc_tac_from_stmt(struct mCc_tac_program *prog,
 		mCc_tac_from_expression(prog, stmt->expression);
 		return 0;
 	case MCC_AST_STATEMENT_TYPE_CMPND:
-		for (unsigned int i = 0; i < (stmt->compound_stmt_count); i++) {
-			if (mCc_tac_from_stmt(prog, stmt->compound_stmts[i]))
-				return 1;
+        for (unsigned int i = 0; i < (stmt->compound_stmt_count); i++) {
+            if (mCc_tac_from_stmt(prog, stmt->compound_stmts[i])){
+                return 1;
+            }
 		}
 		return 0;
 	}
