@@ -25,14 +25,14 @@ static void mCc_asm_test_print(FILE *out)
 {
 	fprintf(out, "#=============== Local Stack\n");
 	for (int i = 0; i < current_elements_in_local_array; ++i) {
-		fprintf(out, "\n#Number: %d\n#Stack: %d\n", position[i].tac_number,
-		        position[i].stack_ptr);
+		fprintf(out, "\n#Number: %d\n#Stack: %d\n#Enum Type: %d\n",
+                position[i].tac_number, position[i].stack_ptr, position[i].lit_type);
 	}
 
 	fprintf(out, "#=============== Param Stack\n");
 	for (int i = 0; i < current_elements_in_param_array; ++i) {
-		fprintf(out, "\n#Number: %d\n#Stack: %d\n", position_param[i].tac_number,
-		        position_param[i].stack_ptr);
+		fprintf(out, "\n#Number: %d\n#Stack: %d\n#Enum Type: %d\n", position_param[i].tac_number,
+		        position_param[i].stack_ptr,  position_param[i].lit_type);
 	}
 }
 
@@ -58,12 +58,17 @@ static int mCc_asm_move_current_pointer(struct mCc_asm_stack_pos position,
     switch (position.lit_type){
         case MCC_TAC_QUAD_LIT_INT:
             ret = -4;
+            break;
         case MCC_TAC_QUAD_LIT_BOOL:
             ret = -1;
+            break;
         case MCC_TAC_QUAD_LIT_FLOAT:
+            break;
         case MCC_TAC_QUAD_LIT_STR:
+            break;
         default:
             ret = -4;
+            break;
     }
     if (pointer <= 0)
         return ret;
