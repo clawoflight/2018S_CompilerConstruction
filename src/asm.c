@@ -249,8 +249,10 @@ static void mCc_asm_print_label(struct mCc_tac_quad *quad, FILE *out)
 			var_count=32;
 		}else if(quad->var_count<13&&quad->var_count>=9){
 			var_count=48;
-		}else if(quad->var_count<16&&quad->var_count>=13){
+		}else if(quad->var_count<17&&quad->var_count>=13){
 			var_count=64;
+		}else if(quad->var_count<21&&quad->var_count>=17){
+			var_count=80;
 		}
         fprintf(out, "\tsubl\t$%d, %%esp\n",var_count);
 	}
