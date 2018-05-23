@@ -336,6 +336,7 @@ static int mCc_tac_from_statement_while(struct mCc_tac_program *prog,
 static int mCc_tac_from_function_def(struct mCc_tac_program *prog,
                                      struct mCc_ast_function_def *fun_def)
 {
+	global_var_count=0;
 	struct mCc_tac_label label_fun =
 	    mCc_get_label_from_fun_name(fun_def->identifier);
 
@@ -389,6 +390,7 @@ static int mCc_tac_from_function_def(struct mCc_tac_program *prog,
 			return 1;
 		}
 	}
+	label_fun_quad->var_count=global_var_count;
 	return 0;
 }
 
@@ -515,7 +517,6 @@ struct mCc_tac_program *mCc_tac_build(struct mCc_ast_program *prog)
 
 	tac->string_literals = global_string_arr;
 	tac->string_literal_count = global_string_count;
-	tac->var_count=global_var_count;
 	return tac;
 }
 

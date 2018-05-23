@@ -243,6 +243,15 @@ static void mCc_asm_print_label(struct mCc_tac_quad *quad, FILE *out)
 		fprintf(out, "%s:\n", quad->result.label.str);
 		fprintf(out, "\tpushl\t%%ebp\n");
 		fprintf(out, "\tmovl\t%%esp, %%ebp\n");
+		if(quad->var_count<5&&quad->var_count!=0){
+			var_count=16;
+		}else if(quad->var_count<9&&quad->var_count>=5){
+			var_count=32;
+		}else if(quad->var_count<13&&quad->var_count>=9){
+			var_count=48;
+		}else if(quad->var_count<16&&quad->var_count>=13){
+			var_count=64;
+		}
         fprintf(out, "\tsubl\t$%d, %%esp\n",var_count);
 	}
 }
@@ -365,15 +374,6 @@ void mCc_asm_generate_assembly(struct mCc_tac_program *prog, FILE *out,
 	fprintf(out, ".section .rodata\n");
 	mCc_asm_print_string_literals(prog, out);
 	fprintf(out, ".text\n");
-    if(prog->var_count<5&&prog->var_count!=0){
-        var_count=16;
-    }else if(prog->var_count<9&&prog->var_count>=5){
-        var_count=32;
-    }else if(prog->var_count<13&&prog->var_count>=9){
-        var_count=48;
-    }else if(prog->var_count<16&&prog->var_count>=13){
-        var_count=64;
-    }
 	for (unsigned int i = 0; i < prog->quad_count; ++i) {
 		mCc_asm_assembly_from_quad(prog->quads[i], out);
 	}
