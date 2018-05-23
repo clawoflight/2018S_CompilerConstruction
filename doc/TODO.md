@@ -4,7 +4,7 @@
 
 # Specific Feedback Corrections
 
-- [ ] Move uthash.h to src/
+- [x] Move uthash.h to src/
 
 - [x] List all dependencies in README --> doxygen
 

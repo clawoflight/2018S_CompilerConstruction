@@ -28,7 +28,7 @@ pgen = generator(bison,
 
 # --------------------------------------------------------------------- LIBRARY
 
-mCc_inc = include_directories('include')
+mCc_inc = include_directories('include', 'src')
 
 mCc_src = [ 'src/ast.c',
             'src/ast_statements.c',
