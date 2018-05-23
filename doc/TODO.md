@@ -8,7 +8,7 @@
 
 - [ ] Make doxygen optional
 
-- [ ] Parser: segfault for "1 + 1;"
+- [x] Parser: segfault for "1 + 1;"
 
 Type checker -- missing:
 
