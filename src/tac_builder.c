@@ -15,6 +15,8 @@ static const unsigned int global_string_block_size = 10;
 static unsigned int global_string_alloc_size = 0;
 /// Number of entries currently in array
 static unsigned int global_string_count = 0;
+/// count variables for assembly
+static unsigned int global_var_count=0;
 
 /// All strings ever created, to use for generating assembly
 static struct mCc_tac_quad_entry *global_string_arr = NULL;
@@ -55,6 +57,7 @@ static void mCc_tac_entry_from_declaration(struct mCc_ast_declaration *decl)
     entry = mCc_tac_create_new_entry();
 
 	decl->decl_id->symtab_ref->tac_tmp = entry;
+	global_var_count++;
 }
 
 static struct mCc_tac_quad_entry
@@ -340,12 +343,11 @@ static int mCc_tac_from_function_def(struct mCc_tac_program *prog,
 	if (mCc_tac_program_add_quad(prog, label_fun_quad)) {
 		return 1;
 	};
-
 	// Copy arguments to new temporaries
 	struct mCc_tac_quad_entry virtual_pointer_to_arguments = { .number = -1 };
 	if (fun_def->para) {
 		for (int i = 0; i < fun_def->para->decl_count; ++i) {
-
+            global_var_count++;
 			// Load argument index into a quad
 			struct mCc_tac_quad_literal *i_lit = malloc(sizeof(*i_lit));
 			i_lit->type = MCC_TAC_QUAD_LIT_INT;
@@ -513,7 +515,7 @@ struct mCc_tac_program *mCc_tac_build(struct mCc_ast_program *prog)
 
 	tac->string_literals = global_string_arr;
 	tac->string_literal_count = global_string_count;
-
+	tac->var_count=global_var_count;
 	return tac;
 }
 

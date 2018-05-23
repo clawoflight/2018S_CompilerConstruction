@@ -137,6 +137,8 @@ struct mCc_tac_program {
 	/// The quads contained in this program
 	struct mCc_tac_quad **quads;
 
+	/// variable count for assembly
+	unsigned int var_count;
 	/// String literals used in the program
 	struct mCc_tac_quad_entry *string_literals;
 	unsigned int string_literal_count;
