@@ -367,7 +367,6 @@ void mCc_asm_generate_assembly(struct mCc_tac_program *prog, FILE *out,
 	for (unsigned int i = 0; i < prog->quad_count; ++i) {
 		mCc_asm_assembly_from_quad(prog->quads[i], out);
 	}
-	// TODO add in tac_builder: if a void function do not have a return than we
-	// also need a ret in assembly
+	// TODO need a ret in assembly
 	mCc_asm_test_print(out);
 }
