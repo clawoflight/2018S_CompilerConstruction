@@ -344,7 +344,6 @@ static int mCc_tac_from_function_def(struct mCc_tac_program *prog,
 	// Copy arguments to new temporaries
 	struct mCc_tac_quad_entry virtual_pointer_to_arguments = { .number = -1 };
 	if (fun_def->para) {
-		//for (int i = fun_def->para->decl_count - 1; i >= 0; --i) {
 		for (int i = 0; i < fun_def->para->decl_count; ++i) {
 
 			// Load argument index into a quad
@@ -450,10 +449,19 @@ mCc_tac_from_expression(struct mCc_tac_program *prog,
 
 	switch (exp->type) {
 	case MCC_AST_EXPRESSION_TYPE_LITERAL:
-		entry = mCc_tac_create_new_entry();
-		struct mCc_tac_quad_literal *lit = mCc_get_quad_literal(exp->literal);
-		struct mCc_tac_quad *lit_quad = mCc_tac_quad_new_assign_lit(lit, entry);
-		mCc_tac_program_add_quad(prog, lit_quad);
+
+		if (exp->literal->type != MCC_AST_LITERAL_TYPE_STRING){
+			struct mCc_tac_quad_literal *lit = mCc_get_quad_literal(exp->literal);
+			entry = mCc_tac_create_new_entry();
+			struct mCc_tac_quad *lit_quad = mCc_tac_quad_new_assign_lit(lit, entry);
+			mCc_tac_program_add_quad(prog, lit_quad);
+		} else {
+			struct mCc_tac_quad_literal *lit = mCc_get_quad_literal(exp->literal);
+			entry = mCc_tac_create_new_string();
+			mCc_tac_string_from_assgn(entry, lit);
+			struct mCc_tac_quad *lit_quad = mCc_tac_quad_new_assign_lit(lit, entry);
+			mCc_tac_program_add_quad(prog, lit_quad);
+		}
 		break;
 	case MCC_AST_EXPRESSION_TYPE_IDENTIFIER:
 		entry = exp->identifier->symtab_ref->tac_tmp;

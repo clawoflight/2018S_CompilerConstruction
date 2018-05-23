@@ -198,7 +198,7 @@ static void mCc_asm_print_bin_op(struct mCc_tac_quad *quad, FILE *out)
 	case MCC_TAC_OP_BINARY_OR:
         fprintf(out,"cmpb $0, %d(%%ebp)\n",op1);
         fprintf(out,"jne .L%d\n",quad->result.label.num);
-        fprintf(out,"cmpb $0, %d(%ebp)\n",op2);
+        fprintf(out,"cmpb $0, %d(%%ebp)\n",op2);
         fprintf(out,"je .L%d\n",quad->result.label.num+1);
         fprintf(out,".L%d:\n",quad->result.label.num);
         fprintf(out,"movl $1, %%eax\n");
