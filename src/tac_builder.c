@@ -370,6 +370,11 @@ static int mCc_tac_from_function_def(struct mCc_tac_program *prog,
 			fun_def->para->decl[i]->decl_id->symtab_ref->tac_tmp = new_entry;
 		}
 	}
+	//if there is an empty body for a void func
+	// add a return stmt at the end
+	if (!fun_def->body && fun_def->func_type == MCC_AST_TYPE_VOID)
+		fun_def->body = mCc_ast_new_statement_compound(mCc_ast_new_statement_return(NULL));
+
 	if (fun_def->body) {
 		if (mCc_tac_from_stmt(prog, fun_def->body)) {
 			return 1;
