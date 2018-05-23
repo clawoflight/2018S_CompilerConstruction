@@ -266,7 +266,7 @@ static void mCc_asm_print_label(struct mCc_tac_quad *quad, FILE *out)
 		fprintf(out, "%s:\n", quad->result.label.str);
 		fprintf(out, "\tpushl\t%%ebp\n");
 		fprintf(out, "\tmovl\t%%esp, %%ebp\n");
-		if(quad->var_count<5&&quad->var_count!=0){
+		if(quad->var_count<5){
 			var_count=16;
 		}else if(quad->var_count<9&&quad->var_count>=5){
 			var_count=32;

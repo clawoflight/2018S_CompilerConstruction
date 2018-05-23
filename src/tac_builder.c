@@ -57,7 +57,6 @@ static void mCc_tac_entry_from_declaration(struct mCc_ast_declaration *decl)
     entry = mCc_tac_create_new_entry();
 
 	decl->decl_id->symtab_ref->tac_tmp = entry;
-	global_var_count++;
 }
 
 static struct mCc_tac_quad_entry
@@ -270,6 +269,7 @@ static int mCc_tac_entry_from_assg(struct mCc_tac_program *prog,
 		struct mCc_tac_quad_literal *lit_result =
 		    mCc_get_quad_literal(stmt->rhs_assgn->literal);
 		new_quad = mCc_tac_quad_new_assign_lit(lit_result, result);
+		global_var_count++;
 		if (stmt->rhs_assgn->literal->type == MCC_AST_LITERAL_TYPE_STRING) {
             struct mCc_tac_quad_entry string = mCc_tac_create_new_string();
             mCc_tac_string_from_assgn(string, lit_result);
@@ -348,7 +348,7 @@ static int mCc_tac_from_function_def(struct mCc_tac_program *prog,
 	struct mCc_tac_quad_entry virtual_pointer_to_arguments = { .number = -1 };
 	if (fun_def->para) {
 		for (int i = 0; i < fun_def->para->decl_count; ++i) {
-            global_var_count++;
+            //global_var_count++;
 			// Load argument index into a quad
 			struct mCc_tac_quad_literal *i_lit = malloc(sizeof(*i_lit));
 			i_lit->type = MCC_TAC_QUAD_LIT_INT;
@@ -358,6 +358,7 @@ static int mCc_tac_from_function_def(struct mCc_tac_program *prog,
 			struct mCc_tac_quad_entry i_entry = mCc_tac_create_new_entry();
 			struct mCc_tac_quad *i_quad =
 			    mCc_tac_quad_new_assign_lit(i_lit, i_entry);
+			global_var_count++;
 			if (mCc_tac_program_add_quad(prog, i_quad))
 				return 1;
 
@@ -471,12 +472,14 @@ mCc_tac_from_expression(struct mCc_tac_program *prog,
 			struct mCc_tac_quad_literal *lit = mCc_get_quad_literal(exp->literal);
 			entry = mCc_tac_create_new_entry();
 			struct mCc_tac_quad *lit_quad = mCc_tac_quad_new_assign_lit(lit, entry);
+			global_var_count++;
 			mCc_tac_program_add_quad(prog, lit_quad);
 		} else {
 			struct mCc_tac_quad_literal *lit = mCc_get_quad_literal(exp->literal);
 			entry = mCc_tac_create_new_string();
 			mCc_tac_string_from_assgn(entry, lit);
 			struct mCc_tac_quad *lit_quad = mCc_tac_quad_new_assign_lit(lit, entry);
+			global_var_count++;
 			mCc_tac_program_add_quad(prog, lit_quad);
 		}
 		break;
