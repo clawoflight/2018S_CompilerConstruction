@@ -4,9 +4,11 @@
 
 # Specific Feedback Corrections
 
-- [ ] List all dependencies in README --> doxygen
+- [ ] Move uthash.h to src/
 
-- [ ] Make doxygen optional
+- [x] List all dependencies in README --> doxygen
+
+- [x] Make doxygen optional
 
 - [x] Parser: segfault for "1 + 1;"
 
