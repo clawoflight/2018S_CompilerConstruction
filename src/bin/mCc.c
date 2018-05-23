@@ -19,9 +19,9 @@ static void print_usage(const char *prg)
 	printf("usage: %s [options] <FILE>\n\n", prg);
 	puts("Options:");
 	printf("  <FILE>                   Input file, or - for stdin\n");
-	printf("  --help                   Print this message\n");
-	printf("  --version                Print the version\n");
-	printf("  -o <FILE>                Path to generated executable, default is a.out\n");
+	printf("  -h|--help                Print this message\n");
+	printf("  -v|--version             Print the version\n");
+	printf("  -o|--output <FILE>       Path to generated executable, default is a.out\n");
 	printf("  --print-symtab [FILE|-]  Print the symbol tables\n");
 	printf("  --print-tac    [FILE|-]  Print the three-address code to the given path\n");
 	printf("  --print-asm    [FILE|-]  Print the assembler code to the given path\n");
@@ -74,18 +74,19 @@ int main(int argc, char *argv[])
 		int c;
 		static struct option long_options[] = {
 			{ "help", no_argument, 0, 'h' },
-			{ "version", no_argument, 0, 'V' },
+			{ "version", no_argument, 0, 'v' },
 			{ "print-tac", optional_argument, 0, 't' },
 			{ "print-symtab", optional_argument, 0, 's' },
 			{ "print-asm", optional_argument, 0, 'a' },
+			{ "output", required_argument, 0, 'o' },
 			{ 0, 0, 0, 0 }
 		};
-		if ((c = getopt_long(argc, argv, "hVo:", long_options, NULL)) == -1)
+		if ((c = getopt_long(argc, argv, "hvo:", long_options, NULL)) == -1)
 			break;
 
 		switch (c) {
 		case 'h': print_usage(argv[0]); return EXIT_SUCCESS;
-		case 'V':
+		case 'v':
 			// TODO
 			puts("We don't have version numbers yet!");
 			return EXIT_SUCCESS;
