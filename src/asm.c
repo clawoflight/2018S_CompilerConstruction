@@ -305,6 +305,7 @@ static void mCc_asm_handle_load(struct mCc_tac_quad *quad)
 
 static void mCc_asm_print_return_void(struct mCc_tac_quad *quad, FILE *out)
 {
+	fprintf(out, "\tmovl\t$0, %%eax\t# return zero because of main\n");
 	if (current_param_pointer > 4) { // parameter were initialized
 		fprintf(out, "\tpopl\t%%ebp\n");
 	} else { // no init param
