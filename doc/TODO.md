@@ -19,6 +19,12 @@ Type checker -- missing:
     - [ ] last statement is an if-statement (with else)
     - [ ] last statement is an if-statement (without else)
 
+- [ ] Unit-tests for TAC, or at least explain why not
+
+- [ ] Uncomment assertions in tac.c
+
+- [ ] Minimize scope of warnin suppressing pragmas
+
 # Assignment 3
 
 ## Task 1
@@ -39,8 +45,8 @@ Type checker -- missing:
 
 ## Task 4
 
-- [ ] Extend integration tests to run executable and compare output.
+- [x] Extend integration tests to run executable and compare output.
 
-- [ ] Store executables in temp dir (mktemp(1)) or build dir.
+- [x] Store executables in temp dir (mktemp(1)) or build dir.
 
 
