@@ -48,9 +48,6 @@ struct mCc_tac_label mCc_tac_get_new_label()
 struct mCc_tac_quad *mCc_tac_quad_new_assign(struct mCc_tac_quad_entry arg1,
                                              struct mCc_tac_quad_entry result)
 {
-	// assert(arg1);
-	//	assert(result);
-
 	struct mCc_tac_quad *quad = malloc(sizeof(*quad));
 
 	if (!quad) {
@@ -68,9 +65,6 @@ struct mCc_tac_quad *
 mCc_tac_quad_new_assign_lit(struct mCc_tac_quad_literal *arg1,
                             struct mCc_tac_quad_entry result)
 {
-	// assert(arg1);
-	// assert(result);
-
 	struct mCc_tac_quad *quad = malloc(sizeof(*quad));
 
 	if (!quad) {
@@ -88,9 +82,6 @@ struct mCc_tac_quad *mCc_tac_quad_new_op_unary(enum mCc_tac_quad_unary_op op,
                                                struct mCc_tac_quad_entry arg1,
                                                struct mCc_tac_quad_entry result)
 {
-	// assert(arg1);
-	//	assert(result);
-
 	struct mCc_tac_quad *quad = malloc(sizeof(*quad));
 
 	if (!quad) {
@@ -109,10 +100,6 @@ struct mCc_tac_quad *mCc_tac_quad_new_op_binary(
     enum mCc_tac_quad_binary_op op, struct mCc_tac_quad_entry arg1,
     struct mCc_tac_quad_entry arg2, struct mCc_tac_quad_entry result)
 {
-	//	assert(arg1);
-	//	assert(arg2);
-	//	assert(result);
-
 	struct mCc_tac_quad *quad = malloc(sizeof(*quad));
 
 	if (!quad) {
@@ -161,7 +148,6 @@ struct mCc_tac_quad *
 mCc_tac_quad_new_jumpfalse(struct mCc_tac_quad_entry condition,
                            struct mCc_tac_label label)
 {
-	// assert(condition);
 	struct mCc_tac_quad *quad = malloc(sizeof(*quad));
 
 	if (!quad) {
@@ -192,9 +178,6 @@ struct mCc_tac_quad *mCc_tac_quad_new_label(struct mCc_tac_label label)
 
 struct mCc_tac_quad *mCc_tac_quad_new_param(struct mCc_tac_quad_entry value)
 {
-
-	//	assert(value);
-
 	struct mCc_tac_quad *quad = malloc(sizeof(*quad));
 
 	if (!quad) {
@@ -229,10 +212,6 @@ struct mCc_tac_quad *mCc_tac_quad_new_load(struct mCc_tac_quad_entry array,
                                            struct mCc_tac_quad_entry index,
                                            struct mCc_tac_quad_entry result)
 {
-	//	assert(array);
-	//	assert(index);
-	//	assert(result);
-
 	struct mCc_tac_quad *quad = malloc(sizeof(*quad));
 
 	if (!quad) {
@@ -252,11 +231,6 @@ struct mCc_tac_quad *mCc_tac_quad_new_store(struct mCc_tac_quad_entry index,
                                             struct mCc_tac_quad_entry value,
                                             struct mCc_tac_quad_entry array)
 {
-
-	//	assert(array);
-	//	assert(index);
-	//	assert(value);
-
 	struct mCc_tac_quad *quad = malloc(sizeof(*quad));
 
 	if (!quad) {

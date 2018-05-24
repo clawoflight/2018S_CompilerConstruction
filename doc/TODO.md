@@ -21,9 +21,9 @@ Type checker -- missing:
 
 - [ ] Unit-tests for TAC, or at least explain why not
 
-- [ ] Uncomment assertions in tac.c
+- [x] Uncomment assertions in tac.c
 
-- [ ] Minimize scope of warnin suppressing pragmas
+- [ ] Minimize scope of warning suppressing pragmas
 
 # Assignment 3
 
