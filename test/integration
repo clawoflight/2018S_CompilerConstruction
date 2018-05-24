@@ -17,6 +17,8 @@ readonly DIR=$(dirname "$(readlink -f "$0")")
 # Location containing examples.
 readonly EXAMPLES_DIR="${EXAMPLES_DIR:-$DIR/../doc/examples}"
 
+readonly OUT_DIR="$(mktemp -d)"
+
 # mC compiler binary.
 readonly MCC="${MCC:-./mCc}"
 
@@ -39,10 +41,22 @@ option_csv=false
 
 # ------------------------------------------------------------------- FUNCTIONS
 
+run_executable()
+{
+	local file=$1
+	local stdin=$2
+	local stdout=$3
+
+	$file <"$stdin" >"$OUT_DIR/tmp_out" 2>/dev/null || return 1
+
+	diff -qZ "$stdout" "$OUT_DIR/tmp_out" >/dev/null
+}
+
 run_compiler()
 {
 	local input=$1
-	\time -f "%e %M %x" "$MCC" "$input" 2>&1 | tail -n1
+	local fname=$(basename "$input")
+	\time -f "%e %M %x" -- "$MCC" --output "$OUT_DIR/${fname%.mC}" "$input" 2>&1 | tail -n1
 	return ${PIPESTATUS[0]}
 }
 
@@ -54,7 +68,7 @@ print_header_md()
 
 print_header_csv()
 {
-	echo "Input,Time [s],Memory [kB],Status"
+	echo "Input,Time [s],Memory [kB],Status,Exec Failed"
 }
 
 print_run_md()
@@ -62,10 +76,12 @@ print_run_md()
 	echo "$@" | awk '{ printf "%-40s   %8s s   %8s kB   ", $1, $2, $3; }'
 
 	# fancy status label
-	if [[ "$4" == "0" ]]; then
+	if [[ "$4" == "0" && "$5" == "0" ]]; then
 		echo -e "${Green}[ Ok ]${NC}"
-	else
-		echo -e "${Red}[Fail]${NC}"
+	elif [[ "$4" == "0" ]]; then
+		echo -e "${Red}[Exec]${NC}"
+        else
+		echo -e "${Red}[ CC ]${NC}"
 	fi
 }
 
@@ -179,8 +195,17 @@ print_header
 			flawless=false
 		fi
 
-		print_run "$example" $stats
+		exec_failed=0
+		if ! run_executable "$OUT_DIR/${example%.mC}" "$EXAMPLES_DIR/$example.stdin" "$EXAMPLES_DIR/$example.stdout"; then
+			flawless=false
+			exec_failed=1
+		fi
+
+		print_run "$example" $stats $exec_failed
 
 	done
+
+	rm -rf "$OUT_DIR"
+
 	$flawless
 )
