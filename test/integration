@@ -47,7 +47,8 @@ run_executable()
 	local stdin=$2
 	local stdout=$3
 
-	$file <"$stdin" >"$OUT_DIR/tmp_out" 2>/dev/null || return 1
+	$file <"$stdin" >"$OUT_DIR/tmp_out" 2>/dev/null |:
+	[[ ${PIPESTATUS[0]} -ne 0 ]] && return 1
 
 	diff -qZ "$stdout" "$OUT_DIR/tmp_out" >/dev/null
 }
