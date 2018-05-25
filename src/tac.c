@@ -385,7 +385,7 @@ static void mCc_tac_print_literal(struct mCc_tac_quad *self, FILE *out)
 		break;
 	case MCC_TAC_QUAD_LIT_BOOL:
 		fprintf(out, "\tt%d = %s\n", self->result.ref.number,
-		        self->literal->ival ? "true" : "false");
+		        self->literal->bval ? "true" : "false");
 		break;
 	case MCC_TAC_QUAD_LIT_STR:
 		fprintf(out, "\tt%d = \"%s\"\n", self->result.ref.number,

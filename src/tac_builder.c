@@ -29,6 +29,25 @@ static int mCc_tac_from_stmt(struct mCc_tac_program *prog,
 struct mCc_tac_quad_literal *
 mCc_get_quad_literal(struct mCc_ast_literal *literal);
 
+static enum mCc_tac_quad_literal_type
+	mCc_tac_type_from_ast_type(enum mCc_ast_type ast_type)
+{
+	switch (ast_type){
+		case MCC_AST_TYPE_BOOL:
+			return MCC_TAC_QUAD_LIT_BOOL;
+		case MCC_AST_TYPE_INT:
+			return MCC_TAC_QUAD_LIT_INT;
+		case MCC_AST_TYPE_FLOAT:
+			return MCC_TAC_QUAD_LIT_FLOAT;
+		case MCC_AST_TYPE_STRING:
+			return MCC_TAC_QUAD_LIT_STR;
+		case MCC_AST_TYPE_VOID:
+			return MCC_TAC_QUAD_LIT_VOID;
+		default:
+			return MCC_TAC_QUAD_LIT_VOID;
+	}
+}
+
 static int mCc_tac_string_from_assgn(struct mCc_tac_quad_entry entry,
                                      struct mCc_tac_quad_literal *lit)
 {
@@ -464,10 +483,10 @@ mCc_tac_from_expression(struct mCc_tac_program *prog,
 	assert(prog);
 	assert(exp);
 	struct mCc_tac_quad_entry entry;
+	entry.type = mCc_tac_type_from_ast_type(exp->type);
 
 	switch (exp->type) {
 	case MCC_AST_EXPRESSION_TYPE_LITERAL:
-
 		if (exp->literal->type != MCC_AST_LITERAL_TYPE_STRING){
 			struct mCc_tac_quad_literal *lit = mCc_get_quad_literal(exp->literal);
 			entry = mCc_tac_create_new_entry();

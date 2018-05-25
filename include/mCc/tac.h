@@ -73,7 +73,8 @@ enum mCc_tac_quad_literal_type {
 	MCC_TAC_QUAD_LIT_FLOAT,
 	MCC_TAC_QUAD_LIT_BOOL,
 	/// TODO maybe it would be better to store literals in the data segment?
-	MCC_TAC_QUAD_LIT_STR
+	MCC_TAC_QUAD_LIT_STR,
+	MCC_TAC_QUAD_LIT_VOID ///For error catching and void function catching
 };
 
 /// Literal type for flexibility
@@ -92,6 +93,7 @@ struct mCc_tac_quad_literal {
 struct mCc_tac_quad_entry {
 	int number; /// Temporary. -1 will be used as array pointer to params
 	char str_value[MCC_TAC_STRING_LEN]; /// (Optional)For Strings
+    enum mCc_tac_quad_literal_type type; /// (Optional)For Parameters
 };
 
 #define MCC_TAC_LABEL_LEN (4096)
