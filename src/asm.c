@@ -8,7 +8,6 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
-
 #include "mCc/asm.h"
 
 #define ARRAY_LENGTH 4096

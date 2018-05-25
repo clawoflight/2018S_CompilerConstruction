@@ -52,8 +52,7 @@ static int mCc_tac_string_from_assgn(struct mCc_tac_quad_entry entry,
                                      struct mCc_tac_quad_literal *lit)
 {
 	strcpy(entry.str_value, lit->strval);
-
-	if (global_string_count < global_string_alloc_size) {
+    if (global_string_count < global_string_alloc_size) {
 		global_string_arr[global_string_count++] = entry;
 		return 1;
 	}
@@ -292,6 +291,7 @@ static int mCc_tac_entry_from_assg(struct mCc_tac_program *prog,
 		if (stmt->rhs_assgn->literal->type == MCC_AST_LITERAL_TYPE_STRING) {
             struct mCc_tac_quad_entry string = mCc_tac_create_new_string();
             mCc_tac_string_from_assgn(string, lit_result);
+            printf("%d",string.number);
         }
 	} else if (stmt->lhs_assgn) {
 		result_rhs = mCc_tac_from_expression(prog, stmt->rhs_assgn);
@@ -299,6 +299,7 @@ static int mCc_tac_entry_from_assg(struct mCc_tac_program *prog,
 	} else {
 		result_rhs = mCc_tac_from_expression(prog, stmt->rhs_assgn);
 		new_quad = mCc_tac_quad_new_assign(result_rhs, result);
+        global_var_count++;
 	}
 	if (!new_quad || mCc_tac_program_add_quad(prog, new_quad))
 		return 1;
@@ -367,8 +368,7 @@ static int mCc_tac_from_function_def(struct mCc_tac_program *prog,
 	struct mCc_tac_quad_entry virtual_pointer_to_arguments = { .number = -1 };
 	if (fun_def->para) {
 		for (int i = 0; i < fun_def->para->decl_count; ++i) {
-            //global_var_count++;
-			// Load argument index into a quad
+           // Load argument index into a quad
 			struct mCc_tac_quad_literal *i_lit = malloc(sizeof(*i_lit));
 			i_lit->type = MCC_TAC_QUAD_LIT_INT;
 			if (!i_lit)
@@ -377,7 +377,7 @@ static int mCc_tac_from_function_def(struct mCc_tac_program *prog,
 			struct mCc_tac_quad_entry i_entry = mCc_tac_create_new_entry();
 			struct mCc_tac_quad *i_quad =
 			    mCc_tac_quad_new_assign_lit(i_lit, i_entry);
-			global_var_count++;
+            global_var_count++;
 			if (mCc_tac_program_add_quad(prog, i_quad))
 				return 1;
 

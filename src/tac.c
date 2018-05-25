@@ -25,7 +25,6 @@ struct mCc_tac_quad_entry mCc_tac_create_new_entry()
 struct mCc_tac_quad_entry mCc_tac_create_new_string()
 {
 	static int current_string = 0;
-
 	struct mCc_tac_quad_entry entry;
 
 	entry.number = current_string;
