@@ -152,10 +152,6 @@ int main(int argc, char *argv[])
 	{
 		struct mCc_parser_result result = mCc_parser_parse_file(in);
 		fclose(in);
-		if (result.program == NULL) {
-			fprintf(stderr, "Error in %s: Top-level is not a program!\n", argv[1]);
-			return EXIT_FAILURE;
-		}
 		if (result.status != MCC_PARSER_STATUS_OK) {
 			fprintf(stderr,
 			        "Error in %s at %d:%d - %d:%d at \e[4m%s\e[24m: %s\n",
@@ -165,6 +161,10 @@ int main(int argc, char *argv[])
 			free((void *)result.err_msg);
 			free((void *)result.err_text);
 
+			return EXIT_FAILURE;
+		}
+		if (result.program == NULL) {
+			fprintf(stderr, "Error in %s: Top-level is not a program!\n", argv[1]);
 			return EXIT_FAILURE;
 		}
 		prog = result.program;
