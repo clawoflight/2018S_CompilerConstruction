@@ -115,13 +115,13 @@ struct mCc_tac_quad *mCc_tac_quad_new_op_binary(
 
 	if(op==MCC_TAC_OP_BINARY_AND){
 		struct  mCc_tac_label label = mCc_tac_get_new_label();
-		quad->result.label=label;
+		quad->result.ref.binary_label=label;
 		quad->comment = "Needs a second label for assembly";
 		mCc_tac_get_new_label();		// assembler needs two labels
 	}
 	if(op==MCC_TAC_OP_BINARY_OR){
 		struct mCc_tac_label label=mCc_tac_get_new_label();
-		quad->result.label=label;
+		quad->result.ref.binary_label=label;
 		quad->comment = "Needs three labels for assembly";
 		mCc_tac_get_new_label();
 		mCc_tac_get_new_label();		// assembler needs three labels
