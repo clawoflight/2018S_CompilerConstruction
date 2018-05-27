@@ -248,7 +248,7 @@ static void mCc_asm_print_bin_op(struct mCc_tac_quad *quad, FILE *out)
         fprintf(out, "\tmovzbl\t%d(%%ebp), %%eax\n", op1.stack_ptr);
 		fprintf(out, "\tcmpl \t%d(%%ebp), %%eax\n", op2.stack_ptr);
 		fprintf(out, "\tsetne\t%%al\n");
-		fprintf(out, "\tmovb\t%%al, %%eax\n");
+		fprintf(out, "\tmovzbl\t%%al, %%eax\n");
 	case MCC_TAC_OP_BINARY_FLOAT_ADD: break;
 	case MCC_TAC_OP_BINARY_FLOAT_SUB: break;
 	case MCC_TAC_OP_BINARY_FLOAT_MUL: break;
