@@ -32,7 +32,6 @@ mCc_get_quad_literal(struct mCc_ast_literal *literal);
 static enum mCc_tac_quad_literal_type
 	mCc_tac_type_from_ast_type(enum mCc_ast_type ast_type)
 {
-    printf("Type: %d\n", ast_type);
 	switch (ast_type){
 		case MCC_AST_TYPE_BOOL:
 			return MCC_TAC_QUAD_LIT_BOOL;
@@ -209,7 +208,6 @@ mCc_tac_from_expression_call(struct mCc_tac_program *prog,
     retval.type = mCc_tac_type_from_ast_type(expr->node.computed_type);
 	struct mCc_tac_quad *jump_to_fun = mCc_tac_quad_new_call(label_fun, retval);
 	mCc_tac_program_add_quad(prog, jump_to_fun);
-    printf("CALL: %d\n", jump_to_fun->result.label.type);
 	return retval;
 }
 
@@ -300,7 +298,6 @@ static int mCc_tac_entry_from_assg(struct mCc_tac_program *prog,
 	} else {
 		result_rhs = mCc_tac_from_expression(prog, stmt->rhs_assgn);
 		new_quad = mCc_tac_quad_new_assign(result_rhs, result);
-        printf("IN ASSGN: %d\n",new_quad->result.ref.type);
         global_var_count++;
 	}
 	if (!new_quad || mCc_tac_program_add_quad(prog, new_quad))
@@ -486,7 +483,6 @@ mCc_tac_from_expression(struct mCc_tac_program *prog,
 	assert(exp);
 	struct mCc_tac_quad_entry entry;
 	//entry.type = mCc_tac_type_from_ast_type(exp->node.computed_type);
-    printf("Entry Type(expr): %d\n", entry.type);
 
 
 	switch (exp->type) {
@@ -520,7 +516,6 @@ mCc_tac_from_expression(struct mCc_tac_program *prog,
 		break;
 	case MCC_AST_EXPRESSION_TYPE_CALL_EXPR:
 		entry = mCc_tac_from_expression_call(prog, exp);
-        printf("Call Type: %d\n", entry.type);
 		break;
 	case MCC_AST_EXPRESSION_TYPE_ARR_SUBSCR:
 		entry = mCc_tac_from_expression_arr_subscr(prog, exp);

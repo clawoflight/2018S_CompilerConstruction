@@ -281,7 +281,6 @@ mCc_check_expression(struct mCc_ast_expression *expr)
 
 	case MCC_AST_EXPRESSION_TYPE_CALL_EXPR:
 		expr->node.computed_type = mCc_check_call_expr(expr);
-			printf("Typecheck: %d\n", expr->node.computed_type);
 		break;
 
 	default:
