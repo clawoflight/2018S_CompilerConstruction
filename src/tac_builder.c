@@ -369,7 +369,8 @@ static int mCc_tac_from_function_def(struct mCc_tac_program *prog,
 		for (int i = 0; i < fun_def->para->decl_count; ++i) {
            // Load argument index into a quad
 			struct mCc_tac_quad_literal *lit = malloc(sizeof(*lit));
-			lit->type = mCc_tac_type_from_ast_type(fun_def->para->decl[i]->type);
+			lit->type = mCc_tac_type_from_ast_type(fun_def->para->decl[i]->decl_type);
+
             lit->ival = i; //For the correct stack ptr in tac
 
 			struct mCc_tac_quad_entry entry = mCc_tac_create_new_entry();
