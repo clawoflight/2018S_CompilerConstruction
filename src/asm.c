@@ -298,6 +298,7 @@ static void mCc_asm_handle_load(struct mCc_tac_quad *quad)
     struct mCc_asm_stack_pos result = mCc_asm_get_stack_ptr_from_number(quad->result.ref.number);
 	if (result.tac_number == -1) {
         struct mCc_asm_stack_pos new_number;
+		new_number.lit_type = quad->result.ref.type;
         current_param_pointer += mCc_asm_move_current_pointer(new_number, current_param_pointer);
 		new_number.tac_number = quad->result.ref.number;
 		new_number.stack_ptr = current_param_pointer;

@@ -368,22 +368,22 @@ static int mCc_tac_from_function_def(struct mCc_tac_program *prog,
 	if (fun_def->para) {
 		for (int i = 0; i < fun_def->para->decl_count; ++i) {
            // Load argument index into a quad
-			struct mCc_tac_quad_literal *i_lit = malloc(sizeof(*i_lit));
-			i_lit->type = MCC_TAC_QUAD_LIT_INT;
-			if (!i_lit)
-				return 1;
-			i_lit->ival = i;
-			struct mCc_tac_quad_entry i_entry = mCc_tac_create_new_entry();
-			struct mCc_tac_quad *i_quad =
-			    mCc_tac_quad_new_assign_lit(i_lit, i_entry);
+			struct mCc_tac_quad_literal *lit = malloc(sizeof(*lit));
+			lit->type = mCc_tac_type_from_ast_type(fun_def->para->decl[i]->type);
+            lit->ival = i; //For the correct stack ptr in tac
+
+			struct mCc_tac_quad_entry entry = mCc_tac_create_new_entry();
+			struct mCc_tac_quad *quad =
+			    mCc_tac_quad_new_assign_lit(lit, entry);
             global_var_count++;
-			if (mCc_tac_program_add_quad(prog, i_quad))
+			if (mCc_tac_program_add_quad(prog, quad))
 				return 1;
 
 			// Load argument from stack into new temporary
 			struct mCc_tac_quad_entry new_entry = mCc_tac_create_new_entry();
+            entry.type = lit->type;
 			struct mCc_tac_quad *load_param = mCc_tac_quad_new_load(
-			    virtual_pointer_to_arguments, i_entry, new_entry);
+			    virtual_pointer_to_arguments, entry, new_entry);
 
 			load_param->comment = "load param from stack to temporary";
 			if (mCc_tac_program_add_quad(prog, load_param))
