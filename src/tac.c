@@ -57,6 +57,8 @@ struct mCc_tac_quad *mCc_tac_quad_new_assign(struct mCc_tac_quad_entry arg1,
 	quad->type = MCC_TAC_QUAD_ASSIGN;
 	quad->arg1 = arg1;
 	quad->result.ref = result;
+	printf("ASSGN TYPE AFTER: %d\n", result.type);
+	quad->result.ref.type = arg1.type;
 	return quad;
 }
 
@@ -74,6 +76,7 @@ mCc_tac_quad_new_assign_lit(struct mCc_tac_quad_literal *arg1,
 	quad->type = MCC_TAC_QUAD_ASSIGN_LIT;
 	quad->literal = arg1;
 	quad->result.ref = result;
+	quad->result.ref.type = arg1->type;
 	return quad;
 }
 
@@ -204,6 +207,7 @@ struct mCc_tac_quad *mCc_tac_quad_new_call(struct mCc_tac_label label,
 	quad->type = MCC_TAC_QUAD_CALL;
 	quad->arg1 = result;
 	quad->result.label = label;
+	quad->result.label.type = result.type;
 	return quad;
 }
 
@@ -511,6 +515,8 @@ int mCc_tac_program_add_quad(struct mCc_tac_program *self,
 {
 	assert(self);
 	assert(quad);
+
+	printf("ADD PROG: %d\n", quad->result.ref.type);
 
 	if (self->quad_count < self->quad_alloc_size) {
 		self->quads[self->quad_count++] = quad;

@@ -352,6 +352,7 @@ static void mCc_asm_print_call(struct mCc_tac_quad *quad, FILE *out)
 
 	if (result.tac_number == -1) {
         struct mCc_asm_stack_pos new_number;
+		new_number.lit_type = quad->result.ref.type;
         current_frame_pointer += mCc_asm_move_current_pointer(new_number, current_frame_pointer);
 		new_number.tac_number = quad->arg1.number;
 		new_number.stack_ptr = current_frame_pointer;
