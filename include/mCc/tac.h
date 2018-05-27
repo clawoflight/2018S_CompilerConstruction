@@ -94,6 +94,7 @@ struct mCc_tac_quad_literal {
 struct mCc_tac_label {
     char str[MCC_TAC_LABEL_LEN]; /// For function labels
     int num;                     /// For anonymous labels
+    enum mCc_tac_quad_literal_type type; /// (Optional)For correct stack allocation later
 };
 
 /// this struct is the used as the type of the quad entries
@@ -101,7 +102,7 @@ struct mCc_tac_label {
 struct mCc_tac_quad_entry {
 	int number; /// Temporary. -1 will be used as array pointer to params
 	char str_value[MCC_TAC_STRING_LEN]; /// (Optional)For Strings
-    enum mCc_tac_quad_literal_type type; /// (Optional)For Parameters
+    enum mCc_tac_quad_literal_type type; /// (Optional)For correct stack allocation later
     struct mCc_tac_label binary_label; /// (Optional)For bool bin_ops
 };
 

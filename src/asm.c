@@ -213,14 +213,14 @@ static void mCc_asm_print_bin_op(struct mCc_tac_quad *quad, FILE *out)
 		break;
 	case MCC_TAC_OP_BINARY_AND:
 		fprintf(out, "\tcmpb\t$0, %d(%%ebp)\n",op1.stack_ptr);
-        fprintf(out,"\tje\t.L%d\n",quad->result.label.num);
+        fprintf(out,"\tje\t.L%d\n",quad->result.ref.binary_label.num);
         fprintf(out,"\tcmpb\t$0, %d(%%ebp)\n",op2.stack_ptr);
-        fprintf(out,"\tje\t.L%d\n",quad->result.label.num);
+        fprintf(out,"\tje\t.L%d\n",quad->result.ref.binary_label.num);
         fprintf(out,"\tmovl\t$1, %%eax\n");
-        fprintf(out,"\tjmp .L%d\n",quad->result.label.num+1);
-        fprintf(out,".L%d:\n",quad->result.label.num);
+        fprintf(out,"\tjmp .L%d\n",quad->result.ref.binary_label.num+1);
+        fprintf(out,".L%d:\n",quad->result.ref.binary_label.num);
         fprintf(out,"\tmovl\t$0, %%eax\n");
-        fprintf(out,".L%d:\n",quad->result.label.num+1);
+        fprintf(out,".L%d:\n",quad->result.ref.binary_label.num+1);
         fprintf(out,"\tmovb\t%%al, %d(%%ebp)\n",result.stack_ptr);
         fprintf(out,"\tandb\t$1, %d(%%ebp)\n",result.stack_ptr);
 		break;
