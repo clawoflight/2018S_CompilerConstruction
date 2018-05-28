@@ -291,8 +291,8 @@ static void mCc_asm_print_label(struct mCc_tac_quad *quad, FILE *out)
 		fprintf(out, ".global\t%s\n", quad->result.label.str);
 		fprintf(out, ".type\t%s, @function\n", quad->result.label.str);
 		fprintf(out, "%s:\n", quad->result.label.str);
-		fprintf(out, "\tpushl\t%%ebp\n");
-		fprintf(out, "\tmovl\t%%esp, %%ebp\n");
+		fprintf(out, "\tpushl\t%%ebp\t# save ebp so it can be restored\n");
+		fprintf(out, "\tmovl\t%%esp, %%ebp\t# save stack in base so we can grow it if needed\n");
 		if(quad->var_count<5){
 			var_count=16;
 		}else if(quad->var_count<9&&quad->var_count>=5){
@@ -304,7 +304,8 @@ static void mCc_asm_print_label(struct mCc_tac_quad *quad, FILE *out)
 		}else if(quad->var_count<21&&quad->var_count>=17){
 			var_count=80;
 		}
-        fprintf(out, "\tsubl\t$%d, %%esp\n",var_count);
+		fprintf(out, "\tsubl\t$%d, %%esp\t# grow stack for local vars\n",var_count);
+		fprintf(out, "\t# begin function body\n");
 	}
 }
 
@@ -332,25 +333,19 @@ static void mCc_asm_handle_load(struct mCc_tac_quad *quad)
 
 static void mCc_asm_print_return_void(struct mCc_tac_quad *quad, FILE *out)
 {
-	fprintf(out, "\tmovl\t$0, %%eax\t# return zero because of main\n");
-	if (current_param_pointer > 4) { // parameter were initialized
-		fprintf(out, "\tpopl\t%%ebp\n");
-	} else { // no init param
-		fprintf(out, "\tleave\n");
-	}
-	fprintf(out, "\tret\n");
+	fprintf(out, "\tmovl\t$0, %%eax\t# return zero because of main --> exit code\n");
+	fprintf(out, "\t# epilogue (cleanup)\n");
+	fprintf(out, "\tleave\t # shrink stack and restore %%ebp\n");
+	fprintf(out, "\tret\n\n");
 }
 
 static void mCc_asm_print_return(struct mCc_tac_quad *quad, FILE *out)
 {
     struct mCc_asm_stack_pos ret_val = mCc_asm_get_stack_ptr_from_number(quad->arg1.number);
 	fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n", ret_val.stack_ptr);
-	if (current_param_pointer > 4) { // parameter
-		fprintf(out, "\tpopl\t%%ebp\n");
-	} else { // local
-		fprintf(out, "\tleave\n");
-	}
-	fprintf(out, "\tret\n");
+	fprintf(out, "\t# epilogue (cleanup)\n");
+	fprintf(out, "\tleave\t # shrink stack and restore %%ebp\n");
+	fprintf(out, "\tret\n\n");
 }
 
 static void mCc_asm_print_param(struct mCc_tac_quad *quad, FILE *out)
