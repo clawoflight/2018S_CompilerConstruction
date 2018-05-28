@@ -108,7 +108,9 @@ static void mCc_asm_print_assign_lit(struct mCc_tac_quad *quad, FILE *out)
 	case MCC_TAC_QUAD_LIT_BOOL:
 		fprintf(out, "\tmovb\t$%d, %d(%%ebp)\n", lit->bval ? 1 : 0, result.stack_ptr);
 		break;
-	case MCC_TAC_QUAD_LIT_STR: break;
+	case MCC_TAC_QUAD_LIT_STR:
+		fprintf(out, "\tmovl\t$S%d, %d(%%ebp)\n", lit->label_num, result.stack_ptr);
+		break;
 	}
 }
 

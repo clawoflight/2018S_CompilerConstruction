@@ -63,6 +63,7 @@ static int mCc_tac_string_from_assgn(struct mCc_tac_quad_entry entry,
 	                   global_string_alloc_size * sizeof(*tmp))) == NULL)
 		return 1;
 
+	lit->label_num = global_string_count;
 	global_string_arr = tmp;
 	global_string_arr[global_string_count++] = entry;
 	return 0;

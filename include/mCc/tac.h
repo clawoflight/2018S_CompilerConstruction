@@ -87,6 +87,7 @@ struct mCc_tac_quad_literal {
 		bool bval;
 		char *strval;
 	};
+	int label_num; ///< Optional, for strings
 };
 
 #define MCC_TAC_LABEL_LEN (4096)
