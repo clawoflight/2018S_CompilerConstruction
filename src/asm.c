@@ -148,12 +148,16 @@ static void mCc_asm_print_un_op(struct mCc_tac_quad *quad, FILE *out)
 		new_number.stack_ptr = current_frame_pointer;
         new_number.lit_type = op1.lit_type;
 
+		// TODO don't need to grow local array for this, right?
 		position[current_elements_in_local_array++] = new_number;
 		result = new_number;
 	}
 	switch (quad->un_op) {
 	case MCC_TAC_OP_UNARY_NEG: fprintf(out, "\tnegl\t%d(%%ebp)\n", op1.stack_ptr); break;
-	case MCC_TAC_OP_UNARY_NOT: break;
+	case MCC_TAC_OP_UNARY_NOT:
+		fprintf(out, "\tandl\t$1, %d(%%ebp) # mask to 1 bit\n", op1.stack_ptr);
+		fprintf(out, "\txorl\t$1, %d(%%ebp)\n", op1.stack_ptr);
+		break;
 	}
 }
 
@@ -316,9 +320,9 @@ static void mCc_asm_print_label(struct mCc_tac_quad *quad, FILE *out)
 static void mCc_asm_print_jump_false(struct mCc_tac_quad *quad, FILE *out)
 {
     struct mCc_asm_stack_pos condition = mCc_asm_get_stack_ptr_from_number(quad->arg1.number);
-	fprintf(out, "\tcmpl\t$1, %d(%%ebp)\n",
-	        condition.stack_ptr); // compare always with true
-	fprintf(out, "\tjne\t.L%d\n", quad->result.label.num);
+	fprintf(out, "\tcmpl\t$0, %d(%%ebp)\n",
+	        condition.stack_ptr); // compare with 0 because everything else is true
+	fprintf(out, "\tje\t.L%d\n", quad->result.label.num);
 }
 
 static void mCc_asm_handle_load(struct mCc_tac_quad *quad)
@@ -438,6 +442,6 @@ void mCc_asm_generate_assembly(struct mCc_tac_program *prog, FILE *out,
 	for (unsigned int i = 0; i < prog->quad_count; ++i) {
 		mCc_asm_assembly_from_quad(prog->quads[i], out);
 	}
-	// TODO need a ret in assembly
+
 	mCc_asm_test_print(out);
 }
