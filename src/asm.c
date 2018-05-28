@@ -206,64 +206,49 @@ static void mCc_asm_print_bin_op(struct mCc_tac_quad *quad, FILE *out)
         fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n", op1.stack_ptr);
 		fprintf(out, "\tcmpl\t%d(%%ebp), %%eax\n", op2.stack_ptr);
 		fprintf(out, "\tsetl\t%%al\n");
-		fprintf(out, "\tmovb\t%%al, %d(%%ebp)\n", result.stack_ptr);
+		fprintf(out, "\tmovl\t%%al, %d(%%ebp)\n", result.stack_ptr);
 		break;
 	case MCC_TAC_OP_BINARY_GT:
         fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n", op1.stack_ptr);
 		fprintf(out, "\tcmpl\t%d(%%ebp), %%eax\n", op2.stack_ptr);
 		fprintf(out, "\tsetg\t%%al\n");
-        fprintf(out, "\tmovb\t%%al, %d(%%ebp)\n", result.stack_ptr);
+        fprintf(out, "\tmovl\t%%al, %d(%%ebp)\n", result.stack_ptr);
 		break;
 	case MCC_TAC_OP_BINARY_LEQ:
         fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n", op1.stack_ptr);
 		fprintf(out, "\tcmpl\t%d(%%ebp), %%eax\n", op2.stack_ptr);
 		fprintf(out, "\tsetle\t%%al\n");
-        fprintf(out, "\tmovb\t%%al, %d(%%ebp)\n", result.stack_ptr);
+        fprintf(out, "\tmovl\t%%al, %d(%%ebp)\n", result.stack_ptr);
 		break;
 	case MCC_TAC_OP_BINARY_GEQ:
         fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n", op1.stack_ptr);
 		fprintf(out, "\tcmpl\t%d(%%ebp), %%eax\n", op2.stack_ptr);
 		fprintf(out, "\tsetge\t%%al\n");
-        fprintf(out, "\tmovb\t%%al, %d(%%ebp)\n", result.stack_ptr);
+        fprintf(out, "\tmovl\t%%al, %d(%%ebp)\n", result.stack_ptr);
 		break;
 	case MCC_TAC_OP_BINARY_AND:
-		fprintf(out, "\tcmpb\t$0, %d(%%ebp)\n",op1.stack_ptr);
-        fprintf(out,"\tje\t.L%d\n",quad->result.ref.binary_label.num);
-        fprintf(out,"\tcmpb\t$0, %d(%%ebp)\n",op2.stack_ptr);
-        fprintf(out,"\tje\t.L%d\n",quad->result.ref.binary_label.num);
-        fprintf(out,"\tmovl\t$1, %%eax\n");
-        fprintf(out,"\tjmp .L%d\n",quad->result.ref.binary_label.num+1);
-        fprintf(out,".L%d:\n",quad->result.ref.binary_label.num);
-        fprintf(out,"\tmovl\t$0, %%eax\n");
-        fprintf(out,".L%d:\n",quad->result.ref.binary_label.num+1);
-        fprintf(out,"\tmovb\t%%al, %d(%%ebp)\n",result.stack_ptr);
-        fprintf(out,"\tandb\t$1, %d(%%ebp)\n",result.stack_ptr);
+		fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n", op1.stack_ptr);
+		fprintf(out, "\tmovl\t%d(%%ebp), %%ebx\n", op2.stack_ptr);
+		fprintf(out, "\tandl\t%%eax, %%ebx\n");
+		fprintf(out, "\tmovl\t%%ebx, %d(%%ebp)\n", result.stack_ptr);
 		break;
 	case MCC_TAC_OP_BINARY_OR:
-        fprintf(out,"\tcmpb $0, %d(%%ebp)\n",op1.stack_ptr);
-        fprintf(out,"\tjne .L%d\n",quad->result.ref.binary_label.num);
-        fprintf(out,"\tcmpb $0, %d(%%ebp)\n",op2.stack_ptr);
-        fprintf(out,"\tje .L%d\n",quad->result.ref.binary_label.num+1);
-        fprintf(out,".L%d:\n",quad->result.ref.binary_label.num);
-        fprintf(out,"\tmovl $1, %%eax\n");
-        fprintf(out,"\tjmp .L%d\n",quad->result.ref.binary_label.num+2);
-        fprintf(out,".L%d:\n",quad->result.ref.binary_label.num+1);
-        fprintf(out,"\tmovl $0, %%eax\n");
-        fprintf(out,".L%d:\n",quad->result.ref.binary_label.num+2);
-        fprintf(out,"\tmovb %%al, %d(%%ebp)\n",result.stack_ptr);
-        fprintf(out,"\tandb $1, %d(%%ebp)\n",result.stack_ptr);
+		fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n", op1.stack_ptr);
+		fprintf(out, "\tmovl\t%d(%%ebp), %%ebx\n", op2.stack_ptr);
+		fprintf(out, "\torl\t%%eax, %%ebx\n");
+		fprintf(out, "\tmovl\t%%ebx, %d(%%ebp)\n", result.stack_ptr);
 		break;
 	case MCC_TAC_OP_BINARY_EQ:
-        fprintf(out, "\tmovzbl\t%d(%%ebp), %%eax\n", op1.stack_ptr);
-		fprintf(out, "\tcmpb\t%d(%%ebp), %%eax\n", op2.stack_ptr);
+        fprintf(out, "\tmovzll\t%d(%%ebp), %%eax\n", op1.stack_ptr);
+		fprintf(out, "\tcmpl\t%d(%%ebp), %%eax\n", op2.stack_ptr);
 		fprintf(out, "\tsete\t%%al\n");
-        fprintf(out, "\tmovb\t%%al, %d(%%ebp)\n", result.stack_ptr);
+        fprintf(out, "\tmovl\t%%al, %d(%%ebp)\n", result.stack_ptr);
 		break;
 	case MCC_TAC_OP_BINARY_NEQ:
-        fprintf(out, "\tmovzbl\t%d(%%ebp), %%eax\n", op1.stack_ptr);
+        fprintf(out, "\tmovzll\t%d(%%ebp), %%eax\n", op1.stack_ptr);
 		fprintf(out, "\tcmpl \t%d(%%ebp), %%eax\n", op2.stack_ptr);
 		fprintf(out, "\tsetne\t%%al\n");
-		fprintf(out, "\tmovzbl\t%%al, %%eax\n");
+		fprintf(out, "\tmovzll\t%%al, %%eax\n");
 		break;
 	case MCC_TAC_OP_BINARY_FLOAT_ADD:
 		/*fprintf(out,"\tfldl\t%d(%%ebp)\n",op1.stack_ptr);
