@@ -293,7 +293,8 @@ static int mCc_tac_entry_from_assg(struct mCc_tac_program *prog,
             mCc_tac_string_from_assgn(string, lit_result);
 			lit_result->label_num = string.number;
         }
-	} else if (stmt->lhs_assgn) {
+	}
+	if (stmt->lhs_assgn) {
 		result_rhs = mCc_tac_from_expression(prog, stmt->rhs_assgn);
 		new_quad = mCc_tac_quad_new_store(result_lhs, result_rhs, result);
 	} else {

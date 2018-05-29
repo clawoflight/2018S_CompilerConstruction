@@ -222,7 +222,6 @@ struct mCc_tac_quad *mCc_tac_quad_new_store(struct mCc_tac_quad_entry index,
                                             struct mCc_tac_quad_entry array)
 {
 	struct mCc_tac_quad *quad = malloc(sizeof(*quad));
-
 	if (!quad) {
 		return NULL;
 	}
