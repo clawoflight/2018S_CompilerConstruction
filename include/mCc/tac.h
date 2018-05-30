@@ -104,6 +104,7 @@ struct mCc_tac_quad_entry {
 	int number; /// Temporary. -1 will be used as array pointer to params
 	char str_value[MCC_TAC_STRING_LEN]; /// (Optional)For Strings
     enum mCc_tac_quad_literal_type type; /// (Optional)For correct stack allocation later
+    int array_size; /// (Optional)For correct Stack allocation
 };
 
 /**

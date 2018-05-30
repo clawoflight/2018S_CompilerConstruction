@@ -74,7 +74,11 @@ static void mCc_tac_entry_from_declaration(struct mCc_ast_declaration *decl)
 
     entry = mCc_tac_create_new_entry();
 
-	decl->decl_id->symtab_ref->tac_tmp = entry;
+    if(decl->decl_array_size){
+        global_var_count+=decl->decl_array_size->i_value;
+        entry.array_size = decl->decl_array_size->i_value;
+    }
+    decl->decl_id->symtab_ref->tac_tmp = entry;
 }
 
 static struct mCc_tac_quad_entry
@@ -163,6 +167,8 @@ mCc_tac_from_expression_arr_subscr(struct mCc_tac_program *prog,
 	// rec. create mCc_tac_program for array index
 	// create quad [load, result_of_prog]
 	struct mCc_tac_quad_entry result = mCc_tac_create_new_entry();
+    result.array_size = expr->identifier->symtab_ref->arr_size;
+    printf("size: %d\n",expr->identifier->symtab_ref->arr_size);
 	struct mCc_tac_quad_entry result1 = mCc_get_var_from_id(expr->array_id);
 	struct mCc_tac_quad_entry result2 =
 	    mCc_tac_from_expression(prog, expr->subscript_expr); // array subscript
@@ -274,7 +280,6 @@ static int mCc_tac_from_statement_if_else(struct mCc_tac_program *prog,
 static int mCc_tac_entry_from_assg(struct mCc_tac_program *prog,
                                    struct mCc_ast_statement *stmt)
 {
-
 	struct mCc_tac_quad *new_quad;
 	struct mCc_tac_quad_entry result = mCc_get_var_from_id(stmt->id_assgn);
 
@@ -486,7 +491,7 @@ mCc_tac_from_expression(struct mCc_tac_program *prog,
 	assert(exp);
 	struct mCc_tac_quad_entry entry;
 	//entry.type = mCc_tac_type_from_ast_type(exp->node.computed_type);
-
+	entry.array_size = 0;
 
 	switch (exp->type) {
 	case MCC_AST_EXPRESSION_TYPE_LITERAL:

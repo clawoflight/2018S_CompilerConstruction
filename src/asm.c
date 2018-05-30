@@ -331,6 +331,23 @@ static void mCc_asm_handle_load(struct mCc_tac_quad *quad)
 	}
 }
 
+static void mCc_asm_handle_store(struct mCc_tac_quad *quad, FILE *out){
+	struct mCc_asm_stack_pos index = mCc_asm_get_stack_ptr_from_number(quad->arg2.number);
+	struct mCc_asm_stack_pos result = mCc_asm_get_stack_ptr_from_number(quad->result.ref.number);
+	struct mCc_asm_stack_pos value = mCc_asm_get_stack_ptr_from_number(quad->arg1.number);
+	fprintf(out,"\tmovl\t%d(%%ebp), %%eax\n",index.stack_ptr);
+	fprintf(out,"\tmovl\t%d(%%ebp), %%edx\n",value.stack_ptr);
+    //tmp compile fix
+
+	int byte_to_add=quad->result.ref.array_size*4;
+    if(current_frame_pointer<0) {
+        fprintf(out, "\tmovl\t%%edx, %d(%%ebp,%%eax,4)\n", -(byte_to_add - current_frame_pointer));        //four byte value
+    }else{
+        fprintf(out, "\tmovl\t%%edx, %d(%%ebp,%%eax,4)\n", byte_to_add + current_param_pointer);        //four byte value
+    }
+
+}
+
 static void mCc_asm_print_return_void(struct mCc_tac_quad *quad, FILE *out)
 {
 	fprintf(out, "\tmovl\t$0, %%eax\t# return zero because of main --> exit code\n");
@@ -403,7 +420,7 @@ static void mCc_asm_assembly_from_quad(struct mCc_tac_quad *quad, FILE *out)
 	case MCC_TAC_QUAD_PARAM: mCc_asm_print_param(quad, out); break;
 	case MCC_TAC_QUAD_CALL: mCc_asm_print_call(quad, out); break;
 	case MCC_TAC_QUAD_LOAD: mCc_asm_handle_load(quad); break;
-	case MCC_TAC_QUAD_STORE: break;
+	case MCC_TAC_QUAD_STORE: mCc_asm_handle_store(quad,out);break;
 	case MCC_TAC_QUAD_RETURN: mCc_asm_print_return(quad, out); break;
 	case MCC_TAC_QUAD_RETURN_VOID: mCc_asm_print_return_void(quad, out); break;
 	}
