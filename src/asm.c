@@ -413,12 +413,17 @@ static void mCc_asm_print_param(struct mCc_tac_quad *quad, FILE *out)
         current_frame_pointer += mCc_asm_move_current_pointer(new_number, current_frame_pointer);
 		new_number.tac_number = quad->result.ref.number;
 		new_number.stack_ptr = current_frame_pointer;
-        //TODO think about what lit type to assign here
+        //TODO think about what lit type to assign here, if we need one
 
 		position[current_elements_in_local_array++] = new_number;
 		result = new_number;
 	}
-	fprintf(out, "\tpushl\t%d(%%ebp)\n", result.stack_ptr);
+    if (quad->arg1.array_size > 0){
+        fprintf(out, "\tleal\t%d(%%ebp), %%eax\n", -(((quad->arg1.array_size-1)*4) - result.stack_ptr));
+        fprintf(out, "\tpushl\t%%eax\n");
+    } else {
+        fprintf(out, "\tpushl\t%d(%%ebp)\n", result.stack_ptr);
+    }
 }
 
 static void mCc_asm_print_call(struct mCc_tac_quad *quad, FILE *out)
