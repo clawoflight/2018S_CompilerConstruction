@@ -317,19 +317,35 @@ static void mCc_asm_print_jump_false(struct mCc_tac_quad *quad, FILE *out)
 	fprintf(out, "\tje\t.L%d\n", quad->result.label.num);
 }
 
-static void mCc_asm_handle_load(struct mCc_tac_quad *quad)
+static void mCc_asm_handle_load(struct mCc_tac_quad *quad, FILE *out)
 {
     //Load can either be a param or a load from array
     if (quad->result.ref.array_size > 0){
+        struct mCc_asm_stack_pos index = mCc_asm_get_stack_ptr_from_number(quad->arg2.number);
         struct mCc_asm_stack_pos result = mCc_asm_get_stack_ptr_from_number(quad->result.ref.number);
+        struct mCc_asm_stack_pos array = mCc_asm_get_stack_ptr_from_number(quad->arg1.number);
+
         if (result.tac_number == -1) {
             struct mCc_asm_stack_pos new_number;
             new_number.lit_type = quad->result.ref.type;
-            current_param_pointer += mCc_asm_move_current_pointer(new_number, current_param_pointer);
+            current_frame_pointer += mCc_asm_move_current_pointer(new_number, current_frame_pointer);
             new_number.tac_number = quad->result.ref.number;
             new_number.stack_ptr = current_frame_pointer;
             position[current_elements_in_local_array++] = new_number;
+            result = new_number;
         }
+
+        fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n", index.stack_ptr);
+
+        //Else branch for params(not tested)
+        int byte_to_add = (quad->result.ref.array_size-1)*4;
+        if(current_frame_pointer<0) {
+            fprintf(out, "\tmovl\t%d(%%ebp,%%eax,4), %%eax\n", -(byte_to_add - array.stack_ptr));//four byte value
+        }else{
+            fprintf(out, "\tmovl\t%d(%%ebp,%%eax,4), %%eax\n", byte_to_add + array.stack_ptr);  //four byte value
+        }
+        fprintf(out, "\tmovl\t%%eax, %d(%%ebp)\n", result.stack_ptr);
+
     } else {
         struct mCc_asm_stack_pos result = mCc_asm_get_stack_ptr_from_number(quad->result.ref.number);
         if (result.tac_number == -1) {
@@ -443,7 +459,7 @@ static void mCc_asm_assembly_from_quad(struct mCc_tac_quad *quad, FILE *out)
 	case MCC_TAC_QUAD_LABEL: mCc_asm_print_label(quad, out); break;
 	case MCC_TAC_QUAD_PARAM: mCc_asm_print_param(quad, out); break;
 	case MCC_TAC_QUAD_CALL: mCc_asm_print_call(quad, out); break;
-	case MCC_TAC_QUAD_LOAD: mCc_asm_handle_load(quad); break;
+	case MCC_TAC_QUAD_LOAD: mCc_asm_handle_load(quad, out); break;
 	case MCC_TAC_QUAD_STORE: mCc_asm_handle_store(quad,out);break;
 	case MCC_TAC_QUAD_RETURN: mCc_asm_print_return(quad, out); break;
 	case MCC_TAC_QUAD_RETURN_VOID: mCc_asm_print_return_void(quad, out); break;
