@@ -168,7 +168,6 @@ mCc_tac_from_expression_arr_subscr(struct mCc_tac_program *prog,
 	// create quad [load, result_of_prog]
 	struct mCc_tac_quad_entry result = mCc_tac_create_new_entry();
     result.array_size = expr->identifier->symtab_ref->arr_size;
-    printf("size: %d\n",expr->identifier->symtab_ref->arr_size);
 	struct mCc_tac_quad_entry result1 = mCc_get_var_from_id(expr->array_id);
 	struct mCc_tac_quad_entry result2 =
 	    mCc_tac_from_expression(prog, expr->subscript_expr); // array subscript
@@ -390,6 +389,7 @@ static int mCc_tac_from_function_def(struct mCc_tac_program *prog,
 			// Load argument from stack into new temporary
 			struct mCc_tac_quad_entry new_entry = mCc_tac_create_new_entry();
             entry.type = lit->type;
+            new_entry.array_size = 0;
 			struct mCc_tac_quad *load_param = mCc_tac_quad_new_load(
 			    virtual_pointer_to_arguments, entry, new_entry);
 

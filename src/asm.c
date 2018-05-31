@@ -319,31 +319,55 @@ static void mCc_asm_print_jump_false(struct mCc_tac_quad *quad, FILE *out)
 
 static void mCc_asm_handle_load(struct mCc_tac_quad *quad)
 {
-    struct mCc_asm_stack_pos result = mCc_asm_get_stack_ptr_from_number(quad->result.ref.number);
-	if (result.tac_number == -1) {
-        struct mCc_asm_stack_pos new_number;
-		new_number.lit_type = quad->result.ref.type;
-        current_param_pointer += mCc_asm_move_current_pointer(new_number, current_param_pointer);
-		new_number.tac_number = quad->result.ref.number;
-		new_number.stack_ptr = current_param_pointer;
-        //TODO think about what lit type to assign here
-		position_param[current_elements_in_param_array++] = new_number;
-	}
+    //Load can either be a param or a load from array
+    if (quad->result.ref.array_size > 0){
+        struct mCc_asm_stack_pos result = mCc_asm_get_stack_ptr_from_number(quad->result.ref.number);
+        if (result.tac_number == -1) {
+            struct mCc_asm_stack_pos new_number;
+            new_number.lit_type = quad->result.ref.type;
+            current_param_pointer += mCc_asm_move_current_pointer(new_number, current_param_pointer);
+            new_number.tac_number = quad->result.ref.number;
+            new_number.stack_ptr = current_frame_pointer;
+            position[current_elements_in_local_array++] = new_number;
+        }
+    } else {
+        struct mCc_asm_stack_pos result = mCc_asm_get_stack_ptr_from_number(quad->result.ref.number);
+        if (result.tac_number == -1) {
+            struct mCc_asm_stack_pos new_number;
+            new_number.lit_type = quad->result.ref.type;
+            current_param_pointer += mCc_asm_move_current_pointer(new_number, current_param_pointer);
+            new_number.tac_number = quad->result.ref.number;
+            new_number.stack_ptr = current_param_pointer;
+            position_param[current_elements_in_param_array++] = new_number;
+        }
+    }
 }
 
 static void mCc_asm_handle_store(struct mCc_tac_quad *quad, FILE *out){
 	struct mCc_asm_stack_pos index = mCc_asm_get_stack_ptr_from_number(quad->arg2.number);
 	struct mCc_asm_stack_pos result = mCc_asm_get_stack_ptr_from_number(quad->result.ref.number);
 	struct mCc_asm_stack_pos value = mCc_asm_get_stack_ptr_from_number(quad->arg1.number);
+
+    if (result.tac_number == -1) {
+        current_frame_pointer += mCc_asm_move_current_pointer(value, current_frame_pointer);
+        struct mCc_asm_stack_pos new_number;
+        new_number.tac_number = quad->result.ref.number;
+        new_number.stack_ptr = current_frame_pointer;
+        new_number.lit_type = value.lit_type;
+        position[current_elements_in_local_array++] = new_number;
+        result = new_number;
+    }
 	fprintf(out,"\tmovl\t%d(%%ebp), %%eax\n",index.stack_ptr);
 	fprintf(out,"\tmovl\t%d(%%ebp), %%edx\n",value.stack_ptr);
-    //tmp compile fix
 
-	int byte_to_add=quad->result.ref.array_size*4;
+	//Else branch for params(not tested)
+	int byte_to_add = (quad->result.ref.array_size-1)*4;
     if(current_frame_pointer<0) {
-        fprintf(out, "\tmovl\t%%edx, %d(%%ebp,%%eax,4)\n", -(byte_to_add - current_frame_pointer));        //four byte value
+        fprintf(out, "\tmovl\t%%edx, %d(%%ebp,%%eax,4)\n", -(byte_to_add - current_frame_pointer));//four byte value
+		current_frame_pointer = -(byte_to_add - current_frame_pointer);
     }else{
-        fprintf(out, "\tmovl\t%%edx, %d(%%ebp,%%eax,4)\n", byte_to_add + current_param_pointer);        //four byte value
+        fprintf(out, "\tmovl\t%%edx, %d(%%ebp,%%eax,4)\n", byte_to_add + current_param_pointer);  //four byte value
+		current_param_pointer = byte_to_add + current_param_pointer;
     }
 
 }

@@ -213,7 +213,6 @@ struct mCc_tac_quad *mCc_tac_quad_new_load(struct mCc_tac_quad_entry array,
 	quad->result.ref = result;
 	quad->result.ref.type = index.type;
 
-
 	return quad;
 }
 
