@@ -166,14 +166,20 @@ mCc_tac_from_expression_arr_subscr(struct mCc_tac_program *prog,
 {
 	// rec. create mCc_tac_program for array index
 	// create quad [load, result_of_prog]
+
 	struct mCc_tac_quad_entry result = mCc_tac_create_new_entry();
-    result.array_size = expr->identifier->symtab_ref->arr_size;
-	struct mCc_tac_quad_entry result1 = mCc_get_var_from_id(expr->array_id);
-	struct mCc_tac_quad_entry result2 =
+	struct mCc_tac_quad_entry array = mCc_get_var_from_id(expr->array_id);
+    array.array_size = expr->identifier->symtab_ref->arr_size;
+    struct mCc_tac_quad_entry index =
 	    mCc_tac_from_expression(prog, expr->subscript_expr); // array subscript
 	struct mCc_tac_quad *array_subscr =
-	    mCc_tac_quad_new_load(result1, result2, result);
-	if (mCc_tac_program_add_quad(prog, array_subscr)) {
+	    mCc_tac_quad_new_load(array, index, result);
+
+    printf("result: %d\n", result.number);
+    printf("array: %d\n", array.number);
+    printf("index: %d\n", index.number);
+    printf("array_size: %d\n", array_subscr->arg1.array_size);
+    if (mCc_tac_program_add_quad(prog, array_subscr)) {
 		// TODO error handling
 	}
 	return result;

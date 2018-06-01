@@ -320,7 +320,8 @@ static void mCc_asm_print_jump_false(struct mCc_tac_quad *quad, FILE *out)
 static void mCc_asm_handle_load(struct mCc_tac_quad *quad, FILE *out)
 {
     //Load can either be a param or a load from array
-    if (quad->result.ref.array_size > 0){
+	printf("Load Array Size: %d\n", quad->arg1.array_size);
+    if (quad->arg1.array_size > 0){
         struct mCc_asm_stack_pos index = mCc_asm_get_stack_ptr_from_number(quad->arg2.number);
         struct mCc_asm_stack_pos result = mCc_asm_get_stack_ptr_from_number(quad->result.ref.number);
         struct mCc_asm_stack_pos array = mCc_asm_get_stack_ptr_from_number(quad->arg1.number);
@@ -338,7 +339,7 @@ static void mCc_asm_handle_load(struct mCc_tac_quad *quad, FILE *out)
         fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n", index.stack_ptr);
 
         //Else branch for params(not tested)
-        int byte_to_add = (quad->result.ref.array_size-1)*4;
+        int byte_to_add = (quad->arg1.array_size-1)*4;
         if(current_frame_pointer<0) {
             fprintf(out, "\tmovl\t%d(%%ebp,%%eax,4), %%eax\n", -(byte_to_add - array.stack_ptr));//four byte value
         }else{
@@ -382,6 +383,7 @@ static void mCc_asm_handle_store(struct mCc_tac_quad *quad, FILE *out){
 
 
     }
+	printf("Store Array Size: %d\n", quad->result.ref.array_size);
 	fprintf(out,"\tmovl\t%d(%%ebp), %%eax\n",index.stack_ptr);
 	fprintf(out,"\tmovl\t%d(%%ebp), %%edx\n",value.stack_ptr);
 
@@ -425,8 +427,8 @@ static void mCc_asm_print_param(struct mCc_tac_quad *quad, FILE *out)
 		position[current_elements_in_local_array++] = new_number;
 		result = new_number;
 	}
-    printf("Array_Size at params: %d\n", quad->arg1.array_size);
-    printf("Number at params: %d\n", quad->arg1.number);
+    printf("Array_Size at param: %d\n", quad->arg1.array_size);
+    printf("Number at param: %d\n", quad->arg1.number);
     if (quad->arg1.array_size > 0){
         fprintf(out, "\tleal\t%d(%%ebp), %%eax\n", -(((quad->arg1.array_size-1)*4) - result.stack_ptr));
         fprintf(out, "\tpushl\t%%eax\n");
