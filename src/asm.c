@@ -334,19 +334,25 @@ static void mCc_asm_handle_load(struct mCc_tac_quad *quad, FILE *out)
             position[current_elements_in_local_array++] = new_number;
             result = new_number;
         }
-
+		fprintf(out, "\t#load from an array begins\n");
         fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n", index.stack_ptr);
 
         //Else branch for params(not tested)
         int byte_to_add = (quad->arg1.array_size-1)*4;
-        if(current_frame_pointer<0) {
+        if(array.stack_ptr<0) {
             fprintf(out, "\tmovl\t%d(%%ebp,%%eax,4), %%eax\n", -(byte_to_add - array.stack_ptr));//four byte value
         }else{
-            fprintf(out, "\tmovl\t%d(%%ebp,%%eax,4), %%eax\n", byte_to_add + array.stack_ptr);  //four byte value
-        }
-        fprintf(out, "\tmovl\t%%eax, %d(%%ebp)\n", result.stack_ptr);
+			//array as param
+			fprintf(out, "\tleal\t0(,%%eax,4), %%edx\n");
+			fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n", array.stack_ptr);
+			fprintf(out, "\taddl\t%%edx, %%eax\n");
+			fprintf(out, "\tmovl\t(%%eax), %%eax\n");
 
-    } else {
+		}
+        fprintf(out, "\tmovl\t%%eax, %d(%%ebp)\n", result.stack_ptr);
+		fprintf(out, "\t#load from an array ends\n");
+
+	} else {
         struct mCc_asm_stack_pos result = mCc_asm_get_stack_ptr_from_number(quad->result.ref.number);
         if (result.tac_number == -1) {
             struct mCc_asm_stack_pos new_number;
@@ -377,21 +383,24 @@ static void mCc_asm_handle_store(struct mCc_tac_quad *quad, FILE *out){
 
         if(current_frame_pointer < 0)
             current_frame_pointer = -(byte_to_add - current_frame_pointer);
-        else
-            current_param_pointer = byte_to_add + current_param_pointer;
-
-
     }
-	fprintf(out,"\tmovl\t%d(%%ebp), %%eax\n",index.stack_ptr);
-	fprintf(out,"\tmovl\t%d(%%ebp), %%edx\n",value.stack_ptr);
+	fprintf(out, "\t#store into an array begins\n");
 
-	//Else branch for params(not tested)
+	fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n",index.stack_ptr);
 
-    if(current_frame_pointer < 0)
-        fprintf(out, "\tmovl\t%%edx, %d(%%ebp,%%eax,4)\n", -(byte_to_add - result.stack_ptr));//four byte value
-    else
-        fprintf(out, "\tmovl\t%%edx, %d(%%ebp,%%eax,4)\n", byte_to_add + result.stack_ptr);  //four byte value
+    if(result.stack_ptr < 0){
+		fprintf(out, "\tmovl\t%d(%%ebp), %%edx\n",value.stack_ptr);
+		fprintf(out, "\tmovl\t%%edx, %d(%%ebp,%%eax,4)\n", -(byte_to_add - result.stack_ptr));//four byte value
+	}
+    else{
+		fprintf(out, "\tleal\t0(,%%eax,4), %%edx\n");  //four byte value
+		fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n",result.stack_ptr);
+		fprintf(out, "\taddl\t%%eax, %%edx\n");
+		fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n",value.stack_ptr);
+		fprintf(out, "\tmovl\t%%eax, (%%edx)\n");
+	}
 
+	fprintf(out, "\t#store into an array ends\n");
 
 }
 
