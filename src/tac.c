@@ -18,6 +18,7 @@ struct mCc_tac_quad_entry mCc_tac_create_new_entry()
 
 	entry.number = current_var;
 	current_var++;
+    entry.array_size = 0;
 
 	return entry;
 }

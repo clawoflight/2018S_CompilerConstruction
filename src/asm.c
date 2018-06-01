@@ -327,7 +327,7 @@ static void mCc_asm_handle_load(struct mCc_tac_quad *quad, FILE *out)
 
         if (result.tac_number == -1) {
             struct mCc_asm_stack_pos new_number;
-            new_number.lit_type = quad->result.ref.type;
+            new_number.lit_type = array.lit_type;
             current_frame_pointer += mCc_asm_move_current_pointer(new_number, current_frame_pointer);
             new_number.tac_number = quad->result.ref.number;
             new_number.stack_ptr = current_frame_pointer;
@@ -418,6 +418,8 @@ static void mCc_asm_print_param(struct mCc_tac_quad *quad, FILE *out)
 		position[current_elements_in_local_array++] = new_number;
 		result = new_number;
 	}
+    printf("Array_Size at params: %d\n", quad->arg1.array_size);
+    printf("Number at params: %d\n", quad->arg1.number);
     if (quad->arg1.array_size > 0){
         fprintf(out, "\tleal\t%d(%%ebp), %%eax\n", -(((quad->arg1.array_size-1)*4) - result.stack_ptr));
         fprintf(out, "\tpushl\t%%eax\n");
