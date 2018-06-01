@@ -175,10 +175,6 @@ mCc_tac_from_expression_arr_subscr(struct mCc_tac_program *prog,
 	struct mCc_tac_quad *array_subscr =
 	    mCc_tac_quad_new_load(array, index, result);
 
-    printf("result: %d\n", result.number);
-    printf("array: %d\n", array.number);
-    printf("index: %d\n", index.number);
-    printf("array_size: %d\n", array_subscr->arg1.array_size);
     if (mCc_tac_program_add_quad(prog, array_subscr)) {
 		// TODO error handling
 	}
