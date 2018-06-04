@@ -29,6 +29,7 @@ struct mCc_tac_quad_entry mCc_tac_create_new_string()
 	struct mCc_tac_quad_entry entry;
 
 	entry.number = current_string;
+	entry.array_size = 0;
 	current_string++;
 
 	return entry;
