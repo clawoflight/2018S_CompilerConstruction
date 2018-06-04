@@ -293,17 +293,14 @@ static void mCc_asm_print_label(struct mCc_tac_quad *quad, FILE *out)
 		fprintf(out, "%s:\n", quad->result.label.str);
 		fprintf(out, "\tpushl\t%%ebp\t# save ebp so it can be restored\n");
 		fprintf(out, "\tmovl\t%%esp, %%ebp\t# save stack in base so we can grow it if needed\n");
-		if(quad->var_count<5){
-			var_count=16;
-		}else if(quad->var_count<9&&quad->var_count>=5){
-			var_count=32;
-		}else if(quad->var_count<13&&quad->var_count>=9){
-			var_count=48;
-		}else if(quad->var_count<17&&quad->var_count>=13){
-			var_count=64;
-		}else if(quad->var_count<21&&quad->var_count>=17){
-			var_count=80;
-		}
+        int i=1;
+        while(true){
+            if(quad->var_count<i){
+                var_count= (quad->var_count*4)-(quad->var_count*4)%16+16;
+                break;
+            }
+            i=i+4;
+        }
 		fprintf(out, "\tsubl\t$%d, %%esp\t# grow stack for local vars\n",var_count);
 		fprintf(out, "\t# begin function body\n");
 	}
