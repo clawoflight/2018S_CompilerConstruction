@@ -215,6 +215,7 @@ mCc_tac_from_expression_call(struct mCc_tac_program *prog,
     retval.type = mCc_tac_type_from_ast_type(expr->node.computed_type);
 	struct mCc_tac_quad *jump_to_fun = mCc_tac_quad_new_call(label_fun, expr->arguments ? expr->arguments->expression_count : (unsigned int) 0, retval);
 	mCc_tac_program_add_quad(prog, jump_to_fun);
+	global_var_count++;
 	return retval;
 }
 
