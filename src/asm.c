@@ -489,7 +489,7 @@ static void mCc_asm_assembly_from_quad(struct mCc_tac_quad *quad, FILE *out)
 static void mCc_asm_print_string_literals(struct mCc_tac_program *prog, FILE *out)
 {
 	for (unsigned int i = 0; i < prog->string_literal_count; ++i) {
-		fprintf(out, "S%d:\n", prog->string_literals[i].number);
+		fprintf(out, "S%d:\n", prog->string_literals[i].str_number);
 		fprintf(out, ".string \"%s\"\n", prog->string_literals[i].str_value);
 	}
 }

@@ -297,7 +297,7 @@ static int mCc_tac_entry_from_assg(struct mCc_tac_program *prog,
 		if (stmt->rhs_assgn->literal->type == MCC_AST_LITERAL_TYPE_STRING) {
             struct mCc_tac_quad_entry string = mCc_tac_create_new_string();
             mCc_tac_string_from_assgn(string, lit_result);
-			lit_result->label_num = string.number;
+			lit_result->label_num = string.str_number;
         }
 	}
 	if (stmt->lhs_assgn) {
@@ -507,7 +507,7 @@ mCc_tac_from_expression(struct mCc_tac_program *prog,
 			struct mCc_tac_quad_literal *lit = mCc_get_quad_literal(exp->literal);
 			entry = mCc_tac_create_new_string();
 			mCc_tac_string_from_assgn(entry, lit);
-			lit->label_num = entry.number;
+			lit->label_num = entry.str_number;
 			struct mCc_tac_quad *lit_quad = mCc_tac_quad_new_assign_lit(lit, entry);
 			global_var_count++;
 			mCc_tac_program_add_quad(prog, lit_quad);
