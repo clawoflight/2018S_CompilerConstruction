@@ -39,8 +39,9 @@ static void mCc_asm_test_print(FILE *out)
 static struct mCc_asm_stack_pos mCc_asm_get_stack_ptr_from_number(int number)
 {
 	for (int i = 0; i < current_elements_in_local_array; ++i) {
-		if (position[i].tac_number == number)
-			return position[i];
+		if (position[i].tac_number == number) {
+            return position[i];
+        }
 	}
 	for (int i = 0; i < current_elements_in_param_array; ++i) {
 		if (position_param[i].tac_number == number)
@@ -66,6 +67,7 @@ static int mCc_asm_move_current_pointer(struct mCc_asm_stack_pos position,
 			//ret = -8;
             break;
         case MCC_TAC_QUAD_LIT_STR:
+            ret =-4;
             break;
         default:
             ret = -4;
@@ -90,9 +92,7 @@ static void mCc_asm_print_assign_lit(struct mCc_tac_quad *quad, FILE *out)
         current_frame_pointer += mCc_asm_move_current_pointer(new_number, current_frame_pointer);
         new_number.tac_number = quad->result.ref.number;
 		new_number.stack_ptr = current_frame_pointer;
-
-
-		position[current_elements_in_local_array++] = new_number;
+        position[current_elements_in_local_array++] = new_number;
 		result = new_number;
 	}
 
@@ -120,14 +120,15 @@ static void mCc_asm_print_assign(struct mCc_tac_quad *quad, FILE *out)
     struct mCc_asm_stack_pos source = mCc_asm_get_stack_ptr_from_number(quad->arg1.number);
 
 	if (result.tac_number == -1) {
-		current_frame_pointer += mCc_asm_move_current_pointer(source, current_frame_pointer);
+        current_frame_pointer += mCc_asm_move_current_pointer(source, current_frame_pointer);
 		struct mCc_asm_stack_pos new_number;
 		new_number.tac_number = quad->result.ref.number;
 		new_number.stack_ptr = current_frame_pointer;
         new_number.lit_type = source.lit_type;
 		position[current_elements_in_local_array++] = new_number;
 		result = new_number;
-	}
+
+    }
 	/*if(source.lit_type==MCC_TAC_QUAD_LIT_FLOAT){
 		fprintf(out,"\tfldl\t%d(%%ebp)\n",source.stack_ptr);
 		fprintf(out,"\tfstpl\t%d(%%ebp)\n",result.stack_ptr);
