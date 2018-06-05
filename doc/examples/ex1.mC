@@ -43,5 +43,5 @@ void main(){
     print_nl();
     print("Primenumber ?");
     print_nl();
-    print(prim);
+    print_int(prim);
 }
