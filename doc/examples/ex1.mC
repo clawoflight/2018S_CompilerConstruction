@@ -12,7 +12,7 @@ void checkEvenOdd(int n, bool m){
 
 bool checkPrim(int n){
     int i;
-    i=0;
+    i=1;
     int p;
     p=0;
     while(i<=n){
