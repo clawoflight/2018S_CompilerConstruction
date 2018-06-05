@@ -181,6 +181,7 @@ struct mCc_tac_quad *mCc_tac_quad_new_param(struct mCc_tac_quad_entry value)
 }
 
 struct mCc_tac_quad *mCc_tac_quad_new_call(struct mCc_tac_label label,
+										   unsigned int param_count,
                                            struct mCc_tac_quad_entry result)
 {
 
@@ -195,6 +196,7 @@ struct mCc_tac_quad *mCc_tac_quad_new_call(struct mCc_tac_label label,
 	quad->arg1 = result;
 	quad->result.label = label;
 	quad->result.label.type = result.type;
+	quad->var_count = param_count;
 	return quad;
 }
 

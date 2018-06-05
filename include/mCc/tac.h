@@ -74,7 +74,7 @@ enum mCc_tac_quad_literal_type {
 	MCC_TAC_QUAD_LIT_BOOL,
 	/// TODO maybe it would be better to store literals in the data segment?
 	MCC_TAC_QUAD_LIT_STR,
-	MCC_TAC_QUAD_LIT_VOID ///For void function catching
+	MCC_TAC_QUAD_LIT_VOID /// For void function catching
 };
 
 /// Literal type for flexibility
@@ -93,9 +93,10 @@ struct mCc_tac_quad_literal {
 #define MCC_TAC_LABEL_LEN (4096)
 /// Label with two alternative options
 struct mCc_tac_label {
-    char str[MCC_TAC_LABEL_LEN]; /// For function labels
-    int num;                     /// For anonymous labels
-    enum mCc_tac_quad_literal_type type; /// (Optional)For correct stack allocation later
+	char str[MCC_TAC_LABEL_LEN]; /// For function labels
+	int num;                     /// For anonymous labels
+	enum mCc_tac_quad_literal_type
+	    type; /// (Optional)For correct stack allocation later
 };
 
 /// this struct is the used as the type of the quad entries
@@ -103,8 +104,9 @@ struct mCc_tac_label {
 struct mCc_tac_quad_entry {
 	int number; /// Temporary. -1 will be used as array pointer to params
 	char str_value[MCC_TAC_STRING_LEN]; /// (Optional)For Strings
-    enum mCc_tac_quad_literal_type type; /// (Optional)For correct stack allocation later
-    int array_size; /// (Optional)For correct Stack allocation
+	enum mCc_tac_quad_literal_type
+	    type;       /// (Optional)For correct stack allocation later
+	int array_size; /// (Optional)For correct Stack allocation
 };
 
 /**
@@ -126,7 +128,7 @@ struct mCc_tac_quad {
 		struct mCc_tac_label label;
 		struct mCc_tac_quad_entry ref;
 	} result;
-	/// variable count for assembly
+	/// variable or argument count for assembly
 	unsigned int var_count;
 };
 
@@ -194,6 +196,7 @@ struct mCc_tac_quad *mCc_tac_quad_new_param(struct mCc_tac_quad_entry value);
  * new "goto" quadruple MCC_TAC_QUAD_CALL Label - -
  */
 struct mCc_tac_quad *mCc_tac_quad_new_call(struct mCc_tac_label label,
+                                           unsigned int param_count,
                                            struct mCc_tac_quad_entry result);
 /**
  * Loading a value from an array and saving it

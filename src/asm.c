@@ -454,6 +454,8 @@ static void mCc_asm_print_call(struct mCc_tac_quad *quad, FILE *out)
 		result = new_number;
 	}
 	fprintf(out, "\tcall\t%s\n", quad->result.label.str);
+	if (quad->var_count)
+		fprintf(out, "\taddl\t$%d, %%esp\t# remove params from stack\n", quad->var_count * 4);
 	fprintf(out, "\tmovl\t%%eax, %d(%%ebp)\n", result.stack_ptr);
 }
 
