@@ -38,10 +38,14 @@ void main(){
     print_nl();
 
     checkEvenOdd(n,false);
-    int prim;
+    bool prim;
     prim=checkPrim(n);
     print_nl();
     print("Primenumber ?");
     print_nl();
-    print_int(prim);
+    if (prim == true) {
+        print_int(1);
+    } else {
+        print_int(0);
+    }
 }

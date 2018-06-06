@@ -13,7 +13,7 @@ int calcAbsolute(int number){
     return -number;
 }
 
-string literallyUseless(int noUse){}
+string literallyUseless(int noUse){return "useless";}
 
 void main(){
     print("Please enter a negative number: ");

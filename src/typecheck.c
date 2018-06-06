@@ -383,6 +383,7 @@ static inline bool mCc_check_assign(struct mCc_ast_statement *stmt)
 			return false;
 		}
 	}
+    stmt->node.computed_type = id_type;
 	return true;
 }
 
@@ -546,9 +547,11 @@ static inline bool mCc_check_statement(struct mCc_ast_statement *stmt)
 	case MCC_AST_STATEMENT_TYPE_ASSGN: return mCc_check_assign(stmt);
 
 	case MCC_AST_STATEMENT_TYPE_EXPR:
-		if (mCc_check_expression(stmt->expression) != MCC_AST_TYPE_VOID)
+		if ((stmt->expression->type == MCC_AST_EXPRESSION_TYPE_CALL_EXPR) && (mCc_check_expression(stmt->expression) == MCC_AST_TYPE_VOID))
 			return true;
-		return false;
+        if (mCc_check_expression(stmt->expression) == MCC_AST_TYPE_VOID)
+		    return false;
+        return true;
 
 	case MCC_AST_STATEMENT_TYPE_CMPND: return mCc_check_cmpnd(stmt);
 
