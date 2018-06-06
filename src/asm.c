@@ -157,11 +157,13 @@ static void mCc_asm_print_un_op(struct mCc_tac_quad *quad, FILE *out)
 	}
 	switch (quad->un_op) {
 	case MCC_TAC_OP_UNARY_NEG:
-		//if(op1.lit_type==MCC_TAC_QUAD_LIT_FLOAT){
-		//	fprintf(out,"\tfchs\n");
-		//}else {
+		if(op1.lit_type==MCC_TAC_QUAD_LIT_FLOAT){
+            fprintf(out, "\tflds\t%d(%%ebp)\n", op1.stack_ptr);
+			fprintf(out, "\tfchs\n");
+            fprintf(out, "\tfstps\t%d(%%ebp)\n", result.stack_ptr);
+		}else {
 			fprintf(out, "\tnegl\t%d(%%ebp)\n", op1.stack_ptr);
-		//}
+		}
 		break;
 	case MCC_TAC_OP_UNARY_NOT:
 		fprintf(out, "\tandl\t$1, %d(%%ebp) # mask to 1 bit\n", op1.stack_ptr);
