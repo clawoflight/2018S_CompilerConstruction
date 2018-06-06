@@ -64,7 +64,7 @@ static int mCc_asm_move_current_pointer(struct mCc_asm_stack_pos position,
             ret = -4;
             break;
         case MCC_TAC_QUAD_LIT_FLOAT:
-			//ret = -8;
+			ret = -4;
             break;
         case MCC_TAC_QUAD_LIT_STR:
             ret =-4;
@@ -101,9 +101,9 @@ static void mCc_asm_print_assign_lit(struct mCc_tac_quad *quad, FILE *out)
 		fprintf(out, "\tmovl\t$%d, %d(%%ebp)\n", lit->ival, result.stack_ptr);
 		break;
 	case MCC_TAC_QUAD_LIT_FLOAT:
-		/*fprintf(out, "\tfldl\t.LC%d\n",current_elements_in_fpu);
-		fprintf(out, "\tfstpl\t%d(%%ebp)\n",result.stack_ptr);
-		current_elements_in_fpu++;*/
+		fprintf(out, "\tflds\t.LC%d\n",current_elements_in_fpu);
+		fprintf(out, "\tfstps\t%d(%%ebp)\n",result.stack_ptr);
+		current_elements_in_fpu++;
 		break;
 	case MCC_TAC_QUAD_LIT_BOOL:
 		fprintf(out, "\tmovl\t$%d, %d(%%ebp)\n", lit->bval ? 1 : 0, result.stack_ptr);
@@ -129,13 +129,13 @@ static void mCc_asm_print_assign(struct mCc_tac_quad *quad, FILE *out)
 		result = new_number;
 
     }
-	/*if(source.lit_type==MCC_TAC_QUAD_LIT_FLOAT){
-		fprintf(out,"\tfldl\t%d(%%ebp)\n",source.stack_ptr);
-		fprintf(out,"\tfstpl\t%d(%%ebp)\n",result.stack_ptr);
-	}else {*/
-    fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n", source.stack_ptr);
-    fprintf(out, "\tmovl\t%%eax, %d(%%ebp)\n", result.stack_ptr);
-	//}
+	if(source.lit_type==MCC_TAC_QUAD_LIT_FLOAT){
+		fprintf(out,"\tflds\t%d(%%ebp)\n",source.stack_ptr);
+		fprintf(out,"\tfstps\t%d(%%ebp)\n",result.stack_ptr);
+	}else {
+    	fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n", source.stack_ptr);
+    	fprintf(out, "\tmovl\t%%eax, %d(%%ebp)\n", result.stack_ptr);
+	}
 }
 
 static void mCc_asm_print_un_op(struct mCc_tac_quad *quad, FILE *out)
@@ -154,7 +154,13 @@ static void mCc_asm_print_un_op(struct mCc_tac_quad *quad, FILE *out)
 		result = new_number;
 	}
 	switch (quad->un_op) {
-	case MCC_TAC_OP_UNARY_NEG: fprintf(out, "\tnegl\t%d(%%ebp)\n", op1.stack_ptr); break;
+	case MCC_TAC_OP_UNARY_NEG:
+		//if(op1.lit_type==MCC_TAC_QUAD_LIT_FLOAT){
+		//	fprintf(out,"\tfchs\n");
+		//}else {
+			fprintf(out, "\tnegl\t%d(%%ebp)\n", op1.stack_ptr);
+		//}
+		break;
 	case MCC_TAC_OP_UNARY_NOT:
 		fprintf(out, "\tandl\t$1, %d(%%ebp) # mask to 1 bit\n", op1.stack_ptr);
 		fprintf(out, "\txorl\t$1, %d(%%ebp)\n", op1.stack_ptr);
@@ -258,24 +264,24 @@ static void mCc_asm_print_bin_op(struct mCc_tac_quad *quad, FILE *out)
 		fprintf(out, "\tmovl\t%%eax, %d(%%ebp)\n", result.stack_ptr);
 		break;
 	case MCC_TAC_OP_BINARY_FLOAT_ADD:
-		/*fprintf(out,"\tfldl\t%d(%%ebp)\n",op1.stack_ptr);
-		fprintf(out,"\tfaddl\t%d(%%ebp)\n",op2.stack_ptr);
-		fprintf(out,"\tfstpl\t%d(%%ebp)\n",result.stack_ptr);*/
+		fprintf(out,"\tflds\t%d(%%ebp)\n",op1.stack_ptr);
+		fprintf(out,"\tfadds\t%d(%%ebp)\n",op2.stack_ptr);
+		fprintf(out,"\tfstps\t%d(%%ebp)\n",result.stack_ptr);
 		break;
 	case MCC_TAC_OP_BINARY_FLOAT_SUB:
-      /*  fprintf(out,"\tfldl\t%d(%%ebp)\n",op1.stack_ptr);
-        fprintf(out,"\tfmull\t%d(%%ebp)\n",op2.stack_ptr);
-        fprintf(out,"\tfstpl\t%d(%%ebp)\n",result.stack_ptr);*/
+        fprintf(out,"\tflds\t%d(%%ebp)\n",op1.stack_ptr);
+        fprintf(out,"\tfmuls\t%d(%%ebp)\n",op2.stack_ptr);
+        fprintf(out,"\tfstps\t%d(%%ebp)\n",result.stack_ptr);
         break;
 	case MCC_TAC_OP_BINARY_FLOAT_MUL:
-      /*  fprintf(out,"\tfldl\t%d(%%ebp)\n",op1.stack_ptr);
-        fprintf(out,"\tfmull\t%d(%%ebp)\n",op2.stack_ptr);
-        fprintf(out,"\tfstpl\t%d(%%ebp)\n",result.stack_ptr);*/
+        fprintf(out,"\tflds\t%d(%%ebp)\n",op1.stack_ptr);
+        fprintf(out,"\tfmuls\t%d(%%ebp)\n",op2.stack_ptr);
+        fprintf(out,"\tfstps\t%d(%%ebp)\n",result.stack_ptr);
         break;
 	case MCC_TAC_OP_BINARY_FLOAT_DIV:
-        /*fprintf(out,"\tfldl\t%d(%%ebp)\n",op1.stack_ptr);
-        fprintf(out,"\tfdivl\t%d(%%ebp)\n",op2.stack_ptr);
-        fprintf(out,"\tfstpl\t%d(%%ebp)\n",result.stack_ptr);*/
+        fprintf(out,"\tflds\t%d(%%ebp)\n",op1.stack_ptr);
+        fprintf(out,"\tfdivs\t%d(%%ebp)\n",op2.stack_ptr);
+        fprintf(out,"\tfstps\t%d(%%ebp)\n",result.stack_ptr);
         break;
 	}
 }
@@ -495,6 +501,13 @@ static void mCc_asm_print_string_literals(struct mCc_tac_program *prog, FILE *ou
 	}
 }
 
+static void mCc_asm_print_fpu(FILE *out){
+	for(unsigned int i=0;i<current_elements_in_fpu; i++){
+		fprintf(out,".LC%d:\n",i);
+		fprintf(out,"\t.long\t1068708659\n");
+	}
+}
+
 void mCc_asm_generate_assembly(struct mCc_tac_program *prog, FILE *out,
                                char *source_filename)
 {
@@ -506,6 +519,6 @@ void mCc_asm_generate_assembly(struct mCc_tac_program *prog, FILE *out,
 	for (unsigned int i = 0; i < prog->quad_count; ++i) {
 		mCc_asm_assembly_from_quad(prog->quads[i], out);
 	}
-
+	mCc_asm_print_fpu(out);
 	mCc_asm_test_print(out);
 }
