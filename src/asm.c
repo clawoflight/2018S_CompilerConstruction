@@ -16,7 +16,7 @@ static struct mCc_asm_stack_pos position_param[ARRAY_LENGTH];
 
 static int current_elements_in_local_array = 0;
 static int current_elements_in_param_array = 0;
-//static int current_elements_in_fpu = 0;
+static int current_elements_in_fpu = 0;
 static int current_frame_pointer = 0;
 static int current_param_pointer = 4;
 static int var_count=0;
