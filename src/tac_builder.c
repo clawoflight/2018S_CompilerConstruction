@@ -129,6 +129,7 @@ mCc_tac_from_expression_binary(struct mCc_tac_program *prog,
 	}
 
 	struct mCc_tac_quad_entry new_result = mCc_tac_create_new_entry();
+	global_var_count++;
 
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 	struct mCc_tac_quad *binary_op =
@@ -294,9 +295,9 @@ static int mCc_tac_entry_from_assg(struct mCc_tac_program *prog,
 		struct mCc_tac_quad_literal *lit_result =
 		    mCc_get_quad_literal(stmt->rhs_assgn->literal);
 		new_quad = mCc_tac_quad_new_assign_lit(lit_result, result);
-		global_var_count++;
 		if (stmt->rhs_assgn->literal->type == MCC_AST_LITERAL_TYPE_STRING) {
             struct mCc_tac_quad_entry string = mCc_tac_create_new_string();
+			/* global_var_count++; // Needed? */
             mCc_tac_string_from_assgn(string, lit_result);
 			lit_result->label_num = string.str_number;
         }
@@ -304,11 +305,13 @@ static int mCc_tac_entry_from_assg(struct mCc_tac_program *prog,
 	if (stmt->lhs_assgn) {
 		result_rhs = mCc_tac_from_expression(prog, stmt->rhs_assgn);
 		new_quad = mCc_tac_quad_new_store(result_lhs, result_rhs, result);
+		global_var_count += 2; // lhs && rhs
 	} else {
 		result_rhs = mCc_tac_from_expression(prog, stmt->rhs_assgn);
 		new_quad = mCc_tac_quad_new_assign(result_rhs, result);
-        global_var_count++;
+        global_var_count++; // rhs
 	}
+	global_var_count++; // result
 	if (!new_quad || mCc_tac_program_add_quad(prog, new_quad))
 		return 1;
 	return 0;
@@ -421,6 +424,7 @@ static int mCc_tac_from_function_def(struct mCc_tac_program *prog,
 		}
 	}
 	label_fun_quad->var_count=global_var_count;
+	/* fprintf(stderr, "global_var_count: %s %d\n", fun_def->identifier->id_value, global_var_count); */
 	return 0;
 }
 
