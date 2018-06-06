@@ -13,6 +13,7 @@
 #define ARRAY_LENGTH 4096
 static struct mCc_asm_stack_pos position[ARRAY_LENGTH];
 static struct mCc_asm_stack_pos position_param[ARRAY_LENGTH];
+static struct mCc_asm_stack_pos position_fpu[ARRAY_LENGTH];
 
 static int current_elements_in_local_array = 0;
 static int current_elements_in_param_array = 0;
@@ -103,7 +104,8 @@ static void mCc_asm_print_assign_lit(struct mCc_tac_quad *quad, FILE *out)
 	case MCC_TAC_QUAD_LIT_FLOAT:
 		fprintf(out, "\tflds\t.LC%d\n",current_elements_in_fpu);
 		fprintf(out, "\tfstps\t%d(%%ebp)\n",result.stack_ptr);
-		current_elements_in_fpu++;
+		result.float_lit = lit->fval;
+		position_fpu[current_elements_in_fpu++] = result;
 		break;
 	case MCC_TAC_QUAD_LIT_BOOL:
 		fprintf(out, "\tmovl\t$%d, %d(%%ebp)\n", lit->bval ? 1 : 0, result.stack_ptr);
@@ -270,7 +272,7 @@ static void mCc_asm_print_bin_op(struct mCc_tac_quad *quad, FILE *out)
 		break;
 	case MCC_TAC_OP_BINARY_FLOAT_SUB:
         fprintf(out,"\tflds\t%d(%%ebp)\n",op1.stack_ptr);
-        fprintf(out,"\tfmuls\t%d(%%ebp)\n",op2.stack_ptr);
+        fprintf(out,"\tfsubs\t%d(%%ebp)\n",op2.stack_ptr);
         fprintf(out,"\tfstps\t%d(%%ebp)\n",result.stack_ptr);
         break;
 	case MCC_TAC_OP_BINARY_FLOAT_MUL:
@@ -504,7 +506,7 @@ static void mCc_asm_print_string_literals(struct mCc_tac_program *prog, FILE *ou
 static void mCc_asm_print_fpu(FILE *out){
 	for(unsigned int i=0;i<current_elements_in_fpu; i++){
 		fprintf(out,".LC%d:\n",i);
-		fprintf(out,"\t.long\t1068708659\n");
+		fprintf(out,"\t.float\t%f\n", position_fpu[i].float_lit);
 	}
 }
 
