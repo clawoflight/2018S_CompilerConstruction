@@ -5,8 +5,8 @@
  * @date 2018-04-27
  *
  */
-#include "mCc/ast.h"
 #include "mCc/tac.h"
+#include "mCc/ast.h"
 #include <assert.h>
 #include <string.h>
 
@@ -18,7 +18,7 @@ struct mCc_tac_quad_entry mCc_tac_create_new_entry()
 
 	entry.number = current_var;
 	current_var++;
-    entry.array_size = 0;
+	entry.array_size = 0;
 
 	return entry;
 }
@@ -180,7 +180,7 @@ struct mCc_tac_quad *mCc_tac_quad_new_param(struct mCc_tac_quad_entry value)
 }
 
 struct mCc_tac_quad *mCc_tac_quad_new_call(struct mCc_tac_label label,
-										   unsigned int param_count,
+                                           unsigned int param_count,
                                            struct mCc_tac_quad_entry result)
 {
 
@@ -503,7 +503,6 @@ int mCc_tac_program_add_quad(struct mCc_tac_program *self,
 {
 	assert(self);
 	assert(quad);
-
 
 	if (self->quad_count < self->quad_alloc_size) {
 		self->quads[self->quad_count++] = quad;

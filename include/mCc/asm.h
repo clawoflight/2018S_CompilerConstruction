@@ -16,7 +16,7 @@ extern "C" {
 struct mCc_asm_stack_pos {
 	int tac_number;
 	int stack_ptr;
-    enum mCc_tac_quad_literal_type lit_type;
+	enum mCc_tac_quad_literal_type lit_type;
 	float float_lit; ///< (Optional) For float numbers
 };
 

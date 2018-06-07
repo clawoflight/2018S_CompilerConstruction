@@ -5,8 +5,8 @@
  * @date 2018-04-17
  */
 
-#include "mCc/ast_visit.h"
 #include "mCc/typecheck.h"
+#include "mCc/ast_visit.h"
 #include <stdio.h>
 
 /// Global Var to save the current func we're in
@@ -131,8 +131,7 @@ mCc_check_binary(struct mCc_ast_expression *binary)
 	switch (binary->op) {
 
 	case MCC_AST_BINARY_OP_ADD:
-	case MCC_AST_BINARY_OP_SUB:
-			break;
+	case MCC_AST_BINARY_OP_SUB: break;
 	case MCC_AST_BINARY_OP_MUL:
 	case MCC_AST_BINARY_OP_DIV:
 		if ((computed_type_left != MCC_AST_TYPE_INT) &&
@@ -384,7 +383,7 @@ static inline bool mCc_check_assign(struct mCc_ast_statement *stmt)
 			return false;
 		}
 	}
-    stmt->node.computed_type = id_type;
+	stmt->node.computed_type = id_type;
 	return true;
 }
 
@@ -424,7 +423,7 @@ static inline bool mCc_check_cmpnd_return(struct mCc_ast_statement *stmt)
 		if (curr_stmt->type == MCC_AST_STATEMENT_TYPE_IF) {
 			curr_stmt->node.outside_if = false;
 
-            if_path_return = mCc_check_if_return(curr_stmt->if_stmt);
+			if_path_return = mCc_check_if_return(curr_stmt->if_stmt);
 
 		} else if (curr_stmt->type == MCC_AST_STATEMENT_TYPE_IFELSE) {
 
@@ -473,23 +472,21 @@ static inline bool mCc_check_if_else_return(struct mCc_ast_statement *stmt)
 
 	if_branch = mCc_check_if_return(if_stmt);
 
-    if (else_stmt->type == MCC_AST_STATEMENT_TYPE_IFELSE){
-        else_branch = (mCc_check_if_return(else_stmt->if_stmt));
-    }
+	if (else_stmt->type == MCC_AST_STATEMENT_TYPE_IFELSE) {
+		else_branch = (mCc_check_if_return(else_stmt->if_stmt));
+	}
 
-	if (else_stmt->type == MCC_AST_STATEMENT_TYPE_CMPND){
-        else_branch = mCc_check_cmpnd_return(else_stmt);
+	if (else_stmt->type == MCC_AST_STATEMENT_TYPE_CMPND) {
+		else_branch = mCc_check_cmpnd_return(else_stmt);
+	}
 
-    }
+	if (else_stmt->type == MCC_AST_STATEMENT_TYPE_RET) {
+		else_branch = mCc_check_ret(else_stmt);
+	}
 
-	if (else_stmt->type == MCC_AST_STATEMENT_TYPE_RET){
-        else_branch = mCc_check_ret(else_stmt);
-
-    }
-
-	if (else_stmt->type == MCC_AST_STATEMENT_TYPE_RET_VOID){
-        else_branch = mCc_check_ret_void(else_stmt);
-    }
+	if (else_stmt->type == MCC_AST_STATEMENT_TYPE_RET_VOID) {
+		else_branch = mCc_check_ret_void(else_stmt);
+	}
 
 	return (if_branch && else_branch);
 }
@@ -525,12 +522,11 @@ static inline bool mCc_check_function(struct mCc_ast_function_def *func)
 	if (func->func_type == MCC_AST_TYPE_VOID)
 		return (check_func_for_return && check_func);
 
-
 	if (!general_ret) {
 		typecheck_result.status = MCC_TYPECHECK_STATUS_ERROR;
 		snprintf(typecheck_result.err_msg, err_len,
 		         "Function %s may not reach a return",
-				 func->identifier->id_value);
+		         func->identifier->id_value);
 		typecheck_result.err_loc = func->node.sloc;
 	}
 
@@ -544,8 +540,7 @@ static inline bool mCc_check_statement(struct mCc_ast_statement *stmt)
 
 	switch (stmt->type) {
 	case MCC_AST_STATEMENT_TYPE_IF:
-	case MCC_AST_STATEMENT_TYPE_IFELSE:
-		return mCc_check_if(stmt);
+	case MCC_AST_STATEMENT_TYPE_IFELSE: return mCc_check_if(stmt);
 
 	case MCC_AST_STATEMENT_TYPE_RET: return mCc_check_ret(stmt);
 
@@ -558,11 +553,12 @@ static inline bool mCc_check_statement(struct mCc_ast_statement *stmt)
 	case MCC_AST_STATEMENT_TYPE_ASSGN: return mCc_check_assign(stmt);
 
 	case MCC_AST_STATEMENT_TYPE_EXPR:
-		if ((stmt->expression->type == MCC_AST_EXPRESSION_TYPE_CALL_EXPR) && (mCc_check_expression(stmt->expression) == MCC_AST_TYPE_VOID))
+		if ((stmt->expression->type == MCC_AST_EXPRESSION_TYPE_CALL_EXPR) &&
+		    (mCc_check_expression(stmt->expression) == MCC_AST_TYPE_VOID))
 			return true;
-        if (mCc_check_expression(stmt->expression) == MCC_AST_TYPE_VOID)
-		    return false;
-        return true;
+		if (mCc_check_expression(stmt->expression) == MCC_AST_TYPE_VOID)
+			return false;
+		return true;
 
 	case MCC_AST_STATEMENT_TYPE_CMPND: return mCc_check_cmpnd(stmt);
 

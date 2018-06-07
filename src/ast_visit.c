@@ -85,7 +85,7 @@ void mCc_ast_visit_statement(struct mCc_ast_statement *statement,
 		// TODO: try out if I can move the scope creation to the callback
 		// (assuming pre-order). That would fix the double scope for every
 		// function issue. (DO THAT AFTER HAVING RUNNING TESTS!)
-        if (visitor->mode == MCC_AST_VISIT_MODE_SYMTAB_REF) {
+		if (visitor->mode == MCC_AST_VISIT_MODE_SYMTAB_REF) {
 			struct mCc_symtab_scope *new_scope =
 			    mCc_symtab_new_scope_in(visitor->userdata, "anon");
 			visitor->userdata = new_scope;
@@ -230,7 +230,7 @@ void mCc_ast_visit_arguments(struct mCc_ast_arguments *arguments,
 	if (arguments) {
 
 		visit_if_pre_order(arguments, visitor->arguments, visitor);
-        for (unsigned int i = 0; i < arguments->expression_count; ++i)
+		for (unsigned int i = 0; i < arguments->expression_count; ++i)
 			mCc_ast_visit_expression(arguments->expressions[i], visitor);
 		visit_if_post_order(arguments, visitor->arguments, visitor);
 	}
@@ -257,7 +257,7 @@ void mCc_ast_visit_declaration(struct mCc_ast_declaration *decl,
 	assert(decl);
 	assert(visitor);
 
-    visit_if_pre_order(decl, visitor->declaration, visitor);
+	visit_if_pre_order(decl, visitor->declaration, visitor);
 	if (decl->decl_array_size) {
 		mCc_ast_visit_literal(decl->decl_array_size, visitor);
 	}
@@ -280,7 +280,7 @@ void mCc_ast_visit_function_def(struct mCc_ast_function_def *func,
 
 	visit_if_pre_order(func, visitor->function_def, visitor);
 	mCc_ast_visit_identifier(func->identifier, visitor);
-	if (func->para) {										// the order matters
+	if (func->para) { // the order matters
 		mCc_ast_visit_parameter(func->para, visitor);
 	}
 	if (func->body) {

@@ -102,7 +102,7 @@ struct mCc_tac_label {
 /// this struct is the used as the type of the quad entries
 #define MCC_TAC_STRING_LEN (4096)
 struct mCc_tac_quad_entry {
-	int number; /// Temporary. -1 will be used as array pointer to params
+	int number;     /// Temporary. -1 will be used as array pointer to params
 	int str_number; /// (Optional) For strings
 	char str_value[MCC_TAC_STRING_LEN]; /// (Optional)For Strings
 	enum mCc_tac_quad_literal_type
