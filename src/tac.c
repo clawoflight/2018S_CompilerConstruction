@@ -420,7 +420,7 @@ void mCc_tac_quad_print(struct mCc_tac_quad *self, FILE *out)
 		fprintf(out, "\tparam t%d\n", self->arg1.number);
 		break;
 	case MCC_TAC_QUAD_CALL:
-		if (self->arg1.number)
+		if (self->arg1.number >= 0)
 			fprintf(out, "\tt%d = call ", self->arg1.number);
 		else
 			fputs("\tcall ", out);
