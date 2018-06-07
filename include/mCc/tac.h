@@ -64,7 +64,7 @@ enum mCc_tac_quad_type {
 	MCC_TAC_QUAD_STORE,
 	MCC_TAC_QUAD_RETURN,
 	MCC_TAC_QUAD_RETURN_VOID,
-	// MCC_TAC_QUAD_ADDR_OF,  ///< TODO neceessary?
+	// MCC_TAC_QUAD_ADDR_OF,  ///< TODO necessary?
 	// MCC_TAC_QUAD_PTR_DEREF ///< TODO necessary?
 };
 
@@ -73,7 +73,8 @@ enum mCc_tac_quad_literal_type {
 	MCC_TAC_QUAD_LIT_FLOAT,
 	MCC_TAC_QUAD_LIT_BOOL,
 	/// TODO maybe it would be better to store literals in the data segment?
-	MCC_TAC_QUAD_LIT_STR
+	MCC_TAC_QUAD_LIT_STR,
+	MCC_TAC_QUAD_LIT_VOID /// For void function catching
 };
 
 /// Literal type for flexibility
@@ -86,12 +87,7 @@ struct mCc_tac_quad_literal {
 		bool bval;
 		char *strval;
 	};
-};
-/// this struct is the used as the type of the quad entries
-#define MCC_TAC_STRING_LEN (4096)
-struct mCc_tac_quad_entry {
-	int number; /// Temporary. -1 will be used as array pointer to params
-	char str_value[MCC_TAC_STRING_LEN]; /// (Optional)For Strings
+	int label_num; ///< Optional, for strings
 };
 
 #define MCC_TAC_LABEL_LEN (4096)
@@ -99,6 +95,19 @@ struct mCc_tac_quad_entry {
 struct mCc_tac_label {
 	char str[MCC_TAC_LABEL_LEN]; /// For function labels
 	int num;                     /// For anonymous labels
+	enum mCc_tac_quad_literal_type
+	    type; /// (Optional)For correct stack allocation later
+};
+
+/// this struct is the used as the type of the quad entries
+#define MCC_TAC_STRING_LEN (4096)
+struct mCc_tac_quad_entry {
+	int number; /// Temporary. -1 will be used as array pointer to params
+	int str_number; /// (Optional) For strings
+	char str_value[MCC_TAC_STRING_LEN]; /// (Optional)For Strings
+	enum mCc_tac_quad_literal_type
+	    type;       /// (Optional)For correct stack allocation later
+	int array_size; /// (Optional)For correct Stack allocation
 };
 
 /**
@@ -120,6 +129,8 @@ struct mCc_tac_quad {
 		struct mCc_tac_label label;
 		struct mCc_tac_quad_entry ref;
 	} result;
+	/// variable or argument count for assembly
+	unsigned int var_count;
 };
 
 /**
@@ -136,6 +147,10 @@ struct mCc_tac_program {
 	unsigned int quad_count;
 	/// The quads contained in this program
 	struct mCc_tac_quad **quads;
+
+	/// String literals used in the program
+	struct mCc_tac_quad_entry *string_literals;
+	unsigned int string_literal_count;
 };
 
 /********************************** Quad Functions */
@@ -182,6 +197,7 @@ struct mCc_tac_quad *mCc_tac_quad_new_param(struct mCc_tac_quad_entry value);
  * new "goto" quadruple MCC_TAC_QUAD_CALL Label - -
  */
 struct mCc_tac_quad *mCc_tac_quad_new_call(struct mCc_tac_label label,
+                                           unsigned int param_count,
                                            struct mCc_tac_quad_entry result);
 /**
  * Loading a value from an array and saving it

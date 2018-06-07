@@ -1,69 +1,149 @@
+#include <errno.h>
+#include <getopt.h>
+#include <libgen.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
+#include "mCc/asm.h"
 #include "mCc/ast.h"
 #include "mCc/ast_symtab_link.h"
 #include "mCc/parser.h"
 #include "mCc/tac_builder.h"
 #include "mCc/typecheck.h"
 
-void print_usage(const char *prg)
+static const char* VERSION = "0.3.0";
+
+static void print_usage(const char *prg)
 {
-	printf("usage: %s [--help] <FILE> [--print-(tac|symtab) <FILE>]\n\n", prg);
-	printf("  <FILE>         Filepath or - for stdin\n");
-	printf("  --print-symtab Print the symbol tables\n");
-	printf("  --print-tac    Print the three-address code to the given path\n");
-	printf("  --help         Print this message\n");
+	printf("usage: %s [options] <FILE>\n\n", prg);
+	puts("Options:");
+	printf("  <FILE>                   Input file, or - for stdin\n");
+	printf("  -h|--help                Print this message\n");
+	printf("  -v|--version             Print the version\n");
+	printf("  -o|--output <FILE>       Path to generated executable, default is a.out\n");
+	printf("  --print-symtab [FILE|-]  Print the symbol tables\n");
+	printf("  --print-tac    [FILE|-]  Print the three-address code to the given path\n");
+	printf("  --print-asm    [FILE|-]  Print the assembler code to the given path\n");
+	printf("\nPrinting anything disables compilation.\n");
+}
+
+static int compile(char *source, char *executable)
+{
+	int pid;
+	if ((pid = fork()) == 0) {
+		execlp("gcc", "gcc", "-m32", source, "../src/mC_builtins.c", "-o",
+		       executable, (char *)NULL);
+		// exec* only returns on error
+		perror("gcc");
+		exit(errno);
+	} else { // parent
+		int wstatus;
+		if (waitpid(pid, &wstatus, 0) < 0) {
+			perror("waitpid");
+			return EXIT_FAILURE;
+		}
+		// return gcc's exit status
+		return WIFEXITED(wstatus) ? WEXITSTATUS(wstatus) : EXIT_FAILURE;
+	}
 }
 
 int main(int argc, char *argv[])
 {
-	if (argc < 2 || argc == 3 || strcmp("--help", argv[1]) == 0) {
+	if (argc < 2) {
 		print_usage(argv[0]);
 		return EXIT_FAILURE;
 	}
 
+	// Variables set by the command-line options
+	FILE *st_out = NULL; // symtab
+	int print_st = 0;
+
+	FILE *tac_out = NULL;
+	int print_tac = 0;
+
+	FILE *asm_out = fopen("a.s", "w");
+	int print_asm = 0;
+	if (!asm_out) {
+		perror("fopen");
+		return EXIT_FAILURE;
+	}
+	char *executable = "a.out";
+
+	while (1) {
+		int c;
+		static struct option long_options[] = {
+			{ "help", no_argument, 0, 'h' },
+			{ "version", no_argument, 0, 'v' },
+			{ "print-tac", optional_argument, 0, 't' },
+			{ "print-symtab", optional_argument, 0, 's' },
+			{ "print-asm", optional_argument, 0, 'a' },
+			{ "output", required_argument, 0, 'o' },
+			{ 0, 0, 0, 0 }
+		};
+		if ((c = getopt_long(argc, argv, "hvo:", long_options, NULL)) == -1)
+			break;
+
+		switch (c) {
+		case 'h': print_usage(argv[0]); return EXIT_SUCCESS;
+		case 'v':
+			puts(VERSION);
+			return EXIT_SUCCESS;
+		case '?':
+			// getopt prints the error message itself
+			return EXIT_FAILURE;
+		case 'o':
+			executable = optarg;
+			break;
+		case 't':
+			if (!optarg || strcmp("-", optarg) == 0) {
+				tac_out = stdout;
+			} else if (!(tac_out = fopen(optarg, "w"))) {
+				perror("fopen");
+				return EXIT_FAILURE;
+			}
+			print_tac = 1;
+			break;
+		case 's':
+			if (!optarg || strcmp("-", optarg) == 0) {
+				st_out = stdout;
+			} else if (!(st_out = fopen(optarg, "w"))) {
+				perror("fopen");
+				return EXIT_FAILURE;
+			}
+			print_st = 1;
+			break;
+		case 'a':
+			if (!optarg || strcmp("-", optarg) == 0) {
+				asm_out = stdout;
+			} else if (!(asm_out = fopen(optarg, "a"))) {
+				perror("fopen");
+				return EXIT_FAILURE;
+			}
+			print_asm = 1;
+			break;
+		}
+	}
+	// Now, first non-option arg is in argv[optind]
+	if (optind >= argc) {
+		fputs("Missing required positional argument: <FILE>\n", stderr);
+		return EXIT_FAILURE;
+	}
+
 	/* determine input source */
+	char *filename;
 	FILE *in;
-	if (strcmp("-", argv[1]) == 0) {
+	if (strcmp("-", argv[optind]) == 0) {
 		in = stdin;
+		filename = "read from stdin";
 	} else {
-		in = fopen(argv[1], "r");
+		filename = basename(argv[optind]);
+		in = fopen(argv[optind], "r");
 		if (!in) {
 			perror("fopen");
 			return EXIT_FAILURE;
-		}
-	}
-
-	/* symtab output TODO: move to getopt later if needed */
-	FILE *st_out = NULL;
-	int print_st = 0;
-	if (argc == 4 && strcmp("--print-symtab", argv[2]) == 0) {
-		print_st = 1;
-		if (strcmp("-", argv[3]) == 0) {
-			st_out = stdout;
-		} else {
-			st_out = fopen(argv[3], "a");
-			if (!st_out) {
-				perror("fopen");
-				return EXIT_FAILURE;
-			}
-		}
-	}
-	/* tac output TODO: move to getopt later if needed */
-	FILE *tac_out = NULL;
-	int print_tac = 0;
-	if (argc == 4 && strcmp("--print-tac", argv[2]) == 0) {
-		print_tac = 1;
-		if (strcmp("-", argv[3]) == 0) {
-			tac_out = stdout;
-		} else {
-			tac_out = fopen(argv[3], "a");
-			if (!tac_out) {
-				perror("fopen");
-				return EXIT_FAILURE;
-			}
 		}
 	}
 
@@ -84,6 +164,10 @@ int main(int argc, char *argv[])
 
 			return EXIT_FAILURE;
 		}
+		if (result.program == NULL) {
+			fprintf(stderr, "Error in %s: Top-level is not a program!\n", argv[1]);
+			return EXIT_FAILURE;
+		}
 		prog = result.program;
 	}
 
@@ -100,6 +184,8 @@ int main(int argc, char *argv[])
 	}
 	if (print_st)
 		mCc_symtab_print_all_scopes(st_out);
+	if (st_out && st_out != stdout)
+		fclose(st_out);
 
 	/* type checking */
 	struct mCc_typecheck_result check_result =
@@ -127,23 +213,29 @@ int main(int argc, char *argv[])
 		mCc_ast_delete_program(prog);
 		return EXIT_FAILURE;
 	}
-
-	/*    TODO
-	 * - do some optimisations
-	 * - output assembly code
-	 * - invoke backend compiler
-	 */
-
-	/* cleanup */
-	if (st_out && st_out != stdout)
-		fclose(st_out);
 	if (tac_out && tac_out != stdout)
 		fclose(tac_out);
 
+	/*    TODO
+	 * - do some optimisations
+	 */
+
+	/* Assembler code generation */
+	mCc_asm_generate_assembly(tac, asm_out, filename);
+
+	if (asm_out && asm_out != stdout)
+		fclose(asm_out);
+
+	int exit_status = EXIT_SUCCESS;
+	// Only compile if nothing was printed
+	if (!(print_st || print_tac || print_asm))
+		exit_status = compile("a.s", executable);
+
+	/* cleanup */
 	mCc_tac_program_delete(tac);
 	mCc_tac_free_global_string_array();
 	mCc_symtab_delete_all_scopes();
 	mCc_ast_delete_program(prog);
 
-	return EXIT_SUCCESS;
+	return exit_status;
 }

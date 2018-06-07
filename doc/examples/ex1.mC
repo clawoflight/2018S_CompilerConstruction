@@ -12,36 +12,36 @@ void checkEvenOdd(int n, bool m){
 
 bool checkPrim(int n){
     int i;
-    i=0;
-    int p;
-    p=0;
-    while(i<=n){
-        if((n - (n/i)*i)==0){
-            p=p+1;
+    i = 2;
+    int mod;
+    while (i < n/2)
+    {
+        mod  = n - (n/i)*i;
+        if(mod == 0){
+            print("not prime");
+            return false;
         }
-        i=i+1;
+        i = i +1;
     }
-    if(p==0){
-        print("prime");
-        return true;
-    } else{
-        print("not prime");
-        return false;
-    }
+    print("prime");
+    return true;
 }
 
 void main(){
     print("Please enter a number: ");
-    print_nl();
     int n;
     n = read_int();
     print_nl();
 
     checkEvenOdd(n,false);
-    int prim;
+    bool prim;
     prim=checkPrim(n);
     print_nl();
-    print("Primenumber ?");
+    print("Primenumber?");
     print_nl();
-    print(prim);
+    if (prim == true) {
+        print("true");
+    } else {
+        print("false");
+    }
 }

@@ -14,6 +14,9 @@ Homework for compiler construction
 * bison for generating the parser
 
 * a compiler supporting C11 (and C++14 for unit tests) -- typically GCC or Clang
+  (We currently only support GCC inside mCc when compiling assembly, but our sources should compile fine with any compiler)
+
+* doxygen (optional), to generate HTML documentation.
 
 ## Building
 First get the Code of the compiler:

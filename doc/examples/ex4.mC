@@ -13,11 +13,10 @@ int calcAbsolute(int number){
     return -number;
 }
 
-string literallyUseless(int noUse){}
+string literallyUseless(int noUse){return "useless";}
 
 void main(){
     print("Please enter a negative number: ");
-    print_nl();
     int n;
     n = read_int();
     print_nl();
@@ -29,5 +28,5 @@ void main(){
     }
     print("Absolute of your Number: ");
     print_nl();
-    print(n);
+    print_int(n);
 }

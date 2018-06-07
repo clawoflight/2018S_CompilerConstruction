@@ -28,7 +28,7 @@ pgen = generator(bison,
 
 # --------------------------------------------------------------------- LIBRARY
 
-mCc_inc = include_directories('include')
+mCc_inc = include_directories('include', 'src')
 
 mCc_src = [ 'src/ast.c',
             'src/ast_statements.c',
@@ -39,6 +39,7 @@ mCc_src = [ 'src/ast.c',
             'src/symtab.c',
 	        'src/ast_symtab_link.c',
 	        'src/typecheck.c',
+	        'src/asm.c',
             lgen.process('src/scanner.l'),
             pgen.process('src/parser.y') ]
 
@@ -103,14 +104,16 @@ endforeach
 
 # --------------------------------------------------------------------- DOXYGEN
 
-doxygen = find_program('doxygen')
+doxygen = find_program('doxygen', required: false)
 
-doxyconf = configuration_data()
-doxyconf.set('ROOT',     meson.source_root())
-doxyconf.set('BUILDDIR', meson.build_root())
+if doxygen.found()
+  doxyconf = configuration_data()
+  doxyconf.set('ROOT',     meson.source_root())
+  doxyconf.set('BUILDDIR', meson.build_root())
 
-doxyfile = configure_file(input: 'Doxyfile',
-                          output: '.doxyfile',
-                          configuration: doxyconf)
+  doxyfile = configure_file(input: 'Doxyfile',
+			    output: '.doxyfile',
+			    configuration: doxyconf)
 
-html_doc = run_target('doc', command: [doxygen, doxyfile])
+  html_doc = run_target('doc', command: [doxygen, doxyfile])
+endif

@@ -112,18 +112,6 @@ TEST(TYPE_CHECK_BINARY, BINARY_SUB_INT)
 	mCc_ast_delete_expression(expr);
 }
 
-TEST(TYPE_CHECK_BINARY, BINARY_ADD_STRING)
-{
-	const char input[] = "\"foo\"+\"bar\"";
-	auto result = mCc_parser_parse_string(input);
-	auto expr = result.expression;
-
-	ASSERT_EQ(MCC_AST_TYPE_VOID, mCc_typecheck_test_type_check(expr).type);
-	ASSERT_EQ(MCC_TYPECHECK_STATUS_ERROR,
-	          mCc_typecheck_test_type_check(expr).status);
-	mCc_ast_delete_expression(expr);
-}
-
 TEST(TYPE_CHECK_BINARY, BINARY_LT_FLOAT)
 {
 	const char input[] = "3.14<3.15";

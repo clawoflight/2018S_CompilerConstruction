@@ -44,6 +44,6 @@ void main() {
     	    print("number is odd");
     }
     print_nl();
-    print_float(calculate_pi(500));
+    print_float(calculate_pi(500.0));
     print_nl();
 }

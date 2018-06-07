@@ -1,30 +1,52 @@
-# General Feedback Corrections:
+# General Feedback Corrections
+
+- [ ] Fix type checker: *any* assignment to a variable with array type is invalid.
+
+# Specific Feedback Corrections
+
+- [x] Move uthash.h to src/
+
+- [x] List all dependencies in README --> doxygen
+
+- [x] Make doxygen optional
+
+- [x] Parser: segfault for "1 + 1;"
+
+Type checker -- missing:
+
+- [ ] error on missing `return`
+    - [ ] last statement not an if-statement
+    - [ ] last statement is an if-statement (with else)
+    - [ ] last statement is an if-statement (without else)
+
+- [ ] Unit-tests for TAC, or at least explain why not
+
+- [x] Uncomment assertions in tac.c
+
+- [ ] Minimize scope of warning suppressing pragmas
 
 # Assignment 3
 
+## Task 1
 
-## Task 1 
-Implement Code Generation
-The task is to convert your TAC to assembly code which can be compiled with the GNU Assembler.
+- [x] Implement code generation.
 
-## Task 2 
-Implement back-end compiler invocation.
+## Task 2
 
-Now that we obtained assembly code we can convert it to an executable by running it through an assembler and linker. For this we'll simply pass it to GCC. This also allows us to attach the built-in functions, just pass the C source file to the compiler call.
-Double check whether the built-in functions provided to your back-end compiler use the same calling convention.
-You should now have a working compiler which can convert valid mC input programs to executables.
+- [x] Back-end compiler invocation.
 
 ## Task 3
 
-Polish the commandline parameter handling of your main compiler executable. At least the following flags must be provided:
+- [x] --help
 
-  * -h / --help to display usage information
-  * -v / --version to display version information
-  * -o / --output to specify the resulting executable
+- [x] --version
 
+- [x] --output
 
 ## Task 4
-Extend your integration test runner to also execute the generated binary. Pass the content of the corresponding .stdin file to the binary and compare its output with the corresponding .stdout file. Matching output indicates success.
 
-Either use a temporary directory (mktemp) or the build directory to store the integration test executables.
+- [x] Extend integration tests to run executable and compare output.
+
+- [x] Store executables in temp dir (mktemp(1)) or build dir.
+
 
