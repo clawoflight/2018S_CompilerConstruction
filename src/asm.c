@@ -189,8 +189,6 @@ static void mCc_asm_print_bin_op(struct mCc_tac_quad *quad, FILE *out)
 		result = new_number;
 	}
 
-   // printf("in binary asm\n");
-
 	switch (quad->bin_op) {
 	case MCC_TAC_OP_BINARY_ADD:
         fprintf(out, "\tmovl\t%d(%%ebp), %%edx\n", op1.stack_ptr);
@@ -209,7 +207,6 @@ static void mCc_asm_print_bin_op(struct mCc_tac_quad *quad, FILE *out)
         fprintf(out, "\tmovl\t%%eax, %d(%%ebp)\n", result.stack_ptr);
 		break;
 	case MCC_TAC_OP_BINARY_DIV:
-        printf("Type Div: %d\n", quad->bin_op);
         fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n", op1.stack_ptr);
 		fprintf(out, "\tcltd\n");
 		fprintf(out, "\tidivl\t%d(%%ebp)\n", op2.stack_ptr);
@@ -285,7 +282,6 @@ static void mCc_asm_print_bin_op(struct mCc_tac_quad *quad, FILE *out)
         fprintf(out,"\tfstps\t%d(%%ebp)\n",result.stack_ptr);
         break;
 	case MCC_TAC_OP_BINARY_FLOAT_DIV:
-        printf("Type float div: %d\n", quad->bin_op);
         fprintf(out,"\tflds\t%d(%%ebp)\n",op1.stack_ptr);
         fprintf(out,"\tfdivs\t%d(%%ebp)\n",op2.stack_ptr);
         fprintf(out,"\tfstps\t%d(%%ebp)\n",result.stack_ptr);
