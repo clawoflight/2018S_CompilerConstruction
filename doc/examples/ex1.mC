@@ -37,7 +37,7 @@ void main(){
     bool prim;
     prim=checkPrim(n);
     print_nl();
-    print("Primenumber ?");
+    print("Primenumber?");
     print_nl();
     if (prim == true) {
         print("true");
