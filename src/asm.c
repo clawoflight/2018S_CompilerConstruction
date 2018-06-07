@@ -183,7 +183,31 @@ static void mCc_asm_print_bin_op(struct mCc_tac_quad *quad, FILE *out)
 		struct mCc_asm_stack_pos new_number;
 		new_number.tac_number = quad->result.ref.number;
 		new_number.stack_ptr = current_frame_pointer;
-        new_number.lit_type = op1.lit_type;
+
+
+		//depending on the OP we got diff types
+		switch (quad->bin_op) {
+			case MCC_TAC_OP_BINARY_ADD:
+			case MCC_TAC_OP_BINARY_SUB:
+			case MCC_TAC_OP_BINARY_MUL:
+			case MCC_TAC_OP_BINARY_DIV:
+			case MCC_TAC_OP_BINARY_FLOAT_ADD:
+			case MCC_TAC_OP_BINARY_FLOAT_SUB:
+			case MCC_TAC_OP_BINARY_FLOAT_MUL:
+			case MCC_TAC_OP_BINARY_FLOAT_DIV:
+			case MCC_TAC_OP_BINARY_AND:
+			case MCC_TAC_OP_BINARY_OR:
+				new_number.lit_type = op1.lit_type;
+				break;
+			case MCC_TAC_OP_BINARY_LT:
+			case MCC_TAC_OP_BINARY_GT:
+			case MCC_TAC_OP_BINARY_LEQ:
+			case MCC_TAC_OP_BINARY_GEQ:
+			case MCC_TAC_OP_BINARY_EQ:
+			case MCC_TAC_OP_BINARY_NEQ:
+				new_number.lit_type = MCC_TAC_QUAD_LIT_BOOL;
+				break;
+		}
 
 		position[current_elements_in_local_array++] = new_number;
 		result = new_number;
