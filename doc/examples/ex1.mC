@@ -32,7 +32,6 @@ bool checkPrim(int n){
 
 void main(){
     print("Please enter a number: ");
-    print_nl();
     int n;
     n = read_int();
     print_nl();
@@ -44,8 +43,8 @@ void main(){
     print("Primenumber ?");
     print_nl();
     if (prim == true) {
-        print_int(1);
+        print("true");
     } else {
-        print_int(0);
+        print("false");
     }
 }
