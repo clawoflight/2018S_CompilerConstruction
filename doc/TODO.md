@@ -29,7 +29,7 @@ Type checker -- missing:
 
 ## Task 1
 
-- [ ] Implement code generation.
+- [x] Implement code generation.
 
 ## Task 2
 
@@ -39,7 +39,7 @@ Type checker -- missing:
 
 - [x] --help
 
---version
+- [x] --version
 
 - [x] --output
 

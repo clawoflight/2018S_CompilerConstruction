@@ -14,6 +14,8 @@
 #include "mCc/tac_builder.h"
 #include "mCc/typecheck.h"
 
+static const char* VERSION = "0.3.0";
+
 static void print_usage(const char *prg)
 {
 	printf("usage: %s [options] <FILE>\n\n", prg);
@@ -87,8 +89,7 @@ int main(int argc, char *argv[])
 		switch (c) {
 		case 'h': print_usage(argv[0]); return EXIT_SUCCESS;
 		case 'v':
-			// TODO
-			puts("We don't have version numbers yet!");
+			puts(VERSION);
 			return EXIT_SUCCESS;
 		case '?':
 			// getopt prints the error message itself
