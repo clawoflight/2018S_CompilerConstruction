@@ -18,7 +18,7 @@ bool checkPrim(int n){
     {
         mod  = n - (n/i)*i;
         if(mod == 0){
-            print("prime");
+            print("not prime");
             return false;
         }
         i = i +1;
