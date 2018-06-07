@@ -547,5 +547,5 @@ void mCc_asm_generate_assembly(struct mCc_tac_program *prog, FILE *out,
 		mCc_asm_assembly_from_quad(prog->quads[i], out);
 	}
 	mCc_asm_print_fpu(out);
-	mCc_asm_test_print(out);
+	/* mCc_asm_test_print(out); */
 }

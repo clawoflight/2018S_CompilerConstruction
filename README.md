@@ -36,7 +36,7 @@ ninja
 ```
 
 ## Execution
-The compiler can be called with `mCc`, see it's help message for details.
+The compiler can be called with `mCc`, **see it's help message for details**.
 `mC_to_dot` is provided to visualize the AST. It can only read from stdin and write to stdout.
 ```
 ./mCc --help
@@ -74,3 +74,8 @@ In order to print the Three Address Code (TAC), --print-tac and the correspondin
 # Kown issues
 - Due to lack of time, overall code quality went down a notch. Sorry.
 - Insufficient error checking during TAC construction.
+- No unit tests for TAC and ASM because time. sorry. For the latter (and now the former), integration tests are close to good enough though.
+
+# Remarks
+- **Floats are returned in %eax instead of the FPU**. We did this so we can treat everything the same to save time, and adapted `read_float` accordingly: it returns the float as a `long` without converting it.
+  This is our only deviation from the cdecl calling convention.
