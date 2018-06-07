@@ -19,7 +19,7 @@ Type checker -- missing:
     - [ ] last statement is an if-statement (with else)
     - [ ] last statement is an if-statement (without else)
 
-- [ ] Unit-tests for TAC, or at least explain why not
+- [x] Unit-tests for TAC, or at least explain why not
 
 - [x] Uncomment assertions in tac.c
 

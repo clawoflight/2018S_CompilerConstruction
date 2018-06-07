@@ -37,6 +37,7 @@ ninja
 
 ## Execution
 The compiler can be called with `mCc`, **see it's help message for details**.
+
 `mC_to_dot` is provided to visualize the AST. It can only read from stdin and write to stdout.
 ```
 ./mCc --help
@@ -51,7 +52,7 @@ Integration tests can be run with:
 ```
 ../test/integration
 ```
-In order dump the symbol tables, --print-symtab and the corresponding output may be specified. `-` for stdout is supported.
+In order dump the symbol tables, `--print-symtab` and the corresponding output may be specified. `-` or no argument for stdout is supported.
 The symbol tables will be printed as markdown table.
 ```
 ./mCc ackermann.mC --print-symtab st-out.md
@@ -61,7 +62,7 @@ The symbol tables will be printed as markdown table.
 ./mCc ackermann.mC --print-symtab - | pandoc -f markdown -o st-out.html
 ```
 
-In order to print the Three Address Code (TAC), --print-tac and the corresponding output may be specified. `-` for stdout is supported.
+In order to print the Three Address Code (TAC), `--print-tac` and the corresponding output may be specified. `-` or no argument for stdout is supported.
 ```
 ./mCc ackermann.mC --print-tac tac-out.txt
 
@@ -70,6 +71,8 @@ In order to print the Three Address Code (TAC), --print-tac and the correspondin
 ./mCc ackermann.mC --print-tac - | highlight -O xterm256 --syntax asm | less
 ./mCc ackermann.mC --print-tac - | highlight --syntax asm > tac-out.html
 ```
+
+The generated assembly can also be printed using `--print-asm`, and it is also stored in `a.s` during normal compilation.
 
 # Kown issues
 - Due to lack of time, overall code quality went down a notch. Sorry.
