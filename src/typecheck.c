@@ -132,6 +132,7 @@ mCc_check_binary(struct mCc_ast_expression *binary)
 
 	case MCC_AST_BINARY_OP_ADD:
 	case MCC_AST_BINARY_OP_SUB:
+			break;
 	case MCC_AST_BINARY_OP_MUL:
 	case MCC_AST_BINARY_OP_DIV:
 		if ((computed_type_left != MCC_AST_TYPE_INT) &&
@@ -391,7 +392,6 @@ static inline bool mCc_check_cmpnd(struct mCc_ast_statement *stmt)
 {
 	if (typecheck_result.status == MCC_TYPECHECK_STATUS_ERROR)
 		return false;
-
 	bool all_correct = true;
 	for (unsigned int i = 0; i < stmt->compound_stmt_count; ++i) {
 		if (!mCc_check_statement(stmt->compound_stmts[i])) {
@@ -423,9 +423,11 @@ static inline bool mCc_check_cmpnd_return(struct mCc_ast_statement *stmt)
 
 		if (curr_stmt->type == MCC_AST_STATEMENT_TYPE_IF) {
 			curr_stmt->node.outside_if = false;
-			if_path_return = mCc_check_if_return(curr_stmt->if_stmt);
+
+            if_path_return = mCc_check_if_return(curr_stmt->if_stmt);
 
 		} else if (curr_stmt->type == MCC_AST_STATEMENT_TYPE_IFELSE) {
+
 			if_path_return = mCc_check_if_else_return(curr_stmt);
 		} else if (curr_stmt->type == MCC_AST_STATEMENT_TYPE_RET) {
 			all_ret = mCc_check_ret(curr_stmt);
@@ -433,7 +435,6 @@ static inline bool mCc_check_cmpnd_return(struct mCc_ast_statement *stmt)
 			all_ret = mCc_check_ret_void(curr_stmt);
 		}
 	}
-
 	return (all_ret && if_path_return);
 }
 
@@ -472,14 +473,23 @@ static inline bool mCc_check_if_else_return(struct mCc_ast_statement *stmt)
 
 	if_branch = mCc_check_if_return(if_stmt);
 
-	if (else_stmt->type == MCC_AST_STATEMENT_TYPE_CMPND)
-		else_branch = mCc_check_cmpnd_return(else_stmt);
+    if (else_stmt->type == MCC_AST_STATEMENT_TYPE_IFELSE){
+        else_branch = (mCc_check_if_return(else_stmt->if_stmt));
+    }
 
-	if (else_stmt->type == MCC_AST_STATEMENT_TYPE_RET)
-		else_branch = mCc_check_ret(else_stmt);
+	if (else_stmt->type == MCC_AST_STATEMENT_TYPE_CMPND){
+        else_branch = mCc_check_cmpnd_return(else_stmt);
 
-	if (else_stmt->type == MCC_AST_STATEMENT_TYPE_RET_VOID)
-		else_branch = mCc_check_ret_void(else_stmt);
+    }
+
+	if (else_stmt->type == MCC_AST_STATEMENT_TYPE_RET){
+        else_branch = mCc_check_ret(else_stmt);
+
+    }
+
+	if (else_stmt->type == MCC_AST_STATEMENT_TYPE_RET_VOID){
+        else_branch = mCc_check_ret_void(else_stmt);
+    }
 
 	return (if_branch && else_branch);
 }
@@ -534,7 +544,8 @@ static inline bool mCc_check_statement(struct mCc_ast_statement *stmt)
 
 	switch (stmt->type) {
 	case MCC_AST_STATEMENT_TYPE_IF:
-	case MCC_AST_STATEMENT_TYPE_IFELSE: return mCc_check_if(stmt);
+	case MCC_AST_STATEMENT_TYPE_IFELSE:
+		return mCc_check_if(stmt);
 
 	case MCC_AST_STATEMENT_TYPE_RET: return mCc_check_ret(stmt);
 
