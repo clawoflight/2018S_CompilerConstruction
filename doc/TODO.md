@@ -1,6 +1,6 @@
 # General Feedback Corrections
 
-- [ ] Fix type checker: *any* assignment to a variable with array type is invalid.
+- [x] Fix type checker: *any* assignment to a variable with array type is invalid.
 
 # Specific Feedback Corrections
 
