@@ -110,6 +110,12 @@ struct mCc_tac_quad_entry {
 	int array_size; /// (Optional)For correct Stack allocation
 };
 
+struct mCc_cfg_block{
+	int number;
+	int next;
+    char* func_name;
+};
+
 /**
  * A single TAC-stmt, stored as quad.
  */
@@ -131,6 +137,8 @@ struct mCc_tac_quad {
 	} result;
 	/// variable or argument count for assembly
 	unsigned int var_count;
+
+	struct mCc_cfg_block cfg_node;
 };
 
 /**
