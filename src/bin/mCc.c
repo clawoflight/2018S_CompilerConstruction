@@ -13,6 +13,7 @@
 #include "mCc/parser.h"
 #include "mCc/tac_builder.h"
 #include "mCc/typecheck.h"
+#include "mCc/cfg_print.h"
 
 static const char* VERSION = "0.3.0";
 
@@ -216,6 +217,7 @@ int main(int argc, char *argv[])
 	if (tac_out && tac_out != stdout)
 		fclose(tac_out);
 
+    mCc_cfg_program_print(tac,tac_out);     //TODO change this into an extra cfg_out solution
 	/*    TODO
 	 * - do some optimisations
 	 */

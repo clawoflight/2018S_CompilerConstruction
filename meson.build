@@ -40,6 +40,7 @@ mCc_src = [ 'src/ast.c',
 	        'src/ast_symtab_link.c',
 	        'src/typecheck.c',
 	        'src/asm.c',
+	        'src/cfg_print.c',
             lgen.process('src/scanner.l'),
             pgen.process('src/parser.y') ]
 

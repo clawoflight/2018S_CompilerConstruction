@@ -279,7 +279,7 @@ static inline void mCc_tac_print_label(struct mCc_tac_label label, FILE *out)
 
 static void mCc_tac_print_bin_op(struct mCc_tac_quad *self, FILE *out)
 {
-	printf("block number %d next %d\n",self->cfg_node.number,self->cfg_node.next);
+	//printf("block number %d next %d\n",self->cfg_node.number,self->cfg_node.next);
 	switch (self->bin_op) {
 	case MCC_TAC_OP_BINARY_ADD:
 		fprintf(out, "\tt%d = t%d + t%d\n", self->result.ref.number,
@@ -351,7 +351,7 @@ static void mCc_tac_print_bin_op(struct mCc_tac_quad *self, FILE *out)
 
 static void mCc_tac_print_unary_op(struct mCc_tac_quad *self, FILE *out)
 {
-	printf("block number %d next %d\n",self->cfg_node.number,self->cfg_node.next);
+	//printf("block number %d next %d\n",self->cfg_node.number,self->cfg_node.next);
 	switch (self->un_op) {
 	case MCC_TAC_OP_UNARY_NEG:
 		fprintf(out, "\tt%d = -t%d\n", self->result.ref.number,
@@ -367,7 +367,7 @@ static void mCc_tac_print_unary_op(struct mCc_tac_quad *self, FILE *out)
 
 static void mCc_tac_print_literal(struct mCc_tac_quad *self, FILE *out)
 {
-	printf("block number %d next %d\n",self->cfg_node.number,self->cfg_node.next);
+	//printf("block number %d next %d\n",self->cfg_node.number,self->cfg_node.next);
 	switch (self->literal->type) {
 	case MCC_TAC_QUAD_LIT_INT:
 		fprintf(out, "\tt%d = %d\n", self->result.ref.number,
@@ -407,29 +407,28 @@ void mCc_tac_quad_print(struct mCc_tac_quad *self, FILE *out)
 	case MCC_TAC_QUAD_OP_UNARY: mCc_tac_print_unary_op(self, out); break;
 	case MCC_TAC_QUAD_OP_BINARY: mCc_tac_print_bin_op(self, out); break;
 	case MCC_TAC_QUAD_JUMP:
-		printf("block number %d next %d\n",self->cfg_node.number, self->cfg_node.next);
+		//printf("block number %d next %d\n",self->cfg_node.number, self->cfg_node.next);
 		fputs("\tjump ", out);
 		mCc_tac_print_label(self->result.label, out);
 		fputc('\n', out);
 		break;
 	case MCC_TAC_QUAD_JUMPFALSE:
-		printf("block number %d next %d nextnext %d\n",self->cfg_node.number,self->cfg_node.next, self->cfg_node.next+1);
+		printf("block number %d next %d\n",self->cfg_node.number,self->cfg_node.next);
 		fprintf(out, "\tjumpfalse t%d ", self->arg1.number);
 		mCc_tac_print_label(self->result.label, out);
 		fputc('\n', out);
 		break;
 	case MCC_TAC_QUAD_LABEL:
-        printf("LABEL block number %d\n",self->cfg_node.number);
-
-            mCc_tac_print_label(self->result.label, out);
+        printf("Label block number %d next %d\n",self->cfg_node.number,self->cfg_node.next);
+        mCc_tac_print_label(self->result.label, out);
 		fputs(":\n", out);
 		break;
 	case MCC_TAC_QUAD_PARAM:
-		printf("block number %d\n",self->cfg_node.number);
+		//printf("block number %d\n",self->cfg_node.number);
 		fprintf(out, "\tparam t%d\n", self->arg1.number);
 		break;
 	case MCC_TAC_QUAD_CALL:
-		printf("block number %d next %d\n",self->cfg_node.number,self->cfg_node.next);
+		//printf("block number %d next %d\n",self->cfg_node.number,self->cfg_node.next);
 		if (self->arg1.number >= 0)
 			fprintf(out, "\tt%d = call ", self->arg1.number);
 		else
@@ -438,12 +437,12 @@ void mCc_tac_quad_print(struct mCc_tac_quad *self, FILE *out)
 		fputc('\n', out);
 		break;
 	case MCC_TAC_QUAD_LOAD:
-		printf("block number %d\n",self->cfg_node.number);
+		//printf("block number %d\n",self->cfg_node.number);
 		fprintf(out, "\tt%d = t%d[t%d]\n", self->result.ref.number,
 		        self->arg1.number, self->arg2.number);
 		break;
 	case MCC_TAC_QUAD_STORE:
-		printf("block number %d\n",self->cfg_node.number);
+		//printf("block number %d\n",self->cfg_node.number);
 		fprintf(out, "\tt%d[t%d] = t%d\n", self->result.ref.number,
 		        self->arg2.number, self->arg1.number);
 		break;
