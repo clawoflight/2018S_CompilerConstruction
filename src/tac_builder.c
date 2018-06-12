@@ -317,12 +317,13 @@ static int mCc_tac_from_statement_if_else(struct mCc_tac_program *prog,
 
 	struct mCc_tac_quad *label_else_quad = mCc_tac_quad_new_label(label_else);
 	label_else_quad->comment = "Else branch";
-	if (mCc_tac_program_add_quad(prog, label_else_quad))
-		return 1;
 
-    label_else_quad->cfg_node.number=tmp_block.number;
+	label_else_quad->cfg_node.number=tmp_block.number;
 	label_else_quad->cfg_node.next=tmp_block.number;
 	label_else_quad->cfg_node.func_name=tmp_block.func_name;
+
+	if (mCc_tac_program_add_quad(prog, label_else_quad))
+		return 1;
 
 	mCc_tac_from_stmt(prog, stmt->else_stmt);
 	struct mCc_tac_quad *label_after_if_quad =

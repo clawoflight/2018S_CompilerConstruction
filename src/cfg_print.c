@@ -1,26 +1,13 @@
 #include "mCc/cfg_print.h"
 
-static int connection_count=0;
-struct connect **connections;
-
-void add_connection(int connectioncount,int from, int to){
-    struct connect *connection=malloc(sizeof(*connection));
-    connection->from=from;
-    connection->to=to;
-    connections[connectioncount]=connection;
-}
 
 void mCc_cfg_program_print(struct mCc_tac_program *self, FILE *out)
 {
     assert(self);
     assert(out);
-    connections=malloc(sizeof(*connections));
     for (unsigned int i = 0; i < self->quad_count; i++) {
         mCc_cfg_quad_print(self->quads[i], out);
     }
-    /*for (int i =0; i <connection_count; i++){                 //TODO think of a better way to save the connections or correct the mem allocation above
-        printf("%d -- %d;\n",connections[i]->from,connections[i]->to);
-    }*/
     fprintf(out, "}\n");
 }
 
@@ -141,25 +128,22 @@ void mCc_cfg_quad_print(struct mCc_tac_quad *quad,FILE *out){
         case MCC_TAC_QUAD_OP_BINARY: mCc_cfg_print_bin_op(quad, out); break;
         case MCC_TAC_QUAD_LABEL:
             if (quad->result.label.num > -1) {
-                fprintf(out, "\"]\n");
-                add_connection(connection_count,quad->cfg_node.number,quad->cfg_node.next);
-                connection_count++;
-                fprintf(out, "%i [label=\"",quad->cfg_node.next);
+                fprintf(out, "\"];\n");
+                fprintf(out,"%d -- %d;\n",quad->cfg_node.number,quad->cfg_node.next);
+                fprintf(out, "%d [label=\"",quad->cfg_node.next);
             }
             else {
                 fprintf(out, "strict graph {\n");
-                fprintf(out, "%i [label=\"Start %s\"];\n",quad->cfg_node.number-1,quad->result.label.str);  //TODO find better way to deal with func label numbers
-                add_connection(connection_count,quad->cfg_node.number-1,quad->cfg_node.number);
-                connection_count++;
-                fprintf(out, "%i [label=\"",quad->cfg_node.number);
+                fprintf(out, "%d [label=\"Start %s\"];",quad->cfg_node.number-1,quad->result.label.str);  //TODO find better way to deal with func label numbers
+                fprintf(out,"%d -- %d;\n",quad->cfg_node.number-1,quad->cfg_node.number);
+                fprintf(out, "%d [label=\"",quad->cfg_node.number);
             }
             break;
         case MCC_TAC_QUAD_JUMP:
             break;
         case MCC_TAC_QUAD_JUMPFALSE:
-            fprintf(out, "\"]\n");
-            add_connection(connection_count,quad->cfg_node.number,quad->cfg_node.next);
-            connection_count++;
+            fprintf(out, "\"];\n");
+            fprintf(out,"%d -- %d;\n",quad->cfg_node.number,quad->cfg_node.next);
             fprintf(out, "%d [label=\"",quad->cfg_node.next);
             break;
         case MCC_TAC_QUAD_PARAM:
