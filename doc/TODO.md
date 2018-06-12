@@ -27,6 +27,8 @@ Type checker -- missing:
 
 # Assignment 3
 
+- [ ] Exterminate compiler warnings!!!
+
 ## Task 1
 
 - [x] Implement code generation.
@@ -50,3 +52,6 @@ Type checker -- missing:
 - [x] Store executables in temp dir (mktemp(1)) or build dir.
 
 
+## Task 5
+
+- [ ] Print CFG as dot
