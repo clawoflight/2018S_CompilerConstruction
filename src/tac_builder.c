@@ -319,7 +319,7 @@ static int mCc_tac_from_statement_if_else(struct mCc_tac_program *prog,
 	label_else_quad->comment = "Else branch";
 
 	label_else_quad->cfg_node.number=tmp_block.number;
-	label_else_quad->cfg_node.next=tmp_block.number;
+	label_else_quad->cfg_node.next=tmp_block.number+anonym_block_count;
 	label_else_quad->cfg_node.func_name=tmp_block.func_name;
 
 	if (mCc_tac_program_add_quad(prog, label_else_quad))
