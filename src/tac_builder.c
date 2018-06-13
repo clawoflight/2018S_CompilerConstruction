@@ -246,7 +246,7 @@ static int mCc_tac_from_statement_if(struct mCc_tac_program *prog,
 	struct mCc_tac_quad *jump_after_if =
 	    mCc_tac_quad_new_jumpfalse(cond, label_after_if);
 	jump_after_if->comment = "Evaluate if condition";
-    anonym_block_count++;
+    ++anonym_block_count;
     jump_after_if->cfg_node.number = tmp_block.number;
     jump_after_if->cfg_node.next = tmp_block.next;
     jump_after_if->cfg_node.func_name = tmp_block.func_name;
@@ -288,7 +288,7 @@ static int mCc_tac_from_statement_if_else(struct mCc_tac_program *prog,
 	struct mCc_tac_quad *jump_to_else =
 	    mCc_tac_quad_new_jumpfalse(cond, label_else);
 	jump_to_else->comment = "Evaluate if condition";
-    anonym_block_count++;
+    ++anonym_block_count;
 	jump_to_else->cfg_node.number=tmp_block.number;
 	jump_to_else->cfg_node.next=tmp_block.next;
 	jump_to_else->cfg_node.func_name="L";               //-1    0
@@ -304,8 +304,8 @@ static int mCc_tac_from_statement_if_else(struct mCc_tac_program *prog,
 	struct mCc_tac_quad *jump_after_if = mCc_tac_quad_new_jump(label_after_if);
 	jump_after_if->comment = "Jump after if";
 
-    jump_after_if->cfg_node.number=tmp_block.next;
-	jump_after_if->cfg_node.next=tmp_block.next+1;
+    jump_after_if->cfg_node.number=tmp_block.next+anonym_block_count;
+	jump_after_if->cfg_node.next=tmp_block.next+anonym_block_count+1;
 	jump_after_if->cfg_node.func_name=tmp_block.func_name;    // 0  1
 
 	if (mCc_tac_program_add_quad(prog, jump_after_if))

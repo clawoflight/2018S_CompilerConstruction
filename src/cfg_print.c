@@ -144,6 +144,7 @@ void mCc_cfg_quad_print(struct mCc_tac_quad *quad,FILE *out){
         case MCC_TAC_QUAD_JUMPFALSE:
             fprintf(out, "\"];\n");
             fprintf(out,"%d -- %d;\n",quad->cfg_node.number,quad->cfg_node.next);
+            fprintf(out,"%d -- %d;\n",quad->cfg_node.number,quad->cfg_node.next+1);	//TODO jump to return 
             fprintf(out, "%d [label=\"",quad->cfg_node.next);
             break;
         case MCC_TAC_QUAD_PARAM:
