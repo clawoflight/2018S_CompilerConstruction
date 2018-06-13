@@ -21,15 +21,15 @@ static void print_usage(const char *prg)
 {
 	printf("usage: %s [options] <FILE>\n\n", prg);
 	puts("Options:");
-	printf("  <FILE>                   Input file, or - for stdin\n");
-	printf("  -h|--help                Print this message\n");
-	printf("  -v|--version             Print the version\n");
-	printf("  -o|--output <FILE>       Path to generated executable, default is a.out\n");
-	printf("  --print-symtab [FILE|-]  Print the symbol tables\n");
-	printf("  --print-tac    [FILE|-]  Print the three-address code to the given path\n");
-	printf("  --print-asm    [FILE|-]  Print the assembler code to the given path\n");
-	printf("  --print-cfg    [FILE|-]  Print the control-flow graph in DOT format\n");
-	printf("\nPrinting anything disables compilation.\n");
+	printf("  <FILE>                  Input file, or - for stdin\n");
+	printf("  -h|--help               Print this message\n");
+	printf("  -v|--version            Print the version\n");
+	printf("  -o|--output <FILE>      Path to generated executable, default is a.out\n");
+	printf("  --print-symtab[=FILE]   Print the symbol tables\n");
+	printf("  --print-tac[=FILE]      Print the three-address code\n");
+	printf("  --print-asm[=FILE]      Print the assembler code\n");
+	printf("  --print-cfg[=FILE]      Print the control-flow graphs in DOT format\n");
+	printf("\nPrinting anything disables compilation. Printing without specifying a file prints to stdout.\n");
 }
 
 static int compile(char *source, char *executable)

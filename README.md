@@ -55,11 +55,11 @@ Integration tests can be run with:
 In order dump the symbol tables, `--print-symtab` and the corresponding output may be specified. `-` or no argument for stdout is supported.
 The symbol tables will be printed as markdown table.
 ```
-./mCc ackermann.mC --print-symtab st-out.md
+./mCc ackermann.mC --print-symtab=st-out.md
 
 # Generate HTML
-./mCc ackermann.mC --print-symtab - | markdown > st-out.html
-./mCc ackermann.mC --print-symtab - | pandoc -f markdown -o st-out.html
+./mCc ackermann.mC --print-symtab | markdown > st-out.html
+./mCc ackermann.mC --print-symtab | pandoc -f markdown -o st-out.html
 ```
 
 In order to print the Three Address Code (TAC), `--print-tac` and the corresponding output may be specified. `-` or no argument for stdout is supported.
@@ -67,12 +67,14 @@ In order to print the Three Address Code (TAC), `--print-tac` and the correspond
 ./mCc ackermann.mC --print-tac tac-out.txt
 
 # decent syntax highlighting:
-./mCc ackermann.mC --print-tac - | vim -c "setf asm" -
-./mCc ackermann.mC --print-tac - | highlight -O xterm256 --syntax asm | less
-./mCc ackermann.mC --print-tac - | highlight --syntax asm > tac-out.html
+./mCc ackermann.mC --print-tac | vim -c "setf asm" -
+./mCc ackermann.mC --print-tac | highlight -O xterm256 --syntax asm | less
+./mCc ackermann.mC --print-tac | highlight --syntax asm > tac-out.html
 ```
 
 The generated assembly can also be printed using `--print-asm`, and it is also stored in `a.s` during normal compilation.
+
+The control-flow graphs can be printed in DOT format using `--print-cfg`.
 
 # Kown issues
 - Due to lack of time, overall code quality went down a notch. Sorry.
