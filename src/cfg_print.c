@@ -26,7 +26,7 @@ void mCc_cfg_print_literal(struct mCc_tac_quad *self, FILE *out){
                     self->literal->bval ? "true" : "false");
             break;
         case MCC_TAC_QUAD_LIT_STR:
-            fprintf(out, "t%d = \"%s\"\\n", self->result.ref.number,
+            fprintf(out, "t%d = \\\"%s\\\"\\n", self->result.ref.number,
                     self->literal->strval);
             break;
     }
