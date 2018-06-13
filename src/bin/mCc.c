@@ -28,6 +28,7 @@ static void print_usage(const char *prg)
 	printf("  --print-symtab [FILE|-]  Print the symbol tables\n");
 	printf("  --print-tac    [FILE|-]  Print the three-address code to the given path\n");
 	printf("  --print-asm    [FILE|-]  Print the assembler code to the given path\n");
+	printf("  --print-cfg    [FILE|-]  Print the control-flow graph in DOT format\n");
 	printf("\nPrinting anything disables compilation.\n");
 }
 
@@ -65,6 +66,9 @@ int main(int argc, char *argv[])
 	FILE *tac_out = NULL;
 	int print_tac = 0;
 
+	FILE *cfg_out = NULL;
+	int print_cfg = 0;
+
 	FILE *asm_out = fopen("a.s", "w");
 	int print_asm = 0;
 	if (!asm_out) {
@@ -81,6 +85,7 @@ int main(int argc, char *argv[])
 			{ "print-tac", optional_argument, 0, 't' },
 			{ "print-symtab", optional_argument, 0, 's' },
 			{ "print-asm", optional_argument, 0, 'a' },
+			{ "print-cfg", optional_argument, 0, 'c' },
 			{ "output", required_argument, 0, 'o' },
 			{ 0, 0, 0, 0 }
 		};
@@ -119,11 +124,20 @@ int main(int argc, char *argv[])
 		case 'a':
 			if (!optarg || strcmp("-", optarg) == 0) {
 				asm_out = stdout;
-			} else if (!(asm_out = fopen(optarg, "a"))) {
+			} else if (!(asm_out = fopen(optarg, "w"))) {
 				perror("fopen");
 				return EXIT_FAILURE;
 			}
 			print_asm = 1;
+			break;
+		case 'c':
+			if (!optarg || strcmp("-", optarg) == 0) {
+				cfg_out = stdout;
+			} else if (!(cfg_out = fopen(optarg, "w"))) {
+				perror("fopen");
+				return EXIT_FAILURE;
+			}
+			print_cfg = 1;
 			break;
 		}
 	}
@@ -217,7 +231,11 @@ int main(int argc, char *argv[])
 	if (tac_out && tac_out != stdout)
 		fclose(tac_out);
 
-    mCc_cfg_program_print(tac,tac_out);     //TODO change this into an extra cfg_out solution
+	if (print_cfg)
+		mCc_cfg_program_print(tac, cfg_out);
+	if (print_cfg && cfg_out != stdout)
+		fclose(cfg_out);
+
 	/*    TODO
 	 * - do some optimisations
 	 */
@@ -230,7 +248,7 @@ int main(int argc, char *argv[])
 
 	int exit_status = EXIT_SUCCESS;
 	// Only compile if nothing was printed
-	if (!(print_st || print_tac || print_asm))
+	if (!(print_st || print_tac || print_asm || print_cfg))
 		exit_status = compile("a.s", executable);
 
 	/* cleanup */
