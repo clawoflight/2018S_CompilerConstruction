@@ -130,7 +130,7 @@ void mCc_cfg_quad_print(struct mCc_tac_quad *quad,FILE *out){
             if (quad->result.label.num > -1) {
                 fprintf(out, "\"];\n");
                 fprintf(out,"%d -- %d;\n",quad->cfg_node.number,quad->cfg_node.next);
-                fprintf(out, "%d [label=\"",quad->cfg_node.next);
+                fprintf(out, "%d [label=\"",quad->cfg_node.number);
             }
             else {
                 fprintf(out, "strict graph {\n");
