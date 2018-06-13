@@ -298,14 +298,14 @@ static int mCc_tac_from_statement_if_else(struct mCc_tac_program *prog,
 
     tmp_block.number=jump_to_else->result.label.num;
     tmp_block.func_name="L";
-    tmp_block.next=jump_to_else->result.label.num;
+    tmp_block.next=jump_to_else->result.label.num+anonym_block_count;
 
 	mCc_tac_from_stmt(prog, stmt->if_stmt);
 	struct mCc_tac_quad *jump_after_if = mCc_tac_quad_new_jump(label_after_if);
 	jump_after_if->comment = "Jump after if";
 
     jump_after_if->cfg_node.number=tmp_block.next+anonym_block_count;
-	jump_after_if->cfg_node.next=tmp_block.next+anonym_block_count+1;
+	jump_after_if->cfg_node.next=tmp_block.next+anonym_block_count;
 	jump_after_if->cfg_node.func_name=tmp_block.func_name;    // 0  1
 
 	if (mCc_tac_program_add_quad(prog, jump_after_if))
