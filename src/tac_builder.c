@@ -412,13 +412,14 @@ static int mCc_tac_from_statement_while(struct mCc_tac_program *prog,
 	    mCc_tac_quad_new_label(label_after_while);
 	label_after_while_quad->comment = "End of while";
 
+    int prev=tmp_block.next;
+
+    tmp_block.number = label_cond_quad->result.label.num;
+    tmp_block.next = label_after_while_quad->result.label.num;
+
     label_cond_quad->cfg_node.number=tmp_block.number;
     label_cond_quad->cfg_node.next=tmp_block.next;
     label_cond_quad->cfg_node.func_name=tmp_block.func_name;
-
-    tmp_block.number=label_cond_quad->result.label.num;
-    tmp_block.func_name="L";
-    tmp_block.next=label_cond_quad->result.label.num;
 
     mCc_tac_program_add_quad(prog, label_cond_quad);
 	struct mCc_tac_quad_entry cond =
@@ -436,17 +437,21 @@ static int mCc_tac_from_statement_while(struct mCc_tac_program *prog,
 	mCc_tac_from_stmt(prog, stmt->while_stmt);
 	struct mCc_tac_quad *jump_to_cond = mCc_tac_quad_new_jump(label_cond);
 	jump_to_cond->comment = "Repeat Loop";
-    jump_to_cond->cfg_node.number=tmp_block.number;
-    jump_to_cond->cfg_node.next=tmp_block.next;
+    jump_to_cond->cfg_node.number=tmp_block.next;
+    jump_to_cond->cfg_node.next=prev;
     jump_to_cond->cfg_node.func_name=tmp_block.func_name;
     if (mCc_tac_program_add_quad(prog, jump_to_cond))
 		return 1;
-
-	if (mCc_tac_program_add_quad(prog, label_after_while_quad))
-		return 1;
     tmp_block.number=jump_after_while->result.label.num;
     tmp_block.func_name="L";
-    tmp_block.next=jump_after_while->result.label.num;
+    tmp_block.next=jump_after_while->result.label.num+1;
+
+    label_after_while_quad->cfg_node.number=tmp_block.next;
+    label_after_while_quad->cfg_node.next=tmp_block.next;
+    label_after_while_quad->cfg_node.func_name=tmp_block.func_name;
+	if (mCc_tac_program_add_quad(prog, label_after_while_quad))
+		return 1;
+
 	return 0;
 }
 

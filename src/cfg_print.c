@@ -134,12 +134,13 @@ void mCc_cfg_quad_print(struct mCc_tac_quad *quad,FILE *out){
             }
             else {
                 fprintf(out, "strict graph {\n");
-                fprintf(out, "%d [label=\"Start %s\"];",quad->cfg_node.number-1,quad->result.label.str);  //TODO find better way to deal with func label numbers
+                fprintf(out, "%d [label=\"Start %s\"];\n",quad->cfg_node.number-1,quad->result.label.str);  //TODO find better way to deal with func label numbers
                 fprintf(out,"%d -- %d;\n",quad->cfg_node.number-1,quad->cfg_node.number);
                 fprintf(out, "%d [label=\"",quad->cfg_node.number);
             }
             break;
         case MCC_TAC_QUAD_JUMP:
+            fprintf(out,"%d -- %d;\n",quad->cfg_node.number,quad->cfg_node.next);
             break;
         case MCC_TAC_QUAD_JUMPFALSE:
             fprintf(out, "\"];\n");
