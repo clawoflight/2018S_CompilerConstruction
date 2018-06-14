@@ -406,34 +406,33 @@ static inline bool mCc_check_cmpnd_return(struct mCc_ast_statement *stmt)
 	if (typecheck_result.status == MCC_TYPECHECK_STATUS_ERROR)
 		return false;
 
-	struct mCc_ast_statement *curr_stmt;
-
-	bool all_ret = true;
+	bool all_ret = false;
 	bool if_path_return = true;
 
 	for (unsigned int i = 0; i < stmt->compound_stmt_count; i++) {
 
-		curr_stmt = stmt->compound_stmts[i];
-
 		if (stmt->node.outside_if == false)
-			curr_stmt->node.outside_if = false;
+			stmt->compound_stmts[i]->node.outside_if = false;
 		else
-			curr_stmt->node.outside_if = true;
+			stmt->compound_stmts[i]->node.outside_if = true;
 
-		if (curr_stmt->type == MCC_AST_STATEMENT_TYPE_IF) {
-			curr_stmt->node.outside_if = false;
+		if (stmt->compound_stmts[i]->type == MCC_AST_STATEMENT_TYPE_IF) {
+			stmt->compound_stmts[i]->node.outside_if = false;
+			if_path_return = mCc_check_if_return(stmt->compound_stmts[i]->if_stmt);
 
-			if_path_return = mCc_check_if_return(curr_stmt->if_stmt);
-
-		} else if (curr_stmt->type == MCC_AST_STATEMENT_TYPE_IFELSE) {
-
-			if_path_return = mCc_check_if_else_return(curr_stmt);
-		} else if (curr_stmt->type == MCC_AST_STATEMENT_TYPE_RET) {
-			all_ret = mCc_check_ret(curr_stmt);
-		} else if (curr_stmt->type == MCC_AST_STATEMENT_TYPE_RET_VOID) {
-			all_ret = mCc_check_ret_void(curr_stmt);
+		} else if (stmt->compound_stmts[i]->type == MCC_AST_STATEMENT_TYPE_IFELSE) {
+            stmt->compound_stmts[i]->node.outside_if = false;
+            if_path_return = mCc_check_if_else_return(stmt->compound_stmts[i]);
+            all_ret = true;
+		    printf("OUTSIDE IF AT ELSE: %d\n", stmt->compound_stmts[i]->node.outside_if);
+        } else if (stmt->compound_stmts[i]->type == MCC_AST_STATEMENT_TYPE_RET) {
+			all_ret = mCc_check_ret(stmt->compound_stmts[i]);
+		} else if (stmt->compound_stmts[i]->type == MCC_AST_STATEMENT_TYPE_RET_VOID) {
+			all_ret = mCc_check_ret_void(stmt->compound_stmts[i]);
 		}
 	}
+    printf("all_ret: %d\n", all_ret);
+    printf("if_path_return: %d\n", if_path_return);
 	return (all_ret && if_path_return);
 }
 
@@ -447,14 +446,17 @@ static inline bool mCc_check_if_return(struct mCc_ast_statement *stmt)
 	inner_stmt->node.outside_if = false;
 	bool ret = true;
 
-	if (inner_stmt->type == MCC_AST_STATEMENT_TYPE_CMPND)
-		ret = mCc_check_cmpnd_return(inner_stmt);
+	if (inner_stmt->type == MCC_AST_STATEMENT_TYPE_CMPND){
+        printf("print twice\n");
+        ret = mCc_check_cmpnd_return(stmt);
+    }
 
 	if (inner_stmt->type == MCC_AST_STATEMENT_TYPE_RET)
-		ret = mCc_check_ret(inner_stmt);
+        ret = mCc_check_ret(stmt);
+
 
 	if (inner_stmt->type == MCC_AST_STATEMENT_TYPE_RET_VOID)
-		ret = mCc_check_ret_void(inner_stmt);
+		ret = mCc_check_ret_void(stmt);
 
 	return ret;
 }
@@ -464,29 +466,36 @@ static inline bool mCc_check_if_else_return(struct mCc_ast_statement *stmt)
 	if (typecheck_result.status == MCC_TYPECHECK_STATUS_ERROR)
 		return false;
 
+    printf("check if else branch\n");
 	bool if_branch = false;
 	bool else_branch = false;
 
-	struct mCc_ast_statement *if_stmt = stmt->if_stmt;
-	struct mCc_ast_statement *else_stmt = stmt->else_stmt;
+	if_branch = mCc_check_if_return(stmt->if_stmt);
 
-	if_branch = mCc_check_if_return(if_stmt);
+    if (stmt->else_stmt->type == MCC_AST_STATEMENT_TYPE_IF) {
+        printf("once\n\n");
+        stmt->else_stmt->node.outside_if = false;
+        else_branch = mCc_check_if_return(stmt->else_stmt);
+    }
 
-	if (else_stmt->type == MCC_AST_STATEMENT_TYPE_IFELSE) {
-		else_branch = (mCc_check_if_return(else_stmt->if_stmt));
+	if (stmt->else_stmt->type == MCC_AST_STATEMENT_TYPE_IFELSE) {
+		else_branch = mCc_check_if_return(stmt->else_stmt->if_stmt);
 	}
 
-	if (else_stmt->type == MCC_AST_STATEMENT_TYPE_CMPND) {
-		else_branch = mCc_check_cmpnd_return(else_stmt);
+	if (stmt->else_stmt->type == MCC_AST_STATEMENT_TYPE_CMPND) {
+		else_branch = mCc_check_cmpnd_return(stmt->else_stmt);
 	}
 
-	if (else_stmt->type == MCC_AST_STATEMENT_TYPE_RET) {
-		else_branch = mCc_check_ret(else_stmt);
+	if (stmt->else_stmt->type == MCC_AST_STATEMENT_TYPE_RET) {
+		else_branch = mCc_check_ret(stmt->else_stmt);
 	}
 
-	if (else_stmt->type == MCC_AST_STATEMENT_TYPE_RET_VOID) {
-		else_branch = mCc_check_ret_void(else_stmt);
+	if (stmt->else_stmt->type == MCC_AST_STATEMENT_TYPE_RET_VOID) {
+		else_branch = mCc_check_ret_void(stmt->else_stmt);
 	}
+
+    printf("if_branch: %d\n", if_branch);
+    printf("else_branch: %d\n", else_branch);
 
 	return (if_branch && else_branch);
 }
@@ -509,27 +518,36 @@ static inline bool mCc_check_function(struct mCc_ast_function_def *func)
 
 	func->body->node.outside_if = true;
 	bool check_func_for_return = mCc_check_cmpnd_return(func->body);
+
 	bool check_func = mCc_check_statement(func->body);
 	bool general_ret = false;
 
-	for (unsigned int i = 0; i < func->body->compound_stmt_count; i++) {
+    if (func->func_type == MCC_AST_TYPE_VOID)
+        return (check_func_for_return && check_func);
 
+	for (unsigned int i = 0; i < func->body->compound_stmt_count; i++) {
+        printf("Outside if: %d\n",func->body->compound_stmts[i]->node.outside_if);
 		if (func->body->compound_stmts[i]->node.outside_if == true) {
-			general_ret = true;
+            general_ret = true;
 		}
 	}
 
-	if (func->func_type == MCC_AST_TYPE_VOID)
-		return (check_func_for_return && check_func);
+	printf("check_func_for_return: %d\n", check_func_for_return);
+	printf("check_func: %d\n", check_func);
+	printf("general_ret: %d\n", general_ret);
 
-	if (!general_ret) {
+
+
+	if (typecheck_result.status == MCC_TYPECHECK_STATUS_ERROR)
+		return false;
+
+	if (!(check_func_for_return && check_func && general_ret)) {
 		typecheck_result.status = MCC_TYPECHECK_STATUS_ERROR;
 		snprintf(typecheck_result.err_msg, err_len,
 		         "Function %s may not reach a return",
 		         func->identifier->id_value);
 		typecheck_result.err_loc = func->node.sloc;
 	}
-
 	return (check_func_for_return && check_func && general_ret);
 }
 
