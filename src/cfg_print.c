@@ -15,19 +15,19 @@ void mCc_cfg_program_print(struct mCc_tac_program *self, FILE *out)
 void mCc_cfg_print_literal(struct mCc_tac_quad *self, FILE *out){
     switch (self->literal->type) {
         case MCC_TAC_QUAD_LIT_INT:
-            fprintf(out, "t%d = %d\\n", self->result.ref.number,
+            fprintf(out, "t%d = %d\\l", self->result.ref.number,
                     self->literal->ival);
             break;
         case MCC_TAC_QUAD_LIT_FLOAT:
-            fprintf(out, "t%d = %f\\n", self->result.ref.number,
+            fprintf(out, "t%d = %f\\l", self->result.ref.number,
                     self->literal->fval);
             break;
         case MCC_TAC_QUAD_LIT_BOOL:
-            fprintf(out, "t%d = %s\\n", self->result.ref.number,
+            fprintf(out, "t%d = %s\\l", self->result.ref.number,
                     self->literal->bval ? "true" : "false");
             break;
         case MCC_TAC_QUAD_LIT_STR:
-            fprintf(out, "t%d = \\\"%s\\\"\\n", self->result.ref.number,
+            fprintf(out, "t%d = \\\"%s\\\"\\l", self->result.ref.number,
                     self->literal->strval);
             break;
     }
@@ -37,11 +37,11 @@ void mCc_cfg_print_literal(struct mCc_tac_quad *self, FILE *out){
 void mCc_cfg_print_unary_op(struct mCc_tac_quad *self, FILE *out){
     switch (self->un_op) {
         case MCC_TAC_OP_UNARY_NEG:
-            fprintf(out, "t%d = -t%d\\n", self->result.ref.number,
+            fprintf(out, "t%d = -t%d\\l", self->result.ref.number,
                     self->arg1.number);
             break;
         case MCC_TAC_OP_UNARY_NOT:
-            fprintf(out, "t%d = !t%d\\n", self->result.ref.number,
+            fprintf(out, "t%d = !t%d\\l", self->result.ref.number,
                     self->arg1.number);
             break;
     }
@@ -51,67 +51,67 @@ void mCc_cfg_print_unary_op(struct mCc_tac_quad *self, FILE *out){
 void mCc_cfg_print_bin_op(struct mCc_tac_quad *self, FILE *out){
     switch (self->bin_op) {
         case MCC_TAC_OP_BINARY_ADD:
-            fprintf(out, "\tt%d = t%d + t%d\n", self->result.ref.number,
+            fprintf(out, "\tt%d = t%d + t%d\\l", self->result.ref.number,
                     self->arg1.number, self->arg2.number);
             break;
         case MCC_TAC_OP_BINARY_SUB:
-            fprintf(out, "\tt%d = t%d - t%d\n", self->result.ref.number,
+            fprintf(out, "\tt%d = t%d - t%d\\l", self->result.ref.number,
                     self->arg1.number, self->arg2.number);
             break;
         case MCC_TAC_OP_BINARY_MUL:
-            fprintf(out, "\tt%d = t%d * t%d\n", self->result.ref.number,
+            fprintf(out, "\tt%d = t%d * t%d\\l", self->result.ref.number,
                     self->arg1.number, self->arg2.number);
             break;
         case MCC_TAC_OP_BINARY_DIV:
-            fprintf(out, "t%d = t%d / t%d\\n", self->result.ref.number,
+            fprintf(out, "t%d = t%d / t%d\\l", self->result.ref.number,
                     self->arg1.number, self->arg2.number);
             break;
         case MCC_TAC_OP_BINARY_LT:
-            fprintf(out, "t%d = t%d < t%d\\n", self->result.ref.number,
+            fprintf(out, "t%d = t%d < t%d\\l", self->result.ref.number,
                     self->arg1.number, self->arg2.number);
             break;
         case MCC_TAC_OP_BINARY_GT:
-            fprintf(out, "t%d = t%d > t%d\\n", self->result.ref.number,
+            fprintf(out, "t%d = t%d > t%d\\l", self->result.ref.number,
                     self->arg1.number, self->arg2.number);
             break;
         case MCC_TAC_OP_BINARY_LEQ:
-            fprintf(out, "t%d = t%d <= t%d\\n", self->result.ref.number,
+            fprintf(out, "t%d = t%d <= t%d\\l", self->result.ref.number,
                     self->arg1.number, self->arg2.number);
             break;
         case MCC_TAC_OP_BINARY_GEQ:
-            fprintf(out, "t%d = t%d >= t%d\\n", self->result.ref.number,
+            fprintf(out, "t%d = t%d >= t%d\\l", self->result.ref.number,
                     self->arg1.number, self->arg2.number);
             break;
         case MCC_TAC_OP_BINARY_AND:
-            fprintf(out, "t%d = t%d && t%d\\n", self->result.ref.number,
+            fprintf(out, "t%d = t%d && t%d\\l", self->result.ref.number,
                     self->arg1.number, self->arg2.number);
             break;
         case MCC_TAC_OP_BINARY_OR:
-            fprintf(out, "t%d = t%d || t%d\\n", self->result.ref.number,
+            fprintf(out, "t%d = t%d || t%d\\l", self->result.ref.number,
                     self->arg1.number, self->arg2.number);
             break;
         case MCC_TAC_OP_BINARY_EQ:
-            fprintf(out, "t%d = t%d == t%d\\n", self->result.ref.number,
+            fprintf(out, "t%d = t%d == t%d\\l", self->result.ref.number,
                     self->arg1.number, self->arg2.number);
             break;
         case MCC_TAC_OP_BINARY_NEQ:
-            fprintf(out, "t%d = t%d != t%d\\n", self->result.ref.number,
+            fprintf(out, "t%d = t%d != t%d\\l", self->result.ref.number,
                     self->arg1.number, self->arg2.number);
             break;
         case MCC_TAC_OP_BINARY_FLOAT_ADD:
-            fprintf(out, "t%d = t%d + t%d\\n", self->result.ref.number,
+            fprintf(out, "t%d = t%d + t%d\\l", self->result.ref.number,
                     self->arg1.number, self->arg2.number);
             break;
         case MCC_TAC_OP_BINARY_FLOAT_SUB:
-            fprintf(out, "t%d = t%d - t%d\\n", self->result.ref.number,
+            fprintf(out, "t%d = t%d - t%d\\l", self->result.ref.number,
                     self->arg1.number, self->arg2.number);
             break;
         case MCC_TAC_OP_BINARY_FLOAT_MUL:
-            fprintf(out, "t%d = t%d * t%d\\n", self->result.ref.number,
+            fprintf(out, "t%d = t%d * t%d\\l", self->result.ref.number,
                     self->arg1.number, self->arg2.number);
             break;
         case MCC_TAC_OP_BINARY_FLOAT_DIV:
-            fprintf(out, "t%d = t%d / t%d\\n", self->result.ref.number,
+            fprintf(out, "t%d = t%d / t%d\\l", self->result.ref.number,
                     self->arg1.number, self->arg2.number);
             break;
     }
@@ -121,7 +121,7 @@ void mCc_cfg_print_bin_op(struct mCc_tac_quad *self, FILE *out){
 void mCc_cfg_quad_print(struct mCc_tac_quad *quad,FILE *out){
     switch (quad->type) {
         case MCC_TAC_QUAD_ASSIGN:
-            fprintf(out, "t%d = t%d\\n", quad->result.ref.number,
+            fprintf(out, "t%d = t%d\\l", quad->result.ref.number,
                     quad->arg1.number);
             break;
         case MCC_TAC_QUAD_ASSIGN_LIT: mCc_cfg_print_literal(quad, out); break;
@@ -130,8 +130,8 @@ void mCc_cfg_quad_print(struct mCc_tac_quad *quad,FILE *out){
         case MCC_TAC_QUAD_LABEL:
             if (quad->result.label.num > -1) {
                 fprintf(out, "\"];\n");
-                fprintf(out,"%d -> %d;\n",quad->cfg_node.number,quad->cfg_node.next);
-                fprintf(out, "%d [shape=box label=\"",quad->cfg_node.number);
+                fprintf(out,"%s%d -> %s%d;\n",quad->cfg_node.label_name,quad->cfg_node.number,quad->cfg_node.label_name_next, quad->cfg_node.next);
+                fprintf(out, "%s%d [shape=box label=\"",quad->cfg_node.label_name,quad->cfg_node.number);
             }
             else {
 				if (first_func)
@@ -140,19 +140,21 @@ void mCc_cfg_quad_print(struct mCc_tac_quad *quad,FILE *out){
 					fprintf(out, "\n} ");
 
                 fprintf(out, "strict digraph \"%s\" {\n", quad->result.label.str);
-                fprintf(out, "%d [label=\"Start %s\"];\n",quad->cfg_node.number-1,quad->result.label.str);  //TODO find better way to deal with func label numbers
-                fprintf(out,"%d -> %d;\n",quad->cfg_node.number-1,quad->cfg_node.number);
-                fprintf(out, "%d [shape=box label=\"",quad->cfg_node.number);
+                fprintf(out, "%s [label=\"Start %s\"];\n",quad->result.label.str,quad->result.label.str);  //TODO find better way to deal with func label numbers
+                fprintf(out,"%s -> %d;\n",quad->result.label.str,quad->cfg_node.number);
+                fprintf(out, "%s%d [shape=box label=\"",quad->cfg_node.label_name,quad->cfg_node.number);
             }
             break;
         case MCC_TAC_QUAD_JUMP:
-            fprintf(out,"\"];\n%d -> %d;\n//",quad->cfg_node.number,quad->cfg_node.next);   //TODO here the edge will be printed inside a label --> well, then create a new anonymous block?
+            fprintf(out,"\"];\n%s%d -> %s%d;\n//",quad->cfg_node.label_name, quad->cfg_node.number,quad->cfg_node.label_name_next,quad->cfg_node.next);   //TODO here the edge will be printed inside a label --> well, then create a new anonymous block?
             break;
         case MCC_TAC_QUAD_JUMPFALSE:
             fprintf(out, "\"];\n");
-            fprintf(out,"%d -> %d [label=\"True\"];\n",quad->cfg_node.number,quad->cfg_node.next);
-            fprintf(out,"%d -> %d [label=\"False\"];\n",quad->cfg_node.number,quad->cfg_node.next+1);	// jump to return
-            fprintf(out, "%d [shape=box label=\"",quad->cfg_node.next);
+            fprintf(out,"%s%d -> %s%d\n [label=\"True\"];\n",quad->cfg_node.label_name,quad->cfg_node.number,quad->cfg_node.label_name_next, quad->cfg_node.next);
+            fprintf(out,"%s%d -> %s%d\n [label=\"False\"];\n",quad->cfg_node.label_name,quad->cfg_node.number,"L", quad->result.label.num);	// jump to return
+            if(!quad->cfg_node.if_jump_label)
+                fprintf(out,"%s%d -> %s%d;\n",quad->cfg_node.label_name_next, quad->cfg_node.next,"L", quad->result.label.num);	// jump to return
+            fprintf(out, "%s%d [shape=box label=\"",quad->cfg_node.label_name,quad->cfg_node.next);
             break;
         case MCC_TAC_QUAD_PARAM:
             fprintf(out, "param t%d\\n", quad->arg1.number);

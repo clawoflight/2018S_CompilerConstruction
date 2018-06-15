@@ -113,7 +113,9 @@ struct mCc_tac_quad_entry {
 struct mCc_cfg_block{
 	int number;
 	int next;
-    char* func_name;
+    char* label_name;
+    char* label_name_next;
+    bool if_jump_label;
 };
 
 /**
