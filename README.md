@@ -64,7 +64,7 @@ The symbol tables will be printed as markdown table.
 
 In order to print the Three Address Code (TAC), `--print-tac` and the corresponding output may be specified. `-` or no argument for stdout is supported.
 ```
-./mCc ackermann.mC --print-tac tac-out.txt
+./mCc ackermann.mC --print-tac=tac-out.txt
 
 # decent syntax highlighting:
 ./mCc ackermann.mC --print-tac | vim -c "setf asm" -
@@ -75,6 +75,10 @@ In order to print the Three Address Code (TAC), `--print-tac` and the correspond
 The generated assembly can also be printed using `--print-asm`, and it is also stored in `a.s` during normal compilation.
 
 The control-flow graphs can be printed in DOT format using `--print-cfg`.
+```
+./mCc ackermann.mC --print-cfg=t.dot
+dot -Tsvg -O t.dot # will produce one svg for every graph
+```
 
 # Kown issues
 - Due to lack of time, overall code quality went down a notch. Sorry.
