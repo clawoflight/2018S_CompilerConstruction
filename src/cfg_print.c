@@ -1,5 +1,6 @@
 #include "mCc/cfg_print.h"
 
+static int first_func = 1;
 
 void mCc_cfg_program_print(struct mCc_tac_program *self, FILE *out)
 {
@@ -133,6 +134,11 @@ void mCc_cfg_quad_print(struct mCc_tac_quad *quad,FILE *out){
                 fprintf(out, "%d [label=\"",quad->cfg_node.number);
             }
             else {
+				if (first_func)
+					first_func = 0;
+				else
+					fprintf(out, "} ");
+
                 fprintf(out, "strict graph {\n");
                 fprintf(out, "%d [label=\"Start %s\"];\n",quad->cfg_node.number-1,quad->result.label.str);  //TODO find better way to deal with func label numbers
                 fprintf(out,"%d -- %d;\n",quad->cfg_node.number-1,quad->cfg_node.number);
