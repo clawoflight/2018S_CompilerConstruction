@@ -130,8 +130,8 @@ void mCc_cfg_quad_print(struct mCc_tac_quad *quad,FILE *out){
         case MCC_TAC_QUAD_LABEL:
             if (quad->result.label.num > -1) {
                 fprintf(out, "\"];\n");
-                fprintf(out,"%d -- %d;\n",quad->cfg_node.number,quad->cfg_node.next);
-                fprintf(out, "%d [label=\"",quad->cfg_node.number);
+                fprintf(out,"%d -> %d;\n",quad->cfg_node.number,quad->cfg_node.next);
+                fprintf(out, "%d [shape=box label=\"",quad->cfg_node.number);
             }
             else {
 				if (first_func)
@@ -139,20 +139,20 @@ void mCc_cfg_quad_print(struct mCc_tac_quad *quad,FILE *out){
 				else
 					fprintf(out, "} ");
 
-                fprintf(out, "strict graph {\n");
+                fprintf(out, "strict digraph \"%s\" {\n", quad->result.label.str);
                 fprintf(out, "%d [label=\"Start %s\"];\n",quad->cfg_node.number-1,quad->result.label.str);  //TODO find better way to deal with func label numbers
-                fprintf(out,"%d -- %d;\n",quad->cfg_node.number-1,quad->cfg_node.number);
-                fprintf(out, "%d [label=\"",quad->cfg_node.number);
+                fprintf(out,"%d -> %d;\n",quad->cfg_node.number-1,quad->cfg_node.number);
+                fprintf(out, "%d [shape=box label=\"",quad->cfg_node.number);
             }
             break;
         case MCC_TAC_QUAD_JUMP:
-            fprintf(out,"%d -- %d;\n",quad->cfg_node.number,quad->cfg_node.next);   //TODO here the edge will be printed inside a label
+            fprintf(out,"%d -> %d;\n",quad->cfg_node.number,quad->cfg_node.next);   //TODO here the edge will be printed inside a label --> well, then create a new anonymous block?
             break;
         case MCC_TAC_QUAD_JUMPFALSE:
             fprintf(out, "\"];\n");
-            fprintf(out,"%d -- %d [label=\"True\"];\n",quad->cfg_node.number,quad->cfg_node.next);
-            fprintf(out,"%d -- %d [label=\"False\"];\n",quad->cfg_node.number,quad->cfg_node.next+1);	// jump to return
-            fprintf(out, "%d [label=\"",quad->cfg_node.next);
+            fprintf(out,"%d -> %d [label=\"True\"];\n",quad->cfg_node.number,quad->cfg_node.next);
+            fprintf(out,"%d -> %d [label=\"False\"];\n",quad->cfg_node.number,quad->cfg_node.next+1);	// jump to return
+            fprintf(out, "%d [shape=box label=\"",quad->cfg_node.next);
             break;
         case MCC_TAC_QUAD_PARAM:
             fprintf(out, "param t%d\\n", quad->arg1.number);
