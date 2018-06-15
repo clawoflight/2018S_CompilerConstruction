@@ -9,7 +9,7 @@ void mCc_cfg_program_print(struct mCc_tac_program *self, FILE *out)
     for (unsigned int i = 0; i < self->quad_count; i++) {
         mCc_cfg_quad_print(self->quads[i], out);
     }
-    fprintf(out, "}\n");
+    fprintf(out, "\n}\n");
 }
 
 void mCc_cfg_print_literal(struct mCc_tac_quad *self, FILE *out){
@@ -137,7 +137,7 @@ void mCc_cfg_quad_print(struct mCc_tac_quad *quad,FILE *out){
 				if (first_func)
 					first_func = 0;
 				else
-					fprintf(out, "} ");
+					fprintf(out, "\n} ");
 
                 fprintf(out, "strict digraph \"%s\" {\n", quad->result.label.str);
                 fprintf(out, "%d [label=\"Start %s\"];\n",quad->cfg_node.number-1,quad->result.label.str);  //TODO find better way to deal with func label numbers
@@ -146,7 +146,7 @@ void mCc_cfg_quad_print(struct mCc_tac_quad *quad,FILE *out){
             }
             break;
         case MCC_TAC_QUAD_JUMP:
-            fprintf(out,"%d -> %d;\n",quad->cfg_node.number,quad->cfg_node.next);   //TODO here the edge will be printed inside a label --> well, then create a new anonymous block?
+            fprintf(out,"\"];\n%d -> %d;\n//",quad->cfg_node.number,quad->cfg_node.next);   //TODO here the edge will be printed inside a label --> well, then create a new anonymous block?
             break;
         case MCC_TAC_QUAD_JUMPFALSE:
             fprintf(out, "\"];\n");
@@ -172,10 +172,10 @@ void mCc_cfg_quad_print(struct mCc_tac_quad *quad,FILE *out){
                 fprintf(out,"call %s\\n",quad->result.label.str);
             break;
         case MCC_TAC_QUAD_RETURN:
-            fprintf(out, "return t%d\"];\n", quad->arg1.number);
+            fprintf(out, "return t%d\"];\n//", quad->arg1.number);
             break;
         case MCC_TAC_QUAD_RETURN_VOID:
-            fprintf(out, "return \"];\n");
+            fprintf(out, "return \"];\n//");
             break;
     }
 }
