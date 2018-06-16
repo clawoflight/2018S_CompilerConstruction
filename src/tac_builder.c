@@ -424,7 +424,7 @@ static int mCc_tac_from_statement_while(struct mCc_tac_program *prog,
 	jump_after_while->comment = "Evaluate while condition";
     jump_after_while->cfg_node.number=label_cond.num;
     jump_after_while->cfg_node.next=anonym_block_count;
-    jump_after_while->cfg_node.label_name="L";
+    jump_after_while->cfg_node.label_name="";
     jump_after_while->cfg_node.label_name_next="";
 
 	jump_after_while->cfg_node.if_jump_label= true;
