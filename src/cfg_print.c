@@ -157,21 +157,21 @@ void mCc_cfg_quad_print(struct mCc_tac_quad *quad,FILE *out){
             fprintf(out, "%s%d [shape=box label=\"",quad->cfg_node.label_name,quad->cfg_node.next);
             break;
         case MCC_TAC_QUAD_PARAM:
-            fprintf(out, "param t%d\\n", quad->arg1.number);
+            fprintf(out, "param t%d\\l", quad->arg1.number);
             break;
         case MCC_TAC_QUAD_LOAD:
-            fprintf(out, "t%d = t%d[t%d]\\n", quad->result.ref.number,
+            fprintf(out, "t%d = t%d[t%d]\\l", quad->result.ref.number,
                     quad->arg1.number, quad->arg2.number);
             break;
         case MCC_TAC_QUAD_STORE:
-            fprintf(out, "t%d[t%d] = t%d\\n", quad->result.ref.number,
+            fprintf(out, "t%d[t%d] = t%d\\l", quad->result.ref.number,
                     quad->arg2.number, quad->arg1.number);
             break;
         case MCC_TAC_QUAD_CALL:
             if (quad->arg1.number >= 0)
-                fprintf(out, "t%d = call %s\\n", quad->arg1.number,quad->result.label.str);
+                fprintf(out, "t%d = call %s\\l", quad->arg1.number,quad->result.label.str);
             else
-                fprintf(out,"call %s\\n",quad->result.label.str);
+                fprintf(out,"call %s\\l",quad->result.label.str);
             break;
         case MCC_TAC_QUAD_RETURN:
             fprintf(out, "return t%d\"];\n//", quad->arg1.number);
