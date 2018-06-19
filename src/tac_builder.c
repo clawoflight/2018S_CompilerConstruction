@@ -296,6 +296,7 @@ static int mCc_tac_from_statement_if(struct mCc_tac_program *prog,
 	if (mCc_tac_program_add_quad(prog, label_after_if_quad))
 		return 1;
 
+	outer_jump =-1;
 	return 0;
 }
 
