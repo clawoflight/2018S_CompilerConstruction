@@ -247,28 +247,46 @@ static int mCc_tac_from_statement_if(struct mCc_tac_program *prog,
 	    mCc_tac_quad_new_jumpfalse(cond, label_after_if);
 	jump_after_if->comment = "Evaluate if condition";
     jump_after_if->cfg_node.if_jump_label= false;
-    jump_after_if->cfg_node.number = tmp_block.number;
-    jump_after_if->cfg_node.next = tmp_block.next;
+    jump_after_if->cfg_node.number = tmp_block.number; 	//0
+    jump_after_if->cfg_node.next = tmp_block.next; 		//1
 
     jump_after_if->cfg_node.label_name = "";
     jump_after_if->cfg_node.label_name_next = "";
 
     ++anonym_block_count;
-	tmp_block.number=tmp_block.next;
-	tmp_block.next=anonym_block_count;
+	tmp_block.number=tmp_block.next; 	//1
+	tmp_block.next=anonym_block_count;	//2
 
     if (mCc_tac_program_add_quad(prog, jump_after_if))
         return 1;
 
     struct mCc_tac_quad *label_after_if_quad =
             mCc_tac_quad_new_label(label_after_if);
+
+	static int outer_jump = -1; //äußerstes label
+	if (outer_jump!=-1){
+		label_after_if_quad->cfg_node.next=outer_jump;
+	} else {
+		label_after_if_quad->cfg_node.next=label_after_if_quad->result.label.num;
+	}
+		outer_jump=label_after_if_quad->result.label.num;
+
+
+	printf("Vor STMT TMP Block curr: %d\n",tmp_block.number);
+	printf("Vor STMT TMP Block next: %d\n",tmp_block.next);
     mCc_tac_from_stmt(prog, stmt->if_stmt);
 
+	//	outer_jump = label_after_if_quad->result.label.num;
+
+	printf("Nach STMT TMP Block curr: %d\n",tmp_block.number);
+	printf("Nach STMT TMP Block next: %d\n",tmp_block.next);
     label_after_if_quad->comment = "End of if";
     label_after_if_quad->cfg_node.number=label_after_if_quad->result.label.num;
-    label_after_if_quad->cfg_node.next=label_after_if_quad->result.label.num;
-    label_after_if_quad->cfg_node.label_name="L";
+
+
+	label_after_if_quad->cfg_node.label_name="L";
     label_after_if_quad->cfg_node.label_name_next="L";
+	label_after_if_quad->cfg_node.if_jump_label= false;
 
 	if (mCc_tac_program_add_quad(prog, label_after_if_quad))
 		return 1;
