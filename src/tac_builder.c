@@ -238,6 +238,7 @@ mCc_tac_from_expression_call(struct mCc_tac_program *prog,
 static int mCc_tac_from_statement_if(struct mCc_tac_program *prog,
                                      struct mCc_ast_statement *stmt)
 {
+    static int outer_jump = -1; //äußerstes label
 	struct mCc_tac_label label_after_if = mCc_tac_get_new_label();
 
 	struct mCc_tac_quad_entry cond =
@@ -246,7 +247,12 @@ static int mCc_tac_from_statement_if(struct mCc_tac_program *prog,
 	struct mCc_tac_quad *jump_after_if =
 	    mCc_tac_quad_new_jumpfalse(cond, label_after_if);
 	jump_after_if->comment = "Evaluate if condition";
-    jump_after_if->cfg_node.if_jump_label= false;
+
+    if(outer_jump != -1){ //set the extra only at inner if
+        jump_after_if->cfg_node.if_jump_label= false;
+    } else {
+        jump_after_if->cfg_node.if_jump_label= true;
+    }
     jump_after_if->cfg_node.number = tmp_block.number; 	//0
     jump_after_if->cfg_node.next = tmp_block.next; 		//1
 
@@ -263,7 +269,7 @@ static int mCc_tac_from_statement_if(struct mCc_tac_program *prog,
     struct mCc_tac_quad *label_after_if_quad =
             mCc_tac_quad_new_label(label_after_if);
 
-	static int outer_jump = -1; //äußerstes label
+
 	if (outer_jump!=-1){
 		label_after_if_quad->cfg_node.next=outer_jump;
 	} else {
@@ -286,7 +292,6 @@ static int mCc_tac_from_statement_if(struct mCc_tac_program *prog,
 
 	label_after_if_quad->cfg_node.label_name="L";
     label_after_if_quad->cfg_node.label_name_next="L";
-	label_after_if_quad->cfg_node.if_jump_label= false;
 
 	if (mCc_tac_program_add_quad(prog, label_after_if_quad))
 		return 1;
