@@ -455,16 +455,20 @@ static int mCc_tac_from_statement_while(struct mCc_tac_program *prog,
     label_cond_quad->cfg_node.label_name_next="";
     label_cond_quad->cfg_node.if_jump_label= true;
 
+    // L0 -> 1
+
     mCc_tac_program_add_quad(prog, label_cond_quad);
 	struct mCc_tac_quad_entry cond =
 	    mCc_tac_from_expression(prog, stmt->while_cond);
 	struct mCc_tac_quad *jump_after_while =
 	    mCc_tac_quad_new_jumpfalse(cond, label_after_while);
 	jump_after_while->comment = "Evaluate while condition";
-    jump_after_while->cfg_node.number=label_cond.num;
-    jump_after_while->cfg_node.next=anonym_block_count;
+    jump_after_while->cfg_node.number=anonym_block_count;
+    jump_after_while->cfg_node.next=label_cond.num;
     jump_after_while->cfg_node.label_name="";
-    jump_after_while->cfg_node.label_name_next="";
+    jump_after_while->cfg_node.label_name_next="L";
+
+    // 1 -> L0
 
 	jump_after_while->cfg_node.if_jump_label= true;
 
@@ -475,9 +479,11 @@ static int mCc_tac_from_statement_while(struct mCc_tac_program *prog,
 	struct mCc_tac_quad *jump_to_cond = mCc_tac_quad_new_jump(label_cond);
 	jump_to_cond->comment = "Repeat Loop";
     jump_to_cond->cfg_node.number=anonym_block_count;
-    jump_to_cond->cfg_node.next=label_cond_quad->cfg_node.number;
+    jump_to_cond->cfg_node.next=label_cond.num;
     jump_to_cond->cfg_node.label_name="";
     jump_to_cond->cfg_node.label_name_next="L";
+
+    //1 -> L0
 
     ++anonym_block_count;
     if (mCc_tac_program_add_quad(prog, jump_to_cond))
@@ -489,6 +495,8 @@ static int mCc_tac_from_statement_while(struct mCc_tac_program *prog,
     label_after_while_quad->cfg_node.label_name_next="L";
 	if (mCc_tac_program_add_quad(prog, label_after_while_quad))
 		return 1;
+
+    //L1 -> L1
 
 	return 0;
 }
