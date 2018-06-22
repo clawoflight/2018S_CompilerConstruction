@@ -20,6 +20,8 @@ extern "C" {
 
 /// Size by which to increase compound_stmts when reallocing
 static const int quad_alloc_block_size = 10;
+static const int cfg_alloc_block_size = 10;
+static const int MAX_NAME_LENGTH = 100;
 
 /// Binary Operators
 enum mCc_tac_quad_binary_op {
@@ -161,6 +163,13 @@ struct mCc_tac_program {
 	/// String literals used in the program
 	struct mCc_tac_quad_entry *string_literals;
 	unsigned int string_literal_count;
+
+	/// Storing connections between control flow blocks
+	char **cfgs;
+	/// For how many cfg blocks memory was allocated in this program
+	unsigned int cfg_alloc_size;
+	/// The number of cfg blocks in this program
+	unsigned int cfg_count;
 };
 
 /********************************** Quad Functions */
@@ -252,6 +261,9 @@ void mCc_tac_quad_literal_delete(struct mCc_tac_quad_literal *lit);
  */
 struct mCc_tac_program *mCc_tac_program_new(int quad_alloc_size);
 
+struct mCc_tac_program *mCc_tac_new_cfg(struct mCc_tac_program *self,
+										int cfg_alloc_size);
+
 /**
  * @brief Append a quad to a program.
  *
@@ -261,7 +273,10 @@ struct mCc_tac_program *mCc_tac_program_new(int quad_alloc_size);
  * @return 0 on success, non-zero on memory error
  */
 int mCc_tac_program_add_quad(struct mCc_tac_program *self,
-                             struct mCc_tac_quad *quad);
+							 struct mCc_tac_quad *quad);
+
+int mCc_tac_program_add_cfg(struct mCc_tac_program *self,
+							char *from_label, int from_number, char *to_label, int to_number, char *label);
 
 /**
  * @brief Print a program by serially printing it's quads.

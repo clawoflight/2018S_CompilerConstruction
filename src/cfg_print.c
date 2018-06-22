@@ -9,7 +9,15 @@ void mCc_cfg_program_print(struct mCc_tac_program *self, FILE *out)
     for (unsigned int i = 0; i < self->quad_count; i++) {
         mCc_cfg_quad_print(self->quads[i], out);
     }
-    fprintf(out, "\n}\n");
+
+    mCc_cfg_print_connections(self, out);
+    fprintf(out, "}\n");
+}
+
+void mCc_cfg_print_connections(struct mCc_tac_program *self, FILE *out){
+    for (int i = 0; i < self->cfg_count; i++){
+        fprintf(out,"%s",self->cfgs[i]);
+    }
 }
 
 void mCc_cfg_print_literal(struct mCc_tac_quad *self, FILE *out){
@@ -140,7 +148,6 @@ void mCc_cfg_quad_print(struct mCc_tac_quad *quad,FILE *out){
                 }
 
                 fprintf(out, "%s [label=\"Start %s\"];\n",quad->result.label.str,quad->result.label.str);  //TODO find better way to deal with func label numbers
-                fprintf(out,"%s -> %d;\n",quad->result.label.str,quad->cfg_node.number);
                 fprintf(out, "%s%d [shape=box label=\"",quad->cfg_node.label_name,quad->cfg_node.number);
             }
             break;
@@ -151,8 +158,6 @@ void mCc_cfg_quad_print(struct mCc_tac_quad *quad,FILE *out){
             fprintf(out, "\"];\n");
             fprintf(out,"%s%d -> %s%d\n [label=\"True\"];\n",quad->cfg_node.label_name,quad->cfg_node.number,quad->cfg_node.label_name_next, quad->cfg_node.next);
             fprintf(out,"%s%d -> %s%d\n [label=\"False\"];\n",quad->cfg_node.label_name,quad->cfg_node.number,"L", quad->result.label.num);	// jump to return
-            if(!quad->cfg_node.if_jump_label)
-                fprintf(out,"%s%d -> %s%d;\n",quad->cfg_node.label_name_next, quad->cfg_node.next,"L", quad->result.label.num);	// jump to return
             fprintf(out, "%s%d [shape=box label=\"",quad->cfg_node.label_name,quad->cfg_node.next);
             break;
         case MCC_TAC_QUAD_PARAM:
@@ -173,10 +178,10 @@ void mCc_cfg_quad_print(struct mCc_tac_quad *quad,FILE *out){
                 fprintf(out,"call %s\\l",quad->result.label.str);
             break;
         case MCC_TAC_QUAD_RETURN:
-            fprintf(out, "return t%d\"];\n//", quad->arg1.number);
+            fprintf(out, "return t%d\"];\n", quad->arg1.number);
             break;
         case MCC_TAC_QUAD_RETURN_VOID:
-            fprintf(out, "return \"];\n//");
+            fprintf(out, "return \"];\n");
             break;
     }
 }

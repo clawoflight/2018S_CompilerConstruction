@@ -500,6 +500,25 @@ struct mCc_tac_program *mCc_tac_program_new(int quad_alloc_size)
 
 	return program;
 }
+
+struct mCc_tac_program *mCc_tac_new_cfg(struct mCc_tac_program *self,
+										int cfg_alloc_size)
+{
+	assert(self);
+	self->cfg_alloc_size = cfg_alloc_size;
+	self->cfg_count = 0;
+	self->cfgs = NULL;
+
+	if (cfg_alloc_size > 0) { // allocate memory if specified
+		if ((self->cfgs =
+					 malloc(cfg_alloc_size * sizeof(*self->cfgs))) == NULL) {
+			free(self);
+			return NULL;
+		}
+	}
+	return self;
+}
+
 int mCc_tac_program_add_quad(struct mCc_tac_program *self,
                              struct mCc_tac_quad *quad)
 {
@@ -521,6 +540,42 @@ int mCc_tac_program_add_quad(struct mCc_tac_program *self,
 
 	self->quads = tmp;
 	self->quads[self->quad_count++] = quad;
+	return 0;
+}
+
+int mCc_tac_program_add_cfg(struct mCc_tac_program *self,
+							char *from_label, int from_number, char *to_label, int to_number, char *label)
+{
+	assert(self);
+    char connection[MAX_NAME_LENGTH];
+
+    //if a function we dont need a number
+    if ((strcmp("",from_label) != 0) && (strcmp("L",from_label) != 0)){
+        sprintf(connection,
+                "%s -> %s%d\n [label=\"%s\"];\n", from_label, to_label, to_number, label);
+    } else {
+        sprintf(connection,
+                "%s%d -> %s%d\n [label=\"%s\"];\n", from_label, from_number, to_label, to_number, label);
+    }
+
+
+	if (self->cfg_count < self->cfg_alloc_size) {
+        self->cfgs[self->cfg_count] = malloc(sizeof(connection));
+		strcpy(self->cfgs[self->cfg_count++],connection); // = de connection bauen
+		return 0;
+	}
+	// Allocate additional memory if necessary
+	char **tmp;
+	self->cfg_alloc_size += cfg_alloc_block_size;
+	if ((tmp = realloc(self->cfgs, self->cfg_alloc_size * sizeof(*tmp))) ==
+		NULL) {
+		mCc_tac_program_delete(self);
+		return 1;
+	}
+
+	self->cfgs = tmp;
+    self->cfgs[self->cfg_count] = malloc(sizeof(connection));
+	strcpy(self->cfgs[self->cfg_count++],connection); //connection = String
 	return 0;
 }
 
