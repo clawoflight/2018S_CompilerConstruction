@@ -16,18 +16,18 @@ Type checker -- missing:
 
 - [ ] error on missing `return`
     - [ ] last statement not an if-statement
-    - [x] last statement is an if-statement (with else)
-    - [x] last statement is an if-statement (without else)
+    - [ ] last statement is an if-statement (with else)
+    - [ ] last statement is an if-statement (without else)
 
 - [x] Unit-tests for TAC, or at least explain why not
 
 - [x] Uncomment assertions in tac.c
 
-- [ ] Minimize scope of warning suppressing pragmas
+- [x] Minimize scope of warning suppressing pragmas
 
 # Assignment 3
 
-- [ ] Exterminate compiler warnings!!!
+- [x] Exterminate compiler warnings!!!
 
 ## Task 1
 
@@ -54,4 +54,4 @@ Type checker -- missing:
 
 ## Task 5
 
-- [ ] Print CFG as dot
+- [x] Print CFG as dot

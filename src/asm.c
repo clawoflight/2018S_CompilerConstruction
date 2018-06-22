@@ -220,7 +220,6 @@ static void mCc_asm_print_bin_op(struct mCc_tac_quad *quad, FILE *out) {
         position[current_elements_in_local_array++] = new_number;
         result = new_number;
     }
-    printf("BIN OP: %d\n", quad->bin_op);
     switch (quad->bin_op) {
 
         case MCC_TAC_OP_BINARY_ADD:
