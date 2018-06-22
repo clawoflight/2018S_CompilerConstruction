@@ -97,7 +97,7 @@ mCc_tac_from_expression_binary(struct mCc_tac_program *prog,
     struct mCc_tac_quad_entry result2 =
             mCc_tac_from_expression(prog, expr->rhs);
 
-    enum mCc_tac_quad_binary_op op;
+    enum mCc_tac_quad_binary_op op = -1;
     switch (expr->op) {
         case MCC_AST_BINARY_OP_ADD:
             op = expr->node.computed_type == MCC_AST_TYPE_FLOAT
@@ -148,11 +148,9 @@ mCc_tac_from_expression_binary(struct mCc_tac_program *prog,
     struct mCc_tac_quad_entry new_result = mCc_tac_create_new_entry();
     global_var_count++;
 
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
     struct mCc_tac_quad *binary_op =
             mCc_tac_quad_new_op_binary(op, result1, result2, new_result);
     binary_op->cfg_node.number = tmp_block.number;
-    binary_op->cfg_node.next = tmp_block.next;
     binary_op->cfg_node.label_name = tmp_block.label_name;
     mCc_tac_program_add_quad(prog, binary_op);
 
@@ -164,7 +162,7 @@ mCc_tac_from_expression_unary(struct mCc_tac_program *prog,
                               struct mCc_ast_expression *expr) {
     assert(expr);
 
-    enum mCc_tac_quad_unary_op op;
+    enum mCc_tac_quad_unary_op op = -1;
     switch (expr->unary_op) {
         case MCC_AST_UNARY_OP_NEG:
             op = MCC_TAC_OP_UNARY_NEG;
@@ -177,12 +175,10 @@ mCc_tac_from_expression_unary(struct mCc_tac_program *prog,
     struct mCc_tac_quad_entry result =
             mCc_tac_from_expression(prog, expr->unary_expression);
 
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
     struct mCc_tac_quad *result_quad =
             mCc_tac_quad_new_op_unary(op, result, result);
     mCc_tac_program_add_quad(prog, result_quad);
     result_quad->cfg_node.number = tmp_block.number;
-    result_quad->cfg_node.next = tmp_block.next;
     result_quad->cfg_node.label_name = tmp_block.label_name;
     return result;
 }
@@ -201,7 +197,6 @@ mCc_tac_from_expression_arr_subscr(struct mCc_tac_program *prog,
     struct mCc_tac_quad *array_subscr =
             mCc_tac_quad_new_load(array, index, result);
     array_subscr->cfg_node.number = tmp_block.number;
-    array_subscr->cfg_node.next = tmp_block.next;
     array_subscr->cfg_node.label_name = tmp_block.label_name;
     if (mCc_tac_program_add_quad(prog, array_subscr)) {
         // TODO error handling
@@ -247,7 +242,6 @@ mCc_tac_from_expression_call(struct mCc_tac_program *prog,
             expr->arguments ? expr->arguments->expression_count : (unsigned int) 0,
             retval);
     jump_to_fun->cfg_node.number = tmp_block.number;
-    jump_to_fun->cfg_node.next = tmp_block.next;
     jump_to_fun->cfg_node.label_name = tmp_block.label_name;
     mCc_tac_program_add_quad(prog, jump_to_fun);
     global_var_count++;
@@ -275,15 +269,12 @@ static int mCc_tac_from_statement_if(struct mCc_tac_program *prog,
                             "L", label_after_if.num, "False");
 
 
-    jump_after_if->cfg_node.number = anonym_block_count;    //0
-    jump_after_if->cfg_node.next = tmp_block.next;        //1
+    jump_after_if->cfg_node.number = anonym_block_count;
 
     jump_after_if->cfg_node.label_name = "";
-    jump_after_if->cfg_node.label_name_next = "";
 
 
-    tmp_block.number = anonym_block_count;    //1
-    tmp_block.next = anonym_block_count;    //2
+    tmp_block.number = anonym_block_count;
     tmp_block.label_name = "";
 
     ++anonym_block_count;
@@ -301,11 +292,10 @@ static int mCc_tac_from_statement_if(struct mCc_tac_program *prog,
 
 
     label_after_if_quad->cfg_node.label_name = "L";
-    label_after_if_quad->cfg_node.label_name_next = "L";
 
     //if to result connection
-    if (prog->quads[prog->quad_count-1]->type != MCC_TAC_QUAD_RETURN_VOID &&
-            prog->quads[prog->quad_count-1]->type != MCC_TAC_QUAD_RETURN) {
+    if (prog->quads[prog->quad_count - 1]->type != MCC_TAC_QUAD_RETURN_VOID &&
+        prog->quads[prog->quad_count - 1]->type != MCC_TAC_QUAD_RETURN) {
         mCc_tac_program_add_cfg(prog, tmp_block.label_name, tmp_block.number,
                                 "L", label_after_if.num, "");
     }
@@ -334,19 +324,12 @@ static int mCc_tac_from_statement_if_else(struct mCc_tac_program *prog,
             mCc_tac_quad_new_jumpfalse(cond, label_else);
     jump_to_else->comment = "Evaluate if condition";
 
-    jump_to_else->cfg_node.if_jump_label = true;
-    jump_to_else->cfg_node.next = tmp_block.next;
-
-    jump_to_else->cfg_node.label_name_next = "";
-
     jump_to_else->cfg_node.number = anonym_block_count;
     jump_to_else->cfg_node.label_name = "";
 
     //if connection
     mCc_tac_program_add_cfg(prog, tmp_block.label_name, tmp_block.number,
-            "", anonym_block_count, "True");
-
-
+                            "", anonym_block_count, "True");
 
     //else connection
     mCc_tac_program_add_cfg(prog, tmp_block.label_name, tmp_block.number,
@@ -360,14 +343,12 @@ static int mCc_tac_from_statement_if_else(struct mCc_tac_program *prog,
 
     ++anonym_block_count;
 
-    tmp_block.next = anonym_block_count;
-
     //go into if branch
     mCc_tac_from_stmt(prog, stmt->if_stmt);
 
     //if to result connection
-    if (prog->quads[prog->quad_count-1]->type != MCC_TAC_QUAD_RETURN_VOID &&
-        prog->quads[prog->quad_count-1]->type != MCC_TAC_QUAD_RETURN) {
+    if (prog->quads[prog->quad_count - 1]->type != MCC_TAC_QUAD_RETURN_VOID &&
+        prog->quads[prog->quad_count - 1]->type != MCC_TAC_QUAD_RETURN) {
 
         mCc_tac_program_add_cfg(prog, tmp_block.label_name, tmp_block.number,
                                 "L", label_after_if.num, "");
@@ -377,9 +358,7 @@ static int mCc_tac_from_statement_if_else(struct mCc_tac_program *prog,
     jump_after_if->comment = "Jump after if";
 
     jump_after_if->cfg_node.number = tmp_block.number;
-    jump_after_if->cfg_node.next = label_after_if.num;
     jump_after_if->cfg_node.label_name = "";
-    jump_after_if->cfg_node.label_name_next = "L";
 
     if (mCc_tac_program_add_quad(prog, jump_after_if))
         return 1;
@@ -389,9 +368,7 @@ static int mCc_tac_from_statement_if_else(struct mCc_tac_program *prog,
     label_else_quad->comment = "Else branch";
 
     label_else_quad->cfg_node.number = label_else.num;
-    label_else_quad->cfg_node.next = label_after_if.num;
     label_else_quad->cfg_node.label_name = "L";
-    label_else_quad->cfg_node.label_name_next = "L";
 
     if (mCc_tac_program_add_quad(prog, label_else_quad))
         return 1;
@@ -402,8 +379,8 @@ static int mCc_tac_from_statement_if_else(struct mCc_tac_program *prog,
     mCc_tac_from_stmt(prog, stmt->else_stmt);
 
     //else to result connection
-    if (prog->quads[prog->quad_count-1]->type != MCC_TAC_QUAD_RETURN_VOID &&
-        prog->quads[prog->quad_count-1]->type != MCC_TAC_QUAD_RETURN) {
+    if (prog->quads[prog->quad_count - 1]->type != MCC_TAC_QUAD_RETURN_VOID &&
+        prog->quads[prog->quad_count - 1]->type != MCC_TAC_QUAD_RETURN) {
 
         mCc_tac_program_add_cfg(prog, tmp_block.label_name, tmp_block.number,
                                 "L", label_after_if.num, "");
@@ -414,10 +391,7 @@ static int mCc_tac_from_statement_if_else(struct mCc_tac_program *prog,
     label_after_if_quad->comment = "End of if";
 
     label_after_if_quad->cfg_node.number = jump_after_if->result.label.num;
-    label_after_if_quad->cfg_node.next = jump_after_if->result.label.num;
     label_after_if_quad->cfg_node.label_name = "L";
-    label_after_if_quad->cfg_node.label_name_next = "L";
-
 
     if (mCc_tac_program_add_quad(prog, label_after_if_quad))
         return 1;
@@ -459,7 +433,6 @@ static int mCc_tac_entry_from_assg(struct mCc_tac_program *prog,
     global_var_count++; // result
     new_quad->cfg_node.label_name = tmp_block.label_name;
     new_quad->cfg_node.number = tmp_block.number;
-    new_quad->cfg_node.next = tmp_block.next;
     if (!new_quad || mCc_tac_program_add_quad(prog, new_quad))
         return 1;
     return 0;
@@ -476,8 +449,6 @@ static int mCc_tac_from_statement_return(struct mCc_tac_program *prog,
         new_quad = mCc_tac_quad_new_return(entry);
     else
         new_quad = mCc_tac_quad_new_return_void();
-    new_quad->cfg_node.number = tmp_block.next;
-    new_quad->cfg_node.next = tmp_block.next + 1;
     new_quad->cfg_node.label_name = tmp_block.label_name;
     if (!new_quad || mCc_tac_program_add_quad(prog, new_quad))
         return 1;
@@ -494,13 +465,10 @@ static int mCc_tac_from_statement_while(struct mCc_tac_program *prog,
     label_after_while_quad->comment = "End of while";
 
     label_cond_quad->cfg_node.number = label_cond.num;
-    label_cond_quad->cfg_node.next = anonym_block_count;
     label_cond_quad->cfg_node.label_name = "L";
-    label_cond_quad->cfg_node.label_name_next = "";
-    label_cond_quad->cfg_node.if_jump_label = true;
 
     mCc_tac_program_add_cfg(prog, tmp_block.label_name, tmp_block.number,
-    "L", label_cond.num, "");
+                            "L", label_cond.num, "");
 
 
     mCc_tac_program_add_quad(prog, label_cond_quad);
@@ -510,9 +478,7 @@ static int mCc_tac_from_statement_while(struct mCc_tac_program *prog,
             mCc_tac_quad_new_jumpfalse(cond, label_after_while);
     jump_after_while->comment = "Evaluate while condition";
     jump_after_while->cfg_node.number = anonym_block_count;
-    jump_after_while->cfg_node.next = label_cond.num;
     jump_after_while->cfg_node.label_name = "";
-    jump_after_while->cfg_node.label_name_next = "L";
 
     if (mCc_tac_program_add_quad(prog, jump_after_while))
         return 1;
@@ -526,8 +492,8 @@ static int mCc_tac_from_statement_while(struct mCc_tac_program *prog,
     ++anonym_block_count;
     mCc_tac_from_stmt(prog, stmt->while_stmt);
 
-    if (prog->quads[prog->quad_count-1]->type != MCC_TAC_QUAD_RETURN_VOID &&
-        prog->quads[prog->quad_count-1]->type != MCC_TAC_QUAD_RETURN) {
+    if (prog->quads[prog->quad_count - 1]->type != MCC_TAC_QUAD_RETURN_VOID &&
+        prog->quads[prog->quad_count - 1]->type != MCC_TAC_QUAD_RETURN) {
 
         mCc_tac_program_add_cfg(prog, tmp_block.label_name, tmp_block.number,
                                 "L", label_cond.num, "");
@@ -535,17 +501,13 @@ static int mCc_tac_from_statement_while(struct mCc_tac_program *prog,
     struct mCc_tac_quad *jump_to_cond = mCc_tac_quad_new_jump(label_cond);
     jump_to_cond->comment = "Repeat Loop";
     jump_to_cond->cfg_node.number = anonym_block_count;
-    jump_to_cond->cfg_node.next = label_cond.num;
     jump_to_cond->cfg_node.label_name = "";
-    jump_to_cond->cfg_node.label_name_next = "L";
 
     if (mCc_tac_program_add_quad(prog, jump_to_cond))
         return 1;
 
     label_after_while_quad->cfg_node.number = label_after_while.num;
-    label_after_while_quad->cfg_node.next = label_after_while.num;
     label_after_while_quad->cfg_node.label_name = "L";
-    label_after_while_quad->cfg_node.label_name_next = "L";
     if (mCc_tac_program_add_quad(prog, label_after_while_quad))
         return 1;
 
@@ -577,7 +539,6 @@ static int mCc_tac_from_function_def(struct mCc_tac_program *prog,
     tmp_block.label_name = "";
     label_fun_quad->cfg_node.label_name = tmp_block.label_name;
     label_fun_quad->cfg_node.number = tmp_block.number;
-    label_fun_quad->cfg_node.next = tmp_block.next;
 
     if (mCc_tac_program_add_quad(prog, label_fun_quad)) {
         return 1;
@@ -585,7 +546,7 @@ static int mCc_tac_from_function_def(struct mCc_tac_program *prog,
     // Copy arguments to new temporaries
     struct mCc_tac_quad_entry virtual_pointer_to_arguments = {.number = -1};
     if (fun_def->para) {
-        for (int i = 0; i < fun_def->para->decl_count; ++i) {
+        for (unsigned int i = 0; i < fun_def->para->decl_count; ++i) {
             // Load argument index into a quad
             struct mCc_tac_quad_literal *lit = malloc(sizeof(*lit));
             lit->type =
@@ -718,7 +679,6 @@ mCc_tac_from_expression(struct mCc_tac_program *prog,
                         mCc_tac_quad_new_assign_lit(lit, entry);
                 global_var_count++;
                 lit_quad->cfg_node.number = tmp_block.number;
-                lit_quad->cfg_node.next = tmp_block.next;
                 lit_quad->cfg_node.label_name = tmp_block.label_name;
                 mCc_tac_program_add_quad(prog, lit_quad);
             } else {
@@ -731,7 +691,6 @@ mCc_tac_from_expression(struct mCc_tac_program *prog,
                         mCc_tac_quad_new_assign_lit(lit, entry);
                 global_var_count++;
                 lit_quad->cfg_node.number = tmp_block.number;
-                lit_quad->cfg_node.next = tmp_block.next;
                 lit_quad->cfg_node.label_name = tmp_block.label_name;
                 mCc_tac_program_add_quad(prog, lit_quad);
             }

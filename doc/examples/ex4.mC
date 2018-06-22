@@ -4,7 +4,7 @@ void bar(float useless){}
 
 void foo2(){}
 
-int helloWorld(){
+void helloWorld(){
     print("GoodBye cruel world");
     print_nl();
 }

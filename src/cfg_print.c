@@ -3,8 +3,7 @@
 static int first_func = 1;
 static enum mCc_tac_quad_type prev_type = MCC_TAC_QUAD_LABEL;
 
-void mCc_cfg_program_print(struct mCc_tac_program *self, FILE *out)
-{
+void mCc_cfg_program_print(struct mCc_tac_program *self, FILE *out) {
     assert(self);
     assert(out);
     for (unsigned int i = 0; i < self->quad_count; i++) {
@@ -15,13 +14,13 @@ void mCc_cfg_program_print(struct mCc_tac_program *self, FILE *out)
     fprintf(out, "}\n");
 }
 
-void mCc_cfg_print_connections(struct mCc_tac_program *self, FILE *out){
-    for (int i = 0; i < self->cfg_count; i++){
-        fprintf(out,"%s",self->cfgs[i]);
+void mCc_cfg_print_connections(struct mCc_tac_program *self, FILE *out) {
+    for (unsigned int i = 0; i < self->cfg_count; i++) {
+        fprintf(out, "%s", self->cfgs[i]);
     }
 }
 
-void mCc_cfg_print_literal(struct mCc_tac_quad *self, FILE *out){
+void mCc_cfg_print_literal(struct mCc_tac_quad *self, FILE *out) {
     switch (self->literal->type) {
         case MCC_TAC_QUAD_LIT_INT:
             fprintf(out, "t%d = %d\\l", self->result.ref.number,
@@ -39,11 +38,13 @@ void mCc_cfg_print_literal(struct mCc_tac_quad *self, FILE *out){
             fprintf(out, "t%d = \\\"%s\\\"\\l", self->result.ref.number,
                     self->literal->strval);
             break;
+        case MCC_TAC_QUAD_LIT_VOID:
+            break;
     }
     return;
 }
 
-void mCc_cfg_print_unary_op(struct mCc_tac_quad *self, FILE *out){
+void mCc_cfg_print_unary_op(struct mCc_tac_quad *self, FILE *out) {
     switch (self->un_op) {
         case MCC_TAC_OP_UNARY_NEG:
             fprintf(out, "t%d = -t%d\\l", self->result.ref.number,
@@ -57,7 +58,7 @@ void mCc_cfg_print_unary_op(struct mCc_tac_quad *self, FILE *out){
     return;
 }
 
-void mCc_cfg_print_bin_op(struct mCc_tac_quad *self, FILE *out){
+void mCc_cfg_print_bin_op(struct mCc_tac_quad *self, FILE *out) {
     switch (self->bin_op) {
         case MCC_TAC_OP_BINARY_ADD:
             fprintf(out, "\tt%d = t%d + t%d\\l", self->result.ref.number,
@@ -127,38 +128,44 @@ void mCc_cfg_print_bin_op(struct mCc_tac_quad *self, FILE *out){
     return;
 }
 
-void mCc_cfg_quad_print(struct mCc_tac_quad *quad,FILE *out){
+void mCc_cfg_quad_print(struct mCc_tac_quad *quad, FILE *out) {
 
     switch (quad->type) {
         case MCC_TAC_QUAD_ASSIGN:
             fprintf(out, "t%d = t%d\\l", quad->result.ref.number,
                     quad->arg1.number);
             break;
-        case MCC_TAC_QUAD_ASSIGN_LIT: mCc_cfg_print_literal(quad, out); break;
-        case MCC_TAC_QUAD_OP_UNARY: mCc_cfg_print_unary_op(quad, out); break;
-        case MCC_TAC_QUAD_OP_BINARY: mCc_cfg_print_bin_op(quad, out); break;
+        case MCC_TAC_QUAD_ASSIGN_LIT:
+            mCc_cfg_print_literal(quad, out);
+            break;
+        case MCC_TAC_QUAD_OP_UNARY:
+            mCc_cfg_print_unary_op(quad, out);
+            break;
+        case MCC_TAC_QUAD_OP_BINARY:
+            mCc_cfg_print_bin_op(quad, out);
+            break;
         case MCC_TAC_QUAD_LABEL:
             if (quad->result.label.num > -1) {
-                if (prev_type != MCC_TAC_QUAD_RETURN && prev_type != MCC_TAC_QUAD_RETURN_VOID){
+                if (prev_type != MCC_TAC_QUAD_RETURN && prev_type != MCC_TAC_QUAD_RETURN_VOID) {
                     fprintf(out, "\"];\n");
                 }
-                fprintf(out, "%s%d [shape=box label=\"",quad->cfg_node.label_name,quad->cfg_node.number);
-            }
-            else {
-				if (first_func) {
+                fprintf(out, "%s%d [shape=box label=\"", quad->cfg_node.label_name, quad->cfg_node.number);
+            } else {
+                if (first_func) {
                     first_func = 0;
                     fprintf(out, "strict digraph \"%s\" {\n", quad->result.label.str);
                 }
 
-                fprintf(out, "%s [label=\"Start %s\"];\n",quad->result.label.str,quad->result.label.str);  //TODO find better way to deal with func label numbers
-                fprintf(out, "%s%d [shape=box label=\"",quad->cfg_node.label_name,quad->cfg_node.number);
+                fprintf(out, "%s [label=\"Start %s\"];\n", quad->result.label.str,
+                        quad->result.label.str);  //TODO find better way to deal with func label numbers
+                fprintf(out, "%s%d [shape=box label=\"", quad->cfg_node.label_name, quad->cfg_node.number);
             }
             break;
         case MCC_TAC_QUAD_JUMP:
             break;
         case MCC_TAC_QUAD_JUMPFALSE:
             fprintf(out, "\"];\n");
-            fprintf(out, "%s%d [shape=box label=\"",quad->cfg_node.label_name,quad->cfg_node.number);
+            fprintf(out, "%s%d [shape=box label=\"", quad->cfg_node.label_name, quad->cfg_node.number);
             break;
         case MCC_TAC_QUAD_PARAM:
             fprintf(out, "param t%d\\l", quad->arg1.number);
@@ -173,9 +180,9 @@ void mCc_cfg_quad_print(struct mCc_tac_quad *quad,FILE *out){
             break;
         case MCC_TAC_QUAD_CALL:
             if (quad->arg1.number >= 0)
-                fprintf(out, "t%d = call %s\\l", quad->arg1.number,quad->result.label.str);
+                fprintf(out, "t%d = call %s\\l", quad->arg1.number, quad->result.label.str);
             else
-                fprintf(out,"call %s\\l",quad->result.label.str);
+                fprintf(out, "call %s\\l", quad->result.label.str);
             break;
         case MCC_TAC_QUAD_RETURN:
             fprintf(out, "return t%d\"];\n", quad->arg1.number);

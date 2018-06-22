@@ -18,131 +18,130 @@ extern "C" {
 
 /******************************** Data Structures */
 
-/// Size by which to increase compound_stmts when reallocing
+/// Size by which to increase quad_size when reallocing
 static const int quad_alloc_block_size = 10;
+/// Size by which to increase cfg_size when reallocing
 static const int cfg_alloc_block_size = 10;
+/// Max length of name of labels
 static const int MAX_NAME_LENGTH = 100;
 
 /// Binary Operators
 enum mCc_tac_quad_binary_op {
-	MCC_TAC_OP_BINARY_ADD,
-	MCC_TAC_OP_BINARY_SUB,
-	MCC_TAC_OP_BINARY_MUL,
-	MCC_TAC_OP_BINARY_DIV,
+    MCC_TAC_OP_BINARY_ADD,
+    MCC_TAC_OP_BINARY_SUB,
+    MCC_TAC_OP_BINARY_MUL,
+    MCC_TAC_OP_BINARY_DIV,
 
-	MCC_TAC_OP_BINARY_FLOAT_ADD,
-	MCC_TAC_OP_BINARY_FLOAT_SUB,
-	MCC_TAC_OP_BINARY_FLOAT_MUL,
-	MCC_TAC_OP_BINARY_FLOAT_DIV,
+    MCC_TAC_OP_BINARY_FLOAT_ADD,
+    MCC_TAC_OP_BINARY_FLOAT_SUB,
+    MCC_TAC_OP_BINARY_FLOAT_MUL,
+    MCC_TAC_OP_BINARY_FLOAT_DIV,
 
-	MCC_TAC_OP_BINARY_LT,
-	MCC_TAC_OP_BINARY_GT,
-	MCC_TAC_OP_BINARY_LEQ,
-	MCC_TAC_OP_BINARY_GEQ,
-	MCC_TAC_OP_BINARY_AND,
-	MCC_TAC_OP_BINARY_OR,
-	MCC_TAC_OP_BINARY_EQ,
-	MCC_TAC_OP_BINARY_NEQ
+    MCC_TAC_OP_BINARY_LT,
+    MCC_TAC_OP_BINARY_GT,
+    MCC_TAC_OP_BINARY_LEQ,
+    MCC_TAC_OP_BINARY_GEQ,
+    MCC_TAC_OP_BINARY_AND,
+    MCC_TAC_OP_BINARY_OR,
+    MCC_TAC_OP_BINARY_EQ,
+    MCC_TAC_OP_BINARY_NEQ
 };
 
 /// Unary Operators
 enum mCc_tac_quad_unary_op {
-	MCC_TAC_OP_UNARY_NEG,
-	MCC_TAC_OP_UNARY_NOT,
+    MCC_TAC_OP_UNARY_NEG,
+    MCC_TAC_OP_UNARY_NOT,
 };
 
 /// Type of a TAC-stmt
 enum mCc_tac_quad_type {
-	MCC_TAC_QUAD_ASSIGN,
-	MCC_TAC_QUAD_ASSIGN_LIT,
-	MCC_TAC_QUAD_OP_UNARY,
-	MCC_TAC_QUAD_OP_BINARY,
-	MCC_TAC_QUAD_JUMP,
-	MCC_TAC_QUAD_JUMPFALSE,
-	MCC_TAC_QUAD_LABEL,
-	MCC_TAC_QUAD_PARAM,
-	MCC_TAC_QUAD_CALL,
-	MCC_TAC_QUAD_LOAD,
-	MCC_TAC_QUAD_STORE,
-	MCC_TAC_QUAD_RETURN,
-	MCC_TAC_QUAD_RETURN_VOID,
-	// MCC_TAC_QUAD_ADDR_OF,  ///< TODO necessary?
-	// MCC_TAC_QUAD_PTR_DEREF ///< TODO necessary?
+    MCC_TAC_QUAD_ASSIGN,
+    MCC_TAC_QUAD_ASSIGN_LIT,
+    MCC_TAC_QUAD_OP_UNARY,
+    MCC_TAC_QUAD_OP_BINARY,
+    MCC_TAC_QUAD_JUMP,
+    MCC_TAC_QUAD_JUMPFALSE,
+    MCC_TAC_QUAD_LABEL,
+    MCC_TAC_QUAD_PARAM,
+    MCC_TAC_QUAD_CALL,
+    MCC_TAC_QUAD_LOAD,
+    MCC_TAC_QUAD_STORE,
+    MCC_TAC_QUAD_RETURN,
+    MCC_TAC_QUAD_RETURN_VOID,
+    // MCC_TAC_QUAD_ADDR_OF,  ///< TODO necessary?
+    // MCC_TAC_QUAD_PTR_DEREF ///< TODO necessary?
 };
 
 enum mCc_tac_quad_literal_type {
-	MCC_TAC_QUAD_LIT_INT,
-	MCC_TAC_QUAD_LIT_FLOAT,
-	MCC_TAC_QUAD_LIT_BOOL,
-	/// TODO maybe it would be better to store literals in the data segment?
-	MCC_TAC_QUAD_LIT_STR,
-	MCC_TAC_QUAD_LIT_VOID /// For void function catching
+    MCC_TAC_QUAD_LIT_INT,
+    MCC_TAC_QUAD_LIT_FLOAT,
+    MCC_TAC_QUAD_LIT_BOOL,
+    /// TODO maybe it would be better to store literals in the data segment?
+            MCC_TAC_QUAD_LIT_STR,
+    MCC_TAC_QUAD_LIT_VOID /// For void function catching
 };
 
 /// Literal type for flexibility
 struct mCc_tac_quad_literal {
-	enum mCc_tac_quad_literal_type type;
+    enum mCc_tac_quad_literal_type type;
 
-	union {
-		int ival;
-		float fval;
-		bool bval;
-		char *strval;
-	};
-	int label_num; ///< Optional, for strings
+    union {
+        int ival;
+        float fval;
+        bool bval;
+        char *strval;
+    };
+    int label_num; ///< Optional, for strings
 };
 
 #define MCC_TAC_LABEL_LEN (4096)
 /// Label with two alternative options
 struct mCc_tac_label {
-	char str[MCC_TAC_LABEL_LEN]; /// For function labels
-	int num;                     /// For anonymous labels
-	enum mCc_tac_quad_literal_type
-	    type; /// (Optional)For correct stack allocation later
+    char str[MCC_TAC_LABEL_LEN]; /// For function labels
+    int num;                     /// For anonymous labels
+    enum mCc_tac_quad_literal_type
+            type; /// (Optional)For correct stack allocation later
 };
 
 /// this struct is the used as the type of the quad entries
 #define MCC_TAC_STRING_LEN (4096)
 struct mCc_tac_quad_entry {
-	int number;     /// Temporary. -1 will be used as array pointer to params
-	int str_number; /// (Optional) For strings
-	char str_value[MCC_TAC_STRING_LEN]; /// (Optional)For Strings
-	enum mCc_tac_quad_literal_type
-	    type;       /// (Optional)For correct stack allocation later
-	int array_size; /// (Optional)For correct Stack allocation
+    int number;     /// Temporary. -1 will be used as array pointer to params
+    int str_number; /// (Optional) For strings
+    char str_value[MCC_TAC_STRING_LEN]; /// (Optional)For Strings
+    enum mCc_tac_quad_literal_type
+            type;       /// (Optional)For correct stack allocation later
+    int array_size; /// (Optional)For correct Stack allocation
 };
 
-struct mCc_cfg_block{
-	int number;
-	int next;
-    char* label_name;
-    char* label_name_next;
-    bool if_jump_label;
+struct mCc_cfg_block {
+    int number;
+    char *label_name;
 };
 
 /**
  * A single TAC-stmt, stored as quad.
  */
 struct mCc_tac_quad {
-	enum mCc_tac_quad_type type;
-	char *comment; ///< Comment to add when printing :)
-	union {
-		struct mCc_tac_quad_literal *literal; ///< Only for literals
-		enum mCc_tac_quad_binary_op bin_op;
-		enum mCc_tac_quad_unary_op un_op;
-	};
-	struct mCc_tac_quad_entry arg1;
-	struct mCc_tac_quad_entry arg2;
+    enum mCc_tac_quad_type type;
+    char *comment; ///< Comment to add when printing :)
+    union {
+        struct mCc_tac_quad_literal *literal; ///< Only for literals
+        enum mCc_tac_quad_binary_op bin_op;
+        enum mCc_tac_quad_unary_op un_op;
+    };
+    struct mCc_tac_quad_entry arg1;
+    struct mCc_tac_quad_entry arg2;
 
-	/// The result can be a reference or a label
-	union {
-		struct mCc_tac_label label;
-		struct mCc_tac_quad_entry ref;
-	} result;
-	/// variable or argument count for assembly
-	unsigned int var_count;
-
-	struct mCc_cfg_block cfg_node;
+    /// The result can be a reference or a label
+    union {
+        struct mCc_tac_label label;
+        struct mCc_tac_quad_entry ref;
+    } result;
+    /// variable or argument count for assembly
+    unsigned int var_count;
+    /// To which node this quad counts
+    struct mCc_cfg_block cfg_node;
 };
 
 /**
@@ -153,29 +152,31 @@ struct mCc_tac_quad {
  * quads into the new program using #mCc_tac_program_add_program
  */
 struct mCc_tac_program {
-	/// For how many quads memory was allocated in this program
-	unsigned int quad_alloc_size;
-	/// The number of quads in this program
-	unsigned int quad_count;
-	/// The quads contained in this program
-	struct mCc_tac_quad **quads;
+    /// For how many quads memory was allocated in this program
+    unsigned int quad_alloc_size;
+    /// The number of quads in this program
+    unsigned int quad_count;
+    /// The quads contained in this program
+    struct mCc_tac_quad **quads;
 
-	/// String literals used in the program
-	struct mCc_tac_quad_entry *string_literals;
-	unsigned int string_literal_count;
+    /// String literals used in the program
+    struct mCc_tac_quad_entry *string_literals;
+    unsigned int string_literal_count;
 
-	/// Storing connections between control flow blocks
-	char **cfgs;
-	/// For how many cfg blocks memory was allocated in this program
-	unsigned int cfg_alloc_size;
-	/// The number of cfg blocks in this program
-	unsigned int cfg_count;
+    /// Storing connections between control flow blocks
+    char **cfgs;
+    /// For how many cfg blocks memory was allocated in this program
+    unsigned int cfg_alloc_size;
+    /// The number of cfg blocks in this program
+    unsigned int cfg_count;
 };
 
 /********************************** Quad Functions */
 
 struct mCc_tac_quad_entry mCc_tac_create_new_entry();
+
 struct mCc_tac_quad_entry mCc_tac_create_new_string();
+
 struct mCc_tac_label mCc_tac_get_new_label();
 
 struct mCc_tac_quad *mCc_tac_quad_new_assign(struct mCc_tac_quad_entry arg1,
@@ -191,8 +192,8 @@ mCc_tac_quad_new_op_unary(enum mCc_tac_quad_unary_op op,
                           struct mCc_tac_quad_entry result);
 
 struct mCc_tac_quad *mCc_tac_quad_new_op_binary(
-    enum mCc_tac_quad_binary_op op, struct mCc_tac_quad_entry arg1,
-    struct mCc_tac_quad_entry arg2, struct mCc_tac_quad_entry result);
+        enum mCc_tac_quad_binary_op op, struct mCc_tac_quad_entry arg1,
+        struct mCc_tac_quad_entry arg2, struct mCc_tac_quad_entry result);
 
 /**
  * @return  new quadruple in the style: MCC_TAC_QUAD_JUMP - - label
@@ -207,6 +208,7 @@ mCc_tac_quad_new_jumpfalse(struct mCc_tac_quad_entry condition,
                            struct mCc_tac_label label);
 
 struct mCc_tac_quad *mCc_tac_quad_new_label(struct mCc_tac_label label);
+
 /**
  * New quadruple in the style MCC_TAC_QUAD_PARAM value - -
  */
@@ -218,6 +220,7 @@ struct mCc_tac_quad *mCc_tac_quad_new_param(struct mCc_tac_quad_entry value);
 struct mCc_tac_quad *mCc_tac_quad_new_call(struct mCc_tac_label label,
                                            unsigned int param_count,
                                            struct mCc_tac_quad_entry result);
+
 /**
  * Loading a value from an array and saving it
  * @return a quadruple in the style MCC_TAC_QUAD_LOAD array index result
@@ -228,6 +231,7 @@ struct mCc_tac_quad *mCc_tac_quad_new_load(struct mCc_tac_quad_entry array,
                                            struct mCc_tac_quad_entry result);
 
 struct mCc_tac_quad *mCc_tac_quad_new_return_void();
+
 struct mCc_tac_quad *
 mCc_tac_quad_new_return(struct mCc_tac_quad_entry ret_value);
 
@@ -247,7 +251,9 @@ struct mCc_tac_quad *mCc_tac_quad_new_store(struct mCc_tac_quad_entry index,
 void mCc_tac_quad_print(struct mCc_tac_quad *self, FILE *out);
 
 void mCc_tac_quad_delete(struct mCc_tac_quad *self);
+
 void mCc_tac_quad_entry_delete(struct mCc_tac_quad_entry entry);
+
 void mCc_tac_quad_literal_delete(struct mCc_tac_quad_literal *lit);
 
 /********************************** Program Functions */
@@ -261,8 +267,17 @@ void mCc_tac_quad_literal_delete(struct mCc_tac_quad_literal *lit);
  */
 struct mCc_tac_program *mCc_tac_program_new(int quad_alloc_size);
 
+
+/**
+ * @brief Create a new cf connections array.
+ *
+ * @param self the program
+ * @param cfg_alloc_size  Number of connection for which memory is reserved
+ *
+ * @return The program with the initialized array
+ */
 struct mCc_tac_program *mCc_tac_new_cfg(struct mCc_tac_program *self,
-										int cfg_alloc_size);
+                                        int cfg_alloc_size);
 
 /**
  * @brief Append a quad to a program.
@@ -273,10 +288,22 @@ struct mCc_tac_program *mCc_tac_new_cfg(struct mCc_tac_program *self,
  * @return 0 on success, non-zero on memory error
  */
 int mCc_tac_program_add_quad(struct mCc_tac_program *self,
-							 struct mCc_tac_quad *quad);
+                             struct mCc_tac_quad *quad);
 
+/**
+ * @brief Append a cf connection to the array
+ *
+ * @param self The program
+ * @param from_label Label from the connection start
+ * @param from_number The Label number from the connection start
+ * @param to_label Label from connection end
+ * @param to_number Label number from connection end
+ * @param label Label of the connection
+ *
+ * @return 0 on success, non-zero on memory error
+ */
 int mCc_tac_program_add_cfg(struct mCc_tac_program *self,
-							char *from_label, int from_number, char *to_label, int to_number, char *label);
+                            char *from_label, int from_number, char *to_label, int to_number, char *label);
 
 /**
  * @brief Print a program by serially printing it's quads.

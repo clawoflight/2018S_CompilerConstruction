@@ -214,8 +214,9 @@ static void mCc_asm_print_bin_op(struct mCc_tac_quad *quad, FILE *out)
 		position[current_elements_in_local_array++] = new_number;
 		result = new_number;
 	}
-
+    printf("BIN OP: %d\n",quad->bin_op);
 	switch (quad->bin_op) {
+
 	case MCC_TAC_OP_BINARY_ADD:
 		fprintf(out, "\tmovl\t%d(%%ebp), %%edx\n", op1.stack_ptr);
 		fprintf(out, "\tmovl\t%d(%%ebp), %%eax\n", op2.stack_ptr);
@@ -575,5 +576,5 @@ void mCc_asm_generate_assembly(struct mCc_tac_program *prog, FILE *out,
 		mCc_asm_assembly_from_quad(prog->quads[i], out);
 	}
 	mCc_asm_print_fpu(out);
-	/* mCc_asm_test_print(out); */
+    mCc_asm_test_print(out);
 }
