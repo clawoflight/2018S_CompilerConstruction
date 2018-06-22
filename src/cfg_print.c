@@ -154,7 +154,7 @@ void mCc_cfg_quad_print(struct mCc_tac_quad *quad,FILE *out){
             break;
         case MCC_TAC_QUAD_JUMPFALSE:
             fprintf(out, "\"];\n");
-            fprintf(out, "%s%d [shape=box label=\"",quad->cfg_node.label_name,quad->cfg_node.next);
+            fprintf(out, "%s%d [shape=box label=\"",quad->cfg_node.label_name,quad->cfg_node.number);
             break;
         case MCC_TAC_QUAD_PARAM:
             fprintf(out, "param t%d\\l", quad->arg1.number);
