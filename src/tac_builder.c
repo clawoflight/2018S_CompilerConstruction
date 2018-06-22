@@ -505,12 +505,18 @@ static int mCc_tac_from_statement_while(struct mCc_tac_program *prog,
     if (mCc_tac_program_add_quad(prog, jump_after_while))
         return 1;
 
-    printf("Anon: %d\n",anonym_block_count);
-
     tmp_block.label_name = "";
     tmp_block.number = anonym_block_count;
 
+    mCc_tac_program_add_cfg(prog, "L", label_cond.num,
+                            "", tmp_block.number, "True");
+
+    ++anonym_block_count;
     mCc_tac_from_stmt(prog, stmt->while_stmt);
+
+    mCc_tac_program_add_cfg(prog, tmp_block.label_name, tmp_block.number,
+                            "L", label_cond.num, "");
+
     struct mCc_tac_quad *jump_to_cond = mCc_tac_quad_new_jump(label_cond);
     jump_to_cond->comment = "Repeat Loop";
     jump_to_cond->cfg_node.number = anonym_block_count;
@@ -518,8 +524,6 @@ static int mCc_tac_from_statement_while(struct mCc_tac_program *prog,
     jump_to_cond->cfg_node.label_name = "";
     jump_to_cond->cfg_node.label_name_next = "L";
 
-
-    ++anonym_block_count;
     if (mCc_tac_program_add_quad(prog, jump_to_cond))
         return 1;
 
@@ -530,6 +534,11 @@ static int mCc_tac_from_statement_while(struct mCc_tac_program *prog,
     if (mCc_tac_program_add_quad(prog, label_after_while_quad))
         return 1;
 
+    mCc_tac_program_add_cfg(prog, "L", label_cond.num,
+                            "L", label_after_while.num, "False");
+
+    tmp_block.label_name = "L";
+    tmp_block.number = label_after_while.num;
 
     return 0;
 }
