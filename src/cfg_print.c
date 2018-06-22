@@ -138,7 +138,6 @@ void mCc_cfg_quad_print(struct mCc_tac_quad *quad,FILE *out){
         case MCC_TAC_QUAD_LABEL:
             if (quad->result.label.num > -1) {
                 fprintf(out, "\"];\n");
-                fprintf(out,"%s%d -> %s%d;\n",quad->cfg_node.label_name,quad->cfg_node.number,quad->cfg_node.label_name_next, quad->cfg_node.next);
                 fprintf(out, "%s%d [shape=box label=\"",quad->cfg_node.label_name,quad->cfg_node.number);
             }
             else {
@@ -152,12 +151,9 @@ void mCc_cfg_quad_print(struct mCc_tac_quad *quad,FILE *out){
             }
             break;
         case MCC_TAC_QUAD_JUMP:
-            fprintf(out,"\"];\n%s%d -> %s%d;\n//",quad->cfg_node.label_name, quad->cfg_node.number,quad->cfg_node.label_name_next,quad->cfg_node.next);   //TODO here the edge will be printed inside a label --> well, then create a new anonymous block?
             break;
         case MCC_TAC_QUAD_JUMPFALSE:
             fprintf(out, "\"];\n");
-            fprintf(out,"%s%d -> %s%d\n [label=\"True\"];\n",quad->cfg_node.label_name,quad->cfg_node.number,quad->cfg_node.label_name_next, quad->cfg_node.next);
-            fprintf(out,"%s%d -> %s%d\n [label=\"False\"];\n",quad->cfg_node.label_name,quad->cfg_node.number,"L", quad->result.label.num);	// jump to return
             fprintf(out, "%s%d [shape=box label=\"",quad->cfg_node.label_name,quad->cfg_node.next);
             break;
         case MCC_TAC_QUAD_PARAM:

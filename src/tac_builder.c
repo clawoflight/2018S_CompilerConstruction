@@ -316,8 +316,6 @@ static int mCc_tac_from_statement_if(struct mCc_tac_program *prog,
 static int mCc_tac_from_statement_if_else(struct mCc_tac_program *prog,
                                           struct mCc_ast_statement *stmt) {
 
-    static int outer_jump = -1; //äußerstes label
-
     struct mCc_tac_label label_else = mCc_tac_get_new_label();
     struct mCc_tac_label label_after_if = mCc_tac_get_new_label();
 
@@ -333,22 +331,12 @@ static int mCc_tac_from_statement_if_else(struct mCc_tac_program *prog,
 
     jump_to_else->cfg_node.label_name_next = "";
 
-    if (outer_jump != -1) {
-        jump_to_else->cfg_node.number = outer_jump;
-        jump_to_else->cfg_node.label_name = "L";
-    } else {
         jump_to_else->cfg_node.number = tmp_block.number;
         jump_to_else->cfg_node.label_name = "";
-    }
-    outer_jump = label_else.num;
 
     //if connection
     mCc_tac_program_add_cfg(prog, tmp_block.label_name, tmp_block.number,
             "", anonym_block_count, "True");
-
-    //from if to after connection
-    mCc_tac_program_add_cfg(prog, tmp_block.label_name, tmp_block.number,
-                            "", anonym_block_count, "True");
 
     ++anonym_block_count;
 
@@ -359,16 +347,22 @@ static int mCc_tac_from_statement_if_else(struct mCc_tac_program *prog,
     if (mCc_tac_program_add_quad(prog, jump_to_else))
         return 1;
 
-    ++anonym_block_count;
+    tmp_block.label_name = "";
     tmp_block.number = tmp_block.next;
     tmp_block.next = anonym_block_count;
 
+    //go into if branch
     mCc_tac_from_stmt(prog, stmt->if_stmt);
+
+    //if to result connection
+    mCc_tac_program_add_cfg(prog, tmp_block.label_name, tmp_block.number,
+                            "L", label_after_if.num, "");
+
+
     struct mCc_tac_quad *jump_after_if = mCc_tac_quad_new_jump(label_after_if);
     jump_after_if->comment = "Jump after if";
 
     jump_after_if->cfg_node.number = tmp_block.number;
-    // ++anonym_block_count;
     jump_after_if->cfg_node.next = label_after_if.num;
     jump_after_if->cfg_node.label_name = "";
     jump_after_if->cfg_node.label_name_next = "L";
@@ -388,7 +382,16 @@ static int mCc_tac_from_statement_if_else(struct mCc_tac_program *prog,
     if (mCc_tac_program_add_quad(prog, label_else_quad))
         return 1;
 
+    tmp_block.label_name = "L";
+    tmp_block.number = label_else.num;
+    //Go into else branch
     mCc_tac_from_stmt(prog, stmt->else_stmt);
+
+    //else to result connection
+    mCc_tac_program_add_cfg(prog, tmp_block.label_name, tmp_block.number,
+                            "L", label_after_if.num, "");
+
+
     struct mCc_tac_quad *label_after_if_quad =
             mCc_tac_quad_new_label(label_after_if);
     label_after_if_quad->comment = "End of if";
@@ -401,6 +404,8 @@ static int mCc_tac_from_statement_if_else(struct mCc_tac_program *prog,
 
     if (mCc_tac_program_add_quad(prog, label_after_if_quad))
         return 1;
+
+    tmp_block.number = label_after_if.num;
 
     return 0;
 }
