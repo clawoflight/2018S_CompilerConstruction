@@ -1,6 +1,7 @@
 #include "mCc/cfg_print.h"
 
 static int first_func = 1;
+static enum mCc_tac_quad_type prev_type = MCC_TAC_QUAD_LABEL;
 
 void mCc_cfg_program_print(struct mCc_tac_program *self, FILE *out)
 {
@@ -127,6 +128,7 @@ void mCc_cfg_print_bin_op(struct mCc_tac_quad *self, FILE *out){
 }
 
 void mCc_cfg_quad_print(struct mCc_tac_quad *quad,FILE *out){
+
     switch (quad->type) {
         case MCC_TAC_QUAD_ASSIGN:
             fprintf(out, "t%d = t%d\\l", quad->result.ref.number,
@@ -137,7 +139,9 @@ void mCc_cfg_quad_print(struct mCc_tac_quad *quad,FILE *out){
         case MCC_TAC_QUAD_OP_BINARY: mCc_cfg_print_bin_op(quad, out); break;
         case MCC_TAC_QUAD_LABEL:
             if (quad->result.label.num > -1) {
-                fprintf(out, "\"];\n");
+                if (prev_type != MCC_TAC_QUAD_RETURN && prev_type != MCC_TAC_QUAD_RETURN_VOID){
+                    fprintf(out, "\"];\n");
+                }
                 fprintf(out, "%s%d [shape=box label=\"",quad->cfg_node.label_name,quad->cfg_node.number);
             }
             else {
@@ -180,4 +184,5 @@ void mCc_cfg_quad_print(struct mCc_tac_quad *quad,FILE *out){
             fprintf(out, "return \"];\n");
             break;
     }
+    prev_type = quad->type;
 }
