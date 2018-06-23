@@ -1,13 +1,12 @@
 #include "mCc/cfg_print.h"
 
 static int first_func = 1;
-static enum mCc_tac_quad_type prev_type = MCC_TAC_QUAD_LABEL;
 
 void mCc_cfg_program_print(struct mCc_tac_program *self, FILE *out) {
     assert(self);
     assert(out);
     for (unsigned int i = 0; i < self->quad_count; i++) {
-        mCc_cfg_quad_print(self->quads[i], out);
+        mCc_cfg_quad_print(self, self->quads[i], out);
     }
         fprintf(out, "\"];\n");
     mCc_cfg_print_connections(self, out);
@@ -18,6 +17,17 @@ void mCc_cfg_print_connections(struct mCc_tac_program *self, FILE *out) {
     for (unsigned int i = 0; i < self->cfg_count; i++) {
         fprintf(out, "%s", self->cfgs[i]);
     }
+}
+
+int mCc_cfg_has_connection(struct mCc_tac_program *prog, struct mCc_tac_quad *quad) {
+    char label_to_check[MAX_NAME_LENGTH];
+    for (unsigned int i = 0; i < prog->cfg_count; i++) {
+        sprintf(label_to_check, "%s%d ",quad->cfg_node.label_name, quad->cfg_node.number);
+        if (strstr(prog->cfgs[i], label_to_check)){
+            return 1;
+        }
+    }
+    return 0;
 }
 
 void mCc_cfg_print_literal(struct mCc_tac_quad *self, FILE *out) {
@@ -128,7 +138,7 @@ void mCc_cfg_print_bin_op(struct mCc_tac_quad *self, FILE *out) {
     return;
 }
 
-void mCc_cfg_quad_print(struct mCc_tac_quad *quad, FILE *out) {
+void mCc_cfg_quad_print(struct mCc_tac_program *prog, struct mCc_tac_quad *quad, FILE *out) {
 
     switch (quad->type) {
         case MCC_TAC_QUAD_ASSIGN:
@@ -145,8 +155,12 @@ void mCc_cfg_quad_print(struct mCc_tac_quad *quad, FILE *out) {
             mCc_cfg_print_bin_op(quad, out);
             break;
         case MCC_TAC_QUAD_LABEL:
+
+
+
             if (quad->result.label.num > -1) {
-                if (prev_type != MCC_TAC_QUAD_RETURN && prev_type != MCC_TAC_QUAD_RETURN_VOID) {
+                if(mCc_cfg_has_connection(prog, quad)){
+
                     fprintf(out, "\"];\n");
                     fprintf(out, "%s%d [shape=box label=\"", quad->cfg_node.label_name, quad->cfg_node.number);
                 }
@@ -158,20 +172,19 @@ void mCc_cfg_quad_print(struct mCc_tac_quad *quad, FILE *out) {
                             quad->result.label.str);  //TODO find better way to deal with func label numbers
 
                 } else {
-                    fprintf(out, "\"]\n%s [label=\"Start %s\"];\n", quad->result.label.str,
+                    fprintf(out, "\"];\n%s [label=\"Start %s\"];\n", quad->result.label.str,
                             quad->result.label.str);  //TODO find better way to deal with func label numbers
 
                 }
                 fprintf(out, "%s%d [shape=box label=\"", quad->cfg_node.label_name, quad->cfg_node.number);
             }
+
             break;
         case MCC_TAC_QUAD_JUMP:
             break;
         case MCC_TAC_QUAD_JUMPFALSE:
-            if (prev_type != MCC_TAC_QUAD_RETURN && prev_type != MCC_TAC_QUAD_RETURN_VOID) {
-                fprintf(out, "\"];\n");
-                fprintf(out, "%s%d [shape=box label=\"", quad->cfg_node.label_name, quad->cfg_node.number);
-            }
+            fprintf(out, "\"];\n");
+            fprintf(out, "%s%d [shape=box label=\"", quad->cfg_node.label_name, quad->cfg_node.number);
             break;
         case MCC_TAC_QUAD_PARAM:
             fprintf(out, "param t%d\\l", quad->arg1.number);
@@ -196,11 +209,6 @@ void mCc_cfg_quad_print(struct mCc_tac_quad *quad, FILE *out) {
         case MCC_TAC_QUAD_RETURN_VOID:
             fprintf(out, "return");
             break;
-    }
-    if (prev_type == MCC_TAC_QUAD_RETURN ||
-        prev_type == MCC_TAC_QUAD_RETURN_VOID ||
-        prev_type == MCC_TAC_QUAD_LABEL){
-        prev_type = quad->type;
     }
 
 }

@@ -545,10 +545,10 @@ int mCc_tac_program_add_cfg(struct mCc_tac_program *self,
     //if a function we dont need a number
     if ((strcmp("", from_label) != 0) && (strcmp("L", from_label) != 0)) {
         sprintf(connection,
-                "%s -> %s%d\n [label=\"%s\"];\n", from_label, to_label, to_number, label);
+                "%s -> %s%d \n[label=\"%s\"];\n", from_label, to_label, to_number, label);
     } else {
         sprintf(connection,
-                "%s%d -> %s%d\n [label=\"%s\"];\n", from_label, from_number, to_label, to_number, label);
+                "%s%d -> %s%d \n[label=\"%s\"];\n", from_label, from_number, to_label, to_number, label);
     }
 
 

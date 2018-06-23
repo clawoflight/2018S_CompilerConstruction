@@ -375,12 +375,20 @@ static int mCc_tac_from_statement_if_else(struct mCc_tac_program *prog,
 
     tmp_block.label_name = "L";
     tmp_block.number = label_else.num;
+
+    static int return_in_else = -1;
     //Go into else branch
     mCc_tac_from_stmt(prog, stmt->else_stmt);
 
+    if (return_in_else == -1 &&
+        (prog->quads[prog->quad_count - 1]->type != MCC_TAC_QUAD_RETURN ||
+        prog->quads[prog->quad_count - 1]->type != MCC_TAC_QUAD_RETURN_VOID)){
+        return_in_else = prog->quads[prog->quad_count - 1]->type;
+    }
+
     //else to result connection
-    if (prog->quads[prog->quad_count - 1]->type != MCC_TAC_QUAD_RETURN_VOID &&
-        prog->quads[prog->quad_count - 1]->type != MCC_TAC_QUAD_RETURN) {
+    if (return_in_else != MCC_TAC_QUAD_RETURN_VOID &&
+        return_in_else != MCC_TAC_QUAD_RETURN) {
 
         mCc_tac_program_add_cfg(prog, tmp_block.label_name, tmp_block.number,
                                 "L", label_after_if.num, "");
