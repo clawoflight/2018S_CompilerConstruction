@@ -55,3 +55,5 @@ Type checker -- missing:
 ## Task 5
 
 - [x] Print CFG as dot
+
+- [ ] (Low Prio) if first statement is while then an empty box is displayed
