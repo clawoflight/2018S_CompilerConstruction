@@ -431,7 +431,7 @@ static inline bool mCc_check_cmpnd_return(struct mCc_ast_statement *stmt) {
         else
             stmt->compound_stmts[i]->node.outside_if = true;
 
-        printf("OUtside if at if: %d\n", stmt->compound_stmts[i]->node.outside_if);
+        // printf("OUtside if at if: %d\n", stmt->compound_stmts[i]->node.outside_if);
 
         if (stmt->compound_stmts[i]->type == MCC_AST_STATEMENT_TYPE_IF) {
             stmt->compound_stmts[i]->node.outside_if = false;
@@ -441,15 +441,15 @@ static inline bool mCc_check_cmpnd_return(struct mCc_ast_statement *stmt) {
             stmt->compound_stmts[i]->node.outside_if = false;
             if_path_return = mCc_check_if_else_return(stmt->compound_stmts[i]);
             all_ret = true;
-          // printf("OUTSIDE IF AT ELSE: %d\n", stmt->compound_stmts[i]->node.outside_if);
+          // // printf("OUTSIDE IF AT ELSE: %d\n", stmt->compound_stmts[i]->node.outside_if);
         } else if (stmt->compound_stmts[i]->type == MCC_AST_STATEMENT_TYPE_RET) {
             all_ret = mCc_check_ret(stmt->compound_stmts[i]);
         } else if (stmt->compound_stmts[i]->type == MCC_AST_STATEMENT_TYPE_RET_VOID) {
             all_ret = mCc_check_ret_void(stmt->compound_stmts[i]);
         }
     }
-    // printf("all_ret: %d\n", all_ret);
-    // printf("if_path_return: %d\n", if_path_return);
+    // // printf("all_ret: %d\n", all_ret);
+    // // printf("if_path_return: %d\n", if_path_return);
     return (all_ret && if_path_return);
 }
 
@@ -463,7 +463,7 @@ static inline bool mCc_check_if_return(struct mCc_ast_statement *stmt) {
     bool ret = true;
 
     if (inner_stmt->type == MCC_AST_STATEMENT_TYPE_CMPND) {
-        // printf("print twice\n");
+        // // printf("print twice\n");
         ret = mCc_check_cmpnd_return(stmt);
     }
 
@@ -481,7 +481,7 @@ static inline bool mCc_check_if_else_return(struct mCc_ast_statement *stmt) {
     if (typecheck_result.status == MCC_TYPECHECK_STATUS_ERROR)
         return false;
 
-    printf("check if else branch\n");
+    // printf("check if else branch\n");
     bool if_branch = false;
     bool else_branch = false;
 
@@ -494,7 +494,7 @@ static inline bool mCc_check_if_else_return(struct mCc_ast_statement *stmt) {
     }
 
     if (stmt->else_stmt->type == MCC_AST_STATEMENT_TYPE_IFELSE) {
-        printf("once\n\n");
+        // printf("once\n\n");
         else_branch = mCc_check_if_else_return(stmt->else_stmt);
     }
 
@@ -510,8 +510,8 @@ static inline bool mCc_check_if_else_return(struct mCc_ast_statement *stmt) {
         else_branch = mCc_check_ret_void(stmt->else_stmt);
     }
 
-    // printf("if_branch: %d\n", if_branch);
-    // printf("else_branch: %d\n", else_branch);
+    // // printf("if_branch: %d\n", if_branch);
+    // // printf("else_branch: %d\n", else_branch);
 
     return (if_branch && else_branch);
 }
@@ -545,23 +545,23 @@ static inline bool mCc_check_function(struct mCc_ast_function_def *func) {
 
 
     if (func->func_type == MCC_AST_TYPE_VOID) {
-        printf("check_func_for_return: %d\n", check_func_for_return);
-        printf("check_func: %d\n", check_func);
-        printf("general_ret: %d\n", general_ret);
+        // printf("check_func_for_return: %d\n", check_func_for_return);
+        // printf("check_func: %d\n", check_func);
+        // printf("general_ret: %d\n", general_ret);
         return (check_func);
     }
 
     for (unsigned int i = 0; i < func->body->compound_stmt_count; i++) {
-        printf("Outside if: %d\n", func->body->compound_stmts[i]->node.outside_if);
+        // printf("Outside if: %d\n", func->body->compound_stmts[i]->node.outside_if);
         if (func->body->compound_stmts[i]->node.outside_if == true) {
             general_ret = true;
             break;
         }
     }
 
-     printf("check_func_for_return: %d\n", check_func_for_return);
-     printf("check_func: %d\n", check_func);
-     printf("general_ret: %d\n", general_ret);
+     // printf("check_func_for_return: %d\n", check_func_for_return);
+     // printf("check_func: %d\n", check_func);
+     // printf("general_ret: %d\n", general_ret);
 
 
     if (typecheck_result.status == MCC_TYPECHECK_STATUS_ERROR)
@@ -653,10 +653,10 @@ struct mCc_typecheck_result mCc_typecheck(struct mCc_ast_program *program,
 
     bool all_correct = true;
     for (unsigned int i = 0; i < program->func_def_count; i++) {
-        printf("New function: %s\n",program->func_defs[i]->identifier->id_value);
+        // printf("New function: %s\n",program->func_defs[i]->identifier->id_value);
         curr_func = program->func_defs[i];
         all_correct = mCc_check_function(curr_func);
-        printf("All Correct: %d\n", all_correct);
+        // printf("All Correct: %d\n", all_correct);
         if (!all_correct)
             break;
     }
