@@ -25,6 +25,7 @@ static void print_usage(const char *prg)
 	printf("  -h|--help               Print this message\n");
 	printf("  -v|--version            Print the version\n");
 	printf("  -o|--output <FILE>      Path to generated executable, default is a.out\n");
+	printf("  -O|--optimize           Prints optimization in doc/optimisation.md and cfg in doc/images\n");
 	printf("  --print-symtab[=FILE]   Print the symbol tables\n");
 	printf("  --print-tac[=FILE]      Print the three-address code\n");
 	printf("  --print-asm[=FILE]      Print the assembler code\n");
@@ -69,6 +70,10 @@ int main(int argc, char *argv[])
 	FILE *cfg_out = NULL;
 	int print_cfg = 0;
 
+    FILE *op_out = NULL;
+    int print_op = 0;
+	char str[100];
+
 	FILE *asm_out = fopen("a.s", "w");
 	int print_asm = 0;
 	if (!asm_out) {
@@ -76,6 +81,7 @@ int main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 	char *executable = "a.out";
+    char *optimization ="../doc/optimisation.md";
 
 	while (1) {
 		int c;
@@ -87,6 +93,7 @@ int main(int argc, char *argv[])
 			{ "print-asm", optional_argument, 0, 'a' },
 			{ "print-cfg", optional_argument, 0, 'c' },
 			{ "output", required_argument, 0, 'o' },
+			{ "optimize", no_argument, 0, 'O' },
 			{ 0, 0, 0, 0 }
 		};
 		if ((c = getopt_long(argc, argv, "hvo:", long_options, NULL)) == -1)
@@ -103,6 +110,13 @@ int main(int argc, char *argv[])
 		case 'o':
 			executable = optarg;
 			break;
+        case 'O':
+            if (!(op_out = fopen(optimization, "a"))) {
+                perror("fopen");
+                return EXIT_FAILURE;
+            }
+            print_op = 1;
+            break;
 		case 't':
 			if (!optarg || strcmp("-", optarg) == 0) {
 				tac_out = stdout;
@@ -167,6 +181,13 @@ int main(int argc, char *argv[])
 	/* parsing phase */
 	{
 		struct mCc_parser_result result = mCc_parser_parse_file(in);
+		if(print_op){
+			rewind(in);
+			fprintf(op_out,"---------------------The input program---------------------\n");
+            while (fgets(str, 100, in) != NULL){
+                fprintf(op_out, "%s\n", str);
+			}
+		}
 		fclose(in);
 		if (result.status != MCC_PARSER_STATUS_OK) {
 			fprintf(stderr,
@@ -230,12 +251,17 @@ int main(int argc, char *argv[])
 	}
 	if (tac_out && tac_out != stdout)
 		fclose(tac_out);
-
 	if (print_cfg)
 		mCc_cfg_program_print(tac, cfg_out);
+    if (print_op)
+        fprintf(op_out,"---------------------The dot cfg of the program---------------------\n");
+        mCc_cfg_program_print(tac, op_out);
 	if (print_cfg && cfg_out != stdout)
 		fclose(cfg_out);
-
+    if (print_op && tac) {
+        fprintf(op_out, "---------------------The Three Address Code---------------------\n");
+        mCc_tac_program_print(tac, op_out);
+    }
 	/*    TODO
 	 * - do some optimisations
 	 */
