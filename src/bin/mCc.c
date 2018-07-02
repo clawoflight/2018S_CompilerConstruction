@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
 			{ "optimize", no_argument, 0, 'O' },
 			{ 0, 0, 0, 0 }
 		};
-		if ((c = getopt_long(argc, argv, "hvo:", long_options, NULL)) == -1)
+		if ((c = getopt_long(argc, argv, "hvoOt:", long_options, NULL)) == -1)
 			break;
 
 		switch (c) {
