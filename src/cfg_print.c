@@ -170,11 +170,11 @@ void mCc_cfg_quad_print(struct mCc_tac_program *prog, struct mCc_tac_quad *quad,
                     first_func = 0;
                     fprintf(out, "strict digraph \"%s\" {\n", quad->result.label.str);
                     fprintf(out, "%s [label=\"Start %s\"];\n", quad->result.label.str,
-                            quad->result.label.str);  //TODO find better way to deal with func label numbers
+                            quad->result.label.str);
 
                 } else {
                     fprintf(out, "\"];\n%s [label=\"Start %s\"];\n", quad->result.label.str,
-                            quad->result.label.str);  //TODO find better way to deal with func label numbers
+                            quad->result.label.str);
 
                 }
                 fprintf(out, "%s%d [shape=box label=\"", quad->cfg_node.label_name, quad->cfg_node.number);

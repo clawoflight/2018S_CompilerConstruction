@@ -157,7 +157,6 @@ static void mCc_asm_print_un_op(struct mCc_tac_quad *quad, FILE *out) {
         new_number.stack_ptr = current_frame_pointer;
         new_number.lit_type = op1.lit_type;
 
-        // TODO don't need to grow local array for this, right?
         position[current_elements_in_local_array++] = new_number;
         result = new_number;
     }
@@ -480,7 +479,6 @@ static void mCc_asm_print_param(struct mCc_tac_quad *quad, FILE *out) {
                 mCc_asm_move_current_pointer(new_number, current_frame_pointer);
         new_number.tac_number = quad->result.ref.number;
         new_number.stack_ptr = current_frame_pointer;
-        // TODO think about what lit type to assign here, if we need one
 
         position[current_elements_in_local_array++] = new_number;
         result = new_number;
@@ -505,7 +503,6 @@ static void mCc_asm_print_call(struct mCc_tac_quad *quad, FILE *out) {
                 mCc_asm_move_current_pointer(new_number, current_frame_pointer);
         new_number.tac_number = quad->arg1.number;
         new_number.stack_ptr = current_frame_pointer;
-        // TODO WHAT TO DO HERE
         position[current_elements_in_local_array++] = new_number;
         result = new_number;
     }

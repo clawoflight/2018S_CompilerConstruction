@@ -363,7 +363,7 @@ mCc_symtab_scope_link_ref_assignment(struct mCc_symtab_scope *self,
             break;
 
         case MCC_SYMTAB_ENTRY_TYPE_VAR: // The if(stmt->type) is not working b=1
-            // will be matched here too TODO think about
+            // will be matched here too
             // if this check is necessary
             // if (stmt->lhs_assgn)
             //   return MCC_SYMTAB_SCOPE_LINK_ERR_VAR;

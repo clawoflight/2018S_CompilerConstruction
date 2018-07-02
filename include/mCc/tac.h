@@ -68,16 +68,13 @@ enum mCc_tac_quad_type {
     MCC_TAC_QUAD_STORE,
     MCC_TAC_QUAD_RETURN,
     MCC_TAC_QUAD_RETURN_VOID,
-    // MCC_TAC_QUAD_ADDR_OF,  ///< TODO necessary?
-    // MCC_TAC_QUAD_PTR_DEREF ///< TODO necessary?
 };
 
 enum mCc_tac_quad_literal_type {
     MCC_TAC_QUAD_LIT_INT,
     MCC_TAC_QUAD_LIT_FLOAT,
     MCC_TAC_QUAD_LIT_BOOL,
-    /// TODO maybe it would be better to store literals in the data segment?
-            MCC_TAC_QUAD_LIT_STR,
+    MCC_TAC_QUAD_LIT_STR,
     MCC_TAC_QUAD_LIT_VOID /// For void function catching
 };
 

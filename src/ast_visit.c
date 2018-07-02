@@ -81,10 +81,6 @@ void mCc_ast_visit_statement(struct mCc_ast_statement *statement,
 		break;
 
 	case MCC_AST_STATEMENT_TYPE_CMPND:
-		// Only execute when linking symbol table
-		// TODO: try out if I can move the scope creation to the callback
-		// (assuming pre-order). That would fix the double scope for every
-		// function issue. (DO THAT AFTER HAVING RUNNING TESTS!)
 		if (visitor->mode == MCC_AST_VISIT_MODE_SYMTAB_REF) {
 			struct mCc_symtab_scope *new_scope =
 			    mCc_symtab_new_scope_in(visitor->userdata, "anon");

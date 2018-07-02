@@ -178,7 +178,6 @@ mCc_symtab_scope_lookup_id(struct mCc_symtab_scope *scope,
  * @brief Link the identifier from an expression to the corresponding symtab
  * entry.
  *
- * TODO: call #mCc_symtab_scope_lookup_id internally, then set
  * expr->id->symtab_entry appropriately
  *
  * @param self The current scope, to begin lookup in
@@ -194,7 +193,6 @@ mCc_symtab_scope_link_ref_expression(struct mCc_symtab_scope *self,
  * @brief Link the identifier from an assignment to the corresponding symtab
  * entry.
  *
- * TODO: call #mCc_symtab_scope_lookup_id internally, then set
  * expr->id->symtab_entry appropriately
  *
  * @param self The current scope, to begin lookup in

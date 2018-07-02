@@ -219,7 +219,6 @@ static struct mCc_tac_quad_entry
 mCc_tac_from_expression_call(struct mCc_tac_program *prog,
                              struct mCc_ast_expression *expr) {
     // Compute all params in reverse order and push them
-    // TODO: I fear that we will need to first compute all params, then push
     // them. That would make this far more annoying - use variable-length array
     // to store results maybe?
     if (expr->arguments) {
