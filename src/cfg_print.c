@@ -11,6 +11,7 @@ void mCc_cfg_program_print(struct mCc_tac_program *self, FILE *out) {
         fprintf(out, "\"];\n");
     mCc_cfg_print_connections(self, out);
     fprintf(out, "}\n");
+    first_func = 1;
 }
 
 void mCc_cfg_print_connections(struct mCc_tac_program *self, FILE *out) {

@@ -4,8 +4,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/wait.h>
 #include <unistd.h>
+#include <linux/limits.h>
+#include <sys/wait.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #include "mCc/asm.h"
 #include "mCc/ast.h"
@@ -111,7 +114,7 @@ int main(int argc, char *argv[])
 			executable = optarg;
 			break;
         case 'O':
-            if (!(op_out = fopen(optimization, "a"))) {
+            if (!(op_out = fopen(optimization, "w"))) {
                 perror("fopen");
                 return EXIT_FAILURE;
             }
@@ -253,13 +256,45 @@ int main(int argc, char *argv[])
 		fclose(tac_out);
 	if (print_cfg)
 		mCc_cfg_program_print(tac, cfg_out);
-    if (print_op)
+    if (print_op) {
         fprintf(op_out,"---------------------The dot cfg of the program---------------------\n");
         mCc_cfg_program_print(tac, op_out);
+
+        //create image folder if it doesnt exist
+        mkdir("../doc/images", 0777);
+
+        //create separate dot file for CFG to create image
+        char img_file_name[200];
+        FILE *img_file = NULL;
+        snprintf(img_file_name, sizeof img_file_name, "../doc/images/%s.dot", strtok(filename, "."));
+        if (!(img_file = fopen(img_file_name, "w"))) {
+            perror("fopen");
+            return EXIT_FAILURE;
+        }
+        mCc_cfg_program_print(tac, img_file);
+
+        fclose(img_file);
+        char system_call[PATH_MAX];
+
+        //get current dir since C doesnt like relative paths
+        char cwd[1024];
+        if (getcwd(cwd, sizeof(cwd)) == NULL)
+            perror("getcwd() error");
+
+        //make the dot compile command
+        snprintf(system_call, sizeof system_call, "dot -Tpng %s/%s -o %s/../doc/images/%s.png",cwd, img_file_name, cwd, strtok(filename, "."));
+        if(system(system_call) < 0){
+            perror("img_create");
+            return EXIT_FAILURE;
+        }
+        //delete the tmp dot file
+        remove(img_file_name);
+    }
+
 	if (print_cfg && cfg_out != stdout)
 		fclose(cfg_out);
     if (print_op && tac) {
-        fprintf(op_out, "---------------------The Three Address Code---------------------\n");
+        fprintf(op_out, "---------------------The Three Address Code before optimizations---------------------\n");
         mCc_tac_program_print(tac, op_out);
     }
 	/*    TODO
